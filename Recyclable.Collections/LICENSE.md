@@ -1,0 +1,1 @@
+﻿The project &amp; source code is free for educational &amp; personal use. Commercial use requires one-time $10 donation for each developer seat.

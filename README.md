@@ -1,4 +1,2 @@
 # Recyclable.Collections
-Recyclable.Collections project is an open source framework for operating dynamic lists at performance close to raw arrays. The project & source code is free for educational, open-source & personal use.
-
-Commercial (re-)use requires separate license. Please contact me for details.
+Recyclable.Collections project is an open source framework for operating dynamic lists at performance close to raw arrays. It aims at providing with minimal memory footprint. It implements IList&lt;T&gt;'s interface and is targeted as direct replacements of List&lt;T&gt;, SortableList&lt;T&gt;, PriorityQueue&lt;T&gt; and similar.
