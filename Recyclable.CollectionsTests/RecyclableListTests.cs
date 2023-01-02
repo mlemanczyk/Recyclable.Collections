@@ -15,20 +15,20 @@ namespace Recyclable.CollectionsTests
 		public void AddShouldAddItems()
 		{
 			// Prepare
-			using var sut = new RecyclableList<int>();
+			using var list = new RecyclableList<int>();
 
 			// Act
 			const int itemsCount = 5;
 			foreach (var index in Enumerable.Range(1, itemsCount))
 			{
-				sut.Add(index);
+				list.Add(index);
 			}
 
 			// Validate
-			_ = sut.Count.Should().Be(itemsCount, "we added so many items");
+			_ = list.Count.Should().Be(itemsCount, "we added so many items");
 			for (var index = 0; index < itemsCount; index++)
 			{
-				var actual = sut[index];
+				var actual = list[index];
 				_ = actual.Should().Be(index + 1);
 			}
 		}
@@ -40,15 +40,15 @@ namespace Recyclable.CollectionsTests
 			int[] testNumbers = new[] { 1, 2, 2, 3 };
 
 			// Act
-			using var sut = new RecyclableList<int>();
+			using var list = new RecyclableList<int>();
 			foreach (var index in testNumbers)
 			{
-				sut.Add(index);
+				list.Add(index);
 			}
 
 			// Validate
-			_ = sut.LongCount.Should().Be(testNumbers.Length);
-			_ = sut.Should().BeEquivalentTo(testNumbers);
+			_ = list.LongCount.Should().Be(testNumbers.Length);
+			_ = list.Should().BeEquivalentTo(testNumbers);
 		}
 
 		[TestMethod]
@@ -58,11 +58,11 @@ namespace Recyclable.CollectionsTests
 			int[] testNumbers = new[] { 1, 2, 2, 3 };
 
 			// Act
-			using var sut = new RecyclableList<int>(testNumbers);
+			using var list = new RecyclableList<int>(testNumbers);
 
 			// Validate
-			_ = sut.LongCount.Should().Be(testNumbers.Length);
-			_ = sut.Should().BeEquivalentTo(testNumbers);
+			_ = list.LongCount.Should().Be(testNumbers.Length);
+			_ = list.Should().BeEquivalentTo(testNumbers);
 		}
 
 		[TestMethod]
@@ -71,32 +71,32 @@ namespace Recyclable.CollectionsTests
 			var expectedList = _testData;
 
 			// Act
-			using RecyclableList<int> actualList = NewRecyclableList;
-			actualList.QuickSort();
+			using RecyclableList<int> list = NewRecyclableList;
+			list.QuickSort();
 
 			// Validate
-			_ = actualList.LongCount.Should().Be(_totalObjectCount);
-			_ = actualList.Count.Should().Be(_totalObjectCount);
-			_ = actualList.Should().Equal(expectedList);
-			_ = expectedList.Should().AllSatisfy(expected => actualList.Contains(expected));
+			_ = list.LongCount.Should().Be(_totalObjectCount);
+			_ = list.Count.Should().Be(_totalObjectCount);
+			_ = list.Should().Equal(expectedList);
+			_ = expectedList.Should().AllSatisfy(expected => list.Contains(expected));
 
 			// Act
-			actualList.Clear();
+			list.Clear();
 
 			// Validate
-			_ = actualList.LongCount.Should().Be(0);
-			_ = actualList.Count.Should().Be(0);
+			_ = list.LongCount.Should().Be(0);
+			_ = list.Count.Should().Be(0);
 		}
 
 		[TestMethod]
 		public void CopyToShouldCopyAllItems()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 			
 			// Act
-			var actual = new int[sut.Count];
-			sut.CopyTo(actual, 0);
+			var actual = new int[list.Count];
+			list.CopyTo(actual, 0);
 			_ = actual.Should().BeEquivalentTo(_testData);
 		}
 
@@ -104,11 +104,11 @@ namespace Recyclable.CollectionsTests
 		public void GetEnumeratorShouldYieldAllItems()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 
 			// Act
 			var actual = new List<int>();
-			var enumerator = sut.GetEnumerator();
+			var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
 				actual.Add(enumerator.Current);
@@ -122,12 +122,12 @@ namespace Recyclable.CollectionsTests
 		public void IndexOfShouldFindTheIndexes()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 
 			// Act & Validate
 			foreach(var index in _testData)
 			{
-				var actual = sut.IndexOf(index);
+				var actual = list.IndexOf(index);
 				_ = actual.Should().Be(index - 1);
 			}
 		}
@@ -137,10 +137,10 @@ namespace Recyclable.CollectionsTests
 		public void InsertShouldRaiseNotSupportedException()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 
 			// Act
-			sut.Insert(0, -1);
+			list.Insert(0, -1);
 		}
 
 		[TestMethod]
@@ -148,10 +148,10 @@ namespace Recyclable.CollectionsTests
 		public void RemoveShouldRaiseNotSupportedException()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 
 			// Act
-			bool removed = sut.Remove(_testData.First());
+			bool removed = list.Remove(_testData.First());
 			_ = removed.Should().BeFalse();
 		}
 
@@ -160,34 +160,34 @@ namespace Recyclable.CollectionsTests
 		public void RemoveAtShouldRaiseNotSupportedException()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 
 			// Act
-			sut.RemoveAt(0);
+			list.RemoveAt(0);
 		}
 
 		[TestMethod]
 		public void DisposeShouldSucceed()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
+			using var list = NewRecyclableList;
 
 			// Act
-			sut.Dispose();
+			list.Dispose();
 
 			// Validate
-			_ = sut.LongCount.Should().Be(0L);
+			_ = list.LongCount.Should().Be(0L);
 		}
 
 		[TestMethod]
 		public void ConsecutiveDisposeShouldSucceed()
 		{
 			// Prepare
-			using var sut = NewRecyclableList;
-			sut.Dispose();
+			using var list = NewRecyclableList;
+			list.Dispose();
 
 			// Act
-			sut.Dispose();
+			list.Dispose();
 		}
 	}
 }
