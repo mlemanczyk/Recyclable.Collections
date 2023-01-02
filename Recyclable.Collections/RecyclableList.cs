@@ -3,8 +3,6 @@ using System.Collections;
 
 namespace Recyclable.Collections
 {
-	public delegate void ItemAdded<T>(long index, T item);
-
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
 		private static readonly IEqualityComparer<T> _comparer = EqualityComparer<T>.Default;
@@ -13,9 +11,20 @@ namespace Recyclable.Collections
 		private readonly List<T[]> _arrays = new();
 		private bool _disposedValue;
 		private long _capacity;
+		protected uint _isUpdating;
 
-		private ItemAdded<T>? _itemAdded;
-		public event ItemAdded<T> ItemAdded { add => _itemAdded += value; remove => _itemAdded -= value; }
+		protected virtual void BlockUpdateEvent()
+		{
+			_isUpdating++;
+		}
+
+		protected virtual void UnblockUpdateEvent()
+		{
+			if (_isUpdating > 0)
+			{
+				_isUpdating--;
+			}
+		}
 
 		private static IEnumerable<T> EnumerateElements(List<T[]> arrays, int chunkSize, long totalCount)
 		{
@@ -58,9 +67,17 @@ namespace Recyclable.Collections
 		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize)
 		{
 			_blockSize = blockSize;
-			foreach (var item in source)
+			BlockUpdateEvent();
+			try
 			{
-				Add(item);
+				foreach (var item in source)
+				{
+					Add(item);
+				}
+			}
+			finally
+			{
+				UnblockUpdateEvent();
 			}
 		}
 
@@ -71,7 +88,10 @@ namespace Recyclable.Collections
 			set
 			{
 				_arrays[(int)(index / _blockSize)][index % _blockSize] = value;
-				_itemAdded?.Invoke(index, value);
+				if (!IsUpdating)
+				{
+					ListUpdated();
+				}
 			}
 		}
 
@@ -84,6 +104,7 @@ namespace Recyclable.Collections
 		public int Count => LongCount <= int.MaxValue ? (int)LongCount : int.MaxValue;
 		public long LongCount { get; protected set; }
 		public bool IsReadOnly { get; } = false;
+		public bool IsUpdating => _isUpdating > 0;
 
 		public void Add(T item)
 		{
@@ -95,15 +116,28 @@ namespace Recyclable.Collections
 			}
 
 			var newIndex = LongCount;
-			this[newIndex] = item;
-			// Don't merge these 2 lines, otherwise we'll have increased count
-			// before the item is actually added.
-			LongCount++;
-			_itemAdded?.Invoke(newIndex, item);
+			// We don't want this[newIndex] set to raise the update event, because
+			// the count would be wrong. We need to increase it, first.
+			BlockUpdateEvent();
+			try
+			{
+				this[newIndex] = item;
+				LongCount++;
+			}
+			finally
+			{
+				UnblockUpdateEvent();
+			}
+
+			if (!IsUpdating)
+			{
+				ListUpdated();
+			}
 		}
 
 		public void Clear()
 		{
+			BlockUpdateEvent();
 			try
 			{
 				for (var arrayIdx = 0; arrayIdx < _arrays.Count; arrayIdx++)
@@ -121,9 +155,16 @@ namespace Recyclable.Collections
 			}
 			finally
 			{
-				// Make sure the list is cleared so that we no longer use any of the arrays
-				LongCount = 0;
-				_arrays.Clear();
+				try
+				{
+					// Make sure the list is cleared so that we no longer use any of the arrays
+					LongCount = 0;
+					_arrays.Clear();
+				}
+				finally
+				{
+					UnblockUpdateEvent();
+				}
 			}
 		}
 
@@ -203,6 +244,10 @@ namespace Recyclable.Collections
 			}
 		}
 
+		protected virtual void ListUpdated()
+		{
+		}
+
 		// override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
 		// ~RecyclableList()
 		// {
@@ -215,6 +260,20 @@ namespace Recyclable.Collections
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			Dispose(disposing: true);
 			GC.SuppressFinalize(this);
+		}
+
+		public void BeginUpdate() => _isUpdating++;
+
+		public void EndUpdate()
+		{
+			if (_isUpdating > 0)
+			{
+				_isUpdating--;
+				if (_isUpdating == 0)
+				{
+					ListUpdated();
+				}
+			}
 		}
 	}
 }

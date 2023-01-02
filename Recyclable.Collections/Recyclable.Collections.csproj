@@ -15,10 +15,17 @@
 		<Description>Recyclable.Collections project is an open source framework for operating dynamic lists at performance close to raw arrays. It aims at providing high performance with minimal memory footprint. It implements IList&lt;T&gt;'s interface and is targeted as direct replacements of List&lt;T&gt;, SortableList&lt;T&gt;, PriorityQueue&lt;T&gt; and similar.
 		
 		The project &amp; source code is free for educational, open-source &amp; personal use.</Description>
+		<ProjectUrl>https://github.com/mlemanczyk/Recyclable.Collections</ProjectUrl>
+		<RepositoryUrl>https://github.com/mlemanczyk/Recyclable.Collections</RepositoryUrl>
+		<Copyright>Marek Lemańczyk 2023</Copyright>
+		<LicenseUrl>https://github.com/mlemanczyk/Recyclable.Collections</LicenseUrl>
+		<Readme>/README.md</Readme>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="RecyclableSortedList.cs" />
+	  <None Include="..\README.md" Link="README.md">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>
