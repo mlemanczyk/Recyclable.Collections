@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<PackageId>Recyclable.Collections</PackageId>
+		<Version>0.0.1</Version>
+		<Authors>Marek Lemańczyk</Authors>
+		<Company>N/A</Company>
+		<Product>Recyclable.Collections</Product>
+		<PackageTags>Recyclable ArrayPool Array Pool List Sortable Sort</PackageTags>
+		<Description>Recyclable.Collections project is an open source framework for operating dynamic lists at performance close to raw arrays. It aims at providing high performance with minimal memory footprint. It implements IList&lt;T&gt;'s interface and is targeted as direct replacements of List&lt;T&gt;, SortableList&lt;T&gt;, PriorityQueue&lt;T&gt; and similar.
+		
+		The project &amp; source code is free for educational, open-source &amp; personal use.</Description>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="RecyclableSortedList.cs" />
+	</ItemGroup>
+
+</Project>
