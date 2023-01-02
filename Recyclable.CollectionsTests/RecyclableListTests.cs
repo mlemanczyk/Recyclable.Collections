@@ -6,7 +6,7 @@ namespace Recyclable.CollectionsTests
 	[TestClass()]
 	public class RecyclableListTests
 	{
-		private const int _totalObjectCount = 5000;
+		private const int _totalObjectCount = 5_000;
 		private static RecyclableList<int> NewRecyclableList => CreateReversedRecyclableList(_testData);
 		private static readonly IEnumerable<int> _testData = Enumerable.Range(1, _totalObjectCount);
 		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source);

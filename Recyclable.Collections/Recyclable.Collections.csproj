@@ -5,6 +5,7 @@
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
 		<Version>0.0.1</Version>
 		<Authors>Marek Lemańczyk</Authors>
