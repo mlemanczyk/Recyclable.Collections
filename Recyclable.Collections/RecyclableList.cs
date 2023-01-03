@@ -13,19 +13,6 @@ namespace Recyclable.Collections
 		private long _capacity;
 		protected uint _isUpdating;
 
-		protected virtual void BlockUpdateEvent()
-		{
-			_isUpdating++;
-		}
-
-		protected virtual void UnblockUpdateEvent()
-		{
-			if (_isUpdating > 0)
-			{
-				_isUpdating--;
-			}
-		}
-
 		private static IEnumerable<T> EnumerateElements(List<T[]> arrays, int chunkSize, long totalCount)
 		{
 			long currentCount = 0;
@@ -67,7 +54,7 @@ namespace Recyclable.Collections
 		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize)
 		{
 			_blockSize = blockSize;
-			BlockUpdateEvent();
+			BeginUpdate();
 			try
 			{
 				foreach (var item in source)
@@ -77,7 +64,7 @@ namespace Recyclable.Collections
 			}
 			finally
 			{
-				UnblockUpdateEvent();
+				EndUpdate();
 			}
 		}
 
@@ -118,7 +105,7 @@ namespace Recyclable.Collections
 			var newIndex = LongCount;
 			// We don't want this[newIndex] set to raise the update event, because
 			// the count would be wrong. We need to increase it, first.
-			BlockUpdateEvent();
+			BeginUpdate();
 			try
 			{
 				this[newIndex] = item;
@@ -126,18 +113,13 @@ namespace Recyclable.Collections
 			}
 			finally
 			{
-				UnblockUpdateEvent();
-			}
-
-			if (!IsUpdating)
-			{
-				ListUpdated();
+				EndUpdate();
 			}
 		}
 
 		public void Clear()
 		{
-			BlockUpdateEvent();
+			BeginUpdate();
 			try
 			{
 				for (var arrayIdx = 0; arrayIdx < _arrays.Count; arrayIdx++)
@@ -163,7 +145,7 @@ namespace Recyclable.Collections
 				}
 				finally
 				{
-					UnblockUpdateEvent();
+					EndUpdate();
 				}
 			}
 		}
