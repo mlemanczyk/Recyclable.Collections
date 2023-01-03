@@ -7,23 +7,28 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
-		<Version>0.0.1</Version>
+		<Version>0.0.2</Version>
 		<Authors>Marek Lemańczyk</Authors>
 		<Company>N/A</Company>
 		<Product>Recyclable.Collections</Product>
 		<PackageTags>Recyclable ArrayPool Array Pool List Sortable Sort</PackageTags>
-		<Description>Recyclable.Collections project is an open source framework for operating dynamic lists at performance close to raw arrays. It aims at providing high performance with minimal memory footprint. It implements IList&lt;T&gt;'s interface and is targeted as direct replacements of List&lt;T&gt;, SortableList&lt;T&gt;, PriorityQueue&lt;T&gt; and similar.
-		
-		The project &amp; source code is free for educational, open-source &amp; personal use.</Description>
+		<Description>Recyclable.Collections project is an open source framework for operating dynamic lists at performance close to raw arrays. It aims at providing minimal memory footprint. It implements IList&lt;T&gt;'s interface and is targeted as direct replacements of List&lt;T&gt;, SortableList&lt;T&gt;, PriorityQueue&lt;T&gt; and similar.</Description>
 		<ProjectUrl>https://github.com/mlemanczyk/Recyclable.Collections</ProjectUrl>
 		<RepositoryUrl>https://github.com/mlemanczyk/Recyclable.Collections</RepositoryUrl>
 		<Copyright>Marek Lemańczyk 2023</Copyright>
 		<LicenseUrl>https://github.com/mlemanczyk/Recyclable.Collections</LicenseUrl>
+		<license>/LICENSE.md</license>
 		<Readme>/README.md</Readme>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <None Include="..\README.md" Link="README.md">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="LICENSE.md">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
