@@ -23,11 +23,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="" Link="README.md">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<None Include="..\LICENSE.md" Pack="true" PackagePath="" Link="LICENSE.md">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
-
-		<None Include="LICENSE.md" Pack="true" PackagePath="">
+		<None Include="..\README.md" Pack="true" PackagePath="" Link="README.md">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
