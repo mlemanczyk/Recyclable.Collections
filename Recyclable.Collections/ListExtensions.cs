@@ -81,13 +81,10 @@ namespace Recyclable.Collections
 			while (stack.TryPop(out range));
 		}
 		public static void QuickSort<T>(this IList<T> values, IComparer<T> comparer, IRandomNumberGenerator randomNumberGenerator)
-		{
-			values.QuickSort(0, values.Count - 1, comparer, randomNumberGenerator);
-		}
+			=> values.QuickSort(0, values.Count - 1, comparer, randomNumberGenerator);
+
 		public static void QuickSort<T>(this IList<T> values)
-		{
-			values.QuickSort(Comparer<T>.Default, new SystemRandomNumberGenerator());
-		}
+			=> values.QuickSort(Comparer<T>.Default, new SystemRandomNumberGenerator());
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static T SampleMedian<T>(this IList<T> values, int startIndex, int endIndex, IComparer<T> comparer, IRandomNumberGenerator randomNumberGenerator)
@@ -116,8 +113,6 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static void Swap<T>(this IList<T> values, int xIndex, int yIndex)
-		{
-			(values[yIndex], values[xIndex]) = (values[xIndex], values[yIndex]);
-		}
+			=> (values[yIndex], values[xIndex]) = (values[xIndex], values[yIndex]);
 	}
 }

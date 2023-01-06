@@ -4,11 +4,11 @@
 		where TKey : notnull
 	{
 		private static readonly IComparer<(TKey, TValue)> _comparer = new FrequencyTupleComparer<TKey, TValue>();
-		private readonly SystemRandomNumberGenerator _randomNumberGenerator = new SystemRandomNumberGenerator();
+		private uint _isUpdating;
+		private readonly SystemRandomNumberGenerator _randomNumberGenerator = new();
 
-		protected override void ListUpdated()
+		protected void ListUpdated()
 		{
-			base.ListUpdated();
 			QuickSort();
 		}
 
@@ -27,16 +27,52 @@
 			QuickSort();
 		}
 
+		public RecyclableSortedList(int blockSize = RecyclableDefaults.BlockSize) 
+			: base(blockSize)
+		{
+		}
+
+		public bool IsUpdating => _isUpdating > 0;
+
+		public void Add(TKey key, TValue value) => Add((key, value));
+
+		public void BeginUpdate() => _isUpdating++;
+
+		public void Clear()
+		{
+			BeginUpdate();
+			try
+			{
+				base.Clear();
+			}
+			finally
+			{
+				EndUpdate();
+			}
+		}
+
+		public void EndUpdate(bool raiseListUpdated = true)
+		{
+			if (_isUpdating > 0)
+			{
+				_isUpdating--;
+				if (raiseListUpdated && _isUpdating == 0)
+				{
+					ListUpdated();
+				}
+			}
+		}
+
 		public void QuickSort()
 		{
-			_isUpdating++;
+			BeginUpdate();
 			try
 			{
 				this.QuickSort(_comparer, _randomNumberGenerator);
 			}
 			finally
 			{
-				_isUpdating--;
+				EndUpdate(false);
 			}		
 		}
 	}

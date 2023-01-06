@@ -1,132 +1,81 @@
-﻿using System.Buffers;
-using System.Collections;
+﻿using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
-		private static readonly IEqualityComparer<T> _comparer = EqualityComparer<T>.Default;
+		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
-		private readonly int _blockSize;
 		private readonly List<T[]> _arrays = new();
 		private bool _disposedValue;
-		private long _capacity;
-		protected uint _isUpdating;
-
-		private static IEnumerable<T> EnumerateElements(List<T[]> arrays, int chunkSize, long totalCount)
-		{
-			long currentCount = 0;
-			for (var arrayIdx = 0; arrayIdx < arrays.Count; arrayIdx++)
-			{
-				var array = arrays[arrayIdx];
-				currentCount += chunkSize;
-				switch (currentCount < totalCount)
-				{
-					case true:
-						for (var valueIdx = 0; valueIdx < chunkSize; valueIdx++)
-						{
-							yield return array[valueIdx];
-						}
-
-						break;
-
-					case false:
-						var partialCount = (int)(totalCount % chunkSize);
-						int maxCount = partialCount > 0 ? partialCount : chunkSize;
-						for (var valueIdx = 0; valueIdx < maxCount; valueIdx++)
-						{
-							yield return array[valueIdx];
-						}
-
-						break;
-				}
-			}
-		}
-
-		private static T[] RentArray(int minSize) => ArrayPool<T>.Shared.Rent(minSize);
-		private static void ReturnArray(in T[] array) => ArrayPool<T>.Shared.Return(array);
 
 		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize)
 		{
-			_blockSize = blockSize;
+			BlockSize = blockSize;
 		}
 
 		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize)
 		{
-			_blockSize = blockSize;
-			BeginUpdate();
-			try
+			BlockSize = blockSize;
+			foreach (var item in source)
 			{
-				foreach (var item in source)
-				{
-					Add(item);
-				}
-			}
-			finally
-			{
-				EndUpdate();
+				Add(item);
 			}
 		}
 
+		public int BlockSize { get; }
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void SetItem(List<T[]> arrays, in int blockSize, in long index, in T value)
+			=> arrays[(int)(index / blockSize)][index % blockSize] = value;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static T GetItem(List<T[]> arrays, in int blockSize, in long index)
+			=> arrays[(int)(index / blockSize)][index % blockSize];
+
 		public T this[long index]
 		{
-			get => _arrays[(int)(index / _blockSize)][index % _blockSize];
-
-			set
-			{
-				_arrays[(int)(index / _blockSize)][index % _blockSize] = value;
-				if (!IsUpdating)
-				{
-					ListUpdated();
-				}
-			}
+			get => GetItem(_arrays, BlockSize, index);
+			set => SetItem(_arrays, BlockSize, index, value);
 		}
 
 		public T this[int index]
 		{
-			get => this[(long)index];
-			set => this[(long)index] = value;
+			get => GetItem(_arrays, BlockSize, index);
+			set => SetItem(_arrays, BlockSize, index, value);
 		}
 
-		public int Count => LongCount <= int.MaxValue ? (int)LongCount : int.MaxValue;
-		public long LongCount { get; protected set; }
+		public long Capacity { get; set; }
+		public int Count => (int)LongCount;
+		public long LongCount { get; set; }
 		public bool IsReadOnly { get; } = false;
-		public bool IsUpdating => _isUpdating > 0;
+		public int BlockCount => _arrays.Count;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
-			if (LongCount == _capacity)
+			if (LongCount == Capacity)
 			{
-				var newArray = RentArray(_blockSize);
+				T[] newArray = BlockSize.RentArrayFromPool<T>();
 				_arrays.Add(newArray);
-				_capacity += _blockSize;
+				Capacity += BlockSize;
 			}
 
-			var newIndex = LongCount;
-			// We don't want this[newIndex] set to raise the update event, because
-			// the count would be wrong. We need to increase it, first.
-			BeginUpdate();
-			try
-			{
-				this[newIndex] = item;
-				LongCount++;
-			}
-			finally
-			{
-				EndUpdate();
-			}
+			this[LongCount] = item;
+			LongCount++;
 		}
 
 		public void Clear()
 		{
-			BeginUpdate();
 			try
 			{
-				for (var arrayIdx = 0; arrayIdx < _arrays.Count; arrayIdx++)
+				// Remove in reversed order for performance savings
+				while (_arrays.Count > 0)
 				{
 					try
 					{
-						ReturnArray(_arrays[arrayIdx]);
+						RemoveBlock(_arrays.Count - 1);
 					}
 					catch (Exception)
 					{
@@ -137,81 +86,30 @@ namespace Recyclable.Collections
 			}
 			finally
 			{
-				try
-				{
-					// Make sure the list is cleared so that we no longer use any of the arrays
-					LongCount = 0;
-					_arrays.Clear();
-				}
-				finally
-				{
-					EndUpdate();
-				}
+				LongCount = 0;
+				_arrays.Clear();
 			}
 		}
 
-		public bool Contains(T item) => _arrays.Any(x => x.Contains(item));
+		public bool Contains(T item) => _arrays.Contains(item);
 
-		public void CopyTo(T[] array, int arrayIndex)
-		{
-			Span<T> arrayMemory = array.AsSpan()[arrayIndex..];
-			for (var arrayIdx = 0; arrayIdx < _arrays.Count - 1; arrayIdx++)
-			{
-				T[] partialArray = _arrays[arrayIdx];
-				ReadOnlySpan<T> sourceMemory = partialArray.AsSpan();
-				sourceMemory = sourceMemory[.._blockSize];
-				sourceMemory.CopyTo(arrayMemory);
-				arrayMemory = arrayMemory[_blockSize..];
-			}
+		public void CopyTo(T[] array, int arrayIndex) => _arrays.CopyTo(0, BlockSize, (int)LongCount % BlockSize, array, arrayIndex);
 
-			if (_arrays.Count > 0)
-			{
-				ReadOnlySpan<T> sourceMemory = _arrays[^1].AsSpan();
-				var maxCount = Count % _blockSize;
-				sourceMemory = maxCount > 0 
-					? sourceMemory[..maxCount]
-					: sourceMemory[.._blockSize];
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public IEnumerator<T> GetEnumerator() => _arrays.Enumerate(BlockSize, LongCount).GetEnumerator();
 
-				sourceMemory.CopyTo(arrayMemory);
-			}
-		}
+		public int IndexOf(T item) => (int)_arrays.LongIndexOf(BlockSize, item, _equalityComparer);
 
-		public IEnumerator<T> GetEnumerator() => EnumerateElements(_arrays, _blockSize, LongCount).GetEnumerator();
+		public void Insert(int index, T item) => throw new NotSupportedException();
 
-		public int IndexOf(T item)
-		{
-			for (var arrayIdx = 0; arrayIdx < _arrays.Count; arrayIdx++)
-			{
-				var array = _arrays[arrayIdx];
-				Span<T> arrayMemory = ((T[]?)array).AsSpan();
-				for (var memoryIdx = 0; memoryIdx < arrayMemory.Length; memoryIdx++)
-				{
-					if (_comparer.Equals(arrayMemory[memoryIdx], item))
-					{
-						return (arrayIdx * _blockSize) + memoryIdx;
-					}
-				}
-			}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public long LongIndexOf(T item) => _arrays.LongIndexOf(BlockSize, item, _equalityComparer);
 
-			return -1;
-		}
+		public bool Remove(T item) => throw new NotSupportedException();
 
-		public void Insert(int index, T item)
-		{
-			throw new NotSupportedException();
-		}
+		public void RemoveAt(int index) => throw new NotSupportedException();
 
-		public bool Remove(T item)
-		{
-			throw new NotSupportedException();
-		}
-
-		public void RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => _arrays.Enumerate(BlockSize, LongCount).GetEnumerator();
 
 		protected virtual void Dispose(bool disposing)
 		{
@@ -224,10 +122,6 @@ namespace Recyclable.Collections
 
 				_disposedValue = true;
 			}
-		}
-
-		protected virtual void ListUpdated()
-		{
 		}
 
 		// override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
@@ -244,17 +138,17 @@ namespace Recyclable.Collections
 			GC.SuppressFinalize(this);
 		}
 
-		public void BeginUpdate() => _isUpdating++;
-
-		public void EndUpdate()
+		public void RemoveBlock(int index)
 		{
-			if (_isUpdating > 0)
+			try
 			{
-				_isUpdating--;
-				if (_isUpdating == 0)
-				{
-					ListUpdated();
-				}
+				_arrays[index].ReturnToPool();
+				_arrays.RemoveAt(index);
+			}
+			finally
+			{
+				Capacity -= BlockSize;
+				LongCount -= BlockSize;
 			}
 		}
 	}

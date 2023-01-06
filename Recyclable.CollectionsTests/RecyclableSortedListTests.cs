@@ -12,7 +12,7 @@ namespace Recyclable.CollectionsTests
 		public void ShouldBeSortedWhenCreated()
 		{
 			// Act
-			using var sortedList = new RecyclableSortedList<int, string>(_testData);
+			using var sortedList = new RecyclableSortedList<int, string>(_testData, 2);
 
 			// Validate
 			_ = sortedList.Should().HaveCount(_testData.Length)
@@ -24,17 +24,17 @@ namespace Recyclable.CollectionsTests
 		public void ShouldBeEmptyWhenNotInitialized()
 		{
 			// Act
-			using var sortedList = new RecyclableSortedList<int, string>();
+			using var sortedList = new RecyclableSortedList<int, string>(2);
 
 			// Validate
 			_ = sortedList.Should().BeEmpty();
 		}
 
 		[TestMethod]
-		public void ShouldBeSortedWhenInitialized()
+		public void ShouldNotBeSortedWhenInitialized()
 		{
 			// Act
-			using var sortedList = new RecyclableSortedList<int, string>()
+			using var sortedList = new RecyclableSortedList<int, string>(2)
 			{
 				_testData[0],
 				_testData[1],
@@ -45,15 +45,14 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = sortedList.Should().NotBeEmpty()
-				.And.BeInAscendingOrder(x => x.Key)
-				.And.BeEquivalentTo(_testData);
+				.And.ContainInConsecutiveOrder(_testData);
 		}
 
 		[TestMethod]
 		public void ShouldBeSortedWhenUpdateEnds()
 		{
 			// Prepare
-			using var sortedList = new RecyclableSortedList<int, string>();
+			using var sortedList = new RecyclableSortedList<int, string>(2);
 
 			// Act
 			sortedList.BeginUpdate();

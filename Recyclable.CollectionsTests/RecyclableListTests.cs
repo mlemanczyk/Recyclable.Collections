@@ -25,7 +25,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = list.Count.Should().Be(itemsCount, "we added so many items");
+			_ = list.LongCount.Should().Be(itemsCount, "we added so many items");
 			for (var index = 0; index < itemsCount; index++)
 			{
 				var actual = list[index];
@@ -76,7 +76,6 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(_totalObjectCount);
-			_ = list.Count.Should().Be(_totalObjectCount);
 			_ = list.Should().Equal(expectedList);
 			_ = expectedList.Should().AllSatisfy(expected => list.Contains(expected));
 
@@ -85,7 +84,6 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(0);
-			_ = list.Count.Should().Be(0);
 		}
 
 		[TestMethod]
@@ -95,7 +93,7 @@ namespace Recyclable.CollectionsTests
 			using var list = NewRecyclableList;
 			
 			// Act
-			var actual = new int[list.Count];
+			var actual = new int[list.LongCount];
 			list.CopyTo(actual, 0);
 			_ = actual.Should().BeEquivalentTo(_testData);
 		}

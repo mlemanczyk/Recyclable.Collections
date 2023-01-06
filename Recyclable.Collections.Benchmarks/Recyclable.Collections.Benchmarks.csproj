@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net6.0</TargetFramework>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
+	  <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Recyclable.Collections\Recyclable.Collections.csproj" />
+	</ItemGroup>
+
+</Project>

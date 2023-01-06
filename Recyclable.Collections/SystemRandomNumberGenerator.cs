@@ -2,7 +2,7 @@
 {
 	public class SystemRandomNumberGenerator : IRandomNumberGenerator
 	{
-		private static readonly Random _random = new();
+		private readonly Random _random = new();
 
 		public int NextInt32(int startIndex, int endIndex) => _random.Next(startIndex, endIndex);
 	}
