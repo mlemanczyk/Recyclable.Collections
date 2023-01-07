@@ -61,17 +61,52 @@ namespace Recyclable.Collections
 
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private T[] SetNewLength(long newSize)
+		private T[] SetNewLength(in long newSize)
 		{
-			var source = _memory;
-			T[] newArray = newSize.RentArrayFromPool<T>();
-			if (newArray.LongLength >= source.LongLength)
+			if (newSize == _capacity)
 			{
-				source.CopyTo(newArray, 0);
+				return _memory;
+			}
+
+			var source = _memory;
+			var sourceLength = source.LongLength;
+			var is32bit = newSize <= int.MaxValue;
+			T[] newArray;
+			if (is32bit)
+			{
+				var newSize32bit = (int)newSize;
+				newArray = newSize32bit.RentArrayFromPool<T>();
+				if (newSize32bit >= sourceLength)
+				{
+					if (sourceLength > 0)
+					{
+						Memory<T> sourceMemory = new(source);
+						Memory<T> newArrayMemory = new(newArray);
+						sourceMemory.CopyTo(newArrayMemory);
+						source.ReturnToPool();
+					}
+
+					return newArray;
+				}
+				else
+				{
+					Span<T> sourceSpan = source.AsSpan();
+					Span<T> newArraySpan = newArray.AsSpan();
+					sourceSpan = sourceSpan[..newSize32bit];
+					sourceSpan.CopyTo(newArraySpan);
+				}
 			}
 			else
 			{
-				CopyItems(0, newArray.LongLength, ref newArray, 0);
+				newArray = newSize.RentArrayFromPool<T>();
+				if (newSize >= sourceLength)
+				{
+					source.CopyTo(newArray, 0);
+				}
+				else
+				{
+					CopyItems(0, newArray.LongLength, ref newArray, 0);
+				}
 			}
 
 			source.ReturnToPool();
@@ -82,56 +117,14 @@ namespace Recyclable.Collections
 
 		public RecyclableBlockList(long initialCapacity = RecyclableDefaults.Capacity)
 		{
-			//EnsureCapacity(capacity);
-			if (_capacity < initialCapacity)
-			{
-				long newCapacity;
-				switch (_capacity > 0)
-				{
-					case true:
-						newCapacity = _capacity * 2;
-						while (newCapacity < initialCapacity)
-						{
-							newCapacity *= 2;
-						}
-
-						break;
-
-					case false:
-						newCapacity = initialCapacity;
-						break;
-				}
-
-				_capacity = newCapacity;
-				_memory = SetNewLength(newCapacity);
-			}
+			_memory = SetNewLength(initialCapacity);
+			_capacity = initialCapacity;
 		}
 
 		public RecyclableBlockList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
-			//EnsureCapacity(capacity);
-			if (_capacity < initialCapacity)
-			{
-				long newCapacity;
-				switch (_capacity > 0)
-				{
-					case true:
-						newCapacity = _capacity * 2;
-						while (newCapacity < initialCapacity)
-						{
-							newCapacity *= 2;
-						}
-
-						break;
-
-					case false:
-						newCapacity = initialCapacity;
-						break;
-				}
-
-				_capacity = newCapacity;
-				_memory = SetNewLength(newCapacity);
-			}
+			_memory = SetNewLength(initialCapacity);
+			_capacity = initialCapacity;
 
 			foreach (var item in source)
 			{
@@ -141,14 +134,14 @@ namespace Recyclable.Collections
 
 		public T this[long index]
 		{
-			get => GetItem(_memory, index);
-			set => SetItem(_memory, index, value);
+			get => _memory[index];
+			set => _memory[index] = value;
 		}
 
 		public T this[int index]
 		{
-			get => GetItem(_memory, index);
-			set => SetItem(_memory, index, value);
+			get => _memory[index];
+			set => _memory[index] = value;
 		}
 
 		private long _capacity;
@@ -192,8 +185,8 @@ namespace Recyclable.Collections
 						break;
 				}
 
-				_capacity = newCapacity;
 				_memory = SetNewLength(newCapacity);
+				_capacity = newCapacity;
 			}
 
 			_memory[LongCount] = item;
@@ -222,8 +215,8 @@ namespace Recyclable.Collections
 		//				break;
 		//		}
 
-		//		_capacity = newCapacity;
 		//		_memory = SetNewLength(newCapacity);
+		//		_capacity = newCapacity;
 		//	}
 		//}
 
@@ -269,8 +262,8 @@ namespace Recyclable.Collections
 						break;
 				}
 
-				_capacity = newCapacity;
 				_memory = SetNewLength(newCapacity);
+				_capacity = newCapacity;
 			}
 
 			for (var toMoveIdx = LongCount - 1; toMoveIdx >= index; toMoveIdx--)
