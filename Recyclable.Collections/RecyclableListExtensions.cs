@@ -1,12 +1,15 @@
 ﻿using System.Buffers;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
 	public static class RecyclableListExtensions
 	{
+		private const int _minPooledArraySize = 100;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void CopyTo<T>(this List<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
+		public static void CopyTo<T>(this RecyclableList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
 		{
 			Span<T> arrayMemory = destinationArray.AsSpan();
 			arrayMemory = arrayMemory[destinationArrayIndex..];
@@ -45,10 +48,10 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Contains<T>(this List<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
+		public static bool Contains<T>(this RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<T> Enumerate<T>(this List<T[]> arrays, int chunkSize, long totalCount)
+		public static IEnumerable<T> Enumerate<T>(this RecyclableList<T[]> arrays, int chunkSize, long totalCount)
 		{
 			long currentCount = 0;
 			for (var arrayIdx = 0; arrayIdx < arrays.Count; arrayIdx++)
@@ -83,7 +86,7 @@ namespace Recyclable.Collections
 			=> comparer.Compare(value, maxValue) > 0 ? maxValue : value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long LongIndexOf<T>(this List<T[]> arrays, int blockSize, T item, IEqualityComparer<T> comparer)
+		public static long LongIndexOf<T>(this RecyclableList<T[]> arrays, int blockSize, T item, IEqualityComparer<T> comparer)
 		{
 			for (var arrayIdx = 0; arrayIdx < arrays.Count; arrayIdx++)
 			{
@@ -102,30 +105,33 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int ToArrayIndex(this long index, int blockSize) => (int)(index / blockSize);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long ToItemIndex(this long index, int blockSize) => index % blockSize;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableList<T> ToRecyclableList<T>(this IList<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T[] RentArrayFromPool<T>(this int minSize) => ArrayPool<T>.Shared.Rent(minSize);
+		public static T[] RentArrayFromPool<T>(this int minSize) => RentArrayFromPool<T>((long)minSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ReturnToPool<T>(this T[] array) => ArrayPool<T>.Shared.Return(array);
+		public static T[] RentArrayFromPool<T>(this long minSize)
+		{
+			return minSize switch
+			{
+				< _minPooledArraySize => new T[minSize],
+				<= int.MaxValue => ArrayPool<T>.Shared.Rent((int)minSize),
+				_ => new T[minSize]
+			};
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetItem<T>(this List<T[]> arrays, in int blockSize, in long index, in T value)
-			=> arrays[(int)(index / blockSize)][index % blockSize] = value;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T GetItem<T>(this List<T[]> arrays, in int blockSize, in long index)
-			=> arrays[(int)(index / blockSize)][index % blockSize];
-
+		public static void ReturnToPool<T>(this T[] array)
+		{
+			long arrayLength = array.LongLength;
+			if (arrayLength is >= _minPooledArraySize and <= int.MaxValue)
+			{
+				ArrayPool<T>.Shared.Return(array);
+			}
+		}
 	}
 }

@@ -3,12 +3,11 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	[TestClass]
 	public class RecyclableQueueTests
 	{
 		private static readonly string[] _testData = new[] { "a", "d", "c", "b", "a" };
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenCreated()
 		{
 			// Act
@@ -19,7 +18,7 @@ namespace Recyclable.CollectionsTests
 				.And.ContainInConsecutiveOrder(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyWhenNotInitialized()
 		{
 			// Act
@@ -29,7 +28,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().BeEmpty();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenInitialized()
 		{
 			// Act
@@ -48,7 +47,7 @@ namespace Recyclable.CollectionsTests
 				.And.BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyAfterClear()
 		{
 			// Prepare
@@ -61,7 +60,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().BeEmpty();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void DequeueShouldReturnItemsInTheSameOrder()
 		{
 			// Prepare
@@ -80,11 +79,11 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = dequeuedItems.Should().ContainInConsecutiveOrder(_testData);
+			_ = dequeuedItems.Should().ContainInConsecutiveOrder(_testData)
+				.And.BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Fact]
 		public void DequeueShoudRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
 		{
 			// Prepare
@@ -96,10 +95,11 @@ namespace Recyclable.CollectionsTests
 				_ = list.Dequeue();
 			}
 
-			_ = list.Dequeue();
+			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Dequeue());
+			_ = list.LongCount.Should().Be(0);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void GetEnumeratorShouldYieldAllItemsInTheSameOrder()
 		{
 			// Prepare
@@ -114,7 +114,8 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = actual.Should().ContainInConsecutiveOrder(_testData);
+			_ = actual.Should().ContainInConsecutiveOrder(_testData)
+				.And.BeEquivalentTo(_testData);
 		}
 	}
 }

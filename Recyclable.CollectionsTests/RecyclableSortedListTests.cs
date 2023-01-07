@@ -3,12 +3,11 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	[TestClass()]
 	public class RecyclableSortedListTests
 	{
 		private static readonly (int, string)[] _testData = new[] { (5, "a"), (4, "d"), (3, "c"), (2, "b"), (1, "a") };
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeSortedWhenCreated()
 		{
 			// Act
@@ -20,7 +19,7 @@ namespace Recyclable.CollectionsTests
 				.And.BeInAscendingOrder((item) => item.Key);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyWhenNotInitialized()
 		{
 			// Act
@@ -30,7 +29,7 @@ namespace Recyclable.CollectionsTests
 			_ = sortedList.Should().BeEmpty();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenInitialized()
 		{
 			// Act
@@ -48,7 +47,7 @@ namespace Recyclable.CollectionsTests
 				.And.ContainInConsecutiveOrder(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeSortedWhenUpdateEnds()
 		{
 			// Prepare
@@ -71,7 +70,7 @@ namespace Recyclable.CollectionsTests
 			_ = sortedList.Should().BeInAscendingOrder(x => x.Key);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyAfterClear()
 		{
 			// Prepare

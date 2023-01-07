@@ -7,17 +7,38 @@ namespace Recyclable.Collections
 	{
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
-		private readonly List<T[]> _arrays = new();
+		private readonly RecyclableBlockList<T[]> _memoryBlocks;
 		private bool _disposedValue;
 
-		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize)
+		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
 		{
 			BlockSize = blockSize;
+			initialCapacity ??= 8 * BlockSize;
+			int additionalArray = initialCapacity % BlockSize > 0 ? 1 : 0;
+			long targetCapacity = (initialCapacity.Value / BlockSize) + additionalArray;
+			_memoryBlocks = new(targetCapacity);
+			Capacity = initialCapacity.Value;
+			for (var blockIdx = 0; blockIdx < targetCapacity; blockIdx++)
+			{
+				_memoryBlocks.Add(BlockSize.RentArrayFromPool<T>());
+			}
+
+			//MemoryBlocks.LongCount = MemoryBlocks.Capacity;
 		}
 
-		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize)
+		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
 		{
 			BlockSize = blockSize;
+			initialCapacity ??= 8 * BlockSize;
+			int additionalCapacity = initialCapacity % BlockSize > 0 ? 1 : 0;
+			long targetCapacity = (initialCapacity.Value / BlockSize) + additionalCapacity;
+			_memoryBlocks = new(targetCapacity);
+			Capacity = initialCapacity.Value;
+			for (var blockIdx = 0; blockIdx < targetCapacity; blockIdx++)
+			{
+				_memoryBlocks.Add(BlockSize.RentArrayFromPool<T>());
+			}
+
 			foreach (var item in source)
 			{
 				Add(item);
@@ -27,42 +48,47 @@ namespace Recyclable.Collections
 		public int BlockSize { get; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetItem(List<T[]> arrays, in int blockSize, in long index, in T value)
+		public static void SetItem(RecyclableBlockList<T[]> arrays, in int blockSize, in long index, in T value)
 			=> arrays[(int)(index / blockSize)][index % blockSize] = value;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T GetItem(List<T[]> arrays, in int blockSize, in long index)
+		public static T GetItem(RecyclableBlockList<T[]> arrays, in int blockSize, in long index)
 			=> arrays[(int)(index / blockSize)][index % blockSize];
 
 		public T this[long index]
 		{
-			get => GetItem(_arrays, BlockSize, index);
-			set => SetItem(_arrays, BlockSize, index, value);
+			//get => GetItem(MemoryBlocks, BlockSize, index);
+			//set => SetItem(MemoryBlocks, BlockSize, index, value);
+			get => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize];
+			set => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize] = value;
 		}
 
 		public T this[int index]
 		{
-			get => GetItem(_arrays, BlockSize, index);
-			set => SetItem(_arrays, BlockSize, index, value);
+			//get => GetItem(MemoryBlocks, BlockSize, index);
+			//set => SetItem(MemoryBlocks, BlockSize, index, value);
+			get => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize];
+			set => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize] = value;
 		}
 
 		public long Capacity { get; set; }
 		public int Count => (int)LongCount;
 		public long LongCount { get; set; }
 		public bool IsReadOnly { get; } = false;
-		public int BlockCount => _arrays.Count;
+		public long BlockCount => _memoryBlocks.LongCount;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			if (LongCount == Capacity)
 			{
-				T[] newArray = BlockSize.RentArrayFromPool<T>();
-				_arrays.Add(newArray);
+				T[] newMemoryBlock = BlockSize.RentArrayFromPool<T>();
+				_memoryBlocks.Add(newMemoryBlock);
 				Capacity += BlockSize;
 			}
 
-			this[LongCount] = item;
+			SetItem(_memoryBlocks, BlockSize, LongCount, item);
+			//_arrays[_arrays.LongCount - 1][LongCount % BlockSize] = item;
 			LongCount++;
 		}
 
@@ -71,11 +97,11 @@ namespace Recyclable.Collections
 			try
 			{
 				// Remove in reversed order for performance savings
-				while (_arrays.Count > 0)
+				while (_memoryBlocks.Count > 0)
 				{
 					try
 					{
-						RemoveBlock(_arrays.Count - 1);
+						RemoveBlock(_memoryBlocks.Count - 1);
 					}
 					catch (Exception)
 					{
@@ -87,29 +113,47 @@ namespace Recyclable.Collections
 			finally
 			{
 				LongCount = 0;
-				_arrays.Clear();
+				_memoryBlocks.Clear();
 			}
 		}
 
-		public bool Contains(T item) => _arrays.Contains(item);
+		public bool Contains(T item) => _memoryBlocks.Contains(item);
 
-		public void CopyTo(T[] array, int arrayIndex) => _arrays.CopyTo(0, BlockSize, (int)LongCount % BlockSize, array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, BlockSize, (int)LongCount % BlockSize, array, arrayIndex);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IEnumerator<T> GetEnumerator() => _arrays.Enumerate(BlockSize, LongCount).GetEnumerator();
+		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(BlockSize, LongCount).GetEnumerator();
 
-		public int IndexOf(T item) => (int)_arrays.LongIndexOf(BlockSize, item, _equalityComparer);
+		public int IndexOf(T item) => (int)_memoryBlocks.LongIndexOf(BlockSize, item, _equalityComparer);
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public long LongIndexOf(T item) => _arrays.LongIndexOf(BlockSize, item, _equalityComparer);
+		public long LongIndexOf(T item) => _memoryBlocks.LongIndexOf(BlockSize, item, _equalityComparer);
 
 		public bool Remove(T item) => throw new NotSupportedException();
 
-		public void RemoveAt(int index) => throw new NotSupportedException();
+		public void RemoveAt(int index) => RemoveAt(this, index);
+		public void RemoveAt(long index) => RemoveAt(this, index);
 
-		IEnumerator IEnumerable.GetEnumerator() => _arrays.Enumerate(BlockSize, LongCount).GetEnumerator();
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		private static void RemoveAt(RecyclableList<T> list, long index)
+		{
+			if (index == list.LongCount - 1)
+			{
+				list.LongCount--;
+				if (list.Capacity - list.LongCount == list.BlockSize)
+				{
+					list.RemoveBlock(list.BlockCount - 1);
+				}
+			}
+			else
+			{
+				throw new NotSupportedException("Only removal of the last element is supported");
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(BlockSize, LongCount).GetEnumerator();
 
 		protected virtual void Dispose(bool disposing)
 		{
@@ -138,12 +182,12 @@ namespace Recyclable.Collections
 			GC.SuppressFinalize(this);
 		}
 
-		public void RemoveBlock(int index)
+		public void RemoveBlock(long index)
 		{
 			try
 			{
-				_arrays[index].ReturnToPool();
-				_arrays.RemoveAt(index);
+				_memoryBlocks[index].ReturnToPool();
+				_memoryBlocks.RemoveAt(index);
 			}
 			finally
 			{

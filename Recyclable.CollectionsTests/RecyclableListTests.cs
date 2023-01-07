@@ -3,7 +3,6 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	[TestClass()]
 	public class RecyclableListTests
 	{
 		private const int _totalObjectCount = 5_000;
@@ -11,7 +10,7 @@ namespace Recyclable.CollectionsTests
 		private static readonly IEnumerable<int> _testData = Enumerable.Range(1, _totalObjectCount);
 		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source);
 
-		[TestMethod]
+		[Fact]
 		public void AddShouldAddItems()
 		{
 			// Prepare
@@ -33,7 +32,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AddShouldAcceptDuplicates()
 		{
 			// Prepare
@@ -51,7 +50,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().BeEquivalentTo(testNumbers);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ConstructorShouldAcceptDuplicates()
 		{
 			// Prepare
@@ -65,7 +64,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().BeEquivalentTo(testNumbers);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void InitializeSortClearShouldSucceed()
 		{
 			var expectedList = _testData;
@@ -86,7 +85,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.LongCount.Should().Be(0);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void CopyToShouldCopyAllItems()
 		{
 			// Prepare
@@ -98,7 +97,7 @@ namespace Recyclable.CollectionsTests
 			_ = actual.Should().BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void GetEnumeratorShouldYieldAllItems()
 		{
 			// Prepare
@@ -116,7 +115,7 @@ namespace Recyclable.CollectionsTests
 			_ = actual.Should().BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void IndexOfShouldFindTheIndexes()
 		{
 			// Prepare
@@ -130,41 +129,37 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(NotSupportedException))]
+		[Fact]
 		public void InsertShouldRaiseNotSupportedException()
 		{
 			// Prepare
 			using var list = NewRecyclableList;
 
 			// Act
-			list.Insert(0, -1);
+			_ = Assert.Throws<NotSupportedException>(() => list.Insert(0, -1));
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(NotSupportedException))]
+		[Fact]
 		public void RemoveShouldRaiseNotSupportedException()
 		{
 			// Prepare
 			using var list = NewRecyclableList;
 
 			// Act
-			bool removed = list.Remove(_testData.First());
-			_ = removed.Should().BeFalse();
+			_ = Assert.Throws<NotSupportedException>(() => list.Remove(_testData.First()));
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(NotSupportedException))]
+		[Fact]
 		public void RemoveAtShouldRaiseNotSupportedException()
 		{
 			// Prepare
 			using var list = NewRecyclableList;
 
 			// Act
-			list.RemoveAt(0);
+			_ = Assert.Throws<NotSupportedException>(() => list.RemoveAt(0));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void DisposeShouldSucceed()
 		{
 			// Prepare
@@ -177,7 +172,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.LongCount.Should().Be(0L);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ConsecutiveDisposeShouldSucceed()
 		{
 			// Prepare

@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using MiscUtil;
-using MiscUtil.Extensions;
 
 namespace Recyclable.Collections.Benchmarks
 {
