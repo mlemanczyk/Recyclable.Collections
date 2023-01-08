@@ -47,28 +47,16 @@ namespace Recyclable.Collections
 
 		public int BlockSize { get; }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void SetItem(RecyclableBlockList<T[]> arrays, in int blockSize, in long index, in T value)
-			=> arrays[(int)(index / blockSize)][index % blockSize] = value;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T GetItem(RecyclableBlockList<T[]> arrays, in int blockSize, in long index)
-			=> arrays[(int)(index / blockSize)][index % blockSize];
-
 		public T this[long index]
 		{
-			//get => GetItem(MemoryBlocks, BlockSize, index);
-			//set => SetItem(MemoryBlocks, BlockSize, index, value);
-			get => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize];
-			set => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize] = value;
+			get => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize];
+			set => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize] = value;
 		}
 
 		public T this[int index]
 		{
-			//get => GetItem(MemoryBlocks, BlockSize, index);
-			//set => SetItem(MemoryBlocks, BlockSize, index, value);
-			get => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize];
-			set => _memoryBlocks[(int)(index / BlockSize)][index % BlockSize] = value;
+			get => _memoryBlocks[index / _blockSize][index % _blockSize];
+			set => _memoryBlocks[index / _blockSize][index % _blockSize] = value;
 		}
 
 		public long Capacity { get; set; }
@@ -87,8 +75,7 @@ namespace Recyclable.Collections
 				Capacity += BlockSize;
 			}
 
-			SetItem(_memoryBlocks, BlockSize, LongCount, item);
-			//_arrays[_arrays.LongCount - 1][LongCount % BlockSize] = item;
+			memoryBlocks[oldCount / blockSize][oldCount % blockSize] = item;
 			LongCount++;
 		}
 
