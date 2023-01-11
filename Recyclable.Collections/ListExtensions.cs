@@ -7,10 +7,10 @@ namespace Recyclable.Collections
 	public static class ListExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool Contains<T>(this RecyclableBlockList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
+		public static bool Contains<T>(this RecyclableArrayList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void CopyTo<T>(this RecyclableBlockList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
+		public static void CopyTo<T>(this RecyclableArrayList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
 		{
 			Span<T> arrayMemory = destinationArray.AsSpan();
 			arrayMemory = arrayMemory[destinationArrayIndex..];
@@ -49,7 +49,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static IEnumerable<T> Enumerate<T>(this RecyclableBlockList<T[]> arrays, int chunkSize, long totalCount)
+		public static IEnumerable<T> Enumerate<T>(this RecyclableArrayList<T[]> arrays, int chunkSize, long totalCount)
 		{
 			long currentCount = 0;
 			for (var arrayIdx = 0; (arrayIdx < arrays.Count) && (currentCount < totalCount); arrayIdx++)
@@ -104,7 +104,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long LongIndexOf<T>(this RecyclableBlockList<T[]> arrays, int blockSize, T item, IEqualityComparer<T> comparer)
+		public static long LongIndexOf<T>(this RecyclableArrayList<T[]> arrays, int blockSize, T item, IEqualityComparer<T> comparer)
 		{
 			for (var arrayIdx = 0; arrayIdx < arrays.Count; arrayIdx++)
 			{

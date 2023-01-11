@@ -3,7 +3,7 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	public class RecyclableBlockListTests
+	public class RecyclableArrayListTests
 	{
 		private readonly static IEnumerable<int> _testData = Enumerable.Range(1, 20);
 
@@ -12,13 +12,13 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>();
+			var list = new RecyclableArrayList<int>();
 
 			// Act
 			foreach (var item in testData)
 			{
 				list.Add(item);
-				_ = list.LongCount.Should().Be(item);
+				_ = list.Count.Should().Be(item);
 			}
 
 			// Validate
@@ -33,13 +33,13 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>();
+			var list = new RecyclableArrayList<int>();
 
 			// Act
 			foreach (var item in testData)
 			{
 				list.Insert(0, item);
-				_ = list.LongCount.Should().Be(item);
+				_ = list.Count.Should().Be(item);
 			}
 
 			// Validate
@@ -54,7 +54,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 
 			// Act & Validate
 			foreach (var item in testData)
@@ -72,7 +72,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
@@ -94,7 +94,7 @@ namespace Recyclable.CollectionsTests
 			var testData = _testData.ToArray();
 
 			// Act & Validate
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
 			{
 				// Act
@@ -112,7 +112,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
@@ -135,13 +135,13 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
 			{
 				// Act
-				list.RemoveAt(list.LongCount - 1);
+				list.RemoveAt(list.Count - 1);
 
 				// Validate
 				_ = list.Should().HaveCount(testData.Length - deleted)
@@ -160,7 +160,7 @@ namespace Recyclable.CollectionsTests
 			var testData = _testData.ToArray();
 
 			// Act
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 
 			// Validate
 			_ = list.Should().HaveCount(testData.Length)
@@ -173,7 +173,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableBlockList<int>(testData);
+			var list = new RecyclableArrayList<int>(testData);
 
 			// Act
 			var yieldedItems = new List<int>();

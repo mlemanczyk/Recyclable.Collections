@@ -84,7 +84,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = true)]
 		public void Comparer()
 		{
 			TestWithComparer(_comparer);
@@ -99,7 +99,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void Func()
 		{
 			TestWithFunc((x, y) => (x - y) switch
@@ -110,7 +110,7 @@ namespace Recyclable.Collections.Benchmarks
 			});
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void StaticFunc()
 		{
 			TestWithFunc(static (x, y) => (x - y) switch
@@ -130,7 +130,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void Delegate()
 		{
 			TestWithDelegate<long>((x, y) => (x - y) switch
@@ -141,7 +141,7 @@ namespace Recyclable.Collections.Benchmarks
 			});
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfFuncs()
 		{
 			const long x = 2, y = 5;
@@ -153,7 +153,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfLocalFuncs()
 		{
 			const long x = 2, y = 5;
@@ -165,7 +165,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfComparers()
 		{
 			const long x = 2, y = 5;
@@ -177,7 +177,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfClasses()
 		{
 			const long x = 2, y = 5;
@@ -189,7 +189,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfStructs()
 		{
 			const long x = 2, y = 5;
@@ -201,7 +201,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfBoxedStructs()
 		{
 			const long x = 2, y = 5;
@@ -213,7 +213,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfUnboxedStructs()
 		{
 			const long x = 2, y = 5;
@@ -225,7 +225,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfUnboxedReadOnlyStructs()
 		{
 			const long x = 2, y = 5;
@@ -237,7 +237,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void ListOfDelegates()
 		{
 			const long x = 2, y = 5;

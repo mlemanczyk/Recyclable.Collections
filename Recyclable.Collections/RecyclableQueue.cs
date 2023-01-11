@@ -8,7 +8,7 @@ namespace Recyclable.Collections
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
 		private bool _disposedValue;
-		private RecyclableBlockList<T[]> Memory { get; }
+		private RecyclableArrayList<T[]> Memory { get; }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private static T Dequeue(RecyclableQueue<T> queue)
