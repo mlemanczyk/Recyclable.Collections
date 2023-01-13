@@ -5,7 +5,9 @@ using Recyclable.Collections.Benchmarks;
 
 BenchmarkRunner.Run<RecyclableCollectionsBenchmarks>();
 
-//var test = new RecyclableCollectionsBenchmarks();
+//var benchmark = new RecyclableCollectionsBenchmarks();
+//benchmark.RecyclableArrayList_Add();
+//benchmark.RecyclableArrayList_Add_WithCapacity();
 
 
 //BenchmarkRunner.Run<DelegateVsComparerBenchmark>();

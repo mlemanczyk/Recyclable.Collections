@@ -29,11 +29,11 @@
 	//public class ListVsLinkedListBenchmarks
 	//{
 	//	[Benchmark]
-	//	public void RecyclableBlockList()
+	//	public void RecyclableArrayList()
 	//	{
 	//		var data = TestObjects;
 	//		var dataCount = TestObjectCount;
-	//		using var list = new RecyclableBlockList<object>(initialCapacity: dataCount);
+	//		using var list = new RecyclableArrayList<object>(initialCapacity: dataCount);
 	//		for (long i = 0; i < dataCount; i++)
 	//		{
 	//			list.Add(data[i]);

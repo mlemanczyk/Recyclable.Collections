@@ -6,7 +6,7 @@ namespace Recyclable.CollectionsTests
 	public class RecyclableArrayListTests
 	{
 		private readonly static IEnumerable<int> _testData = Enumerable.Range(1, 20);
-
+		
 		[Fact]
 		public void AddCountShouldSucceed()
 		{
@@ -24,6 +24,40 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.Capacity.Should().Be(32);
 			_ = list.Should().HaveCount(testData.Length)
+				.And.ContainInConsecutiveOrder(testData)
+				.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
+		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsArray()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableArrayList<int>();
+
+			// Act
+			list.AddRange(testData);
+			
+			// Validate
+			_ = list.Capacity.Should().Be(20, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(testData.Length)
+				.And.ContainInConsecutiveOrder(testData)
+				.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
+		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsList()
+		{
+			// Prepare
+			var testData = _testData.ToList();
+			var list = new RecyclableArrayList<int>();
+
+			// Act
+			list.AddRange(testData);
+
+			// Validate
+			_ = list.Capacity.Should().Be(20, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(testData.Count)
 				.And.ContainInConsecutiveOrder(testData)
 				.And.BeEquivalentTo(testData);
 		}

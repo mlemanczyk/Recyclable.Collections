@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Buffers;
+using System.Collections;
 
 namespace Recyclable.Collections
 {
@@ -36,7 +37,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		protected void EnsureCapacity(in int requestedCapacity)
+		protected ref int EnsureCapacity(in int requestedCapacity)
 		{
 			int newCapacity;
 			switch (_capacity > 0)
@@ -56,7 +57,9 @@ namespace Recyclable.Collections
 			}
 
 			_memory = SetNewLength(_memory, newCapacity);
-			_capacity = _memory.Length;
+			newCapacity = _memory.Length;
+			_capacity = newCapacity;
+			return ref _capacity;
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
@@ -107,6 +110,7 @@ namespace Recyclable.Collections
 				}
 			}
 		}
+
 		public int Count { get; set; }
 		public bool IsReadOnly { get; } = false;
 
@@ -115,11 +119,46 @@ namespace Recyclable.Collections
 			int requestedCapacity = Count + 1;
 			if (_capacity < requestedCapacity)
 			{
-				EnsureCapacity(requestedCapacity);
+				_ = EnsureCapacity(requestedCapacity);
 			}
 
 			_memory[Count] = item;
 			Count++;
+		}
+
+		public void AddRange(in T[] items)
+		{
+			int sourceItemsCount = items.Length;
+			int targetCapacity = Count + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			Span<T> itemsSpan = items.AsSpan();
+			for (int sourceItemIdx = 0, targetItemIdx = Count; sourceItemIdx < sourceItemsCount;)
+			{
+				_memory[targetItemIdx++] = itemsSpan[sourceItemIdx++];
+			}
+
+			Count = targetCapacity;
+		}
+
+		public void AddRange(in List<T> items)
+		{
+			var sourceItemsCount = items.Count;
+			var targetCapacity = Count + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			for (int sourceItemIdx = 0, targetItemIdx = Count; sourceItemIdx < sourceItemsCount;)
+			{
+				_memory[targetItemIdx++] = items[sourceItemIdx++];
+			}
+
+			Count = targetCapacity;
 		}
 
 		public void Clear()
@@ -159,9 +198,9 @@ namespace Recyclable.Collections
 		public void Insert(int index, T item)
 		{
 			int requestedCapacity = Count + 1;
-			if (Capacity < requestedCapacity)
+			if (_capacity < requestedCapacity)
 			{
-				EnsureCapacity(requestedCapacity);
+				_ = EnsureCapacity(requestedCapacity);
 			}
 
 			for (var toMoveIdx = Count - 1; toMoveIdx >= index; toMoveIdx--)
