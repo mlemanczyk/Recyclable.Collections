@@ -27,7 +27,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_Add()
 		{
 			var data = TestObjects;
@@ -39,7 +39,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = true)]
 		public void List_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -59,7 +59,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark]
+		[Benchmark(Baseline = true)]
 		public void List_AddRange_WithCapacity()
 		{
 			var data = TestObjects;

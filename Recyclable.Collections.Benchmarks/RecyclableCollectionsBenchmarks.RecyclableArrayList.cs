@@ -41,7 +41,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableArrayList_Add()
 		{
 			var data = TestObjects;
@@ -53,7 +53,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableArrayList_Add_WithCapacity()
 		{
 			var data = TestObjects;

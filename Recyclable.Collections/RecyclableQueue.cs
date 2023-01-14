@@ -1,10 +1,12 @@
-﻿using System.Collections;
+﻿using System.Buffers;
+using System.Collections;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
 	public class RecyclableQueue<T> : IRecyclableOwner<T>, IList<T>, IDisposable
 	{
+		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
 		private bool _disposedValue;
@@ -129,7 +131,7 @@ namespace Recyclable.Collections
 
 		public void AddBlock()
 		{
-			T[] newArray = BlockSize.RentArrayFromPool<T>();
+			T[] newArray = BlockSize.RentArrayFromPool<T>(_arrayPool);
 			Memory.Add(newArray);
 			Capacity += BlockSize;
 		}
@@ -179,7 +181,7 @@ namespace Recyclable.Collections
 		{
 			try
 			{
-				Memory[index].ReturnToPool();
+				Memory[index].ReturnToPool(_arrayPool);
 				Memory.RemoveAt(index);
 			}
 			finally

@@ -128,21 +128,21 @@ namespace Recyclable.Collections
 		//public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T[] RentArrayFromPool<T>(this int minSize) => (minSize >= _minPooledArraySize)
-			? ArrayPool<T>.Shared.Rent(minSize)
+		public static T[] RentArrayFromPool<T>(this int minSize, ArrayPool<T> arrayPool) => (minSize >= _minPooledArraySize)
+			? arrayPool.Rent(minSize)
 			: new T[minSize];
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static T[] RentArrayFromPool<T>(this long minSize) => (minSize is >= _minPooledArraySize and <= int.MaxValue)
-			? ArrayPool<T>.Shared.Rent((int)minSize)
+		public static T[] RentArrayFromPool<T>(this long minSize, ArrayPool<T> arrayPool) => (minSize is >= _minPooledArraySize and <= int.MaxValue)
+			? arrayPool.Rent((int)minSize)
 			: new T[minSize];
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ReturnToPool<T>(this T[] array)
+		public static void ReturnToPool<T>(this T[] array, ArrayPool<T> arrayPool)
 		{
 			if (array.LongLength is > _minPooledArraySize and <= int.MaxValue)
 			{
-				ArrayPool<T>.Shared.Return(array);
+				arrayPool.Return(array);
 			}
 		}
 
@@ -154,6 +154,7 @@ namespace Recyclable.Collections
 		//	}
 		//}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long LimitTo(this long value, int limit)
 			=> (value <= limit) ? value : limit;
 

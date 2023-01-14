@@ -4,9 +4,10 @@ using Recyclable.Collections.Benchmarks;
 //BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(new[] { "-f*" });
 
 BenchmarkRunner.Run<RecyclableCollectionsBenchmarks>();
+//BenchmarkRunner.Run<RefVsInstanceMemberBenchmarks>();
 
 //var benchmark = new RecyclableCollectionsBenchmarks();
-//benchmark.RecyclableArrayList_Add();
+//benchmark.RecyclableArrayList_AddRange_WithCapacity();
 //benchmark.RecyclableArrayList_Add_WithCapacity();
 
 
