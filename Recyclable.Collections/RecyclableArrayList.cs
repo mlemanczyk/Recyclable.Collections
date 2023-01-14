@@ -16,12 +16,12 @@ namespace Recyclable.Collections
 			throw new ArgumentOutOfRangeException("index");
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected static T[] SetNewLength(in T[]? source, in int newSize)
 		{
+			ArrayPool<T> arrayPool = _arrayPool;
 			var sourceLength = source?.Length ?? 0;
-			T[] newArray;
-			newArray = newSize.RentArrayFromPool(_arrayPool);
+			T[] newArray = newSize.RentArrayFromPool(arrayPool);
 			switch (newSize >= sourceLength)
 			{
 				case true:
@@ -30,7 +30,7 @@ namespace Recyclable.Collections
 						Memory<T> sourceMemory = new(source);
 						Memory<T> newArrayMemory = new(newArray);
 						sourceMemory.CopyTo(newArrayMemory);
-						source!.ReturnToPool(_arrayPool);
+						source!.ReturnToPool(arrayPool);
 					}
 
 					return newArray;
@@ -40,7 +40,7 @@ namespace Recyclable.Collections
 					Span<T> newArraySpan = new(newArray);
 					sourceSpan = sourceSpan[..newSize];
 					sourceSpan.CopyTo(newArraySpan);
-					source!.ReturnToPool(_arrayPool);
+					source!.ReturnToPool(arrayPool);
 					return newArray;
 			}
 		}
@@ -118,24 +118,30 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public int Count { get; set; }
+		private int _count;
+		public int Count
+		{
+			get => _count;
+			set => _count = value;
+		}
+
 		public bool IsReadOnly { get; } = false;
 
 		public void Add(in T item)
 		{
-			int requestedCapacity = Count + 1;
+			int requestedCapacity = _count + 1;
 			if (_capacity < requestedCapacity)
 			{
 				_ = EnsureCapacity(requestedCapacity);
 			}
 
-			_memory[Count++] = item;
+			_memory[_count++] = item;
 		}
 
 		public void AddRange(in T[] items)
 		{
 			int sourceItemsCount = items.Length;
-			int targetCapacity = Count + sourceItemsCount;
+			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
 				_ = EnsureCapacity(targetCapacity);
@@ -143,30 +149,30 @@ namespace Recyclable.Collections
 
 			Span<T> itemsSpan = new(items);
 			Span<T> targetSpan = new(_memory);
-			for (int sourceItemIdx = 0, targetItemIdx = Count; sourceItemIdx < sourceItemsCount;)
+			for (int sourceItemIdx = 0, targetItemIdx = _count; sourceItemIdx < sourceItemsCount;)
 			{
 				targetSpan[targetItemIdx++] = itemsSpan[sourceItemIdx++];
 			}
 
-			Count = targetCapacity;
+			_count = targetCapacity;
 		}
 
 		public void AddRange(in List<T> items)
 		{
 			var sourceItemsCount = items.Count;
-			var targetCapacity = Count + sourceItemsCount;
+			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
 				_ = EnsureCapacity(targetCapacity);
 			}
 
 			Span<T> targetSpan = new(_memory);
-			for (int sourceItemIdx = 0, targetItemIdx = Count; sourceItemIdx < sourceItemsCount;)
+			for (int sourceItemIdx = 0, targetItemIdx = _count; sourceItemIdx < sourceItemsCount;)
 			{
 				targetSpan[targetItemIdx++] = items[sourceItemIdx++];
 			}
 
-			Count = targetCapacity;
+			_count = targetCapacity;
 		}
 
 		public void AddRange(IEnumerable<T> source)
@@ -179,7 +185,7 @@ namespace Recyclable.Collections
 
 		public void Clear()
 		{
-			Count = 0;
+			_count = 0;
 		}
 
 		public bool Contains(T item) => _memory.Contains(item);
@@ -188,7 +194,7 @@ namespace Recyclable.Collections
 
 		protected static IEnumerable<T> Enumerate(RecyclableArrayList<T> list)
 		{
-			int count = list.Count;
+			int count = list._count;
 			var memory = list._memory;
 			for (var i = 0; i < count; i++)
 			{
@@ -199,7 +205,7 @@ namespace Recyclable.Collections
 		public int IndexOf(T itemToFind)
 		{
 			Span<T> memorySpan = _memory;
-			int itemCount = Count;
+			int itemCount = _count;
 			var equalityComparer = _equalityComparer;
 			for (var itemIdx = 0; itemIdx < itemCount; itemIdx++)
 			{
@@ -215,20 +221,20 @@ namespace Recyclable.Collections
 
 		public void Insert(int index, T item)
 		{
-			int requestedCapacity = Count + 1;
+			int requestedCapacity = _count + 1;
 			if (_capacity < requestedCapacity)
 			{
 				_ = EnsureCapacity(requestedCapacity);
 			}
 
 			Span<T> memorySpan = new(_memory);
-			for (var toMoveIdx = Count - 1; toMoveIdx >= index; toMoveIdx--)
+			for (var toMoveIdx = _count - 1; toMoveIdx >= index; toMoveIdx--)
 			{
 				memorySpan[toMoveIdx + 1] = memorySpan[toMoveIdx];
 			}
 
 			memorySpan[index] = item;
-			Count++;
+			_count++;
 		}
 
 		public bool Remove(T itemToRemove)
@@ -244,11 +250,11 @@ namespace Recyclable.Collections
 		}
 		public void RemoveAt(int index)
 		{
-			int oldCount = Count;
+			int oldCount = _count;
 			int oldCountMinus1 = oldCount - 1;
 			if (index == oldCountMinus1)
 			{
-				Count--;
+				_count--;
 				return;
 			}
 
@@ -259,7 +265,7 @@ namespace Recyclable.Collections
 			}
 
 			_memory.CopyItems(index, oldCountMinus1, ref _memory);
-			Count--;
+			_count--;
 		}
 
 		public IEnumerator<T> GetEnumerator() => Enumerate(this).GetEnumerator();
