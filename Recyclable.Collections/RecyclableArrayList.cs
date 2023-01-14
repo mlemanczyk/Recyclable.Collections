@@ -103,7 +103,7 @@ namespace Recyclable.Collections
 			set => _memory[index] = value;
 		}
 
-		internal int _capacity;
+		protected int _capacity;
 		public int Capacity 
 		{
 			get => _capacity;
@@ -149,12 +149,6 @@ namespace Recyclable.Collections
 			var targetSpan = new Span<T>(_memory)[_count..];
 			Span<T> itemsSpan = new(items);
 			itemsSpan.CopyTo(targetSpan);
-
-			//for (int sourceItemIdx = 0, targetItemIdx = _count; sourceItemIdx < sourceItemsCount;)
-			//{
-			//	targetSpan[targetItemIdx++] = itemsSpan[sourceItemIdx++];
-			//}
-
 			_count = targetCapacity;
 		}
 
@@ -226,7 +220,7 @@ namespace Recyclable.Collections
 
 		public int IndexOf(T itemToFind)
 		{
-			Span<T> memorySpan = _memory;
+			Span<T> memorySpan = new(_memory);
 			int itemCount = _count;
 			var equalityComparer = _equalityComparer;
 			for (var itemIdx = 0; itemIdx < itemCount; itemIdx++)
@@ -249,13 +243,10 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(requestedCapacity);
 			}
 
-			Span<T> memorySpan = new(_memory);
-			for (var toMoveIdx = _count - 1; toMoveIdx >= index; toMoveIdx--)
-			{
-				memorySpan[toMoveIdx + 1] = memorySpan[toMoveIdx];
-			}
-
-			memorySpan[index] = item;
+			var sourceSpan = new Span<T>(_memory)[index..];
+			var targetSpan = new Span<T>(_memory)[(index + 1)..];
+			sourceSpan.CopyTo(targetSpan);
+			sourceSpan[index] = item;
 			_count++;
 		}
 
