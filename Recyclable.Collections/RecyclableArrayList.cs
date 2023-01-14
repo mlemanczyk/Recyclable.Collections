@@ -162,12 +162,6 @@ namespace Recyclable.Collections
 			}
 
 			items.CopyTo(_memory, _count);
-			//Span<T> targetSpan = new(_memory);
-			//for (int sourceItemIdx = 0, targetItemIdx = _count; sourceItemIdx < sourceItemsCount;)
-			//{
-			//	targetSpan[targetItemIdx++] = items[sourceItemIdx++];
-			//}
-
 			_count = targetCapacity;
 		}
 
@@ -183,11 +177,6 @@ namespace Recyclable.Collections
 			var targetSpan = new Span<T>(_memory)[_count..];
 			Span<T> itemsSpan = new(items._memory);
 			itemsSpan.CopyTo(targetSpan);
-			//for (int sourceItemIdx = 0, targetItemIdx = _count; sourceItemIdx < sourceItemsCount;)
-			//{
-			//	targetSpan[targetItemIdx++] = itemsSpan[sourceItemIdx++];
-			//}
-			//
 			_count = targetCapacity;
 		}
 
@@ -237,16 +226,21 @@ namespace Recyclable.Collections
 
 		public void Insert(int index, T item)
 		{
-			int requestedCapacity = _count + 1;
+			int oldCount = _count;
+			int requestedCapacity = oldCount + 1;
 			if (_capacity < requestedCapacity)
 			{
 				_ = EnsureCapacity(requestedCapacity);
 			}
 
-			var sourceSpan = new Span<T>(_memory)[index..];
-			var targetSpan = new Span<T>(_memory)[(index + 1)..];
-			sourceSpan.CopyTo(targetSpan);
-			sourceSpan[index] = item;
+			if (oldCount > 0)
+			{
+				var sourceSpan = new Span<T>(_memory)[index..oldCount];
+				var targetSpan = new Span<T>(_memory)[(index + 1)..];
+				sourceSpan.CopyTo(targetSpan);
+			}
+
+			_memory[index] = item;
 			_count++;
 		}
 
