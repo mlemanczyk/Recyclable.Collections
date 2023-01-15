@@ -127,7 +127,7 @@ namespace Recyclable.Collections
 		public T this[int index]
 		{
 			get => _memory[index];
-			set => _memory[index] = value;
+			set => new Span<T>(_memory)[index] = value;
 		}
 
 		protected int _capacity;
@@ -153,6 +153,7 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly { get; } = false;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			int requestedCapacity = _count + 1;

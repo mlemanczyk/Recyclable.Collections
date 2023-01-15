@@ -12,12 +12,15 @@ namespace Recyclable.Collections.Benchmarks
 			_testRecyclableList = new(TestObjects, TestObjectCount);
 			_testArray = TestObjects.ToArray();
 			_testList = new(TestObjects);
+			_ = TestObjectsAsList;
+			_ = TestObjectsAsRecyclableArrayList;
 		}
 
 		~RecyclableCollectionsBenchmarks()
 		{
 			_testRecyclableArrayList?.Dispose();
 			_testRecyclableList?.Dispose();
+			TestObjectsAsRecyclableArrayList?.Dispose();
 		}
 
 		//[Benchmark]
@@ -123,8 +126,6 @@ namespace Recyclable.Collections.Benchmarks
 			{
 				data[i] = TestObjects[i];
 			}
-
-			data.Count = dataCount;
 		}
 
 		[Benchmark]
