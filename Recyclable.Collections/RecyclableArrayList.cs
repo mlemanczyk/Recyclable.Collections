@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public class RecyclableArrayList<T> : IEnumerable<T>, IDisposable
+	public class RecyclableArrayList<T> : IEnumerable<T>, IList<T>, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
@@ -296,15 +296,6 @@ namespace Recyclable.Collections
 			}
 
 			_count = targetIndex;
-
-			//foreach (var item in source)
-			//{
-			//	if (capacity == count)
-			//	{
-			//	}
-
-			//	Add(item);
-			//}
 		}
 
 		public void Clear()

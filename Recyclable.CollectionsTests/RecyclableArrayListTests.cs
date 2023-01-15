@@ -237,5 +237,22 @@ namespace Recyclable.CollectionsTests
 				.And.ContainInConsecutiveOrder(testData)
 				.And.BeEquivalentTo(testData);
 		}
+
+		[Fact]
+		public void CopyToShouldCopyAllItemsInTheCorrectOrder()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableArrayList<int>(testData);
+			int[] yieldedItems = new int[testData.Length];
+
+			// Act
+			list.CopyTo(yieldedItems, 0);
+
+			// Validate
+			_ = yieldedItems.Should().HaveCount(testData.Length)
+				.And.ContainInConsecutiveOrder(testData)
+				.And.BeEquivalentTo(testData);
+		}
 	}
 }
