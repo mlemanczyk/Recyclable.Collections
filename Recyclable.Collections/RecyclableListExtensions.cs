@@ -161,14 +161,6 @@ namespace Recyclable.Collections
 			}
 		}
 
-		//public static void AddRange<T>(this RecyclableList<T> destination, IEnumerable<T> source)
-		//{
-		//	foreach (var item in source)
-		//	{
-		//		destination.Add(item);
-		//	}
-		//}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long LimitTo(this long value, int limit)
 			=> (value <= limit) ? value : limit;
