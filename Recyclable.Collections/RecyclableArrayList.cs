@@ -82,12 +82,39 @@ namespace Recyclable.Collections
 		public RecyclableArrayList(int initialCapacity)
 #pragma warning restore CS8618
 		{
-			// _memory will be initialized when the 1st item is added
 			if (initialCapacity > 0)
 			{
 				_memory = SetNewLength(_memory, initialCapacity);
 				_capacity = _memory.Length;
 			}
+		}
+
+#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
+		public RecyclableArrayList(RecyclableArrayList<T> source)
+#pragma warning restore CS8618
+		{
+			AddRange(source);
+		}
+
+#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
+		public RecyclableArrayList(in T[] source)
+#pragma warning restore CS8618
+		{
+			AddRange(source);
+		}
+
+#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
+		public RecyclableArrayList(List<T> source)
+#pragma warning restore CS8618
+		{
+			AddRange(source);
+		}
+
+#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
+		public RecyclableArrayList(IList<T> source)
+#pragma warning restore CS8618
+		{
+			AddRange(source);
 		}
 
 		public RecyclableArrayList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
@@ -126,7 +153,7 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly { get; } = false;
 
-		public void Add(in T item)
+		public void Add(T item)
 		{
 			int requestedCapacity = _count + 1;
 			if (_capacity < requestedCapacity)
@@ -152,7 +179,7 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
-		public void AddRange(in List<T> items)
+		public void AddRange(List<T> items)
 		{
 			var sourceItemsCount = items.Count;
 			var targetCapacity = _count + sourceItemsCount;
@@ -165,7 +192,20 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
-		public void AddRange(in RecyclableArrayList<T> items)
+		public void AddRange(IList<T> items)
+		{
+			var sourceItemsCount = items.Count;
+			var targetCapacity = _count + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			items.CopyTo(_memory, _count);
+			_count = targetCapacity;
+		}
+
+		public void AddRange(RecyclableArrayList<T> items)
 		{
 			var sourceItemsCount = items._count;
 			var targetCapacity = _count + sourceItemsCount;
@@ -180,10 +220,17 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
-		public void AddRange(IEnumerable<T> source)
+		public void AddRange(IEnumerable<T> source, int growByCount = 100)
 		{
+			ref int capacity = ref _capacity;
+			ref int count = ref _count;
 			foreach (var item in source)
 			{
+				if (capacity == count)
+				{
+					_ = EnsureCapacity(capacity * growByCount);
+				}
+
 				Add(item);
 			}
 		}

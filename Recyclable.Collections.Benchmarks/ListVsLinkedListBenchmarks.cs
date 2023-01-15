@@ -14,6 +14,12 @@
 		protected object[]? _testObjects;
 		protected object[] TestObjects => _testObjects ??= Enumerable.Range(1, TestObjectCount).Select(x => new object()).ToArray();
 
+		private List<object>? _testObjectsAsList;
+		protected List<object> TestObjectsAsList => _testObjectsAsList ??= TestObjects.ToList();
+
+		private RecyclableArrayList<object>? _testObjectsAsRecyclableArrayList;
+		protected RecyclableArrayList<object> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ??= TestObjects.ToRecyclableArrayList();
+
 		protected static void DoNothing<T>(T obj)
 		{
 			_ = obj;

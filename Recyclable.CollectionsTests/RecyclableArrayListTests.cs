@@ -161,7 +161,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().Be(32);
+			_ = list.Capacity.Should().Be(20);
 		}
 
 		[Fact]
@@ -184,7 +184,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().Be(32);
+			_ = list.Capacity.Should().Be(20);
 		}
 
 		[Fact]

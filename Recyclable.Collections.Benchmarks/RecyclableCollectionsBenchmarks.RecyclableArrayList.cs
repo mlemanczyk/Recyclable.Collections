@@ -41,7 +41,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableArrayList_Add()
 		{
 			var data = TestObjects;
@@ -53,7 +53,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableArrayList_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -66,9 +66,41 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		[Benchmark]
-		public void RecyclableArrayList_AddRange()
+		public void RecyclableArrayList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
+			using var list = new RecyclableArrayList<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableArrayList_AddRangeWhenSourceIsList()
+		{
+			var data = TestObjectsAsList;
+			using var list = new RecyclableArrayList<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableArrayList_AddRangeWhenSourceIsIList()
+		{
+			var data = (IList<object>)TestObjectsAsList;
+			using var list = new RecyclableArrayList<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableArrayList_AddRangeWhenSourceIsIEnumerable()
+		{
+			var data = (IEnumerable<object>)TestObjects;
+			using var list = new RecyclableArrayList<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableArrayList_AddRangeWhenSourceIsRecyclableArrayList()
+		{
+			var data = TestObjectsAsRecyclableArrayList;
 			using var list = new RecyclableArrayList<object>();
 			list.AddRange(data);
 		}
@@ -82,10 +114,23 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark]
+		public void RecyclableArrayList_SetItem()
+		{
+			var data = TestObjectsAsRecyclableArrayList;
+			var dataCount = TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				data[i] = TestObjects[i];
+			}
+
+			data.Count = dataCount;
+		}
+
+		[Benchmark]
 		public void RecyclableArrayList_GetItem()
 		{
-			var data = _testRecyclableArrayList;
+			var data = TestObjectsAsRecyclableArrayList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -93,18 +138,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
-		public void RecyclableArrayList_SetItem()
-		{
-			var data = _testRecyclableArrayList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
-			{
-				data[i] = TestObjects[i];
-			}
-		}
-
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableArrayList_Count()
 		{
 			var data = _testRecyclableArrayList;

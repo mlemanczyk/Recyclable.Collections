@@ -121,11 +121,26 @@ namespace Recyclable.Collections
 			return -1;
 		}
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public static RecyclableList<T> ToRecyclableList<T>(this IList<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableList<T> ToRecyclableList<T>(this IList<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableList<T> ToRecyclableList<T>(this List<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this IEnumerable<T> values) => new(values, values.TryGetNonEnumeratedCount(out int count) ? count : RecyclableDefaults.Capacity);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this T[] values) => new(values);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this List<T> values) => new(values);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this RecyclableArrayList<T> values) => new(values);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T[] RentArrayFromPool<T>(this int minSize, ArrayPool<T> arrayPool) => (minSize >= _minPooledArraySize)

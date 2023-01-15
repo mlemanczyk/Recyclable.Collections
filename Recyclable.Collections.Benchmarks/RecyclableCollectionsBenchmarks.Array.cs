@@ -7,27 +7,17 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		private readonly object[] _testArray;
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void Array_Create_WithCapacity()
 		{
-			DoNothing(new object[TestObjectCount]);
+			var data = new object[TestObjectCount];
+			DoNothing(data);
 		}
 
-		//[Benchmark]
-		public void Array_GetItem()
-		{
-			var data = _testArray;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
-			{
-				DoNothing(data[i]);
-			}
-		}
-
-		//[Benchmark]
+		[Benchmark(Baseline = true)]
 		public void Array_SetItem()
 		{
-			var data = _testArray;
+			var data = TestObjects;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -35,14 +25,25 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
+		public void Array_GetItem()
+		{
+			var data = TestObjects;
+			var dataCount = TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(data[i]);
+			}
+		}
+
+		[Benchmark]
 		public void Array_Count()
 		{
 			var data = _testArray;
 			DoNothing(data.Length);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void Array_LongCount()
 		{
 			var data = _testArray;
