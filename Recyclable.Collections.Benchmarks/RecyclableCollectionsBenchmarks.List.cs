@@ -6,7 +6,7 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		private readonly List<object> _testList;
 
-		//[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = false)]
 		public void List_Create()
 		{
 			var list = new List<object>();
@@ -27,7 +27,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void List_Add()
 		{
 			var data = TestObjects;
@@ -39,7 +39,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void List_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -52,14 +52,38 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		[Benchmark]
-		public void List_AddRange()
+		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
 			var list = new List<object>();
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = true)]
+		[Benchmark]
+		public void List_AddRangeWhenSourceIsList()
+		{
+			var data = TestObjectsAsList;
+			var list = new List<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void List_AddRangeWhenSourceIsIList()
+		{
+			var data = (IList<object>)TestObjectsAsList;
+			var list = new List<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void List_AddRangeWhenSourceIsIEnumerable()
+		{
+			var data = (IEnumerable<object>)TestObjects;
+			var list = new List<object>();
+			list.AddRange(data);
+		}
+
+		[Benchmark(Baseline = false)]
 		public void List_AddRange_WithCapacity()
 		{
 			var data = TestObjects;
@@ -68,21 +92,10 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
-		public void List_GetItem()
-		{
-			var data = _testList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
-			{
-				DoNothing(data[i]);
-			}
-		}
-
-		//[Benchmark]
+		[Benchmark]
 		public void List_SetItem()
 		{
-			var data = _testList;
+			var data = TestObjectsAsList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -90,7 +103,18 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
+		public void List_GetItem()
+		{
+			var data = TestObjectsAsList;
+			var dataCount = TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(data[i]);
+			}
+		}
+
+		[Benchmark]
 		public void List_Count()
 		{
 			var data = _testList;
