@@ -5,7 +5,7 @@ namespace Recyclable.Collections
 {
 	public static class RecyclableListExtensions
 	{
-		private const int _minPooledArraySize = 100;
+		private const int _minPooledArraySize = RecyclableDefaults.MinPooledArrayLength;
 
 		public static void CopyItems<T>(this T[] memory, long startingIndex, long count, ref T[] destArray, long offset = 1)
 		{

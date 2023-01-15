@@ -25,7 +25,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void Array_GetItem()
 		{
 			var data = TestObjects;
@@ -36,14 +36,14 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void Array_Count()
 		{
 			var data = _testArray;
 			DoNothing(data.Length);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void Array_LongCount()
 		{
 			var data = _testArray;

@@ -27,7 +27,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_Add()
 		{
 			var data = TestObjects;
@@ -39,7 +39,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -51,7 +51,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
@@ -59,7 +59,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_AddRangeWhenSourceIsList()
 		{
 			var data = TestObjectsAsList;
@@ -67,7 +67,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<object>)TestObjectsAsList;
@@ -78,12 +78,12 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark]
 		public void List_AddRangeWhenSourceIsIEnumerable()
 		{
-			var data = (IEnumerable<object>)TestObjects;
+			var data = TestObjectsAsIEnumerable;
 			var list = new List<object>();
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_AddRange_WithCapacity()
 		{
 			var data = TestObjects;
@@ -92,7 +92,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_SetItem()
 		{
 			var data = TestObjectsAsList;
@@ -103,7 +103,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_GetItem()
 		{
 			var data = TestObjectsAsList;
@@ -114,7 +114,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_Count()
 		{
 			var data = _testList;

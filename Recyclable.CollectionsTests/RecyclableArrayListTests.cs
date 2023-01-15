@@ -63,6 +63,22 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
+		public void ConstructorShouldAddItemsInCorrectOrderWhenSourceIsIEnumerable()
+		{
+			// Prepare
+			var testData = _testData;
+
+			// Act
+			var list = new RecyclableArrayList<int>(testData);
+
+			// Validate
+			_ = list.Capacity.Should().Be(32, "when we succeed in taking count without enumerating, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(testData.Count())
+				.And.ContainInConsecutiveOrder(testData)
+				.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
 		public void InsertAtTheBeginningShouldMoveItems()
 		{
 			// Prepare

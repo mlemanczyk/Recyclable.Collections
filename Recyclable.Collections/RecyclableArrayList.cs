@@ -153,7 +153,7 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly { get; } = false;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			int requestedCapacity = _count + 1;
@@ -221,19 +221,90 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
-		public void AddRange(IEnumerable<T> source, int growByCount = 100)
+		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
-			ref int capacity = ref _capacity;
-			ref int count = ref _count;
-			foreach (var item in source)
+			if (source is T[] sourceArray)
 			{
-				if (capacity == count)
+				AddRange(sourceArray);
+				return;
+			}
+
+			if (source is List<T> sourceList)
+			{
+				AddRange(sourceList);
+				return;
+			}
+
+			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			{
+				AddRange(sourceRecyclableArrayList);
+				return;
+			}
+
+			if (source is IList<T> sourceIList)
+			{
+				AddRange(sourceIList);
+				return;
+			}
+
+			int capacity = _capacity;
+			int targetIndex = _count;
+			Span<T> memorySpan;
+			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+			{
+				_ = EnsureCapacity(targetIndex + requiredAdditionalCapacity);
+				memorySpan = new(_memory);
+				foreach (var item in source)
 				{
-					_ = EnsureCapacity(capacity * growByCount);
+					memorySpan[targetIndex++] = item;
 				}
 
-				Add(item);
+				_count = targetIndex;
+				return;
 			}
+
+			int i;
+			using var enumerator = source.GetEnumerator();
+
+			memorySpan = new(_memory);
+			if (enumerator.MoveNext())
+			{
+				int available = capacity - targetIndex;
+				while (true)
+				{
+					if (targetIndex + growByCount > capacity)
+					{
+						capacity = EnsureCapacity(capacity + growByCount);
+						memorySpan = new(_memory);
+						available = capacity - targetIndex;
+					}
+
+					for (i = 0; i < available; i++)
+					{
+						memorySpan[targetIndex++] = enumerator.Current;
+						if (!enumerator.MoveNext())
+						{
+							break;
+						}
+					}
+
+					if (i < available)
+					{
+						break;
+					}
+				}
+			}
+
+			_count = targetIndex;
+
+			//foreach (var item in source)
+			//{
+			//	if (capacity == count)
+			//	{
+			//	}
+
+			//	Add(item);
+			//}
 		}
 
 		public void Clear()

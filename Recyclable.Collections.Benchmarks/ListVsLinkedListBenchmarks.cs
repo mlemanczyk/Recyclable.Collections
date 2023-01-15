@@ -19,6 +19,7 @@
 
 		private RecyclableArrayList<object>? _testObjectsAsRecyclableArrayList;
 		protected RecyclableArrayList<object> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ??= TestObjects.ToRecyclableArrayList();
+		protected IEnumerable<object> TestObjectsAsIEnumerable = Enumerable.Range(1, TestObjectCount).Select(static x => new object());
 
 		protected static void DoNothing<T>(T obj)
 		{
