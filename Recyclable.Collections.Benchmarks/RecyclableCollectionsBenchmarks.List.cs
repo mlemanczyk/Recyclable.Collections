@@ -4,17 +4,10 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = true)]
 		public void List_Create()
 		{
 			var list = new List<object>();
-			DoNothing(list);
-		}
-
-		//[Benchmark]
-		public void List_Create_0Capacity()
-		{
-			var list = new List<object>(0);
 			DoNothing(list);
 		}
 

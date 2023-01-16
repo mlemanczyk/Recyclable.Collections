@@ -39,13 +39,6 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		//[Benchmark]
-		public void RecyclableArrayList_Create_0Capacity()
-		{
-			using var list = new RecyclableArrayList<object>(0);
-			DoNothing(list);
-		}
-
 		[Benchmark]
 		public void RecyclableArrayList_Create_WithCapacity()
 		{
