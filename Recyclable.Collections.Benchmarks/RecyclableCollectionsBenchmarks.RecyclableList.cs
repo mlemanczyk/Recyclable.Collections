@@ -4,7 +4,7 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		private readonly RecyclableList<object> _testRecyclableList;
+		private RecyclableList<object> _testRecyclableList;
 
 		//[Benchmark]
 		public void RecyclableList_Create()

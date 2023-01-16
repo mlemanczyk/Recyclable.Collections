@@ -4,9 +4,7 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		private readonly List<object> _testList;
-
-		//[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = true)]
 		public void List_Create()
 		{
 			var list = new List<object>();
@@ -20,7 +18,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void List_Create_WithCapacity()
 		{
 			var list = new List<object>(TestObjectCount);
@@ -75,7 +73,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void List_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
@@ -117,7 +115,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark]
 		public void List_Count()
 		{
-			var data = _testList;
+			var data = TestObjectsAsList;
 			DoNothing(data.Count);
 		}
 	}

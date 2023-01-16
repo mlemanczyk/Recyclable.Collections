@@ -70,6 +70,11 @@ namespace Recyclable.Collections
 
 		private static RecyclableArrayList<T[]> SetupMemoryBlocks(RecyclableList<T> owner, int blockSize, long? totalItemsCount)
 		{
+			if (blockSize <= 0)
+			{
+				return new();
+			}
+
 			totalItemsCount ??= 8 * blockSize;
 			int additionalArray = totalItemsCount % blockSize > 0 ? 1 : 0;
 			int memoryBlockCount = (int)(totalItemsCount.Value / blockSize).LimitTo(int.MaxValue) + additionalArray;

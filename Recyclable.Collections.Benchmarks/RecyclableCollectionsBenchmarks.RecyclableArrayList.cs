@@ -4,23 +4,32 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		private readonly RecyclableArrayList<object> _testRecyclableArrayList;
+		private RecyclableArrayList<object> _testRecyclableArrayList;
 
-		public RecyclableCollectionsBenchmarks()
+		[GlobalSetup]
+		public void Setup()
 		{
 			_testRecyclableArrayList = new(TestObjects, TestObjectCount);
 			_testRecyclableList = new(TestObjects, TestObjectCount);
 			_testArray = TestObjects.ToArray();
-			_testList = new(TestObjects);
 			_ = TestObjectsAsList;
 			_ = TestObjectsAsRecyclableArrayList;
+			_ = TestObjectsAsIEnumerable;
 		}
 
-		~RecyclableCollectionsBenchmarks()
+
+		[GlobalCleanup]
+		public void Cleanup()
 		{
 			_testRecyclableArrayList?.Dispose();
+			_testRecyclableArrayList = default;
 			_testRecyclableList?.Dispose();
+			_testRecyclableList = default;
 			TestObjectsAsRecyclableArrayList?.Dispose();
+			_testObjectsAsRecyclableArrayList = default;
+			_testArray = default;
+			_testObjectsAsList = default;
+			_testObjects = default;
 		}
 
 		//[Benchmark]
@@ -37,7 +46,7 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableArrayList_Create_WithCapacity()
 		{
 			using var list = new RecyclableArrayList<object>(TestObjectCount);
@@ -92,7 +101,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableArrayList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
@@ -142,7 +151,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark]
 		public void RecyclableArrayList_Count()
 		{
-			var data = _testRecyclableArrayList;
+			var data = TestObjectsAsRecyclableArrayList;
 			DoNothing(data.Count);
 		}
 	}

@@ -5,16 +5,16 @@ namespace Recyclable.Collections.Benchmarks
 	[MemoryDiagnoser]
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		private readonly object[] _testArray;
+		private object[] _testArray;
 
-		//[Benchmark(Baseline = false)]
+		[Benchmark(Baseline = true)]
 		public void Array_Create_WithCapacity()
 		{
 			var data = new object[TestObjectCount];
 			DoNothing(data);
 		}
 
-		[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = true)]
 		public void Array_SetItem()
 		{
 			var data = TestObjects;
