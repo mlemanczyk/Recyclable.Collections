@@ -27,11 +27,6 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			_ = obj;
 		}
-
-		public BenchmarkBase()
-		{
-			_ = TestObjects;
-		}
 	}
 
 	//[MemoryDiagnoser]
