@@ -7,7 +7,7 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		private object[] _testArray;
 
-		[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = true)]
 		public void Array_Create_WithCapacity()
 		{
 			var data = new object[TestObjectCount];
