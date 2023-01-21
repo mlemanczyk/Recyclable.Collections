@@ -1,14 +1,39 @@
 # Recyclable.Collections
 `Recyclable.Collections` project is an open source framework for operating dynamic lists at performance close to raw arrays, but fairly unlimited in size. It aims at providing minimal memory footprint. It implements `IList<T>`'s interface and is targeted as direct replacements of `List<T>`, `SortableList<T>`, `PriorityQueue<T>` & similar.
 
+## Included
+* `RecyclableArrayList<T>`
+* `RecyclableList<T>`
+* `RecyclableSortableList<T>`
+    * Range: `long`
+    * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
+* `RecyclableQueue<T>`
+    * Range: `long`
+    * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
+* `RecyclableStack<T>`
+    * Range: `long`
+    * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
+
 # Characteristicts of the classes
 
-* All classes provide large storage capabilities, in practice limited only by the memory available in your system.
-* All data is stored in blocks, with the provided `int blockSize` or the default, currently being `10,240` items in each block. It's recommended to use smaller numbers, if you foresee storing low no. of items on the list.
+## Common
+* All classes implement `IDisposable` interface & SHOULD be disposed after use. That's to return block arrays taken from the shared pool. It may be foreseen as an issue for replacement in existing code, which obviously is missing `using` clause. But considering that `Dispose` will be called by `GC` anyway, it should cause issues in specific scenarios, only. In either case the fix is one-word addition of `using`.
 * Memory blocks are created in 2 ways, depending on `blockSize` value
     * when `blockSize < 100` ⇨ blocks are created as regular `arrays`
     * when `blockSize >= 100` ⇨ blocks are taken from and returned to `ArrayPool<T>.Shared`, when blocks are removed
-* All classes implement `IDisposable` interface & SHOULD be disposed after use. That's to return block arrays taken from the shared pool. It may be foreseen as an issue for replacement in existing code, which obviously is missing `using` clause. But considering that `Dispose` will be called by `GC` anyway, it should cause issues in specific scenarios, only. In either case the fix is one-word addition of `using`.
+* Array pools are shared between the same `T` type. I.e. `List<int>` will use a different pool from `List<short>` and so on. For high concurrency environments you may want to provide your own pools, when this feature becomes available in the upcoming releases.
+* Trying to access `this[int index]`, `this[long index]`, `Count`, `LongCount` etc. when `Capacity == 0` will raise `NullReferenceException`. This is by design to remove all non-critical code from the constructor.
+
+## `RecyclableArrayList<T>`
+* Range: `int`
+* Interfaces: `IList<T>`, `IEnumerable<T>`, `IDisposable`
+This is the direct equivalent of `List<T>` class, except that the arrays are taken from the shared pool, instead of directly being allocated. It proves to out perform `List<T>` & the standard arrays in certains operations and is fairly close in others. But they may perform worse in certain scenarios. If you're interested in details, please refer to benchmarks.
+
+## `RecyclableList<T>`, `RecyclableSortableList<T>`, `RecyclableQueue<T>`, `RecyclableStack<T>`
+* Range: `long`
+* Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
+* All classes provide large storage capabilities, in practice limited only by the memory available in your system.
+* All data is stored in blocks, with the provided `int blockSize` or the default, currently being `10,240` items in each block. It's recommended to use smaller numbers, if you foresee storing low no. of items on the list.
 * There is no memory copying to increase the capacity of the recyclable classes, anymore. If more capacity is needed, a new memory block is allocate & added to the internal list of blocks. This is the only list that may re-allocate memory block & copy their content to grow. That shouldn't be an issue considering limited no. of blocks stored by each class in practical scenarios. Currently I'm not planning any works around that. Shall there be a need to eliminate it, you're welcomed to file a PR with the proposed changes.
 * `Insert`, `Remove` & `RemoveAt` methods raise `NotSupportedException`. This is by design in the current version, because it involves performance degradadion. I'm planning works around this in the upcoming weeks. If you need that sooner, you're welcomed to file a PR with the proposed changes.
 
@@ -16,7 +41,7 @@
 The architecture of the classes included in this project is driven primarily by performance & memory footprints. The following decisions were made to support it.
 
 ## Code duplication
-There is some level of code duplication in each of the classes. When you look at them, you will see they are alike & some of the code could be extracted to extension methods. It has been done & proved to perform worse. For this reason, properties & methods expected to be on the hotpath duplicate some code.
+There is high level of code duplication in each of the classes. When you look at them, you will see they are alike & some of the code could be extracted to extension methods. It has been done & has proved to perform worse. For this reason, properties & methods expected much of the code is duplicated to get the most out of it.
 
 ## Common base `ILongList<T>`
 Having a common base class for all the classes looks very attractive. But it is also proved to perform worse, if you start making properties & methods virtual & there are subsequent calls to `base`. For this reason, each of the classes is the root class & there are hardly any virtual methods & properties. All classes are meant to be `final`, but I've not marked them as `sealed`. If you feel that you'd benefit from it, you're welcomed to inherit from them.

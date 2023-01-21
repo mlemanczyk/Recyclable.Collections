@@ -31,14 +31,14 @@ namespace Recyclable.Collections.Benchmarks
 			_testObjects = default;
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableArrayList_Create()
 		{
 			using var list = new RecyclableArrayList<object>();
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableArrayList_Create_WithCapacity()
 		{
 			using var list = new RecyclableArrayList<object>(TestObjectCount);

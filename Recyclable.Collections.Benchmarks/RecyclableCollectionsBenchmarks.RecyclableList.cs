@@ -6,28 +6,21 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		private RecyclableList<object> _testRecyclableList;
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Create()
 		{
 			using var list = new RecyclableList<object>();
 			DoNothing(list);
 		}
 
-		//[Benchmark]
-		public void RecyclableList_Create_0Capacity()
-		{
-			using var list = new RecyclableList<object>(totalItemsCount: 0);
-			DoNothing(list);
-		}
-
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Create_WithCapacity()
 		{
-			using var list = new RecyclableList<object>(totalItemsCount: TestObjectCount);
+			using var list = new RecyclableList<object>(initialCapacity: TestObjectCount);
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Add()
 		{
 			var data = TestObjects;
@@ -39,7 +32,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Add_WithCapacity()
 		{
 			var data = TestObjects;

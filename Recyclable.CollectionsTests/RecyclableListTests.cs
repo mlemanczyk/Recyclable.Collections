@@ -156,7 +156,7 @@ namespace Recyclable.CollectionsTests
 			using var list = NewRecyclableList;
 
 			// Act
-			_ = Assert.Throws<NotSupportedException>(() => list.RemoveAt(0));
+			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(0));
 		}
 
 		[Fact]

@@ -15,17 +15,17 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public static void CopyTo<T>(this RecyclableList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
+		public static void CopyTo<T>(this T[][] arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
 		{
 			Span<T> arrayMemory = destinationArray.AsSpan();
 			arrayMemory = arrayMemory[destinationArrayIndex..];
 			int startingArrayIndex = (int)(startingIndex / blockSize);
 			startingIndex %= blockSize;
-			if (arrays.LongCount > 0)
+			if (arrays.LongLength > 0)
 			{
 				ReadOnlySpan<T> sourceMemory = arrays[0].AsSpan();
 				var maxToCopy = (int)Math.Min(blockSize - startingIndex, arrayMemory.Length);
-				if (arrays.LongCount == 1)
+				if (arrays.LongLength == 1)
 				{
 					maxToCopy = (int)Math.Min(maxToCopy, lastBlockSize);
 				}
@@ -35,7 +35,7 @@ namespace Recyclable.Collections
 				arrayMemory = arrayMemory[maxToCopy..];
 			}
 
-			for (var arrayIdx = startingArrayIndex + 1; arrayIdx < arrays.Count - 1 && arrayMemory.Length > 0; arrayIdx++)
+			for (var arrayIdx = startingArrayIndex + 1; arrayIdx < arrays.Length - 1 && arrayMemory.Length > 0; arrayIdx++)
 			{
 				ReadOnlySpan<T> sourceMemory = arrays[arrayIdx].AsSpan();
 				var maxToCopy = Math.Min(blockSize, arrayMemory.Length);
@@ -44,7 +44,7 @@ namespace Recyclable.Collections
 				arrayMemory = arrayMemory[maxToCopy..];
 			}
 
-			if (arrays.Count > 1 && arrayMemory.Length > 0)
+			if (arrays.Length > 1 && arrayMemory.Length > 0)
 			{
 				ReadOnlySpan<T> sourceMemory = arrays[^1].AsSpan();
 				var maxToCopy = Math.Min(lastBlockSize, arrayMemory.Length);
@@ -56,35 +56,35 @@ namespace Recyclable.Collections
 		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		//public static bool Contains<T>(this RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
 
-		//public static IEnumerable<T> Enumerate<T>(this RecyclableList<T[]> arrays, int chunkSize, long totalCount)
-		//{
-		//	long currentCount = 0;
-		//	for (var arrayIdx = 0; arrayIdx < arrays.Count; arrayIdx++)
-		//	{
-		//		var array = arrays[arrayIdx];
-		//		currentCount += chunkSize;
-		//		switch (currentCount < totalCount)
-		//		{
-		//			case true:
-		//				for (var valueIdx = 0; valueIdx < chunkSize; valueIdx++)
-		//				{
-		//					yield return array[valueIdx];
-		//				}
+		public static IEnumerable<T> Enumerate<T>(this T[][] arrays, int chunkSize, long totalCount)
+		{
+			long currentCount = 0;
+			for (var arrayIdx = 0; arrayIdx < arrays.Length && currentCount < totalCount; arrayIdx++)
+			{
+				var array = arrays[arrayIdx];
+				currentCount += chunkSize;
+				switch (currentCount < totalCount)
+				{
+					case true:
+						for (var valueIdx = 0; valueIdx < chunkSize; valueIdx++)
+						{
+							yield return array[valueIdx];
+						}
 
-		//				break;
+						break;
 
-		//			case false:
-		//				var partialCount = (int)(totalCount % chunkSize);
-		//				int maxCount = partialCount > 0 ? partialCount : chunkSize;
-		//				for (var valueIdx = 0; valueIdx < maxCount; valueIdx++)
-		//				{
-		//					yield return array[valueIdx];
-		//				}
+					case false:
+						var partialCount = (int)(totalCount % chunkSize);
+						int maxCount = partialCount > 0 ? partialCount : chunkSize;
+						for (var valueIdx = 0; valueIdx < maxCount; valueIdx++)
+						{
+							yield return array[valueIdx];
+						}
 
-		//				break;
-		//		}
-		//	}
-		//}
+						break;
+				}
+			}
+		}
 
 		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		//public static T LimitTo<T>(this T value, T maxValue, IComparer<T> comparer)
@@ -107,14 +107,26 @@ namespace Recyclable.Collections
 			return -1;
 		}
 
-		public static long LongIndexOf<T>(this RecyclableArrayList<T> arrays, int itemsCount, T itemToFind, IEqualityComparer<T> comparer)
+		public static long LongIndexOf<T>(this T[][] arrays, long itemsCount, T itemToFind, IEqualityComparer<T> comparer)
 		{
-			for (var itemIdx = 0; itemIdx < itemsCount; itemIdx++)
+			var arraysSpan = new Span<T[]>(arrays);
+			var arraysCount = arraysSpan.Length;
+			for (int arrayIdx = 0, scannedCount = 0; arrayIdx < arraysCount; arrayIdx++)
 			{
-				var item = arrays[itemIdx];
-				if (comparer.Equals(itemToFind, item))
+				var itemsSpan = new Span<T>(arraysSpan[arrayIdx]);
+				var arrayItemsCount = itemsSpan.Length;
+				for (var itemIdx = 0; itemIdx < arrayItemsCount; itemIdx++)
 				{
-					return itemIdx;
+					if (comparer.Equals(itemToFind, itemsSpan[itemIdx]))
+					{
+						return scannedCount;
+					}
+
+					scannedCount++;					
+					if (scannedCount == itemsCount)
+					{
+						return -1;
+					}
 				}
 			}
 

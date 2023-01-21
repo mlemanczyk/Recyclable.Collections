@@ -1,20 +1,279 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
+		private static readonly ArrayPool<T[]> _arrayPool = ArrayPool<T[]>.Create();
+		private static readonly ArrayPool<T> _blockArrayPool = ArrayPool<T>.Create();
+		private static readonly T[][] _emptyBlockArray = new T[0][];
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
-		private const int _minPooledArraySize = 100;
 		private readonly int _blockSize;
-		private readonly RecyclableArrayList<T[]> _memoryBlocks;
+		protected T[][] _memoryBlocks;
 
-		private static void AddCapacity(RecyclableList<T> list, RecyclableArrayList<T[]> memoryBlocks, int additionalCapacity)
+		private long _capacity;
+		public long Capacity
 		{
-			T[] newMemoryBlock = RentArrayFromPool(additionalCapacity);
-			memoryBlocks.Add(newMemoryBlock);
-			list.Capacity += additionalCapacity;
+			get => _capacity;
+			protected set => _capacity = value;
+		}
+
+		public int Count => (int)LongCount;
+
+		protected long _longCount;
+		public long LongCount
+		{
+			get => _longCount;
+			set => _longCount = value;
+		}
+
+		public bool IsReadOnly { get; } = false;
+		public int BlockCount => _memoryBlocks.Length;
+
+		private static void RemoveAt(RecyclableList<T> list, long index)
+		{
+			long oldCount = list._longCount;
+			long oldCountMinus1 = oldCount - 1;
+			if (index != oldCountMinus1)
+			{
+				ThrowArgumentOutOfRangeException();
+			}
+
+			list._longCount--;
+			if (list._capacity - oldCountMinus1 == list._blockSize)
+			{
+				list.RemoveBlock(list._memoryBlocks.Length - 1);
+			}
+		}
+
+		private static void ThrowArgumentOutOfRangeException()
+		{
+			throw new ArgumentOutOfRangeException("index");
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		protected static T[][] SetNewLength(in T[][]? source, in int blockSize, in long newSize)
+		{
+			ArrayPool<T[]> arrayPool = _arrayPool;
+			ArrayPool<T> blockArrayPool = _blockArrayPool;
+			var sourceBlockCount = source?.Length ?? 0;
+			int requiredBlockCount = (int)(newSize / blockSize) + (newSize % blockSize > 0 ? 1 : 0);
+			Span<T[]> newArraySpan;
+			T[][] newMemoryBlocks = requiredBlockCount.RentArrayFromPool(arrayPool);
+			switch (requiredBlockCount >= sourceBlockCount)
+			{
+				case true:
+					if (sourceBlockCount > 0)
+					{
+						Memory<T[]> sourceMemory = new(source);
+						Memory<T[]> newArrayMemory = new(newMemoryBlocks);
+						sourceMemory.CopyTo(newArrayMemory);
+						source!.ReturnToPool(arrayPool);
+						newArraySpan = new Span<T[]>(newMemoryBlocks)[sourceBlockCount..];
+					}
+					else
+					{
+						newArraySpan = new Span<T[]>(newMemoryBlocks);
+					}
+
+					for (int i = 0; i < newArraySpan.Length; i++)
+					{
+						newArraySpan[i] = blockSize.RentArrayFromPool(blockArrayPool);
+					}
+
+					return newMemoryBlocks;
+
+				case false:
+					var sourceSpan = new Span<T[]>(source)[..requiredBlockCount];
+					newArraySpan = new Span<T[]>(newMemoryBlocks);
+					sourceSpan.CopyTo(newArraySpan);
+					sourceSpan = new Span<T[]>(source)[newArraySpan.Length..];
+					for (int i = 0; i < sourceSpan.Length; i++)
+					{
+						sourceSpan[i].ReturnToPool(_blockArrayPool);
+					}
+
+					source!.ReturnToPool(arrayPool);
+					return newMemoryBlocks;
+			}
+		}
+
+		protected long EnsureCapacity(in long requestedCapacity)
+		{
+			long oldCapacity = _capacity;
+			ref T[][] memory = ref _memoryBlocks;
+
+			long newCapacity;
+			switch (oldCapacity > 0)
+			{
+				case true:
+					newCapacity = oldCapacity;
+					while (newCapacity < requestedCapacity)
+					{
+						newCapacity *= 2;
+					}
+
+					break;
+
+				case false:
+					newCapacity = requestedCapacity;
+					break;
+			}
+
+			memory = SetNewLength(memory, _blockSize, newCapacity);
+			newCapacity = memory.Length;
+			_capacity = newCapacity;
+			return newCapacity;
+		}
+
+#pragma warning disable CS8618 // _memoryBlocks will be initialized when the 1st item is added
+		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
+#pragma warning restore CS8618
+		{
+			_blockSize = blockSize;
+			if (initialCapacity > 0)
+			{
+				_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, initialCapacity.Value);
+				_capacity = _memoryBlocks.Length * blockSize;
+			}
+			else
+			{
+				_memoryBlocks = _emptyBlockArray;
+			}
+		}
+
+#pragma warning disable CS8618 // _memoryBlocks will be initialized when the 1st item is added
+		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+#pragma warning restore CS8618
+		{
+			_blockSize = blockSize;
+			if (expectedItemsCount > 0)
+			{
+				_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, expectedItemsCount.Value);
+				_capacity = _memoryBlocks.Length * blockSize;
+			}
+			else
+			{
+				_memoryBlocks = _emptyBlockArray;
+			}
+
+			AddRange(this, source);
+		}
+
+		public T this[long index]
+		{
+			get => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize];
+			set => new Span<T>(_memoryBlocks[(int)(index / _blockSize)])[(int)index % _blockSize] = value;
+		}
+
+		public T this[int index]
+		{
+			get => _memoryBlocks[index / _blockSize][index % _blockSize];
+			set => new Span<T>(_memoryBlocks[index / _blockSize])[index % _blockSize] = value;
+		}
+
+		public void Add(T item)
+		{
+			int blockSize = _blockSize;
+			long oldCount = _longCount;
+			long requiredCapacity = oldCount + 1;
+			if (_capacity < requiredCapacity)
+			{
+				_ = EnsureCapacity(requiredCapacity);
+			}
+
+			_memoryBlocks[(int)(oldCount / blockSize)][oldCount % blockSize] = item;
+			_longCount++;
+		}
+
+		public void AddRange(in T[] items)
+		{
+			long sourceItemsCount = items.LongLength;
+			long oldLongCount = _longCount;
+			long targetCapacity = oldLongCount + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			int blockSize = _blockSize;
+			int targetItemIdx = (int)(oldLongCount % blockSize);
+			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+			var memoryBlockSpan = new Span<T[]>(_memoryBlocks);
+			var targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+			for (long i = 0; i < sourceItemsCount; i++)
+			{
+				targetBlockSpan[targetItemIdx++] = items[i];
+				if (targetItemIdx == blockSize)
+				{
+					targetBlockIdx++;
+					targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+					targetItemIdx = 0;
+				}
+			}
+
+			_longCount = targetCapacity;
+		}
+
+		public void AddRange(in List<T> items)
+		{
+			long sourceItemsCount = items.Count;
+			long oldLongCount = _longCount;
+			long targetCapacity = oldLongCount + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			int blockSize = _blockSize;
+			int targetItemIdx = (int)(oldLongCount % blockSize);
+			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+			var memoryBlockSpan = new Span<T[]>(_memoryBlocks);
+			var targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+			for (int i = 0; i < sourceItemsCount; i++)
+			{
+				targetBlockSpan[targetItemIdx++] = items[i];
+				if (targetItemIdx == blockSize)
+				{
+					targetBlockIdx++;
+					targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+					targetItemIdx = 0;
+				}
+			}
+
+			_longCount = targetCapacity;
+		}
+
+		public void AddRange(in IList<T> items)
+		{
+			long sourceItemsCount = items.Count;
+			long oldLongCount = _longCount;
+			long targetCapacity = oldLongCount + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			int blockSize = _blockSize;
+			int targetItemIdx = (int)(oldLongCount % blockSize);
+			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+			var memoryBlockSpan = new Span<T[]>(_memoryBlocks);
+			var targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+			for (int i = 0; i < sourceItemsCount; i++)
+			{
+				targetBlockSpan[targetItemIdx++] = items[i];
+				if (targetItemIdx == blockSize)
+				{
+					targetBlockIdx++;
+					targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+					targetItemIdx = 0;
+				}
+			}
+
+			_longCount = targetCapacity;
 		}
 
 		private static void AddRange(RecyclableList<T> destination, IEnumerable<T> source)
@@ -25,125 +284,16 @@ namespace Recyclable.Collections
 			}
 		}
 
-		private static void RemoveAt(RecyclableList<T> list, long index)
-		{
-			if (index == list.LongCount - 1)
-			{
-				list.LongCount--;
-				if (list.Capacity - list.LongCount == list._blockSize)
-				{
-					list.RemoveBlock(list.BlockCount - 1);
-				}
-			}
-			else
-			{
-				throw new NotSupportedException("Only removal of the last element is supported");
-			}
-		}
-
-		private static T[] RentArrayFromPool(int minSize) => (minSize >= _minPooledArraySize)
-			? ArrayPool<T>.Shared.Rent(minSize)
-			: new T[minSize];
-
-		private static void ReturnToPool(in T[] array)
-		{
-			if (array.LongLength is < _minPooledArraySize or > int.MaxValue)
-			{
-				return;
-			}
-
-			ArrayPool<T>.Shared.Return(array);
-		}
-
-		private static void RemoveBlock(RecyclableList<T> owner, RecyclableArrayList<T[]> memoryBlocks, int blockSize, int index)
-		{
-			try
-			{
-				ReturnToPool(memoryBlocks[index]);
-				memoryBlocks.RemoveAt(index);
-			}
-			finally
-			{
-				owner.Capacity -= blockSize;
-			}
-		}
-
-		private static RecyclableArrayList<T[]> SetupMemoryBlocks(RecyclableList<T> owner, int blockSize, long? totalItemsCount)
-		{
-			if (blockSize <= 0)
-			{
-				return new();
-			}
-
-			totalItemsCount ??= 8 * blockSize;
-			int additionalArray = totalItemsCount % blockSize > 0 ? 1 : 0;
-			int memoryBlockCount = (int)(totalItemsCount.Value / blockSize).LimitTo(int.MaxValue) + additionalArray;
-			RecyclableArrayList<T[]> memoryBlocks = new(memoryBlockCount);
-			for (var blockIdx = 0; blockIdx < memoryBlockCount; blockIdx++)
-			{
-				memoryBlocks[blockIdx] = RentArrayFromPool(blockSize);
-			}
-
-			memoryBlocks.Count = memoryBlockCount;
-			owner.Capacity = totalItemsCount.Value;
-			return memoryBlocks;
-		}
-
-
-		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? totalItemsCount = default)
-		{
-			_blockSize = blockSize;
-			_memoryBlocks = SetupMemoryBlocks(this, blockSize, totalItemsCount);
-		}
-
-		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize, long? totalItemsCount = default)
-		{
-			_blockSize = blockSize;
-			_memoryBlocks = SetupMemoryBlocks(this, blockSize, totalItemsCount);
-			AddRange(this, source);
-		}
-
-		public T this[long index]
-		{
-			get => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize];
-			set => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize] = value;
-		}
-
-		public T this[int index]
-		{
-			get => _memoryBlocks[index / _blockSize][index % _blockSize];
-			set => _memoryBlocks[index / _blockSize][index % _blockSize] = value;
-		}
-
-		public long Capacity { get; protected set; }
-		public int Count => (int)LongCount;
-		public long LongCount { get; set; }
-		public bool IsReadOnly { get; } = false;
-		public int BlockCount => _memoryBlocks.Count;
-
-		public void Add(T item)
-		{
-			long oldCount = LongCount;
-			int blockSize = _blockSize;
-			if (oldCount == Capacity)
-			{
-				AddCapacity(this, _memoryBlocks, blockSize);
-			}
-
-			_memoryBlocks[(int)(oldCount / blockSize)][oldCount % blockSize] = item;
-			LongCount++;
-		}
-
 		public void Clear()
 		{
 			try
 			{
 				// Remove in reversed order for performance savings
-				while (_memoryBlocks.Count > 0)
+				while (_memoryBlocks.Length > 0)
 				{
 					try
 					{
-						RemoveBlock(this, _memoryBlocks, _blockSize, _memoryBlocks.Count - 1);
+						_memoryBlocks = RemoveBlock(this, _memoryBlocks, _blockSize, _memoryBlocks.Length - 1);
 					}
 					catch (Exception)
 					{
@@ -154,36 +304,77 @@ namespace Recyclable.Collections
 			}
 			finally
 			{
-				LongCount = 0;
-				_memoryBlocks.Clear();
+				_longCount = 0;
 			}
 		}
 
-		public bool Contains(T item) => _memoryBlocks.Contains(item);
+		public bool Contains(T item) => _memoryBlocks.Any(x => x.Contains(item));
 
 		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, _blockSize, (int)LongCount % _blockSize, array, arrayIndex);
 
 		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		public int IndexOf(T item) => (int)_memoryBlocks.LongIndexOf(_blockSize, item, _equalityComparer);
-
+		public int IndexOf(T item) => (int)_memoryBlocks.LongIndexOf(_longCount, item, _equalityComparer);
 		public void Insert(int index, T item) => throw new NotSupportedException();
-
 		public long LongIndexOf(T item) => _memoryBlocks.LongIndexOf(_blockSize, item, _equalityComparer);
-
 		public bool Remove(T item) => throw new NotSupportedException();
-
+		public void RemoveBlock(int index) => _memoryBlocks = RemoveBlock(this, _memoryBlocks, _blockSize, index);
 		public void RemoveAt(int index) => RemoveAt(this, index);
 		public void RemoveAt(long index) => RemoveAt(this, index);
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		public void Dispose()
+		//private static void AddCapacity(RecyclableList<T> list, RecyclableArrayList<T[]> memoryBlocks, int additionalCapacity)
+		//{
+		//	T[] newMemoryBlock = RentArrayFromPool(additionalCapacity);
+		//	memoryBlocks.Add(newMemoryBlock);
+		//	list.Capacity += additionalCapacity;
+		//}
+
+		private static T[][] RemoveBlock(RecyclableList<T> owner, in T[][] memoryBlocks, int blockSize, int blockIndex)
 		{
-			Clear();
-			GC.SuppressFinalize(this);
+			try
+			{
+				var memoryBlocksSpan = new Span<T[]>(memoryBlocks);
+				return SetNewLength(memoryBlocks, blockSize, memoryBlocks.Length - 1);
+			}
+			finally
+			{
+				owner._capacity -= blockSize;
+			}
 		}
 
-		public void RemoveBlock(int index) => RemoveBlock(this, _memoryBlocks, _blockSize, index);
+		//private static RecyclableArrayList<T[]> SetupMemoryBlocks(RecyclableList<T> owner, int blockSize, long? totalItemsCount)
+		//{
+		//	if (blockSize <= 0)
+		//	{
+		//		return new();
+		//	}
+
+		//	totalItemsCount ??= 8 * blockSize;
+		//	int additionalArray = totalItemsCount % blockSize > 0 ? 1 : 0;
+		//	int memoryBlockCount = (int)(totalItemsCount.Value / blockSize).LimitTo(int.MaxValue) + additionalArray;
+		//	RecyclableArrayList<T[]> memoryBlocks = new(memoryBlockCount);
+		//	for (var blockIdx = 0; blockIdx < memoryBlockCount; blockIdx++)
+		//	{
+		//		memoryBlocks[blockIdx] = RentArrayFromPool(blockSize);
+		//	}
+
+		//	memoryBlocks.Count = memoryBlockCount;
+		//	owner.Capacity = totalItemsCount.Value;
+		//	return memoryBlocks;
+		//}
+
+
+		public void Dispose()
+		{
+			if (_capacity > 0)
+			{
+				Clear();
+				_capacity = 0;
+				_memoryBlocks.ReturnToPool(_arrayPool);
+				GC.SuppressFinalize(this);
+			}
+		}
 	}
 }
