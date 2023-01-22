@@ -47,7 +47,7 @@ namespace Recyclable.Collections
 		{
 			var toRemove = List[LongCount - 1];
 			LongCount--;
-			if (List.Capacity * _blockSize - LongCount == _blockSize)
+			if ((List.Capacity * _blockSize) - LongCount == _blockSize)
 			{
 				List.RemoveBlock(List.BlockCount - 1);
 			}
