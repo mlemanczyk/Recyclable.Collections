@@ -47,7 +47,8 @@ namespace Recyclable.Collections
 			if ((list._capacity * blockSize) - oldCountMinus1 == blockSize)
 			{
 				T[][] memoryBlocks = list._memoryBlocks;
-				ReleaseBlock(list, memoryBlocks, blockSize, memoryBlocks.Length - 1);
+				memoryBlocks[^1].ReturnToPool(_blockArrayPool);
+				list._capacity -= blockSize;
 			}
 		}
 
@@ -168,7 +169,7 @@ namespace Recyclable.Collections
 				_memoryBlocks = _emptyBlockArray;
 			}
 
-			AddRange(this, source);
+			AddRange(source);
 		}
 
 		public T this[long index]
@@ -302,7 +303,7 @@ namespace Recyclable.Collections
 			_longCount = targetCapacity;
 		}
 
-		private void AddRange(RecyclableList<T> destination, IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		private void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
 			if (source is T[] sourceArray)
 			{
@@ -420,29 +421,16 @@ namespace Recyclable.Collections
 
 		public void Clear()
 		{
-			try
+			ArrayPool<T> blockArrayPool = _blockArrayPool;
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			int memoryBlocksCount = memoryBlocksSpan.Length;
+			for (var toRemoveIdx = 0; toRemoveIdx < memoryBlocksCount; toRemoveIdx++)
 			{
-				// Remove in reversed order for performance savings
-				var toRemoveIdx = _memoryBlocks.Length - 1;
-				while (toRemoveIdx >= 0)
-				{
-					try
-					{
-						ReleaseBlock(this, _memoryBlocks, _blockSize, toRemoveIdx);
-					}
-					catch (Exception)
-					{
-						// We want to try returning as many arrays, as possible, before
-						// the list is cleared.
-					}
+				memoryBlocksSpan[toRemoveIdx].ReturnToPool(blockArrayPool);
+			}
 
-					toRemoveIdx--;
-				}
-			}
-			finally
-			{
-				_longCount = 0;
-			}
+			_capacity = 0;
+			_longCount = 0;
 		}
 
 		public bool Contains(T item) => _memoryBlocks.Any(x => x.Contains(item));
@@ -455,23 +443,16 @@ namespace Recyclable.Collections
 		public void Insert(int index, T item) => throw new NotSupportedException();
 		public long LongIndexOf(T item) => _memoryBlocks.LongIndexOf(_blockSize, item, _equalityComparer);
 		public bool Remove(T item) => throw new NotSupportedException();
-		public void RemoveBlock(int index) => ReleaseBlock(this, _memoryBlocks, _blockSize, index);
+		public void RemoveBlock(int index)
+		{
+			_memoryBlocks[index].ReturnToPool(_blockArrayPool);
+			_capacity -= _blockSize;
+		}
+
 		public void RemoveAt(int index) => RemoveAt(this, index);
 		public void RemoveAt(long index) => RemoveAt(this, index);
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
-
-		private static void ReleaseBlock(RecyclableList<T> owner, in T[][] memoryBlocks, int blockSize, int blockIndex)
-		{
-			try
-			{
-				memoryBlocks[blockIndex].ReturnToPool(_blockArrayPool);
-			}
-			finally
-			{
-				owner._capacity -= blockSize;
-			}
-		}
 
 		public void Dispose()
 		{
