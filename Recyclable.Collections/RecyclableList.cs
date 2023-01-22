@@ -11,6 +11,7 @@ namespace Recyclable.Collections
 		private static readonly ArrayPool<T> _blockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyBlockArray = new T[0][];
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
+
 		private readonly int _blockSize;
 		protected T[][] _memoryBlocks;
 
@@ -57,36 +58,47 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected static T[][] SetNewLength(in T[][]? source, in int blockSize, in long newSize)
+		protected static T[][] SetNewLength(in T[][]? source, in int blockSize, in long newCapacity)
 		{
 			ArrayPool<T[]> arrayPool = _arrayPool;
 			ArrayPool<T> blockArrayPool = _blockArrayPool;
 			var sourceBlockCount = source?.Length ?? 0;
-			int requiredBlockCount = (int)(newSize / blockSize) + (newSize % blockSize > 0 ? 1 : 0);
+			int requiredBlockCount = (int)(newCapacity / blockSize) + (newCapacity % blockSize > 0 ? 1 : 0);
 			if (requiredBlockCount == sourceBlockCount)
 			{
 				return source!;
 			}
+			//else if (requiredBlockCount < sourceBlockCount)
+			//{
+			//	requiredBlockCount = requiredBlockCount > 0 ? requiredBlockCount : 1;
+			//	while (requiredBlockCount < sourceBlockCount)
+			//	{
+			//		requiredBlockCount *= 2;
+			//	}
+			//}
 
 			Span<T[]> newArraySpan;
 			T[][] newMemoryBlocks = requiredBlockCount.RentArrayFromPool(arrayPool);
 			switch (requiredBlockCount >= sourceBlockCount)
 			{
 				case true:
-					if (sourceBlockCount > 0)
+					switch (sourceBlockCount > 0)
 					{
-						Memory<T[]> sourceMemory = new(source);
-						Memory<T[]> newArrayMemory = new(newMemoryBlocks);
-						sourceMemory.CopyTo(newArrayMemory);
-						source!.ReturnToPool(arrayPool);
-						newArraySpan = new Span<T[]>(newMemoryBlocks)[sourceBlockCount..];
-					}
-					else
-					{
-						newArraySpan = new Span<T[]>(newMemoryBlocks);
+						case true:
+							Memory<T[]> sourceMemory = new(source);
+							Memory<T[]> newArrayMemory = new(newMemoryBlocks);
+							sourceMemory.CopyTo(newArrayMemory);
+							source!.ReturnToPool(arrayPool);
+							newArraySpan = new Span<T[]>(newMemoryBlocks)[sourceBlockCount..];
+							break;
+
+						case false:
+							newArraySpan = new Span<T[]>(newMemoryBlocks);
+							break;
 					}
 
-					for (int i = 0; i < newArraySpan.Length; i++)
+					int uninitializedBlocksCount = newArraySpan.Length;
+					for (int i = 0; i < uninitializedBlocksCount; i++)
 					{
 						newArraySpan[i] = blockSize.RentArrayFromPool(blockArrayPool);
 					}
@@ -98,9 +110,10 @@ namespace Recyclable.Collections
 					newArraySpan = new Span<T[]>(newMemoryBlocks);
 					sourceSpan.CopyTo(newArraySpan);
 					sourceSpan = new Span<T[]>(source)[newArraySpan.Length..];
-					for (int i = 0; i < sourceSpan.Length; i++)
+					int sourceLength = sourceSpan.Length;
+					for (int i = 0; i < sourceLength; i++)
 					{
-						sourceSpan[i].ReturnToPool(_blockArrayPool);
+						sourceSpan[i].ReturnToPool(blockArrayPool);
 					}
 
 					source!.ReturnToPool(arrayPool);
@@ -174,7 +187,7 @@ namespace Recyclable.Collections
 		public T this[long index]
 		{
 			get => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize];
-			set => new Span<T>(_memoryBlocks[(int)(index / _blockSize)])[(int)index % _blockSize] = value;
+			set => new Span<T>(_memoryBlocks[(int)(index / _blockSize)])[(int)(index % _blockSize)] = value;
 		}
 
 		public T this[int index]
@@ -193,7 +206,7 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(requiredCapacity);
 			}
 
-			_memoryBlocks[(int)(oldCount / blockSize)][oldCount % blockSize] = item;
+			_memoryBlocks[(int)(oldCount / blockSize)][(int)(oldCount % blockSize)] = item;
 			_longCount++;
 		}
 
@@ -210,15 +223,21 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-			var memoryBlockSpan = new Span<T[]>(_memoryBlocks);
-			var targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
-			for (long i = 0; i < sourceItemsCount; i++)
+			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
+			var memoryBlocksCount = memoryBlocksSpan.Length;
+			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+			for (var i = 0L; i < sourceItemsCount; i++)
 			{
 				targetBlockSpan[targetItemIdx++] = items[i];
 				if (targetItemIdx == blockSize)
 				{
 					targetBlockIdx++;
-					targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+					if (targetBlockIdx == memoryBlocksCount)
+					{
+						break;
+					}
+
+					targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
 					targetItemIdx = 0;
 				}
 			}
@@ -239,15 +258,21 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-			var memoryBlockSpan = new Span<T[]>(_memoryBlocks);
-			var targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
+			var memoryBlocksCount = memoryBlocksSpan.Length;
+			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
 			for (int i = 0; i < sourceItemsCount; i++)
 			{
 				targetBlockSpan[targetItemIdx++] = items[i];
 				if (targetItemIdx == blockSize)
 				{
 					targetBlockIdx++;
-					targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+					if (targetBlockIdx == memoryBlocksCount)
+					{
+						break;
+					}
+
+					targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
 					targetItemIdx = 0;
 				}
 			}
@@ -268,15 +293,21 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-			var memoryBlockSpan = new Span<T[]>(_memoryBlocks);
-			var targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
+			var memoryBlocksCount = memoryBlocksSpan.Length;
+			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
 			for (int i = 0; i < sourceItemsCount; i++)
 			{
 				targetBlockSpan[targetItemIdx++] = items[i];
 				if (targetItemIdx == blockSize)
 				{
 					targetBlockIdx++;
-					targetBlockSpan = new Span<T>(memoryBlockSpan[targetBlockIdx]);
+					if (targetBlockIdx == memoryBlocksCount)
+					{
+						break;
+					}
+
+					targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
 					targetItemIdx = 0;
 				}
 			}
@@ -284,12 +315,114 @@ namespace Recyclable.Collections
 			_longCount = targetCapacity;
 		}
 
-		private static void AddRange(RecyclableList<T> destination, IEnumerable<T> source)
+		private void AddRange(RecyclableList<T> destination, IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
-			foreach (var item in source)
+			if (source is T[] sourceArray)
 			{
-				destination.Add(item);
+				AddRange(sourceArray);
+				return;
 			}
+
+			if (source is List<T> sourceList)
+			{
+				AddRange(sourceList);
+				return;
+			}
+
+			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			{
+				AddRange(sourceRecyclableArrayList);
+				return;
+			}
+
+			if (source is IList<T> sourceIList)
+			{
+				AddRange(sourceIList);
+				return;
+			}
+
+			long capacity = _capacity;
+			long oldLongCount = _longCount;
+			int blockSize = _blockSize;
+			int targetItemIdx = (int)(oldLongCount % blockSize);
+			int targetBlockIdx = (int)(targetItemIdx / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+
+			Span<T[]> memoryBlocksSpan;
+			Span<T> blockArraySpan;
+			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+			{
+				_ = EnsureCapacity(targetItemIdx + requiredAdditionalCapacity);
+				memoryBlocksSpan = new(_memoryBlocks);
+				var memoryBlocksCount = memoryBlocksSpan.Length;
+				blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+				foreach (var item in source)
+				{
+					blockArraySpan[targetItemIdx++] = item;
+					if (targetItemIdx == blockSize)
+					{
+						targetBlockIdx++;
+						if (targetBlockIdx == memoryBlocksCount)
+						{
+							break;
+						}
+
+						targetItemIdx = 0;
+						blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+					}
+				}
+
+				_longCount = targetItemIdx;
+				return;
+			}
+
+			long i;
+			using var enumerator = source.GetEnumerator();
+
+			if (enumerator.MoveNext())
+			{
+				long available = capacity - targetItemIdx;
+				memoryBlocksSpan = new(_memoryBlocks);
+				var memoryBlocksCount = memoryBlocksSpan.Length;
+				while (true)
+				{
+					if (targetItemIdx + growByCount > capacity)
+					{
+						capacity = EnsureCapacity(capacity + growByCount);
+						memoryBlocksSpan = new(_memoryBlocks);
+						memoryBlocksCount = memoryBlocksSpan.Length;
+						available = capacity - targetItemIdx;
+					}
+
+					blockArraySpan = memoryBlocksSpan[targetBlockIdx];
+					for (i = 0; i < available; i++)
+					{
+						blockArraySpan[targetItemIdx++] = enumerator.Current;
+						if (!enumerator.MoveNext())
+						{
+							break;
+						}
+
+						if (targetItemIdx == blockSize)
+						{
+							targetBlockIdx++;
+							if (targetBlockIdx == memoryBlocksCount)
+							{
+								break;
+							}
+
+							targetItemIdx = 0;
+							blockArraySpan = new(memoryBlocksSpan[targetBlockIdx]);
+						}
+					}
+
+					if (i < available)
+					{
+						break;
+					}
+				}
+			}
+
+			_longCount = targetItemIdx;
 		}
 
 		public void Clear()
