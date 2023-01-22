@@ -18,8 +18,8 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			Console.WriteLine("******* GLOBAL SETUP RAISED *******");
 			_testObjects = Enumerable.Range(1, TestObjectCount).Select(x => new object()).ToArray();
-			_testRecyclableArrayList = new(TestObjects, TestObjectCount);
-			_testRecyclableList = new(TestObjects, TestObjectCount);
+			_testRecyclableArrayList = new(TestObjects, initialCapacity: TestObjectCount);
+			_testRecyclableList = new(TestObjects, expectedItemsCount: TestObjectCount);
 			_testArray = TestObjects.ToArray();
 			_testObjectsAsList = TestObjects.ToList();
 			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();

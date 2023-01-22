@@ -35,7 +35,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<object>(dataCount);
+			using var list = new RecyclableList<object>(initialCapacity: dataCount);
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
