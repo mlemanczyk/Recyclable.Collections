@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
@@ -68,14 +67,6 @@ namespace Recyclable.Collections
 			{
 				return source!;
 			}
-			//else if (requiredBlockCount < sourceBlockCount)
-			//{
-			//	requiredBlockCount = requiredBlockCount > 0 ? requiredBlockCount : 1;
-			//	while (requiredBlockCount < sourceBlockCount)
-			//	{
-			//		requiredBlockCount *= 2;
-			//	}
-			//}
 
 			Span<T[]> newArraySpan;
 			T[][] newMemoryBlocks = requiredBlockCount.RentArrayFromPool(arrayPool);
@@ -150,9 +141,7 @@ namespace Recyclable.Collections
 			return newCapacity;
 		}
 
-#pragma warning disable CS8618 // _memoryBlocks will be initialized when the 1st item is added
 		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
-#pragma warning restore CS8618
 		{
 			_blockSize = blockSize;
 			if (initialCapacity > 0)
@@ -166,9 +155,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-#pragma warning disable CS8618 // _memoryBlocks will be initialized when the 1st item is added
 		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			_blockSize = blockSize;
 			if (expectedItemsCount > 0)
@@ -351,7 +338,13 @@ namespace Recyclable.Collections
 			Span<T> blockArraySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				_ = EnsureCapacity(targetItemIdx + requiredAdditionalCapacity);
+
+				int requiredCapacity = targetItemIdx + requiredAdditionalCapacity;
+				if (capacity < requiredCapacity)
+				{
+					_ = EnsureCapacity(requiredCapacity);
+				}
+
 				memoryBlocksSpan = new(_memoryBlocks);
 				var memoryBlocksCount = memoryBlocksSpan.Length;
 				blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
@@ -479,28 +472,6 @@ namespace Recyclable.Collections
 				owner._capacity -= blockSize;
 			}
 		}
-
-		//private static RecyclableArrayList<T[]> SetupMemoryBlocks(RecyclableList<T> owner, int blockSize, long? totalItemsCount)
-		//{
-		//	if (blockSize <= 0)
-		//	{
-		//		return new();
-		//	}
-
-		//	totalItemsCount ??= 8 * blockSize;
-		//	int additionalArray = totalItemsCount % blockSize > 0 ? 1 : 0;
-		//	int memoryBlockCount = (int)(totalItemsCount.Value / blockSize).LimitTo(int.MaxValue) + additionalArray;
-		//	RecyclableArrayList<T[]> memoryBlocks = new(memoryBlockCount);
-		//	for (var blockIdx = 0; blockIdx < memoryBlockCount; blockIdx++)
-		//	{
-		//		memoryBlocks[blockIdx] = RentArrayFromPool(blockSize);
-		//	}
-
-		//	memoryBlocks.Count = memoryBlockCount;
-		//	owner.Capacity = totalItemsCount.Value;
-		//	return memoryBlocks;
-		//}
-
 
 		public void Dispose()
 		{
