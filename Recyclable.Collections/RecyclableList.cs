@@ -180,21 +180,23 @@ namespace Recyclable.Collections
 
 		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 		{
-			if (expectedItemsCount > 0)
+			switch (expectedItemsCount > 0)
 			{
-				_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, expectedItemsCount.Value);
-				if (_memoryBlocks.Length > 0)
-				{
-					blockSize = _memoryBlocks[0].Length;
-				}
+				case true:
+					_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, expectedItemsCount.Value);
+					if (_memoryBlocks.Length > 0)
+					{
+						blockSize = _memoryBlocks[0].Length;
+					}
 
-				_blockSize = blockSize;
-				_capacity = _memoryBlocks.Length * blockSize;
-			}
-			else
-			{
-				_blockSize = blockSize;
-				_memoryBlocks = _emptyBlockArray;
+					_blockSize = blockSize;
+					_capacity = _memoryBlocks.Length * blockSize;
+					break;
+
+				case false:
+					_blockSize = blockSize;
+					_memoryBlocks = _emptyBlockArray;
+					break;
 			}
 
 			AddRange(source);
