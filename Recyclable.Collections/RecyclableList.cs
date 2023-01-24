@@ -47,7 +47,7 @@ namespace Recyclable.Collections
 			if ((list._capacity * blockSize) - oldCountMinus1 == blockSize)
 			{
 				T[][] memoryBlocks = list._memoryBlocks;
-				memoryBlocks[^1].ReturnToPool(_blockArrayPool);
+				memoryBlocks[list.BlockCount - 1].ReturnToPool(_blockArrayPool);
 				list._capacity -= blockSize;
 			}
 		}
