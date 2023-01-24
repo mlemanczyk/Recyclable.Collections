@@ -12,6 +12,8 @@ namespace Recyclable.Collections
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
 		private int _blockSize;
+		private int _lastBlockIndex;
+		private int _lastItemIndex;        
 		protected T[][] _memoryBlocks;
 
 		private long _capacity;
@@ -35,14 +37,25 @@ namespace Recyclable.Collections
 
 		private static void RemoveAt(RecyclableList<T> list, long index)
 		{
-			long oldCount = list._longCount;
-			long oldCountMinus1 = oldCount - 1;
+			long oldCountMinus1 = list._longCount - 1;
 			if (index != oldCountMinus1)
 			{
 				ThrowArgumentOutOfRangeException();
 			}
 
 			list._longCount--;
+			switch (list._lastItemIndex)
+			{
+				case 0:
+					list._lastBlockIndex--;
+					list._lastItemIndex = list._blockSize;
+					break;
+
+				default:
+					list._lastItemIndex--;
+					break;
+			}
+
 			int blockSize = list._blockSize;
 			if ((list._capacity * blockSize) - oldCountMinus1 == blockSize)
 			{
@@ -216,15 +229,19 @@ namespace Recyclable.Collections
 
 		public void Add(T item)
 		{
-			int blockSize = _blockSize;
-			long oldCount = _longCount;
-			long requiredCapacity = oldCount + 1;
+			long requiredCapacity = _longCount + 1;
 			if (_capacity < requiredCapacity)
 			{
 				_ = EnsureCapacity(requiredCapacity);
 			}
 
-			_memoryBlocks[(int)(oldCount / blockSize)][(int)(oldCount % blockSize)] = item;
+			_memoryBlocks[_lastBlockIndex][_lastItemIndex++] = item;
+			if (_lastItemIndex == _blockSize)
+			{
+				_lastBlockIndex++;
+				_lastItemIndex = 0;
+			}
+			
 			_longCount++;
 		}
 
@@ -261,6 +278,8 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
+			_lastBlockIndex = targetBlockIdx - 1;
+			_lastItemIndex = targetItemIdx;
 		}
 
 		public void AddRange(in List<T> items)
@@ -296,6 +315,8 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
+			_lastBlockIndex = targetBlockIdx - 1;
+			_lastItemIndex = targetItemIdx;
 		}
 
 		public void AddRange(in IList<T> items)
@@ -331,6 +352,8 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
+			_lastBlockIndex = targetBlockIdx - 1;
+			_lastItemIndex = targetItemIdx;
 		}
 
 		private void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
@@ -363,7 +386,7 @@ namespace Recyclable.Collections
 			long oldLongCount = _longCount;
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
-			int targetBlockIdx = (int)(targetItemIdx / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+			int targetBlockIdx = targetItemIdx / blockSize + (targetItemIdx > 0 ? 1 : 0);
 
 			Span<T[]> memoryBlocksSpan;
 			Span<T> blockArraySpan;
@@ -396,6 +419,8 @@ namespace Recyclable.Collections
 				}
 
 				_longCount = targetItemIdx;
+				_lastBlockIndex = targetBlockIdx - 1;
+				_lastItemIndex = targetItemIdx;
 				return;
 			}
 
@@ -447,6 +472,8 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetItemIdx;
+			_lastBlockIndex = targetBlockIdx - 1;
+			_lastItemIndex = targetItemIdx;
 		}
 
 		public void Clear()
@@ -460,6 +487,8 @@ namespace Recyclable.Collections
 			}
 
 			_capacity = 0;
+			_lastBlockIndex = 0;
+			_lastItemIndex = 0;
 			_longCount = 0;
 		}
 
@@ -477,6 +506,15 @@ namespace Recyclable.Collections
 		{
 			_memoryBlocks[index].ReturnToPool(_blockArrayPool);
 			_capacity -= _blockSize;
+			int lastBlockIndex = _lastBlockIndex;
+			if (lastBlockIndex == index)
+			{
+				_lastItemIndex = 0;
+			}
+			else if (lastBlockIndex > index)
+			{
+				_lastBlockIndex--;
+			}
 		}
 
 		public void RemoveAt(int index) => RemoveAt(this, index);
