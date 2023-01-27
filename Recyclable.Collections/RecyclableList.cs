@@ -180,7 +180,7 @@ namespace Recyclable.Collections
 		protected long EnsureCapacity(in long requestedCapacity)
 		{
 			long oldCapacity = _capacity;
-			ref T[][] memory = ref _memoryBlocks;
+			T[][] memory = _memoryBlocks;
 			long newCapacity;
 
 			switch (oldCapacity > 0)
@@ -209,6 +209,7 @@ namespace Recyclable.Collections
 
 			newCapacity = memory.Length * blockSize;
 			_capacity = newCapacity;
+			_memoryBlocks = memory;
 			return newCapacity;
 		}
 
