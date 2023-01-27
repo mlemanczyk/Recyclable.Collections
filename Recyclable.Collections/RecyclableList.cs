@@ -14,7 +14,7 @@ namespace Recyclable.Collections
 
 		private int _blockSize;
 		private int _lastBlockIndex;
-		private int _lastItemIndex;        
+		private int _lastItemIndex;
 		protected T[][] _memoryBlocks;
 
 		private long _capacity;
@@ -269,6 +269,8 @@ namespace Recyclable.Collections
 			get => _memoryBlocks[index / _blockSize][index % _blockSize];
 			set => new Span<T>(_memoryBlocks[index / _blockSize])[index % _blockSize] = value;
 		}
+
+		public T[][] MemoryBlocks { get => _memoryBlocks; }
 
 		public void Add(T item)
 		{
