@@ -199,15 +199,13 @@ namespace Recyclable.Collections
 					break;
 			}
 
-			int blockSize = _blockSize;
-			memory = SetNewLength(memory, blockSize, newCapacity);
+			memory = SetNewLength(memory, _blockSize, newCapacity);
 			if (oldCapacity == 0 && newCapacity > 0)
 			{
-				blockSize = memory[0].Length;
-				_blockSize = blockSize;
+				_blockSize = memory[0].Length;
 			}
 
-			newCapacity = memory.Length * blockSize;
+			newCapacity = memory.Length * _blockSize;
 			_capacity = newCapacity;
 			_memoryBlocks = memory;
 			return newCapacity;
