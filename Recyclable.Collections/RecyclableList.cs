@@ -84,7 +84,7 @@ namespace Recyclable.Collections
 			int requiredBlockCount = (int)(newCapacity / blockSize) + (newCapacity % blockSize > 0 ? 1 : 0);
 
 			Span<T[]> newArraySpan;
-			T[][] newMemoryBlocks = requiredBlockCount > RecyclableDefaults.MinPooledArrayLength
+			T[][] newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength
 				? arrayPool.Rent(requiredBlockCount)
 				: new T[requiredBlockCount][];
 
