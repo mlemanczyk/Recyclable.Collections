@@ -21,38 +21,22 @@ namespace Recyclable.Collections
 		{
 			ArrayPool<T> arrayPool = _arrayPool;
 			var sourceLength = source?.Length ?? 0;
-			Span<T> sourceSpan, newArraySpan;
 			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
 				? arrayPool.Rent(newSize)
 				: new T[newSize];
 
-			switch (newSize >= sourceLength)
+			if (sourceLength > 0)
 			{
-				case true:
-					if (sourceLength > 0)
-					{
-						sourceSpan = new Span<T>(source);
-						newArraySpan = new Span<T>(newMemoryBlock);
-						sourceSpan.CopyTo(newArraySpan);
-						if (sourceLength >= RecyclableDefaults.MinPooledArrayLength)
-						{
-							arrayPool.Return(source!);
-						}
-					}
-
-					return newMemoryBlock;
-
-				case false:
-					sourceSpan = new Span<T>(source)[..newSize];
-					newArraySpan = new(newMemoryBlock);
-					sourceSpan.CopyTo(newArraySpan);
-					if (sourceLength >= RecyclableDefaults.MinPooledArrayLength)
-					{
-						arrayPool.Return(source!);
-					}
-
-					return newMemoryBlock;
+				var sourceSpan = new Memory<T>(source);
+				var newArraySpan = new Memory<T>(newMemoryBlock);
+				sourceSpan.CopyTo(newArraySpan);
+				if (sourceLength >= RecyclableDefaults.MinPooledArrayLength)
+				{
+					arrayPool.Return(source!);
+				}
 			}
+
+			return newMemoryBlock;
 		}
 
 		protected int EnsureCapacity(in int requestedCapacity)
