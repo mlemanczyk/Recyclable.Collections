@@ -266,6 +266,7 @@ namespace Recyclable.Collections
 
 		public T[][] MemoryBlocks { get => _memoryBlocks; }
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			long requiredCapacity = _longCount + 1;
