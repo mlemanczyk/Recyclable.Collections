@@ -82,10 +82,6 @@ namespace Recyclable.Collections
 			ArrayPool<T> blockArrayPool = _blockArrayPool;
 			var sourceBlockCount = source?.Length ?? 0;
 			int requiredBlockCount = (int)(newCapacity / blockSize) + (newCapacity % blockSize > 0 ? 1 : 0);
-			if (requiredBlockCount == sourceBlockCount)
-			{
-				return source!;
-			}
 
 			Span<T[]> newArraySpan;
 			T[][] newMemoryBlocks = requiredBlockCount > RecyclableDefaults.MinPooledArrayLength
