@@ -153,7 +153,7 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly { get; } = false;
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			int requiredCapacity = _count + 1;
