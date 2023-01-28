@@ -206,12 +206,12 @@ namespace Recyclable.Collections
 			return newCapacity;
 		}
 
-		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
+		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 		{
-			switch (initialCapacity > 0)
+			switch (expectedItemsCount > 0)
 			{
 				case true:
-					_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, initialCapacity.Value);
+					_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, expectedItemsCount.Value);
 					if (_memoryBlocks.Length > 0)
 					{
 						blockSize = _memoryBlocks[0].Length;

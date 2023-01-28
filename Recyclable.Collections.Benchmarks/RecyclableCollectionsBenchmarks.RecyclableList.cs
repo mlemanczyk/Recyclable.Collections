@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark]
 		public void RecyclableList_Create_WithCapacity()
 		{
-			using var list = new RecyclableList<object>(blockSize: 102_400, initialCapacity: TestObjectCount);
+			using var list = new RecyclableList<object>(blockSize: 102_400, expectedItemsCount: TestObjectCount);
 			DoNothing(list);
 		}
 
@@ -35,7 +35,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<object>(blockSize: 102_400, initialCapacity: dataCount);
+			using var list = new RecyclableList<object>(blockSize: 102_400, expectedItemsCount: dataCount);
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
