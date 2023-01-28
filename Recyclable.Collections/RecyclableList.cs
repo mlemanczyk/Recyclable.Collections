@@ -179,14 +179,13 @@ namespace Recyclable.Collections
 
 		protected long EnsureCapacity(in long requestedCapacity)
 		{
-			long oldCapacity = _capacity;
 			T[][] memory = _memoryBlocks;
 			long newCapacity;
 
-			switch (oldCapacity > 0)
+			switch (_capacity > 0)
 			{
 				case true:
-					newCapacity = oldCapacity;
+					newCapacity = _capacity;
 					while (newCapacity < requestedCapacity)
 					{
 						newCapacity *= 2;
@@ -200,7 +199,7 @@ namespace Recyclable.Collections
 			}
 
 			memory = SetNewLength(memory, _blockSize, newCapacity);
-			if (oldCapacity == 0 && newCapacity > 0)
+			if (newCapacity > 0 && _capacity == 0)
 			{
 				_blockSize = memory[0].Length;
 			}
