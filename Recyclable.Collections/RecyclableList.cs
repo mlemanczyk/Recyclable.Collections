@@ -92,10 +92,10 @@ namespace Recyclable.Collections
 				? new T[localInts[requiredBlockCount]][]
 				: memoryBlocksPool.Rent(localInts[requiredBlockCount]);
 
-			var newMemoryBlocksSpan = new Span<T[]>(newMemoryBlocks);
+			Span<T[]> newMemoryBlocksSpan = new(newMemoryBlocks);
 			if (localInts[sourceBlockCount] > 0)
 			{
-				var sourceSpan = new Span<T[]>(source);
+				Span<T[]> sourceSpan = new(source);
 				sourceSpan.CopyTo(newMemoryBlocksSpan);
 				if (localInts[sourceBlockCount] >= RecyclableDefaults.MinPooledArrayLength)
 				{
@@ -266,9 +266,9 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			int memoryBlocksCount = memoryBlocksSpan.Length;
-			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+			Span<T> targetBlockSpan = new(memoryBlocksSpan[targetBlockIdx]);
 			for (var i = 0L; i < sourceItemsCount; i++)
 			{
 				targetBlockSpan[targetItemIdx++] = items[i];
@@ -303,9 +303,9 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			var memoryBlocksCount = memoryBlocksSpan.Length;
-			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+			Span<T> targetBlockSpan = new(memoryBlocksSpan[targetBlockIdx]);
 			for (int i = 0; i < sourceItemsCount; i++)
 			{
 				targetBlockSpan[targetItemIdx++] = items[i];
@@ -340,9 +340,9 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			var memoryBlocksCount = memoryBlocksSpan.Length;
-			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+			Span<T> targetBlockSpan = new(memoryBlocksSpan[targetBlockIdx]);
 			for (int i = 0; i < sourceItemsCount; i++)
 			{
 				targetBlockSpan[targetItemIdx++] = items[i];
