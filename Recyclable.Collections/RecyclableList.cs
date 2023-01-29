@@ -35,7 +35,7 @@ namespace Recyclable.Collections
 			set => _longCount = value;
 		}
 
-		public bool IsReadOnly { get; } = false;
+		public bool IsReadOnly { get; }
 		public int BlockCount => _memoryBlocks.Length;
 
 		private static void RemoveAt(RecyclableList<T> list, long index, ArrayPool<T> blockArrayPool)
