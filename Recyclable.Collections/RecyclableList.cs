@@ -26,7 +26,7 @@ namespace Recyclable.Collections
 			protected set => _capacity = value;
 		}
 
-		public int Count => (int)LongCount;
+		public int Count => (int)_longCount;
 
 		protected long _longCount;
 		public long LongCount
