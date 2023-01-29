@@ -231,10 +231,9 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
-			long requiredCapacity = _longCount + 1;
-			if (_capacity < requiredCapacity)
+			if (_capacity < _longCount + 1)
 			{
-				_ = EnsureCapacity(requiredCapacity);
+				_ = EnsureCapacity(_longCount + 1);
 			}
 
 			_memoryBlocks[_lastBlockIndex][_lastItemIndex++] = item;
