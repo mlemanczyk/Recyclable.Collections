@@ -83,28 +83,21 @@ namespace Recyclable.Collections
 			var sourceBlockCount = source?.Length ?? 0;
 			int requiredBlockCount = (int)(newCapacity / blockSize) + (newCapacity % blockSize > 0 ? 1 : 0);
 
-			Span<T[]> sourceSpan, newArraySpan;
 			T[][] newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength
 				? arrayPool.Rent(requiredBlockCount)
 				: new T[requiredBlockCount][];
 
-			switch (sourceBlockCount > 0)
+			var newArraySpan = new Span<T[]>(newMemoryBlocks);
+			if (sourceBlockCount > 0)
 			{
-				case true:
-					sourceSpan = new Span<T[]>(source);
-					newArraySpan = new Span<T[]>(newMemoryBlocks);
-					sourceSpan.CopyTo(newArraySpan);
-					if (sourceSpan.Length >= RecyclableDefaults.MinPooledArrayLength)
-					{
-						arrayPool.Return(source!);
-					}
+				var sourceSpan = new Span<T[]>(source);
+				sourceSpan.CopyTo(newArraySpan);
+				if (sourceSpan.Length >= RecyclableDefaults.MinPooledArrayLength)
+				{
+					arrayPool.Return(source!);
+				}
 
-					newArraySpan = newArraySpan[sourceBlockCount..];
-					break;
-
-				case false:
-					newArraySpan = new Span<T[]>(newMemoryBlocks);
-					break;
+				newArraySpan = newArraySpan[sourceBlockCount..];
 			}
 
 			int uninitializedBlocksCount = newArraySpan.Length;
