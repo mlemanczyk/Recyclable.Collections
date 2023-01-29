@@ -6,8 +6,8 @@ namespace Recyclable.Collections
 {
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
-		private static readonly ArrayPool<T[]> _arrayPool = ArrayPool<T[]>.Create();
-		private static readonly ArrayPool<T> _blockArrayPool = ArrayPool<T>.Create();
+		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
+		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
@@ -15,6 +15,8 @@ namespace Recyclable.Collections
 		private int _blockSize;
 		private int _lastBlockIndex;
 		private int _lastItemIndex;
+		protected ArrayPool<T[]> _memoryBlocksPool;
+		protected ArrayPool<T> _blockArrayPool;
 		protected T[][] _memoryBlocks;
 
 		private long _capacity;
@@ -36,7 +38,7 @@ namespace Recyclable.Collections
 		public bool IsReadOnly { get; } = false;
 		public int BlockCount => _memoryBlocks.Length;
 
-		private static void RemoveAt(RecyclableList<T> list, long index)
+		private static void RemoveAt(RecyclableList<T> list, long index, ArrayPool<T> blockArrayPool)
 		{
 			long oldCountMinus1 = list._longCount - 1;
 			if (index != oldCountMinus1)
@@ -61,7 +63,7 @@ namespace Recyclable.Collections
 				T[][] memoryBlocks = list._memoryBlocks;
 				if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					_blockArrayPool.Return(memoryBlocks[list.BlockCount - 1]);
+					blockArrayPool.Return(memoryBlocks[list.BlockCount - 1]);
 				}
 
 				list._capacity -= blockSize;
@@ -74,15 +76,14 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, in long newCapacity)
+		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, in long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
-			ArrayPool<T[]> arrayPool = _arrayPool;
 			var sourceBlockCount = source?.Length ?? 0;
 			int requiredBlockCount = (int)(newCapacity / minBlockSize) + (newCapacity % minBlockSize > 0 ? 1 : 0);
 
 			T[][] newMemoryBlocks = requiredBlockCount < RecyclableDefaults.MinPooledArrayLength
 				? new T[requiredBlockCount][]
-				: arrayPool.Rent(requiredBlockCount);
+				: memoryBlocksPool.Rent(requiredBlockCount);
 
 			var newMemoryBlocksSpan = new Span<T[]>(newMemoryBlocks);
 			if (sourceBlockCount > 0)
@@ -91,13 +92,12 @@ namespace Recyclable.Collections
 				sourceSpan.CopyTo(newMemoryBlocksSpan);
 				if (sourceSpan.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					arrayPool.Return(source!);
+					memoryBlocksPool.Return(source!);
 				}
 
 				newMemoryBlocksSpan = newMemoryBlocksSpan[sourceBlockCount..];
 			}
 
-			ArrayPool<T> blockArrayPool = _blockArrayPool;
 			int uninitializedBlocksCount = newMemoryBlocksSpan.Length;
 			if (uninitializedBlocksCount == requiredBlockCount)
 			{
@@ -151,7 +151,7 @@ namespace Recyclable.Collections
 				newCapacity = requestedCapacity;
 			}
 
-			memory = SetNewLength(memory, _blockSize, newCapacity);
+			memory = SetNewLength(memory, _blockSize, newCapacity, _memoryBlocksPool, _blockArrayPool);
 			if (newCapacity > 0 && _capacity == 0)
 			{
 				_blockSize = memory[0].Length;
@@ -163,11 +163,16 @@ namespace Recyclable.Collections
 			return newCapacity;
 		}
 
-		public RecyclableList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 		{
+			memoryBlocksPool ??= _defaultMemoryBlocksPool;
+			blockArrayPool ??= _defaultBlockArrayPool;
+			_memoryBlocksPool = memoryBlocksPool;
+			_blockArrayPool = blockArrayPool;
+
 			if (expectedItemsCount > 0)
 			{
-				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, expectedItemsCount.Value);
+				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
 				if (_memoryBlocks.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
@@ -183,11 +188,15 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public RecyclableList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 		{
+			memoryBlocksPool ??= _defaultMemoryBlocksPool;
+			blockArrayPool ??= _defaultBlockArrayPool;
+			_memoryBlocksPool = memoryBlocksPool;
+			_blockArrayPool = blockArrayPool;
 			if (expectedItemsCount > 0)
 			{
-				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, expectedItemsCount.Value);
+				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
 				if (_memoryBlocks.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
@@ -379,7 +388,7 @@ namespace Recyclable.Collections
 			long oldLongCount = _longCount;
 			int blockSize = _blockSize;
 			int targetItemIdx = (int)(oldLongCount % blockSize);
-			int targetBlockIdx = targetItemIdx / blockSize + (targetItemIdx > 0 ? 1 : 0);
+			int targetBlockIdx = (targetItemIdx / blockSize) + (targetItemIdx > 0 ? 1 : 0);
 
 			Span<T[]> memoryBlocksSpan;
 			Span<T> blockArraySpan;
@@ -520,8 +529,8 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void RemoveAt(int index) => RemoveAt(this, index);
-		public void RemoveAt(long index) => RemoveAt(this, index);
+		public void RemoveAt(int index) => RemoveAt(this, index, _blockArrayPool);
+		public void RemoveAt(long index) => RemoveAt(this, index, _blockArrayPool);
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
@@ -533,7 +542,7 @@ namespace Recyclable.Collections
 				_capacity = 0;
 				if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					_arrayPool.Return(_memoryBlocks);
+					_memoryBlocksPool.Return(_memoryBlocks);
 				}
 
 				GC.SuppressFinalize(this);
