@@ -45,6 +45,7 @@ namespace Recyclable.Collections
 			}
 
 			list._longCount--;
+			int blockSize = list._blockSize;
 			if (list._lastItemIndex > 0)
 			{
 				list._lastItemIndex--;
@@ -52,10 +53,9 @@ namespace Recyclable.Collections
 			else
 			{
 				list._lastBlockIndex--;
-				list._lastItemIndex = list._blockSize;
+				list._lastItemIndex = blockSize;
 			}
 
-			int blockSize = list._blockSize;
 			if ((list._capacity * blockSize) - oldCountMinus1 == blockSize)
 			{
 				T[][] memoryBlocks = list._memoryBlocks;
