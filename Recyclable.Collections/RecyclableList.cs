@@ -92,10 +92,10 @@ namespace Recyclable.Collections
 				? new T[localInts[requiredBlockCount]][]
 				: memoryBlocksPool.Rent(localInts[requiredBlockCount]);
 
-			var newMemoryBlocksSpan = new Span<T[]>(newMemoryBlocks);
+			Span<T[]> newMemoryBlocksSpan = new(newMemoryBlocks);
 			if (localInts[sourceBlockCount] > 0)
 			{
-				var sourceSpan = new Span<T[]>(source);
+				Span<T[]> sourceSpan = new(source);
 				sourceSpan.CopyTo(newMemoryBlocksSpan);
 				if (localInts[sourceBlockCount] >= RecyclableDefaults.MinPooledArrayLength)
 				{
