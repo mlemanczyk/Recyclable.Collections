@@ -78,28 +78,35 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, in long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
-			var sourceBlockCount = source?.Length ?? 0;
-			int requiredBlockCount = (int)(newCapacity / minBlockSize) + (newCapacity % minBlockSize > 0 ? 1 : 0);
+			const int sourceBlockCount = 0, requiredBlockCount = 1, uninitializedBlocksCount = 2, i = 3;
 
-			T[][] newMemoryBlocks = requiredBlockCount < RecyclableDefaults.MinPooledArrayLength
-				? new T[requiredBlockCount][]
-				: memoryBlocksPool.Rent(requiredBlockCount);
+			Span<int> localInts = stackalloc int[4]
+			{
+				source?.Length ?? 0, // sourceBlockCount
+				(int)(newCapacity / minBlockSize) + (newCapacity % minBlockSize > 0 ? 1 : 0), // requiredBlockCount
+				0, // uninitializedBlocksCount
+				0, // i
+			};
+
+			T[][] newMemoryBlocks = localInts[requiredBlockCount] < RecyclableDefaults.MinPooledArrayLength
+				? new T[localInts[requiredBlockCount]][]
+				: memoryBlocksPool.Rent(localInts[requiredBlockCount]);
 
 			var newMemoryBlocksSpan = new Span<T[]>(newMemoryBlocks);
-			if (sourceBlockCount > 0)
+			if (localInts[sourceBlockCount] > 0)
 			{
 				var sourceSpan = new Span<T[]>(source);
 				sourceSpan.CopyTo(newMemoryBlocksSpan);
-				if (sourceSpan.Length >= RecyclableDefaults.MinPooledArrayLength)
+				if (localInts[sourceBlockCount] >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					memoryBlocksPool.Return(source!);
 				}
 
-				newMemoryBlocksSpan = newMemoryBlocksSpan[sourceBlockCount..];
+				newMemoryBlocksSpan = newMemoryBlocksSpan[localInts[sourceBlockCount]..];
 			}
 
-			int uninitializedBlocksCount = newMemoryBlocksSpan.Length;
-			if (uninitializedBlocksCount == requiredBlockCount)
+			localInts[uninitializedBlocksCount] = newMemoryBlocksSpan.Length;
+			if (localInts[uninitializedBlocksCount] == localInts[requiredBlockCount])
 			{
 				if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
@@ -112,21 +119,21 @@ namespace Recyclable.Collections
 				}
 
 				newMemoryBlocksSpan = newMemoryBlocksSpan[1..];
-				uninitializedBlocksCount--;
+				localInts[uninitializedBlocksCount]--;
 			}
 
 			if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				for (int i = 0; i < uninitializedBlocksCount; i++)
+				for (localInts[i] = 0; localInts[i] < localInts[uninitializedBlocksCount]; localInts[i]++)
 				{
-					newMemoryBlocksSpan[i] = blockArrayPool.Rent(minBlockSize);
+					newMemoryBlocksSpan[localInts[i]] = blockArrayPool.Rent(minBlockSize);
 				}
 			}
 			else
 			{
-				for (int i = 0; i < uninitializedBlocksCount; i++)
+				for (localInts[i] = 0; localInts[i] < localInts[uninitializedBlocksCount]; localInts[i]++)
 				{
-					newMemoryBlocksSpan[i] = new T[minBlockSize];
+					newMemoryBlocksSpan[localInts[i]] = new T[minBlockSize];
 				}
 			}
 
