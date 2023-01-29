@@ -74,11 +74,11 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected static T[][] SetNewLength(in T[][]? source, int blockSize, in long newCapacity)
+		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, in long newCapacity)
 		{
 			ArrayPool<T[]> arrayPool = _arrayPool;
 			var sourceBlockCount = source?.Length ?? 0;
-			int requiredBlockCount = (int)(newCapacity / blockSize) + (newCapacity % blockSize > 0 ? 1 : 0);
+			int requiredBlockCount = (int)(newCapacity / minBlockSize) + (newCapacity % minBlockSize > 0 ? 1 : 0);
 
 			T[][] newMemoryBlocks = requiredBlockCount < RecyclableDefaults.MinPooledArrayLength
 				? new T[requiredBlockCount][]
@@ -101,32 +101,32 @@ namespace Recyclable.Collections
 			int uninitializedBlocksCount = newMemoryBlocksSpan.Length;
 			if (uninitializedBlocksCount == requiredBlockCount)
 			{
-				if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
+				if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					newMemoryBlocksSpan[0] = blockArrayPool.Rent(blockSize);
-					blockSize = newMemoryBlocksSpan[0].Length;
+					newMemoryBlocksSpan[0] = blockArrayPool.Rent(minBlockSize);
+					minBlockSize = newMemoryBlocksSpan[0].Length;
 				}
 				else
 				{
-					newMemoryBlocksSpan[0] = new T[blockSize];
+					newMemoryBlocksSpan[0] = new T[minBlockSize];
 				}
 
 				newMemoryBlocksSpan = newMemoryBlocksSpan[1..];
 				uninitializedBlocksCount--;
 			}
 
-			if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
+			if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
 				for (int i = 0; i < uninitializedBlocksCount; i++)
 				{
-					newMemoryBlocksSpan[i] = blockArrayPool.Rent(blockSize);
+					newMemoryBlocksSpan[i] = blockArrayPool.Rent(minBlockSize);
 				}
 			}
 			else
 			{
 				for (int i = 0; i < uninitializedBlocksCount; i++)
 				{
-					newMemoryBlocksSpan[i] = new T[blockSize];
+					newMemoryBlocksSpan[i] = new T[minBlockSize];
 				}
 			}
 
@@ -163,42 +163,42 @@ namespace Recyclable.Collections
 			return newCapacity;
 		}
 
-		public RecyclableList(int blockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 		{
 			if (expectedItemsCount > 0)
 			{
-				_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, expectedItemsCount.Value);
+				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, expectedItemsCount.Value);
 				if (_memoryBlocks.Length > 0)
 				{
-					blockSize = _memoryBlocks[0].Length;
+					minBlockSize = _memoryBlocks[0].Length;
 				}
 
-				_blockSize = blockSize;
-				_capacity = _memoryBlocks.Length * blockSize;
+				_blockSize = minBlockSize;
+				_capacity = _memoryBlocks.Length * minBlockSize;
 			}
 			else
 			{
-				_blockSize = blockSize;
+				_blockSize = minBlockSize;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
 		}
 
-		public RecyclableList(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 		{
 			if (expectedItemsCount > 0)
 			{
-				_memoryBlocks = SetNewLength(_memoryBlocks, blockSize, expectedItemsCount.Value);
+				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, expectedItemsCount.Value);
 				if (_memoryBlocks.Length > 0)
 				{
-					blockSize = _memoryBlocks[0].Length;
+					minBlockSize = _memoryBlocks[0].Length;
 				}
 
-				_blockSize = blockSize;
-				_capacity = _memoryBlocks.Length * blockSize;
+				_blockSize = minBlockSize;
+				_capacity = _memoryBlocks.Length * minBlockSize;
 			}
 			else
 			{
-				_blockSize = blockSize;
+				_blockSize = minBlockSize;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
 
