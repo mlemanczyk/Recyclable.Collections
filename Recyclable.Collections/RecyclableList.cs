@@ -79,7 +79,6 @@ namespace Recyclable.Collections
 		protected static T[][] SetNewLength(in T[][]? source, int blockSize, in long newCapacity)
 		{
 			ArrayPool<T[]> arrayPool = _arrayPool;
-			ArrayPool<T> blockArrayPool = _blockArrayPool;
 			var sourceBlockCount = source?.Length ?? 0;
 			int requiredBlockCount = (int)(newCapacity / blockSize) + (newCapacity % blockSize > 0 ? 1 : 0);
 
@@ -100,6 +99,7 @@ namespace Recyclable.Collections
 				newArraySpan = newArraySpan[sourceBlockCount..];
 			}
 
+			ArrayPool<T> blockArrayPool = _blockArrayPool;
 			int uninitializedBlocksCount = newArraySpan.Length;
 			if (uninitializedBlocksCount == requiredBlockCount)
 			{
