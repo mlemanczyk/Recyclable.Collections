@@ -242,7 +242,7 @@ namespace Recyclable.Collections
 				_lastBlockIndex++;
 				_lastItemIndex = 0;
 			}
-			
+
 			_longCount++;
 		}
 
@@ -260,7 +260,7 @@ namespace Recyclable.Collections
 			int targetItemIdx = (int)(oldLongCount % blockSize);
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
 			var memoryBlocksSpan = new Span<T[]>(_memoryBlocks);
-			var memoryBlocksCount = memoryBlocksSpan.Length;
+			int memoryBlocksCount = memoryBlocksSpan.Length;
 			var targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
 			for (var i = 0L; i < sourceItemsCount; i++)
 			{
