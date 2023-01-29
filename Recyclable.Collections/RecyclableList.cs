@@ -490,7 +490,7 @@ namespace Recyclable.Collections
 
 		public bool Contains(T item) => _memoryBlocks.Any(x => x.Contains(item));
 
-		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, _blockSize, (int)LongCount % _blockSize, array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, _blockSize, (int)(LongCount % _blockSize), array, arrayIndex);
 
 		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
