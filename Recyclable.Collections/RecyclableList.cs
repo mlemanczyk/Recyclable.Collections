@@ -539,7 +539,6 @@ namespace Recyclable.Collections
 			if (_capacity > 0)
 			{
 				Clear();
-				_capacity = 0;
 				if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					_memoryBlocksPool.Return(_memoryBlocks);
