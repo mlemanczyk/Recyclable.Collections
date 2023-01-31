@@ -15,41 +15,26 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public static void CopyTo<T>(this T[][] arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
+		public static void CopyTo<T>(this T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
 		{
-			Span<T> arrayMemory = destinationArray.AsSpan();
-			arrayMemory = arrayMemory[destinationArrayIndex..];
-			int startingArrayIndex = (int)(startingIndex / blockSize);
-			startingIndex %= blockSize;
-			if (arrays.LongLength > 0)
+			Memory<T> sourceBlockMemory;
+			Memory<T> destinationArrayMemory;
+			int startingBlockIndex = (int)(startingIndex / blockSize);
+			int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount - (itemsCount / blockSize) > 0 ? 1 : 0)) - 1;
+			Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex - startingBlockIndex + 1);
+			destinationArrayMemory = new Memory<T>(destinationArray, destinationArrayIndex, destinationArray.Length);
+			int memoryBlockIndex;
+			for (memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
 			{
-				ReadOnlySpan<T> sourceMemory = arrays[0].AsSpan();
-				var maxToCopy = (int)Math.Min(blockSize - startingIndex, arrayMemory.Length);
-				if (arrays.LongLength == 1)
-				{
-					maxToCopy = (int)Math.Min(maxToCopy, lastBlockSize);
-				}
-
-				sourceMemory = sourceMemory[(int)startingIndex..maxToCopy];
-				sourceMemory.CopyTo(arrayMemory);
-				arrayMemory = arrayMemory[maxToCopy..];
+				sourceBlockMemory = new(sourceMemoryBlocksSpan[memoryBlockIndex], 0, blockSize);
+				sourceBlockMemory.CopyTo(destinationArrayMemory);
+				destinationArrayMemory = destinationArrayMemory[blockSize..];
 			}
 
-			for (var arrayIdx = startingArrayIndex + 1; arrayIdx < arrays.Length - 1 && arrayMemory.Length > 0; arrayIdx++)
+			if (itemsCount % blockSize > 0)
 			{
-				ReadOnlySpan<T> sourceMemory = arrays[arrayIdx].AsSpan();
-				var maxToCopy = Math.Min(blockSize, arrayMemory.Length);
-				sourceMemory = sourceMemory[..maxToCopy];
-				sourceMemory.CopyTo(arrayMemory);
-				arrayMemory = arrayMemory[maxToCopy..];
-			}
-
-			if (arrays.Length > 1 && arrayMemory.Length > 0)
-			{
-				ReadOnlySpan<T> sourceMemory = arrays[^1].AsSpan();
-				var maxToCopy = Math.Min(lastBlockSize, arrayMemory.Length);
-				sourceMemory = sourceMemory[..maxToCopy];
-				sourceMemory.CopyTo(arrayMemory);
+				sourceBlockMemory = new(sourceMemoryBlocksSpan[^1], 0, (int)(itemsCount % blockSize));
+				sourceBlockMemory.CopyTo(destinationArrayMemory);
 			}
 		}
 
