@@ -426,8 +426,8 @@ namespace Recyclable.Collections
 					}
 				}
 
-				_longCount = targetItemIdx;
-				_lastBlockIndex = targetBlockIdx - 1;
+				_longCount = targetBlockIdx * blockSize + targetItemIdx;
+				_lastBlockIndex = targetBlockIdx;
 				_lastItemIndex = targetItemIdx;
 				return;
 			}
