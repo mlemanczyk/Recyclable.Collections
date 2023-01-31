@@ -494,7 +494,7 @@ namespace Recyclable.Collections
 				Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 				int memoryBlocksCount = memoryBlocksSpan.Length;
 				ArrayPool<T> blockArrayPool = _blockArrayPool;
-				for (var toRemoveIdx = 0; toRemoveIdx < memoryBlocksCount; toRemoveIdx++)
+				for (int toRemoveIdx = 0; toRemoveIdx < memoryBlocksCount; toRemoveIdx++)
 				{
 					blockArrayPool.Return(memoryBlocksSpan[toRemoveIdx]);
 				}
