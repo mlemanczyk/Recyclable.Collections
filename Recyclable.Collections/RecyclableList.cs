@@ -405,6 +405,9 @@ namespace Recyclable.Collections
 				if (capacity < requiredCapacity)
 				{
 					_ = EnsureCapacity(requiredCapacity);
+					blockSize = _blockSize;
+					targetBlockIdx = (targetItemIdx / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+					targetItemIdx = (int)(oldLongCount % blockSize);
 				}
 
 				memoryBlocksSpan = new(_memoryBlocks);
