@@ -21,6 +21,8 @@ namespace Recyclable.Collections.Benchmarks
 
 		protected RecyclableArrayList<object>? _testObjectsAsRecyclableArrayList;
 		protected RecyclableArrayList<object> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+		protected RecyclableList<object>? _testObjectsAsRecyclableList;
+		protected RecyclableList<object> TestObjectsAsRecyclableList => _testObjectsAsRecyclableList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 		protected IEnumerable<object> TestObjectsAsIEnumerable => Enumerable.Range(1, TestObjectCount).Select(static x => new object());
 
 		protected static void DoNothing<T>(T obj)

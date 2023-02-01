@@ -18,6 +18,7 @@ namespace Recyclable.Collections.Benchmarks
 			_testArray = TestObjects.ToArray();
 			_testObjectsAsList = TestObjects.ToList();
 			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();
+			_testObjectsAsRecyclableList = TestObjects.ToRecyclableList();
 		}
 
 		[GlobalCleanup]
@@ -28,6 +29,7 @@ namespace Recyclable.Collections.Benchmarks
 			_testRecyclableList?.Dispose();
 			TestObjectsAsRecyclableArrayList?.Dispose();
 			_testObjectsAsRecyclableArrayList = default;
+			_testObjectsAsRecyclableList = default;
 			_testObjectsAsList = default;
 			_testObjects = default;
 		}
