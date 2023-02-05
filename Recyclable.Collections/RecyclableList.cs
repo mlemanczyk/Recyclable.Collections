@@ -518,7 +518,7 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int itemIndex = 0;
 			int blockIndex = 0;
-			int lastBlockIndex = 0;
+			int lastBlockIndex = _lastBlockIndex;
 
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
@@ -740,7 +740,7 @@ namespace Recyclable.Collections
 			int blockSize = _blockSize;
 			int itemIndex = 0;
 			int blockIndex = 0;
-			int lastBlockIndex = 0;
+			int lastBlockIndex = _lastBlockIndex;
 
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
@@ -750,42 +750,42 @@ namespace Recyclable.Collections
 				{
 					if (item.Equals(blockArraySpan[itemIndex]))
 					{
-						return itemIndex;
+						return (blockIndex * blockSize) + itemIndex;
 					}
 
 					if (itemIndex + 1 < blockSize && item.Equals(blockArraySpan[itemIndex + 1]))
 					{
-						return itemIndex + 1;
+						return (blockIndex * blockSize) + itemIndex + 1;
 					}
 
 					if (itemIndex + 2 < blockSize && item.Equals(blockArraySpan[itemIndex + 2]))
 					{
-						return itemIndex + 2;
+						return (blockIndex * blockSize) + itemIndex + 2;
 					}
 
 					if (itemIndex + 3 < blockSize && item.Equals(blockArraySpan[itemIndex + 3]))
 					{
-						return itemIndex + 3;
+						return (blockIndex * blockSize) + itemIndex + 3;
 					}
 
 					if (itemIndex + 4 < blockSize && item.Equals(blockArraySpan[itemIndex + 4]))
 					{
-						return itemIndex + 4;
+						return (blockIndex * blockSize) + itemIndex + 4;
 					}
 
 					if (itemIndex + 5 < blockSize && item.Equals(blockArraySpan[itemIndex + 5]))
 					{
-						return itemIndex + 5;
+						return (blockIndex * blockSize) + itemIndex + 5;
 					}
 
 					if (itemIndex + 6 < blockSize && item.Equals(blockArraySpan[itemIndex + 6]))
 					{
-						return itemIndex + 6;
+						return (blockIndex * blockSize) + itemIndex + 6;
 					}
 
 					if (itemIndex + 7 < blockSize && item.Equals(blockArraySpan[itemIndex + 7]))
 					{
-						return itemIndex + 7;
+						return (blockIndex * blockSize) + itemIndex + 7;
 					}
 
 					itemIndex += 8;
@@ -797,48 +797,48 @@ namespace Recyclable.Collections
 					}
 				}
 
-				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+				blockArraySpan = new(memoryBlocksSpan[blockIndex]);
 				var nextItemIndex = _nextItemIndex;
 				while (itemIndex < nextItemIndex)
 				{
 					if (item.Equals(blockArraySpan[itemIndex]))
 					{
-						return itemIndex;
+						return (blockIndex * blockSize) + itemIndex;
 					}
 
 					if (itemIndex + 1 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 1]))
 					{
-						return itemIndex + 1;
+						return (blockIndex * blockSize) + itemIndex + 1;
 					}
 
 					if (itemIndex + 2 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 2]))
 					{
-						return itemIndex + 2;
+						return (blockIndex * blockSize) + itemIndex + 2;
 					}
 
 					if (itemIndex + 3 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 3]))
 					{
-						return itemIndex + 3;
+						return (blockIndex * blockSize) + itemIndex + 3;
 					}
 
 					if (itemIndex + 4 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 4]))
 					{
-						return itemIndex + 4;
+						return (blockIndex * blockSize) + itemIndex + 4;
 					}
 
 					if (itemIndex + 5 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 5]))
 					{
-						return itemIndex + 5;
+						return (blockIndex * blockSize) + itemIndex + 5;
 					}
 
 					if (itemIndex + 6 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 6]))
 					{
-						return itemIndex + 6;
+						return (blockIndex * blockSize) + itemIndex + 6;
 					}
 
 					if (itemIndex + 7 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 7]))
 					{
-						return itemIndex + 7;
+						return (blockIndex * blockSize) + itemIndex + 7;
 					}
 
 					itemIndex += 8;
@@ -850,42 +850,42 @@ namespace Recyclable.Collections
 				{
 					if (blockArraySpan[itemIndex] == null)
 					{
-						return itemIndex;
+						return (blockIndex * blockSize) + itemIndex;
 					}
 
 					if (itemIndex + 1 < blockSize && blockArraySpan[itemIndex + 1] == null)
 					{
-						return itemIndex + 1;
+						return (blockIndex * blockSize) + itemIndex + 1;
 					}
 
 					if (itemIndex + 2 < blockSize && blockArraySpan[itemIndex + 2] == null)
 					{
-						return itemIndex + 2;
+						return (blockIndex * blockSize) + itemIndex + 2;
 					}
 
 					if (itemIndex + 3 < blockSize && blockArraySpan[itemIndex + 3] == null)
 					{
-						return itemIndex + 3;
+						return (blockIndex * blockSize) + itemIndex + 3;
 					}
 
 					if (itemIndex + 4 < blockSize && blockArraySpan[itemIndex + 4] == null)
 					{
-						return itemIndex + 4;
+						return (blockIndex * blockSize) + itemIndex + 4;
 					}
 
 					if (itemIndex + 5 < blockSize && blockArraySpan[itemIndex + 5] == null)
 					{
-						return itemIndex + 5;
+						return (blockIndex * blockSize) + itemIndex + 5;
 					}
 
 					if (itemIndex + 6 < blockSize && blockArraySpan[itemIndex + 6] == null)
 					{
-						return itemIndex + 6;
+						return (blockIndex * blockSize) + itemIndex + 6;
 					}
 
 					if (itemIndex + 7 < blockSize && blockArraySpan[itemIndex + 7] == null)
 					{
-						return itemIndex + 7;
+						return (blockIndex * blockSize) + itemIndex + 7;
 					}
 
 					itemIndex += 8;
@@ -903,42 +903,42 @@ namespace Recyclable.Collections
 				{
 					if (blockArraySpan[itemIndex] == null)
 					{
-						return itemIndex;
+						return (blockIndex * blockSize) + itemIndex;
 					}
 
 					if (itemIndex + 1 < nextItemIndex && blockArraySpan[itemIndex + 1] == null)
 					{
-						return itemIndex + 1;
+						return (blockIndex * blockSize) + itemIndex + 1;
 					}
 
 					if (itemIndex + 2 < nextItemIndex && blockArraySpan[itemIndex + 2] == null)
 					{
-						return itemIndex + 2;
+						return (blockIndex * blockSize) + itemIndex + 2;
 					}
 
 					if (itemIndex + 3 < nextItemIndex && blockArraySpan[itemIndex + 3] == null)
 					{
-						return itemIndex + 3;
+						return (blockIndex * blockSize) + itemIndex + 3;
 					}
 
 					if (itemIndex + 4 < nextItemIndex && blockArraySpan[itemIndex + 4] == null)
 					{
-						return itemIndex + 4;
+						return (blockIndex * blockSize) + itemIndex + 4;
 					}
 
 					if (itemIndex + 5 < nextItemIndex && blockArraySpan[itemIndex + 5] == null)
 					{
-						return itemIndex + 5;
+						return (blockIndex * blockSize) + itemIndex + 5;
 					}
 
 					if (itemIndex + 6 < nextItemIndex && blockArraySpan[itemIndex + 6] == null)
 					{
-						return itemIndex + 6;
+						return (blockIndex * blockSize) + itemIndex + 6;
 					}
 
 					if (itemIndex + 7 < nextItemIndex && blockArraySpan[itemIndex + 7] == null)
 					{
-						return itemIndex + 7;
+						return (blockIndex * blockSize) + itemIndex + 7;
 					}
 
 					itemIndex += 8;

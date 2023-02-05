@@ -8,7 +8,7 @@ namespace Recyclable.CollectionsTests
 		private const int _totalObjectCount = 5_000;
 		private static RecyclableList<int> NewRecyclableList => CreateReversedRecyclableList(_testData);
 		private static readonly IEnumerable<int> _testData = Enumerable.Range(1, _totalObjectCount);
-		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source);
+		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source, 1024);
 
 		[Fact]
 		public void AddShouldAddItems()
