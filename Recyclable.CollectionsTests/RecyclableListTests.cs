@@ -86,6 +86,53 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
+		public void ContainsShouldFindAllItems()
+		{
+			// Prepare
+			var testData = _testData;
+			using var list = NewRecyclableList;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.Contains(item).Should().BeTrue();
+			}
+		}
+
+		[Fact]
+		public void ContainsShouldNotFindNonExistingItems()
+		{
+			// Prepare
+			var testData = _testData;
+			using var list = NewRecyclableList;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.Contains(-item).Should().BeFalse();
+			}
+
+			// Validate
+			_ = list.Contains(0).Should().BeFalse();
+		}
+
+		[Fact]
+		public void ContainsShouldNotFindAnythingWhenListEmpty()
+		{
+			// Prepare
+			using var list = new RecyclableList<int>();
+
+			// Validate
+			_ = list.Contains(0).Should().BeFalse();
+			_ = list.Contains(1).Should().BeFalse();
+		}
+
+
+		[Fact]
 		public void CopyToShouldCopyAllItems()
 		{
 			// Prepare

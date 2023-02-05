@@ -433,7 +433,7 @@ namespace Recyclable.Collections
 					}
 				}
 
-				_longCount = targetBlockIdx * blockSize + targetItemIdx;
+				_longCount = (targetBlockIdx * blockSize) + targetItemIdx;
 				_lastBlockIndex = targetBlockIdx;
 				_nextItemIndex = targetItemIdx;
 				return;
@@ -510,6 +510,7 @@ namespace Recyclable.Collections
 			_longCount = 0;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Contains(T item)
 		{
 			if (_longCount == 0)
@@ -517,101 +518,215 @@ namespace Recyclable.Collections
 				return false;
 			}
 
-			int midPoint = _blockSize / 2;
-			int lastBlockIndex = _lastBlockIndex;
-			int itemIndex0 = 0;
-			int itemIndex1 = midPoint;
+			int blockSize = _blockSize;
+			int itemIndex = 0;
 			int blockIndex = 0;
+			int lastBlockIndex = 0;
 
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
 			if (item != null)
 			{
-				while (blockIndex <= lastBlockIndex)
+				while (blockIndex < lastBlockIndex)
 				{
-					if (item.Equals(blockArraySpan[itemIndex0++]))
+					if (item.Equals(blockArraySpan[itemIndex]))
 					{
 						return true;
 					}
 
-					if (item.Equals(blockArraySpan[itemIndex1++]))
+					if (itemIndex + 1 < blockSize && item.Equals(blockArraySpan[itemIndex + 1]))
+					{
+						return true;
+					}
+					
+					if (itemIndex + 2 < blockSize && item.Equals(blockArraySpan[itemIndex + 2]))
+					{
+						return true;
+					}
+					
+					if (itemIndex + 3 < blockSize && item.Equals(blockArraySpan[itemIndex + 3]))
 					{
 						return true;
 					}
 
-					if (itemIndex0 == midPoint)
+					if (itemIndex + 4 < blockSize && item.Equals(blockArraySpan[itemIndex + 4]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 5 < blockSize && item.Equals(blockArraySpan[itemIndex + 5]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 6 < blockSize && item.Equals(blockArraySpan[itemIndex + 6]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 7 < blockSize && item.Equals(blockArraySpan[itemIndex + 7]))
+					{
+						return true;
+					}
+
+					itemIndex += 8;
+					if (itemIndex >= blockSize)
 					{
 						blockIndex++;
-						if (blockIndex == lastBlockIndex)
-						{
-							int nextItemIndex = _nextItemIndex;
-							if (nextItemIndex == 0)
-							{
-								return false;
-							}
-
-							midPoint = (nextItemIndex / 2) + (nextItemIndex % 2);
-						}
-
 						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-						itemIndex0 = 0;
-						itemIndex1 = midPoint;
+						itemIndex = 0;
 					}
+				}
+
+				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+				var nextItemIndex = _nextItemIndex;
+				while (itemIndex < nextItemIndex)
+				{
+					if (item.Equals(blockArraySpan[itemIndex]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 1 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 1]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 2 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 2]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 3 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 3]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 4 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 4]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 5 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 5]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 6 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 6]))
+					{
+						return true;
+					}
+
+					if (itemIndex + 7 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 7]))
+					{
+						return true;
+					}
+
+					itemIndex += 8;
 				}
 			}
 			else
 			{
 				while (blockIndex < lastBlockIndex)
 				{
-					if (blockArraySpan[itemIndex0++] == null)
+					if (blockArraySpan[itemIndex] == null)
 					{
 						return true;
 					}
 
-					if (blockArraySpan[itemIndex1++] == null)
+					if (itemIndex + 1 < blockSize && blockArraySpan[itemIndex + 1] == null)
 					{
 						return true;
 					}
 
-					if (itemIndex0 == midPoint)
+					if (itemIndex + 2 < blockSize && blockArraySpan[itemIndex + 2] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 3 < blockSize && blockArraySpan[itemIndex + 3] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 4 < blockSize && blockArraySpan[itemIndex + 4] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 5 < blockSize && blockArraySpan[itemIndex + 5] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 6 < blockSize && blockArraySpan[itemIndex + 6] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 7 < blockSize && blockArraySpan[itemIndex + 7] == null)
+					{
+						return true;
+					}
+
+					itemIndex += 8;
+					if (itemIndex >= blockSize)
 					{
 						blockIndex++;
-						if (blockIndex == lastBlockIndex)
-						{
-							if (_nextItemIndex == 0)
-							{
-								return false;
-							}
-
-							midPoint = ((_nextItemIndex - 1) / 2) + ((_nextItemIndex - 1) % 2);
-						}
-
 						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-						itemIndex0 = 0;
-						itemIndex1 = 0;
+						itemIndex = 0;
 					}
+				}
+
+				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+				var nextItemIndex = _nextItemIndex;
+				while (itemIndex < nextItemIndex)
+				{
+					if (blockArraySpan[itemIndex] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 1 < nextItemIndex && blockArraySpan[itemIndex + 1] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 2 < nextItemIndex && blockArraySpan[itemIndex + 2] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 3 < nextItemIndex && blockArraySpan[itemIndex + 3] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 4 < nextItemIndex && blockArraySpan[itemIndex + 4] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 5 < nextItemIndex && blockArraySpan[itemIndex + 5] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 6 < nextItemIndex && blockArraySpan[itemIndex + 6] == null)
+					{
+						return true;
+					}
+
+					if (itemIndex + 7 < nextItemIndex && blockArraySpan[itemIndex + 7] == null)
+					{
+						return true;
+					}
+
+					itemIndex += 8;
 				}
 			}
 
 			return false;
-
-			//for (memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
-			//{
-			//	//T? found = Array.Find(memoryBlocksSpan[memoryBlockIndex], x => comparer.Equals(x, item));
-			//	//if (found != null)
-			//	//{
-			//	//	return true;
-			//	//}
-
-			//	blockArraySpan = new(memoryBlocksSpan[memoryBlockIndex]);
-			//	for (itemIndex = 0; itemIndex < mainBlockSize; itemIndex++)
-			//	{
-			//		if (comparer.Equals(blockArraySpan[itemIndex], item))
-			//		{
-			//			return true;
-			//		}
-			//	}
-			//}
 		}
 
 		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, _blockSize, _longCount, array, arrayIndex);
