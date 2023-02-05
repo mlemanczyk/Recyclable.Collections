@@ -112,27 +112,51 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(data.Count);
 		}
 
-		//[Benchmark(Baseline = true)]
-		public void List_Contains()
+		[Benchmark(Baseline = true)]
+		public void List_Contains_1_000_FirstItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = 100_000;
+			var dataCount = 1_000;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[i]));
 			}
 		}
 
-		[Benchmark(Baseline = true)]
-		public void List_IndexOf()
+		[Benchmark]
+		public void List_Contains_1_000_LastItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = 100_000;
+			var dataCount = 1_000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.Contains(data[^(i + 1)]));
+			}
+		}
+
+		//[Benchmark(Baseline = true)]
+		public void List_IndexOf_1_000_FirstItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsList;
+			var dataCount = 1_000;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
+			}
+		}
+
+		//[Benchmark]
+		public void List_IndexOf_1_000_LastItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsList;
+			var dataCount = 1_000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.IndexOf(data[^(i + 1)]));
 			}
 		}
 	}

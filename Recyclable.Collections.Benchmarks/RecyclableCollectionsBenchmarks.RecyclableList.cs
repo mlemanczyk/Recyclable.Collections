@@ -78,12 +78,12 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(data.LongCount);
 		}
 
-		//[Benchmark]
-		public void RecyclableList_Contains()
+		[Benchmark]
+		public void RecyclableList_Contains_1_000_FirstItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = 100_000;
+			var dataCount = 1000;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[i]));
@@ -91,14 +91,38 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		[Benchmark]
-		public void RecyclableList_IndexOf()
+		public void RecyclableList_Contains_1_000_LastItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = 100_000;
+			var dataCount = 1_000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.Contains(data[^(i + 1)]));
+			}
+		}
+
+		//[Benchmark]
+		public void RecyclableList_IndexOf_1_000_FirstItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = 1000;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
+			}
+		}
+
+		//[Benchmark]
+		public void RecyclableList_IndexOf_1_000_LastItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = 1_000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.IndexOf(data[^(i + 1)]));
 			}
 		}
 	}

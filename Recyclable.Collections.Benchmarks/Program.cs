@@ -16,7 +16,7 @@ internal class Program
 		benchmark.Setup();
 		foreach (var _ in Enumerable.Range(1, 1000))
 		{
-			benchmark.RecyclableList_Contains();
+			//benchmark.RecyclableList_Contains();
 			//benchmark.RecyclableArrayList_AddRange_WithCapacity();
 			//benchmark.RecyclableArrayList_Add_WithCapacity();
 

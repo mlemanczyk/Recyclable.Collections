@@ -515,221 +515,27 @@ namespace Recyclable.Collections
 				return false;
 			}
 
-			int blockSize = _blockSize;
-			int itemIndex = 0;
-			int blockIndex = 0;
-			int lastBlockIndex = _lastBlockIndex;
-
+			int itemIndex, blockIndex = 0, lastBlockIndex = _lastBlockIndex, blockSize = _blockSize;
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-			if (item != null)
+			while (blockIndex < lastBlockIndex)
 			{
-				while (blockIndex < lastBlockIndex)
+				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
+				if (itemIndex >= 0)
 				{
-					if (item.Equals(blockArraySpan[itemIndex]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 1 < blockSize && item.Equals(blockArraySpan[itemIndex + 1]))
-					{
-						return true;
-					}
-					
-					if (itemIndex + 2 < blockSize && item.Equals(blockArraySpan[itemIndex + 2]))
-					{
-						return true;
-					}
-					
-					if (itemIndex + 3 < blockSize && item.Equals(blockArraySpan[itemIndex + 3]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 4 < blockSize && item.Equals(blockArraySpan[itemIndex + 4]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 5 < blockSize && item.Equals(blockArraySpan[itemIndex + 5]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 6 < blockSize && item.Equals(blockArraySpan[itemIndex + 6]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 7 < blockSize && item.Equals(blockArraySpan[itemIndex + 7]))
-					{
-						return true;
-					}
-
-					itemIndex += 8;
-					if (itemIndex >= blockSize)
-					{
-						blockIndex++;
-						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-						itemIndex = 0;
-					}
+					return true;
 				}
 
-				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
-				var nextItemIndex = _nextItemIndex;
-				while (itemIndex < nextItemIndex)
-				{
-					if (item.Equals(blockArraySpan[itemIndex]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 1 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 1]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 2 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 2]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 3 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 3]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 4 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 4]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 5 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 5]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 6 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 6]))
-					{
-						return true;
-					}
-
-					if (itemIndex + 7 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 7]))
-					{
-						return true;
-					}
-
-					itemIndex += 8;
-				}
-			}
-			else
-			{
-				while (blockIndex < lastBlockIndex)
-				{
-					if (blockArraySpan[itemIndex] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 1 < blockSize && blockArraySpan[itemIndex + 1] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 2 < blockSize && blockArraySpan[itemIndex + 2] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 3 < blockSize && blockArraySpan[itemIndex + 3] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 4 < blockSize && blockArraySpan[itemIndex + 4] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 5 < blockSize && blockArraySpan[itemIndex + 5] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 6 < blockSize && blockArraySpan[itemIndex + 6] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 7 < blockSize && blockArraySpan[itemIndex + 7] == null)
-					{
-						return true;
-					}
-
-					itemIndex += 8;
-					if (itemIndex >= blockSize)
-					{
-						blockIndex++;
-						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-						itemIndex = 0;
-					}
-				}
-
-				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
-				var nextItemIndex = _nextItemIndex;
-				while (itemIndex < nextItemIndex)
-				{
-					if (blockArraySpan[itemIndex] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 1 < nextItemIndex && blockArraySpan[itemIndex + 1] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 2 < nextItemIndex && blockArraySpan[itemIndex + 2] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 3 < nextItemIndex && blockArraySpan[itemIndex + 3] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 4 < nextItemIndex && blockArraySpan[itemIndex + 4] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 5 < nextItemIndex && blockArraySpan[itemIndex + 5] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 6 < nextItemIndex && blockArraySpan[itemIndex + 6] == null)
-					{
-						return true;
-					}
-
-					if (itemIndex + 7 < nextItemIndex && blockArraySpan[itemIndex + 7] == null)
-					{
-						return true;
-					}
-
-					itemIndex += 8;
-				}
+				blockIndex++;
 			}
 
-			return false;
+			return Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _nextItemIndex) >= 0;
 		}
 
 		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, _blockSize, _longCount, array, arrayIndex);
 
 		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item)
 		{
 			if (_longCount == 0)
@@ -737,219 +543,52 @@ namespace Recyclable.Collections
 				return ItemNotFoundIndex;
 			}
 
-			int blockSize = _blockSize;
-			int itemIndex = 0;
-			int blockIndex = 0;
-			int lastBlockIndex = _lastBlockIndex;
-
+			int itemIndex, blockIndex = 0, lastBlockIndex = _lastBlockIndex, blockSize = _blockSize;
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-			if (item != null)
+			while (blockIndex < lastBlockIndex)
 			{
-				while (blockIndex < lastBlockIndex)
+				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
+				if (itemIndex >= 0)
 				{
-					if (item.Equals(blockArraySpan[itemIndex]))
-					{
-						return (blockIndex * blockSize) + itemIndex;
-					}
-
-					if (itemIndex + 1 < blockSize && item.Equals(blockArraySpan[itemIndex + 1]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 1;
-					}
-
-					if (itemIndex + 2 < blockSize && item.Equals(blockArraySpan[itemIndex + 2]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 2;
-					}
-
-					if (itemIndex + 3 < blockSize && item.Equals(blockArraySpan[itemIndex + 3]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 3;
-					}
-
-					if (itemIndex + 4 < blockSize && item.Equals(blockArraySpan[itemIndex + 4]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 4;
-					}
-
-					if (itemIndex + 5 < blockSize && item.Equals(blockArraySpan[itemIndex + 5]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 5;
-					}
-
-					if (itemIndex + 6 < blockSize && item.Equals(blockArraySpan[itemIndex + 6]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 6;
-					}
-
-					if (itemIndex + 7 < blockSize && item.Equals(blockArraySpan[itemIndex + 7]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 7;
-					}
-
-					itemIndex += 8;
-					if (itemIndex >= blockSize)
-					{
-						blockIndex++;
-						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-						itemIndex = 0;
-					}
+					return (blockIndex * blockSize) + itemIndex;
 				}
 
-				blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-				var nextItemIndex = _nextItemIndex;
-				while (itemIndex < nextItemIndex)
-				{
-					if (item.Equals(blockArraySpan[itemIndex]))
-					{
-						return (blockIndex * blockSize) + itemIndex;
-					}
-
-					if (itemIndex + 1 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 1]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 1;
-					}
-
-					if (itemIndex + 2 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 2]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 2;
-					}
-
-					if (itemIndex + 3 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 3]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 3;
-					}
-
-					if (itemIndex + 4 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 4]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 4;
-					}
-
-					if (itemIndex + 5 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 5]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 5;
-					}
-
-					if (itemIndex + 6 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 6]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 6;
-					}
-
-					if (itemIndex + 7 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 7]))
-					{
-						return (blockIndex * blockSize) + itemIndex + 7;
-					}
-
-					itemIndex += 8;
-				}
-			}
-			else
-			{
-				while (blockIndex < lastBlockIndex)
-				{
-					if (blockArraySpan[itemIndex] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex;
-					}
-
-					if (itemIndex + 1 < blockSize && blockArraySpan[itemIndex + 1] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 1;
-					}
-
-					if (itemIndex + 2 < blockSize && blockArraySpan[itemIndex + 2] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 2;
-					}
-
-					if (itemIndex + 3 < blockSize && blockArraySpan[itemIndex + 3] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 3;
-					}
-
-					if (itemIndex + 4 < blockSize && blockArraySpan[itemIndex + 4] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 4;
-					}
-
-					if (itemIndex + 5 < blockSize && blockArraySpan[itemIndex + 5] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 5;
-					}
-
-					if (itemIndex + 6 < blockSize && blockArraySpan[itemIndex + 6] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 6;
-					}
-
-					if (itemIndex + 7 < blockSize && blockArraySpan[itemIndex + 7] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 7;
-					}
-
-					itemIndex += 8;
-					if (itemIndex >= blockSize)
-					{
-						blockIndex++;
-						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
-						itemIndex = 0;
-					}
-				}
-
-				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
-				var nextItemIndex = _nextItemIndex;
-				while (itemIndex < nextItemIndex)
-				{
-					if (blockArraySpan[itemIndex] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex;
-					}
-
-					if (itemIndex + 1 < nextItemIndex && blockArraySpan[itemIndex + 1] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 1;
-					}
-
-					if (itemIndex + 2 < nextItemIndex && blockArraySpan[itemIndex + 2] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 2;
-					}
-
-					if (itemIndex + 3 < nextItemIndex && blockArraySpan[itemIndex + 3] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 3;
-					}
-
-					if (itemIndex + 4 < nextItemIndex && blockArraySpan[itemIndex + 4] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 4;
-					}
-
-					if (itemIndex + 5 < nextItemIndex && blockArraySpan[itemIndex + 5] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 5;
-					}
-
-					if (itemIndex + 6 < nextItemIndex && blockArraySpan[itemIndex + 6] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 6;
-					}
-
-					if (itemIndex + 7 < nextItemIndex && blockArraySpan[itemIndex + 7] == null)
-					{
-						return (blockIndex * blockSize) + itemIndex + 7;
-					}
-
-					itemIndex += 8;
-				}
+				blockIndex++;
 			}
 
-			return ItemNotFoundIndex;
+			itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _nextItemIndex);
+			return itemIndex >= 0
+				? (blockIndex * blockSize) + itemIndex
+				: ItemNotFoundIndex;
 		}
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
-		public long LongIndexOf(T item) => _memoryBlocks.LongIndexOf(_blockSize, item, _equalityComparer);
+		public long LongIndexOf(T item)
+		{
+			if (_longCount == 0)
+			{
+				return ItemNotFoundIndex;
+			}
+
+			int itemIndex, blockIndex = 0, lastBlockIndex = _lastBlockIndex, blockSize = _blockSize;
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			while (blockIndex < lastBlockIndex)
+			{
+				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
+				if (itemIndex >= 0)
+				{
+					return ((long)blockIndex * blockSize) + itemIndex;
+				}
+
+				blockIndex++;
+			}
+
+			itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _nextItemIndex);
+			return itemIndex >= 0
+				? ((long)blockIndex * blockSize) + itemIndex
+				: ItemNotFoundIndex;
+		}
+
 		public bool Remove(T item) => throw new NotSupportedException();
 		public void RemoveBlock(int index)
 		{
