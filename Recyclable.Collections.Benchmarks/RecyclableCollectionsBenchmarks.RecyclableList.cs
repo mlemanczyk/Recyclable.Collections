@@ -78,15 +78,27 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(data.LongCount);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_Contains()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = 100_000;
+			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[i]));
+			}
+		}
+
+		[Benchmark]
+		public void RecyclableList_IndexOf()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.IndexOf(data[i]));
 			}
 		}
 	}

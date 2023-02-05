@@ -1,15 +1,12 @@
 ﻿using System.Buffers;
 using System.Collections;
-using System.Linq;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Recyclable.Collections
 {
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
+		private const int ItemNotFoundIndex = -1;
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
@@ -733,7 +730,224 @@ namespace Recyclable.Collections
 
 		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		public int IndexOf(T item) => (int)_memoryBlocks.LongIndexOf(_longCount, item, _equalityComparer);
+		public int IndexOf(T item)
+		{
+			if (_longCount == 0)
+			{
+				return ItemNotFoundIndex;
+			}
+
+			int blockSize = _blockSize;
+			int itemIndex = 0;
+			int blockIndex = 0;
+			int lastBlockIndex = 0;
+
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
+			if (item != null)
+			{
+				while (blockIndex < lastBlockIndex)
+				{
+					if (item.Equals(blockArraySpan[itemIndex]))
+					{
+						return itemIndex;
+					}
+
+					if (itemIndex + 1 < blockSize && item.Equals(blockArraySpan[itemIndex + 1]))
+					{
+						return itemIndex + 1;
+					}
+
+					if (itemIndex + 2 < blockSize && item.Equals(blockArraySpan[itemIndex + 2]))
+					{
+						return itemIndex + 2;
+					}
+
+					if (itemIndex + 3 < blockSize && item.Equals(blockArraySpan[itemIndex + 3]))
+					{
+						return itemIndex + 3;
+					}
+
+					if (itemIndex + 4 < blockSize && item.Equals(blockArraySpan[itemIndex + 4]))
+					{
+						return itemIndex + 4;
+					}
+
+					if (itemIndex + 5 < blockSize && item.Equals(blockArraySpan[itemIndex + 5]))
+					{
+						return itemIndex + 5;
+					}
+
+					if (itemIndex + 6 < blockSize && item.Equals(blockArraySpan[itemIndex + 6]))
+					{
+						return itemIndex + 6;
+					}
+
+					if (itemIndex + 7 < blockSize && item.Equals(blockArraySpan[itemIndex + 7]))
+					{
+						return itemIndex + 7;
+					}
+
+					itemIndex += 8;
+					if (itemIndex >= blockSize)
+					{
+						blockIndex++;
+						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
+						itemIndex = 0;
+					}
+				}
+
+				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+				var nextItemIndex = _nextItemIndex;
+				while (itemIndex < nextItemIndex)
+				{
+					if (item.Equals(blockArraySpan[itemIndex]))
+					{
+						return itemIndex;
+					}
+
+					if (itemIndex + 1 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 1]))
+					{
+						return itemIndex + 1;
+					}
+
+					if (itemIndex + 2 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 2]))
+					{
+						return itemIndex + 2;
+					}
+
+					if (itemIndex + 3 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 3]))
+					{
+						return itemIndex + 3;
+					}
+
+					if (itemIndex + 4 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 4]))
+					{
+						return itemIndex + 4;
+					}
+
+					if (itemIndex + 5 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 5]))
+					{
+						return itemIndex + 5;
+					}
+
+					if (itemIndex + 6 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 6]))
+					{
+						return itemIndex + 6;
+					}
+
+					if (itemIndex + 7 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 7]))
+					{
+						return itemIndex + 7;
+					}
+
+					itemIndex += 8;
+				}
+			}
+			else
+			{
+				while (blockIndex < lastBlockIndex)
+				{
+					if (blockArraySpan[itemIndex] == null)
+					{
+						return itemIndex;
+					}
+
+					if (itemIndex + 1 < blockSize && blockArraySpan[itemIndex + 1] == null)
+					{
+						return itemIndex + 1;
+					}
+
+					if (itemIndex + 2 < blockSize && blockArraySpan[itemIndex + 2] == null)
+					{
+						return itemIndex + 2;
+					}
+
+					if (itemIndex + 3 < blockSize && blockArraySpan[itemIndex + 3] == null)
+					{
+						return itemIndex + 3;
+					}
+
+					if (itemIndex + 4 < blockSize && blockArraySpan[itemIndex + 4] == null)
+					{
+						return itemIndex + 4;
+					}
+
+					if (itemIndex + 5 < blockSize && blockArraySpan[itemIndex + 5] == null)
+					{
+						return itemIndex + 5;
+					}
+
+					if (itemIndex + 6 < blockSize && blockArraySpan[itemIndex + 6] == null)
+					{
+						return itemIndex + 6;
+					}
+
+					if (itemIndex + 7 < blockSize && blockArraySpan[itemIndex + 7] == null)
+					{
+						return itemIndex + 7;
+					}
+
+					itemIndex += 8;
+					if (itemIndex >= blockSize)
+					{
+						blockIndex++;
+						blockArraySpan = new(memoryBlocksSpan[blockIndex]);
+						itemIndex = 0;
+					}
+				}
+
+				blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+				var nextItemIndex = _nextItemIndex;
+				while (itemIndex < nextItemIndex)
+				{
+					if (blockArraySpan[itemIndex] == null)
+					{
+						return itemIndex;
+					}
+
+					if (itemIndex + 1 < nextItemIndex && blockArraySpan[itemIndex + 1] == null)
+					{
+						return itemIndex + 1;
+					}
+
+					if (itemIndex + 2 < nextItemIndex && blockArraySpan[itemIndex + 2] == null)
+					{
+						return itemIndex + 2;
+					}
+
+					if (itemIndex + 3 < nextItemIndex && blockArraySpan[itemIndex + 3] == null)
+					{
+						return itemIndex + 3;
+					}
+
+					if (itemIndex + 4 < nextItemIndex && blockArraySpan[itemIndex + 4] == null)
+					{
+						return itemIndex + 4;
+					}
+
+					if (itemIndex + 5 < nextItemIndex && blockArraySpan[itemIndex + 5] == null)
+					{
+						return itemIndex + 5;
+					}
+
+					if (itemIndex + 6 < nextItemIndex && blockArraySpan[itemIndex + 6] == null)
+					{
+						return itemIndex + 6;
+					}
+
+					if (itemIndex + 7 < nextItemIndex && blockArraySpan[itemIndex + 7] == null)
+					{
+						return itemIndex + 7;
+					}
+
+					itemIndex += 8;
+				}
+			}
+
+			return ItemNotFoundIndex;
+		}
+
 		public void Insert(int index, T item) => throw new NotSupportedException();
 		public long LongIndexOf(T item) => _memoryBlocks.LongIndexOf(_blockSize, item, _equalityComparer);
 		public bool Remove(T item) => throw new NotSupportedException();
