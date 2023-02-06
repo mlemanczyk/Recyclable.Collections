@@ -137,7 +137,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = NewRecyclableList;
-			
+
 			// Act
 			var actual = new int[list.LongCount];
 			list.CopyTo(actual, 0);
@@ -228,6 +228,20 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			list.Dispose();
+		}
+
+		[Fact]
+		public void ClearShouldRemoveAllItems()
+		{
+			// Prepare
+			using var list = NewRecyclableList;
+			_ = list.LongCount.Should().NotBe(0);
+
+			// Act		
+			list.Clear();
+
+			// Validate			
+			_ = list.LongCount.Should().Be(0);
 		}
 	}
 }

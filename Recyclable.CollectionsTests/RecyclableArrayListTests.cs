@@ -17,7 +17,8 @@ namespace Recyclable.CollectionsTests
 			// Act
 			foreach (var item in testData)
 			{
-				list.Add(item);
+
+
 				_ = list.Count.Should().Be(item);
 			}
 
@@ -283,6 +284,22 @@ namespace Recyclable.CollectionsTests
 			{
 				var actual = list.IndexOf(index);
 				_ = actual.Should().Be(index - 1);
+			}
+		}
+
+		[Fact]
+		public void ContainsShouldFindAllItems()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			using var list = new RecyclableArrayList<int>(testData);
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.Contains(item).Should().BeTrue();
 			}
 		}
 	}
