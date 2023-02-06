@@ -302,5 +302,23 @@ namespace Recyclable.CollectionsTests
 				_ = list.Contains(item).Should().BeTrue();
 			}
 		}
+
+		[Fact]
+		public void AddShouldAcceptDuplicates()
+		{
+			// Prepare
+			int[] testNumbers = new[] { 1, 2, 2, 3 };
+
+			// Act
+			using var list = new RecyclableArrayList<int>();
+			foreach (var index in testNumbers)
+			{
+				list.Add(index);
+			}
+
+			// Validate
+			_ = list.Count.Should().Be(testNumbers.Length);
+			_ = list.Should().BeEquivalentTo(testNumbers);
+		}
 	}
 }
