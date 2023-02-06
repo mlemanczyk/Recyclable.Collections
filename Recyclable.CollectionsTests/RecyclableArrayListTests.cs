@@ -6,7 +6,7 @@ namespace Recyclable.CollectionsTests
 	public class RecyclableArrayListTests
 	{
 		private readonly static IEnumerable<int> _testData = Enumerable.Range(1, 20);
-		
+
 		[Fact]
 		public void AddCountShouldSucceed()
 		{
@@ -37,7 +37,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			list.AddRange(testData);
-			
+
 			// Validate
 			_ = list.Capacity.Should().Be(20, "when capacity == 0, then we allocate as much memory as needed, only");
 			_ = list.Should().HaveCount(testData.Length)
@@ -253,6 +253,37 @@ namespace Recyclable.CollectionsTests
 			_ = yieldedItems.Should().HaveCount(testData.Length)
 				.And.ContainInConsecutiveOrder(testData)
 				.And.BeEquivalentTo(testData);
+		}
+		[Fact]
+		public void ClearShouldRemoveAllItems()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableArrayList<int>(testData);
+			_ = list.Count.Should().NotBe(0);
+
+			// Act		
+			list.Clear();
+
+			// Validate			
+			_ = list.Count.Should().Be(0);
+			_ = list.Should().HaveCount(0);
+
+		}
+
+		[Fact]
+		public void IndexOfShouldFindTheIndexes()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			using var list = new RecyclableArrayList<int>(testData);
+
+			// Act & Validate
+			foreach (var index in _testData.ToArray())
+			{
+				var actual = list.IndexOf(index);
+				_ = actual.Should().Be(index - 1);
+			}
 		}
 	}
 }
