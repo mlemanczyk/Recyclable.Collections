@@ -8,7 +8,7 @@ namespace Recyclable.CollectionsTests
 		private const int _totalObjectCount = 5_000;
 		private static RecyclableList<int> NewRecyclableList => CreateReversedRecyclableList(_testData);
 		private static readonly IEnumerable<int> _testData = Enumerable.Range(1, _totalObjectCount);
-		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source);
+		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source, 1024);
 
 		[Fact]
 		public void AddShouldAddItems()
@@ -84,6 +84,53 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.LongCount.Should().Be(0);
 		}
+
+		[Fact]
+		public void ContainsShouldFindAllItems()
+		{
+			// Prepare
+			var testData = _testData;
+			using var list = NewRecyclableList;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.Contains(item).Should().BeTrue();
+			}
+		}
+
+		[Fact]
+		public void ContainsShouldNotFindNonExistingItems()
+		{
+			// Prepare
+			var testData = _testData;
+			using var list = NewRecyclableList;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.Contains(-item).Should().BeFalse();
+			}
+
+			// Validate
+			_ = list.Contains(0).Should().BeFalse();
+		}
+
+		[Fact]
+		public void ContainsShouldNotFindAnythingWhenListEmpty()
+		{
+			// Prepare
+			using var list = new RecyclableList<int>();
+
+			// Validate
+			_ = list.Contains(0).Should().BeFalse();
+			_ = list.Contains(1).Should().BeFalse();
+		}
+
 
 		[Fact]
 		public void CopyToShouldCopyAllItems()

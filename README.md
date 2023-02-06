@@ -41,12 +41,12 @@ This is the direct equivalent of `List<T>` class, except that the arrays are tak
 The architecture of the classes included in this project is driven primarily by performance & memory footprints. The following decisions were made to support it.
 
 ## Code duplication
-There is high level of code duplication in each of the classes. When you look at them, you will see they are alike & some of the code could be extracted to extension methods. It has been done & has proved to perform worse. For this reason, properties & methods expected much of the code is duplicated to get the most out of it.
+There is high level of code duplication in each of the classes. When you look at them, you will see they are alike & some of the code could be extracted to extension methods. It has been done & has proven to perform worse. For this reason, properties & methods expected to be on the hot-path, duplicate much of the code to get the most out of it.
 
-## Common base `ILongList<T>`
-Having a common base class for all the classes looks very attractive. But it is also proved to perform worse, if you start making properties & methods virtual & there are subsequent calls to `base`. For this reason, each of the classes is the root class & there are hardly any virtual methods & properties. All classes are meant to be `final`, but I've not marked them as `sealed`. If you feel that you'd benefit from it, you're welcomed to inherit from them.
+## Common base - `ILongList<T>`
+Having a common base class for all the classes looks very attractive. But it is also proved to perform worse, if you start making properties & methods virtual & there are subsequent calls to `base`. For this reason, each of the classes is the root class & there are hardly any virtual methods & properties. All classes are meant to be `final`, but I've not marked them as `sealed`. If you feel that you'd benefit from it, you're welcomed to inherit from them. The protected stuff is there for your use.
 
-If you desire to have a common base for calls, each of the classes implements `IList<T>` & `ILongList<T>` interfaces. `ILongList<T>` is a new interface, made alike `IList<T>`, but unlocking full support for `long` indexing &amp; use. Considering the characteristics of the classes I feel that the generic name is justified, instead of `IRecyclableList<T>` what you could expect.
+If you desire to have a common base for calls, each of the classes implements `IList<T>` & `ILongList<T>` interfaces. `ILongList<T>` is a new interface, made alike `IList<T>`, but unlocking full support for `long` indexing & use. Considering the characteristics of the classes I feel that the generic name is justified, instead of `IRecyclableList<T>` what you could expect.
 
 ## Protection against inccorrect use & state
 Having protection against invalid state of the object is an important part of software engineering. The classes included in this project provide the same level of protection as the regular `array` & `List` class. They will raise exceptions when invalid index is given. But there is no additional protection that the content & state of the objects internally used by these classes are valid. You can break them, if you want to.
@@ -62,19 +62,32 @@ This is by design, for the best performance. Initially there have been checks in
 
 If you foresee the overflowing as an issue, you're welcomed to propose an improvement & file a PR with proposed solution.
 
+# Auto-properties & new language features
+When you look at the code you may note, that it looks like in early c# days. Where the new language features yield the same or better performance, they are & will be used.
+
+However, many of the new language features have proved to provide worse performance at some point in my testing. It includes auto-properties, for which I could see getters & setters generated in IL, instead of fields. Because all the classes are expected to be on the hot-paths, I've eliminated most of them.
+
+If you know & can show it in your benchmarks that the code can be simplified without impacting the performance, feel free to file a PR with proposed changes. Please include benchmark results from your testing to speed up things.
+
 # Thread Safety
 The `public static` members of the classes are thread safe. Any instance members are not guaraneteed to be thread safe. You need to implement locking mechanism to safely use the classes in a multi-threading environment.
 
 # Use
 All the classes included in this package are meant to be direct replacements of their corresponding system classes.
+* `IList<T>` ⇨ `ILongList<T>`
 * `List<T>` ⇨ `RecyclableList<T>` 
-* `SortedList<T>` ⇨ `RecyclableSortedList<T>`
 * `Queue<T>` ⇨ `RecyclableQueue<T>`
 * `PriorityQueue<T>` ⇨ `RecyclableSortedList<T>`
+* `SortedList<T>` ⇨ `RecyclableSortedList<T>`
 * `Stack<T>` ⇨ `RecyclableStack<T>`
-* `IList<T>` ⇨ `ILongList<T>`
 
 Examples of each of the above classes are provided below. Please refer automated tests for more.
+
+## `RecyclableArrayList<T>`
+It's the closest equivalent to `List<T>` in regards to functionality. It supports items' removal & delivers the best performance. But it's limited to `int` range, tough. If you find that acceptable, my recommendation is to use this class as the direct replacement for `List<T>`.
+
+Do note, that it implements `ILongList<T>` interface, too. This is to allow having common code base regardless, if you use the basic `RecyclableArrayList<T>` or it's `long`-range version - `RecyclableList<T>`. By doing that you can switch between them with highly limited changes in code.
+
 ## `RecyclableList<T>`
 
 ```CSharp
@@ -111,3 +124,9 @@ public void RecyclableListExample()
     list.Clear();
 }
 ```
+## `RecyclableArrayList<T>`
+
+## `RecyclableArrayList<T>`
+
+## `RecyclableArrayList<T>`
+

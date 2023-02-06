@@ -21,27 +21,22 @@ namespace Recyclable.Collections
 		{
 			ArrayPool<T> arrayPool = _arrayPool;
 			var sourceLength = source?.Length ?? 0;
-			T[] newMemoryBlock = newSize.RentArrayFromPool(arrayPool);
-			switch (newSize >= sourceLength)
+			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
+				? arrayPool.Rent(newSize)
+				: new T[newSize];
+
+			if (sourceLength > 0)
 			{
-				case true:
-					if (sourceLength > 0)
-					{
-						Memory<T> sourceMemory = new(source);
-						Memory<T> newArrayMemory = new(newMemoryBlock);
-						sourceMemory.CopyTo(newArrayMemory);
-						source!.ReturnToPool(arrayPool);
-					}
-
-					return newMemoryBlock;
-
-				case false:
-					var sourceSpan = new Span<T>(source)[..newSize];
-					Span<T> newArraySpan = new(newMemoryBlock);
-					sourceSpan.CopyTo(newArraySpan);
-					source!.ReturnToPool(arrayPool);
-					return newMemoryBlock;
+				var sourceSpan = new Memory<T>(source);
+				var newArraySpan = new Memory<T>(newMemoryBlock);
+				sourceSpan.CopyTo(newArraySpan);
+				if (sourceLength >= RecyclableDefaults.MinPooledArrayLength)
+				{
+					arrayPool.Return(source!);
+				}
 			}
+
+			return newMemoryBlock;
 		}
 
 		protected int EnsureCapacity(in int requestedCapacity)
@@ -153,7 +148,7 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly { get; } = false;
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			int requiredCapacity = _count + 1;
@@ -247,41 +242,41 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			int capacity = _capacity;
-			int targetIndex = _count;
+			int targetItemIdx = _count;
 			Span<T> memorySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				_ = EnsureCapacity(targetIndex + requiredAdditionalCapacity);
+				_ = EnsureCapacity(targetItemIdx + requiredAdditionalCapacity);
 				memorySpan = new(_memoryBlock);
 				foreach (var item in source)
 				{
-					memorySpan[targetIndex++] = item;
+					memorySpan[targetItemIdx++] = item;
 				}
 
-				_count = targetIndex;
+				_count = targetItemIdx;
 				return;
 			}
 
 			int i;
 			using var enumerator = source.GetEnumerator();
 
+			int capacity = _capacity;
 			memorySpan = new(_memoryBlock);
 			if (enumerator.MoveNext())
 			{
-				int available = capacity - targetIndex;
+				int available = capacity - targetItemIdx;
 				while (true)
 				{
-					if (targetIndex + growByCount > capacity)
+					if (targetItemIdx + growByCount > capacity)
 					{
 						capacity = EnsureCapacity(capacity + growByCount);
 						memorySpan = new(_memoryBlock);
-						available = capacity - targetIndex;
+						available = capacity - targetItemIdx;
 					}
 
 					for (i = 0; i < available; i++)
 					{
-						memorySpan[targetIndex++] = enumerator.Current;
+						memorySpan[targetItemIdx++] = enumerator.Current;
 						if (!enumerator.MoveNext())
 						{
 							break;
@@ -295,7 +290,7 @@ namespace Recyclable.Collections
 				}
 			}
 
-			_count = targetIndex;
+			_count = targetItemIdx;
 		}
 
 		public void Clear()

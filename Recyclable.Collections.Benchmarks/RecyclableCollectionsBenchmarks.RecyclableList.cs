@@ -4,21 +4,21 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_Create()
 		{
 			using var list = new RecyclableList<object>();
 			DoNothing(list);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_Create_WithCapacity()
 		{
-			using var list = new RecyclableList<object>(initialCapacity: TestObjectCount);
+			using var list = new RecyclableList<object>(minBlockSize: 102_400, expectedItemsCount: TestObjectCount);
 			DoNothing(list);
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_Add()
 		{
 			var data = TestObjects;
@@ -30,12 +30,12 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_Add_WithCapacity()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<object>(dataCount);
+			using var list = new RecyclableList<object>(minBlockSize: 102_400, expectedItemsCount: dataCount);
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -76,6 +76,54 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = _testRecyclableList;
 			DoNothing(data.LongCount);
+		}
+
+		[Benchmark]
+		public void RecyclableList_Contains_1_000_FirstItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = 1000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.Contains(data[i]));
+			}
+		}
+
+		[Benchmark]
+		public void RecyclableList_Contains_1_000_LastItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = 1_000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.Contains(data[^(i + 1)]));
+			}
+		}
+
+		//[Benchmark]
+		public void RecyclableList_IndexOf_1_000_FirstItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = 1000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.IndexOf(data[i]));
+			}
+		}
+
+		//[Benchmark]
+		public void RecyclableList_IndexOf_1_000_LastItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = 1_000;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.IndexOf(data[^(i + 1)]));
+			}
 		}
 	}
 }
