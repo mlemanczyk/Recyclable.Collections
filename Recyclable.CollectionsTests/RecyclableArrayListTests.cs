@@ -17,8 +17,7 @@ namespace Recyclable.CollectionsTests
 			// Act
 			foreach (var item in testData)
 			{
-
-
+				list.Add(item);
 				_ = list.Count.Should().Be(item);
 			}
 
