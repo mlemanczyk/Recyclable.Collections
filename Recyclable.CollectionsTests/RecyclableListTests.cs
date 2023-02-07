@@ -256,7 +256,7 @@ namespace Recyclable.CollectionsTests
 			list.AddRange(testData);
 
 			// Validate
-			_ = list.Capacity.Should().Be(16384,"when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Capacity.Should().Be(16384, "when capacity == 0, then we allocate as much memory as needed, only");
 			_ = list.Should().HaveCount(testData.Length)
 			.And.ContainInConsecutiveOrder(testData)
 			.And.BeEquivalentTo(testData);
@@ -277,6 +277,17 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().HaveCount(testData.Count)
 			.And.ContainInConsecutiveOrder(testData)
 			.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
+		public void InsertAtTheBeginningShouldMoveItems()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableList<int>();
+
+			// Act
+			_ = Assert.Throws<NotSupportedException>(() => list.Insert(0, -1));
 		}
 	}
 }
