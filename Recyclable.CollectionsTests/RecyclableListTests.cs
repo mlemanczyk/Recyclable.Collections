@@ -243,5 +243,40 @@ namespace Recyclable.CollectionsTests
 			// Validate			
 			_ = list.LongCount.Should().Be(0);
 		}
+
+		[Fact]
+		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsArray()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableList<int>();
+
+
+			// Act
+			list.AddRange(testData);
+
+			// Validate
+			_ = list.Capacity.Should().Be(16384,"when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(testData.Length)
+			.And.ContainInConsecutiveOrder(testData)
+			.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
+		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsList()
+		{
+			// Prepare
+			var testData = _testData.ToList();
+			var list = new RecyclableList<int>();
+
+			// Act
+			list.AddRange(testData);
+
+			// Validate
+			_ = list.Capacity.Should().Be(16384, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(testData.Count)
+			.And.ContainInConsecutiveOrder(testData)
+			.And.BeEquivalentTo(testData);
+		}
 	}
 }
