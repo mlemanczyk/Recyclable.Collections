@@ -303,35 +303,66 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
-		public void AddShouldAcceptDuplicates()
+		public void ContainsShouldNotFindNonExistingItems()
 		{
 			// Prepare
-			int[] testNumbers = new[] { 1, 2, 2, 3 };
+			var testData = _testData.ToArray();
+			using var list = new RecyclableArrayList<int>(testData);
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
-			using var list = new RecyclableArrayList<int>();
-			foreach (var index in testNumbers)
+			foreach (var item in testData)
 			{
-				list.Add(index);
+				// Validate
+				_ = list.Contains(-item).Should().BeFalse();
 			}
 
 			// Validate
-			_ = list.Count.Should().Be(testNumbers.Length);
-			_ = list.Should().BeEquivalentTo(testNumbers);
+			_ = list.Contains(0).Should().BeFalse();
 		}
 
 		[Fact]
-		public void ConstructorShouldAcceptDuplicates()
+		public void ContainsShouldNotFindAnythingWhenListEmpty()
 		{
 			// Prepare
-			int[] testNumbers = new[] { 1, 2, 2, 3 };
-
-			// Act
-			using var list = new RecyclableArrayList<int>(testNumbers);
+			var testData = _testData.ToArray();
+			using var list = new RecyclableArrayList<int>(testData);
 
 			// Validate
-			_ = list.Count.Should().Be(testNumbers.Length);
-			_ = list.Should().BeEquivalentTo(testNumbers);
+			_ = list.Contains(0).Should().BeFalse();
+			_ = list.Contains(1).Should().BeTrue();
 		}
-	}
-}
+
+		[Fact]
+		public void AddShouldAcceptDuplicates()
+			{
+				// Prepare
+				int[] testNumbers = new[] { 1, 2, 2, 3 };
+
+				// Act
+				using var list = new RecyclableArrayList<int>();
+				foreach (var index in testNumbers)
+				{
+					list.Add(index);
+				}
+
+				// Validate
+				_ = list.Count.Should().Be(testNumbers.Length);
+				_ = list.Should().BeEquivalentTo(testNumbers);
+			}
+
+			[Fact]
+			public void ConstructorShouldAcceptDuplicates()
+			{
+				// Prepare
+				int[] testNumbers = new[] { 1, 2, 2, 3 };
+
+				// Act
+				using var list = new RecyclableArrayList<int>(testNumbers);
+
+				// Validate
+				_ = list.Count.Should().Be(testNumbers.Length);
+				_ = list.Should().BeEquivalentTo(testNumbers);
+			}
+		}
+	} 
