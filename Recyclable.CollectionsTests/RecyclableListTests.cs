@@ -169,7 +169,7 @@ namespace Recyclable.CollectionsTests
 			using var list = NewRecyclableList;
 
 			// Act & Validate
-			foreach(var index in _testData)
+			foreach (var index in _testData)
 			{
 				var actual = list.IndexOf(index);
 				_ = actual.Should().Be(index - 1);
@@ -308,5 +308,19 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
+		[Fact]
+		public void ConstructorSourceShouldInitializeList()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+
+			// Act
+			var list = new RecyclableList<int>(testData);
+
+			// Validate
+			_ = list.Should().HaveCount(testData.Length)
+			.And.ContainInConsecutiveOrder(testData)
+			.And.BeEquivalentTo(testData);
+		}
 	}
 }
