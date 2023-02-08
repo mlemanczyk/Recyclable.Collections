@@ -289,5 +289,24 @@ namespace Recyclable.CollectionsTests
 			// Act
 			_ = Assert.Throws<NotSupportedException>(() => list.Insert(0, -1));
 		}
+
+		[Fact]
+		public void LongIndexOfShouldReturnCorrectIndexes()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableList<int>(testData);
+
+			// Act & Validate
+			foreach (var item in testData)
+			{
+				// Act
+				var index = list.LongIndexOf(item);
+
+				// Validate
+				_ = index.Should().Be(item - 1);
+			}
+		}
+
 	}
 }
