@@ -319,5 +319,19 @@ namespace Recyclable.CollectionsTests
 			_ = list.Count.Should().Be(testNumbers.Length);
 			_ = list.Should().BeEquivalentTo(testNumbers);
 		}
+
+		[Fact]
+		public void ConstructorShouldAcceptDuplicates()
+		{
+			// Prepare
+			int[] testNumbers = new[] { 1, 2, 2, 3 };
+
+			// Act
+			using var list = new RecyclableArrayList<int>(testNumbers);
+
+			// Validate
+			_ = list.Count.Should().Be(testNumbers.Length);
+			_ = list.Should().BeEquivalentTo(testNumbers);
+		}
 	}
 }
