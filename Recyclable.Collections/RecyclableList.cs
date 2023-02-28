@@ -7,6 +7,7 @@ namespace Recyclable.Collections
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
 		private const int ItemNotFoundIndex = -1;
+		private const int BatchSize = 8;
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
@@ -515,20 +516,284 @@ namespace Recyclable.Collections
 				return false;
 			}
 
-			int itemIndex, blockIndex = 0, lastBlockIndex = _lastBlockIndex, blockSize = _blockSize;
+			// VERSION 2
+			//using var safeToContinue = new ManualResetEventSlim(false);
+			//using var foundEvent = new ManualResetEventSlim(false);
+			//using var countdownEvent = new CountdownEvent(((_lastBlockIndex + 1) / BatchSize) + ((_lastBlockIndex + 1) % BatchSize) > 0 ? 1 : 0);
+			//int lastBlockIndex = _lastBlockIndex;
+			//T[][] memoryBlocks = _memoryBlocks;
+			//int batchOffset = 0;
+			//while (batchOffset < memoryBlocks.Length)
+			//{
+			//	var toCopy = Math.Min(BatchSize, memoryBlocks.Length - batchOffset);
+			//	//var batch = memoryBlocks[0..toCopy].ToArray();
+			//	_ = Task.Run(() =>
+			//	{
+			//		Span<T[]> batchSpan = new(memoryBlocks, batchOffset, toCopy); //new(batch);
+			//		safeToContinue.Set();
+			//		for (var memoryBlockIndex = 0; memoryBlockIndex < batchSpan.Length; memoryBlockIndex++)
+			//		{
+			//			if (Array.IndexOf(batchSpan[memoryBlockIndex], item, 0, _blockSize) >= 0)
+			//			{
+			//				foundEvent.Set();
+			//				break;
+			//			}
+			//			else if (foundEvent.IsSet)
+			//			{
+			//				return;
+			//			}
+			//		}
+
+			//		if (!foundEvent.IsSet)
+			//		{
+			//			_ = countdownEvent.Signal();
+			//		}
+			//	});
+
+			//	while (!safeToContinue.IsSet)
+			//	{
+			//		// Intentionally left empty
+			//	}
+
+			//	safeToContinue.Reset();
+			//	if (foundEvent.IsSet)
+			//	{
+			//		return true;
+			//	}
+
+			//	batchOffset += toCopy;
+			//	//memoryBlocks = memoryBlocks[toCopy..];
+			//}
+
+			//_ = WaitHandle.WaitAny(new WaitHandle[] { foundEvent.WaitHandle, countdownEvent.WaitHandle });
+			//return foundEvent.IsSet || Array.IndexOf(_memoryBlocks[_lastBlockIndex], item, 0, _nextItemIndex) >= 0;
+
+
+
+			// VERSION 1
+			//int blockSize = _blockSize;
+			//int itemIndex = 0;
+			//int blockIndex = 0;
+			//int lastBlockIndex = _lastBlockIndex;
+
+			//Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			//Span<T> blockArraySpan = new(memoryBlocksSpan[blockIndex]);
+			//if (item != null)
+			//{
+			//	int midPoint = blockSize / 4;
+			//	while (blockIndex < lastBlockIndex)
+			//	{
+			//		if (item.Equals(blockArraySpan[itemIndex]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (item.Equals(blockArraySpan[midPoint + itemIndex]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (item.Equals(blockArraySpan[(midPoint * 2) + itemIndex]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (item.Equals(blockArraySpan[(midPoint * 3) + itemIndex]))
+			//		{
+			//			return true;
+			//		}
+
+			//		//if (item.Equals(blockArraySpan[(midPoint * 4) + itemIndex]))
+			//		//{
+			//		//	return true;
+			//		//}
+
+			//		//if (item.Equals(blockArraySpan[(midPoint * 5) + itemIndex]))
+			//		//{
+			//		//	return true;
+			//		//}
+
+			//		//if (item.Equals(blockArraySpan[(midPoint * 6) + itemIndex]))
+			//		//{
+			//		//	return true;
+			//		//}
+
+			//		//if (item.Equals(blockArraySpan[(midPoint * 7) + itemIndex]))
+			//		//{
+			//		//	return true;
+			//		//}
+
+			//		itemIndex++;
+			//		if (itemIndex >= midPoint)
+			//		{
+			//			blockIndex++;
+			//			blockArraySpan = new(memoryBlocksSpan[blockIndex]);
+			//			itemIndex = 0;
+			//		}
+			//	}
+
+			//	blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+			//	var nextItemIndex = _nextItemIndex;
+			//	while (itemIndex < nextItemIndex)
+			//	{
+			//		if (item.Equals(blockArraySpan[itemIndex]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 1 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 1]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 2 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 2]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 3 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 3]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 4 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 4]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 5 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 5]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 6 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 6]))
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 7 < nextItemIndex && item.Equals(blockArraySpan[itemIndex + 7]))
+			//		{
+			//			return true;
+			//		}
+
+			//		itemIndex += 8;
+			//	}
+			//}
+			//else
+			//{
+			//	while (blockIndex < lastBlockIndex)
+			//	{
+			//		if (blockArraySpan[itemIndex] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 1 < blockSize && blockArraySpan[itemIndex + 1] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 2 < blockSize && blockArraySpan[itemIndex + 2] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 3 < blockSize && blockArraySpan[itemIndex + 3] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 4 < blockSize && blockArraySpan[itemIndex + 4] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 5 < blockSize && blockArraySpan[itemIndex + 5] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 6 < blockSize && blockArraySpan[itemIndex + 6] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 7 < blockSize && blockArraySpan[itemIndex + 7] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		itemIndex += 8;
+			//		if (itemIndex >= blockSize)
+			//		{
+			//			blockIndex++;
+			//			blockArraySpan = new(memoryBlocksSpan[blockIndex]);
+			//			itemIndex = 0;
+			//		}
+			//	}
+
+			//	blockArraySpan = new(memoryBlocksSpan[lastBlockIndex]);
+			//	var nextItemIndex = _nextItemIndex;
+			//	while (itemIndex < nextItemIndex)
+			//	{
+			//		if (blockArraySpan[itemIndex] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 1 < nextItemIndex && blockArraySpan[itemIndex + 1] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 2 < nextItemIndex && blockArraySpan[itemIndex + 2] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 3 < nextItemIndex && blockArraySpan[itemIndex + 3] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 4 < nextItemIndex && blockArraySpan[itemIndex + 4] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 5 < nextItemIndex && blockArraySpan[itemIndex + 5] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 6 < nextItemIndex && blockArraySpan[itemIndex + 6] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		if (itemIndex + 7 < nextItemIndex && blockArraySpan[itemIndex + 7] == null)
+			//		{
+			//			return true;
+			//		}
+
+			//		itemIndex += 8;
+			//	}
+			//}
+
+			//return false;
+
+			// VERSION 3
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			while (blockIndex < lastBlockIndex)
+			int lastBlockIndex = _lastBlockIndex;
+			for (int blockIndex = 0; blockIndex < lastBlockIndex; blockIndex++)
 			{
-				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
-				if (itemIndex >= 0)
+				if (Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _blockSize) >= 0)
 				{
 					return true;
 				}
-
-				blockIndex++;
 			}
 
-			return Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _nextItemIndex) >= 0;
+			return Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, _nextItemIndex) >= 0;
 		}
 
 		public void CopyTo(T[] array, int arrayIndex) => _memoryBlocks.CopyTo(0, _blockSize, _longCount, array, arrayIndex);
