@@ -113,11 +113,11 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		[Benchmark(Baseline = true)]
-		public void List_Contains_1_000_FirstItems()
+		public void List_Contains_FirstItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = 1_000;
+			var dataCount = TestObjectCount / 10;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[i]));
@@ -125,11 +125,11 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		[Benchmark]
-		public void List_Contains_1_000_LastItems()
+		public void List_Contains_LastItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = 1_000;
+			var dataCount = TestObjectCount / 10;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[^(i + 1)]));
@@ -137,11 +137,11 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		//[Benchmark(Baseline = true)]
-		public void List_IndexOf_1_000_FirstItems()
+		public void List_IndexOf_FirstItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = 1_000;
+			var dataCount = TestObjectCount / 10;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
@@ -149,11 +149,11 @@ namespace Recyclable.Collections.Benchmarks
 		}
 
 		//[Benchmark]
-		public void List_IndexOf_1_000_LastItems()
+		public void List_IndexOf_LastItems()
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = 1_000;
+			var dataCount = TestObjectCount / 10;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[^(i + 1)]));
