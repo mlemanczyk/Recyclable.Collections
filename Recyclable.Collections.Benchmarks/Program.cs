@@ -10,7 +10,7 @@ using Recyclable.Collections.Benchmarks;
 
 internal class Program
 {
-	void RunBenchmark()
+	static void RunBenchmark()
 	{
 		var benchmark = new RecyclableCollectionsBenchmarks();
 		benchmark.Setup();
@@ -24,6 +24,7 @@ internal class Program
 			//benchmark.RecyclableList_Create_WithCapacity();
 			//benchmark.RecyclableList_Add();
 			//benchmark.RecyclableList_Add_WithCapacity();
+			benchmark.RecyclableList_Contains_LastItems();
 		}
 
 		benchmark.Cleanup();
