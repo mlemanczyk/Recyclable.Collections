@@ -287,7 +287,7 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
-			_lastBlockIndex = targetBlockIdx - 1;
+			_lastBlockIndex = targetBlockIdx;
 			_nextItemIndex = targetItemIdx;
 		}
 
@@ -324,7 +324,7 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
-			_lastBlockIndex = targetBlockIdx - 1;
+			_lastBlockIndex = targetBlockIdx;
 			_nextItemIndex = targetItemIdx;
 		}
 
@@ -361,7 +361,7 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
-			_lastBlockIndex = targetBlockIdx - 1;
+			_lastBlockIndex = targetBlockIdx;
 			_nextItemIndex = targetItemIdx;
 		}
 
@@ -484,7 +484,7 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetItemIdx;
-			_lastBlockIndex = targetBlockIdx - 1;
+			_lastBlockIndex = targetBlockIdx;
 			_nextItemIndex = targetItemIdx;
 		}
 
