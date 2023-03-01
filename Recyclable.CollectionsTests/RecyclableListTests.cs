@@ -5,7 +5,7 @@ namespace Recyclable.CollectionsTests
 {
 	public class RecyclableListTests
 	{
-		private const int _totalObjectCount = 5_000;
+		private const int _totalObjectCount = 100_000;
 		private static RecyclableList<int> NewRecyclableList => CreateReversedRecyclableList(_testData);
 		private static readonly IEnumerable<int> _testData = Enumerable.Range(1, _totalObjectCount);
 		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source, 1024);
@@ -97,7 +97,7 @@ namespace Recyclable.CollectionsTests
 			foreach (var item in testData)
 			{
 				// Validate
-				_ = list.Contains(item).Should().BeTrue();
+				_ = list.Contains(item).Should().BeTrue($"we searched for {item}");
 			}
 		}
 
@@ -256,7 +256,7 @@ namespace Recyclable.CollectionsTests
 			list.AddRange(testData);
 
 			// Validate
-			_ = list.Capacity.Should().Be(16384, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
 			_ = list.Should().HaveCount(testData.Length)
 			.And.ContainInConsecutiveOrder(testData)
 			.And.BeEquivalentTo(testData);
@@ -273,7 +273,7 @@ namespace Recyclable.CollectionsTests
 			list.AddRange(testData);
 
 			// Validate
-			_ = list.Capacity.Should().Be(16384, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
 			_ = list.Should().HaveCount(testData.Count)
 			.And.ContainInConsecutiveOrder(testData)
 			.And.BeEquivalentTo(testData);
