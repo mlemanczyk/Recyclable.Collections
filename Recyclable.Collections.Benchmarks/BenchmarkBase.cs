@@ -13,8 +13,8 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			0 => 1,
 			> 0 and <= 10 => TestObjectCount,
-			_ => TestObjectCount / Divider
-		};
+            _ => TestObjectCount / Divider > 0 ? TestObjectCount / Divider : TestObjectCount
+        };
 
 		protected object[]? _testObjects;
 		protected object[] TestObjects => _testObjects ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
