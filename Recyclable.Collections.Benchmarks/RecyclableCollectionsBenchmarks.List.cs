@@ -117,7 +117,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = TestObjectCount / 10;
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[i]));
@@ -129,7 +129,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = TestObjectCount / 10;
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.Contains(data[^(i + 1)]));
