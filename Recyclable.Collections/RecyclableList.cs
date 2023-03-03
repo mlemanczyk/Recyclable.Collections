@@ -516,6 +516,11 @@ namespace Recyclable.Collections
 				return false;
 			}
 
+			if (_lastBlockIndex == 0 || (_lastBlockIndex == 1 && _nextItemIndex == 0))
+			{
+				return Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount) >= 0;
+			}
+
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			int lastBlockIndex = _lastBlockIndex;
 			for (int blockIndex = 0; blockIndex < lastBlockIndex; blockIndex++)
