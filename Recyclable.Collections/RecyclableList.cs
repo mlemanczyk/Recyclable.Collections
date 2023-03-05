@@ -77,6 +77,23 @@ namespace Recyclable.Collections
 			throw new ArgumentOutOfRangeException("index");
 		}
 
+		protected static long DoIndexOf(T item, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
+		{
+			Span<T[]> memoryBlocksSpan = new(memoryBlocks);
+			int itemIndex;
+			for (var blockIndex = 0; blockIndex < lastBlockIndex; blockIndex++)
+			{
+				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
+				if (itemIndex >= 0)
+				{
+					return itemIndex + (blockIndex * blockSize);
+				}
+			}
+
+			itemIndex = Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, nextItemIndex);
+			return itemIndex >= 0 ? itemIndex + (lastBlockIndex * blockSize) : itemIndex;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, in long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
@@ -539,60 +556,18 @@ namespace Recyclable.Collections
 		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item)
-		{
-			if (_longCount == 0)
-			{
-				return ItemNotFoundIndex;
-			}
-			
-			if (_lastBlockIndex == 0 || (_lastBlockIndex == 1 && _nextItemIndex == 0))
-			{
-				return Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount);
-			}
-
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			const int blockIndex = 0, lastBlockIndex = 1, itemIndex = 2, blockSize = 3;
-			Span<int> localVars = stackalloc int[4] { 0, _lastBlockIndex, ItemNotFoundIndex, _blockSize };
-			for (localVars[blockIndex] = 0; localVars[blockIndex] < localVars[lastBlockIndex]; localVars[blockIndex]++)
-			{
-				localVars[itemIndex] = Array.IndexOf(memoryBlocksSpan[localVars[blockIndex]], item, 0, localVars[blockSize]);
-				if (localVars[itemIndex] >= 0)
-				{
-					return localVars[itemIndex] + (localVars[blockIndex] * localVars[blockSize]);
-				}
-			}
-
-			localVars[itemIndex] = Array.IndexOf(memoryBlocksSpan[localVars[lastBlockIndex]], item, 0, _nextItemIndex);
-			return localVars[itemIndex] >= 0 ? localVars[itemIndex] + (localVars[blockIndex] * localVars[blockSize]) : ItemNotFoundIndex;
-		}
+		public int IndexOf(T item) => _longCount == 0
+				? ItemNotFoundIndex
+				: _lastBlockIndex == 0 || (_lastBlockIndex == 1 && _nextItemIndex == 0)
+				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
+				: (int)DoIndexOf(item, _memoryBlocks, _lastBlockIndex, _blockSize, _nextItemIndex);
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
-		public long LongIndexOf(T item)
-		{
-			if (_longCount == 0)
-			{
-				return ItemNotFoundIndex;
-			}
-
-			int itemIndex, blockIndex = 0, lastBlockIndex = _lastBlockIndex, blockSize = _blockSize;
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			while (blockIndex < lastBlockIndex)
-			{
-				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
-				if (itemIndex >= 0)
-				{
-					return ((long)blockIndex * blockSize) + itemIndex;
-				}
-
-				blockIndex++;
-			}
-
-			itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _nextItemIndex);
-			return itemIndex >= 0
-				? ((long)blockIndex * blockSize) + itemIndex
-				: ItemNotFoundIndex;
-		}
+		public long LongIndexOf(T item) => _longCount == 0
+				? ItemNotFoundIndex
+				: _lastBlockIndex == 0 || (_lastBlockIndex == 1 && _nextItemIndex == 0)
+				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
+				: DoIndexOf(item, _memoryBlocks, _lastBlockIndex, _blockSize, _nextItemIndex);
 
 		public bool Remove(T item) => throw new NotSupportedException();
 		public void RemoveBlock(int index)

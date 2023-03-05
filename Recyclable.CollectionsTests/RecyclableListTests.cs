@@ -169,10 +169,10 @@ namespace Recyclable.CollectionsTests
 			using var list = NewRecyclableList;
 
 			// Act & Validate
-			foreach (var index in _testData)
+			foreach (var item in _testData)
 			{
-				var actual = list.IndexOf(index);
-				_ = actual.Should().Be(index - 1);
+				var actual = list.IndexOf(item);
+				_ = actual.Should().Be(item - 1);
 			}
 		}
 
