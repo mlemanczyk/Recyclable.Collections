@@ -163,7 +163,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
-		public void IndexOfShouldFindTheIndexes()
+		public void IndexOfShouldReturnCorrectIndexes()
 		{
 			// Prepare
 			using var list = NewRecyclableList;
@@ -174,6 +174,36 @@ namespace Recyclable.CollectionsTests
 				var actual = list.IndexOf(item);
 				_ = actual.Should().Be(item - 1);
 			}
+		}
+
+		[Fact]
+		public void IndexOfShouldNotFindNonExistingItems()
+		{
+			// Prepare
+			var testData = _testData;
+			using var list = NewRecyclableList;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.IndexOf(-item).Should().Be(-1);
+			}
+
+			// Validate
+			_ = list.IndexOf(0).Should().Be(-1);
+		}
+
+		[Fact]
+		public void IndexOfShouldNotFindAnythingWhenListEmpty()
+		{
+			// Prepare
+			using var list = new RecyclableList<int>();
+
+			// Validate
+			_ = list.IndexOf(0).Should().Be(-1);
+			_ = list.IndexOf(1).Should().Be(-1);
 		}
 
 		[Fact]
@@ -328,6 +358,37 @@ namespace Recyclable.CollectionsTests
 				_ = index.Should().Be(item - 1);
 			}
 		}
+
+		[Fact]
+		public void LongIndexOfShouldNotFindNonExistingItems()
+		{
+			// Prepare
+			var testData = _testData;
+			using var list = NewRecyclableList;
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.LongIndexOf(-item).Should().Be(-1);
+			}
+
+			// Validate
+			_ = list.LongIndexOf(0).Should().Be(-1);
+		}
+
+		[Fact]
+		public void LongIndexOfShouldNotFindAnythingWhenListEmpty()
+		{
+			// Prepare
+			using var list = new RecyclableList<int>();
+
+			// Validate
+			_ = list.LongIndexOf(0).Should().Be(-1);
+			_ = list.LongIndexOf(1).Should().Be(-1);
+		}
+
 
 		[Fact]
 		public void ConstructorSourceShouldInitializeList()
