@@ -545,24 +545,26 @@ namespace Recyclable.Collections
 			{
 				return ItemNotFoundIndex;
 			}
-
-			int itemIndex, blockIndex = 0, lastBlockIndex = _lastBlockIndex, blockSize = _blockSize;
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			while (blockIndex < lastBlockIndex)
+			
+			if (_lastBlockIndex == 0 || (_lastBlockIndex == 1 && _nextItemIndex == 0))
 			{
-				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
-				if (itemIndex >= 0)
-				{
-					return (blockIndex * blockSize) + itemIndex;
-				}
-
-				blockIndex++;
+				return Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount);
 			}
 
-			itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, _nextItemIndex);
-			return itemIndex >= 0
-				? (blockIndex * blockSize) + itemIndex
-				: ItemNotFoundIndex;
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			const int blockIndex = 0, lastBlockIndex = 1, itemIndex = 2, blockSize = 3;
+			Span<int> localVars = stackalloc int[4] { 0, _lastBlockIndex, ItemNotFoundIndex, _blockSize };
+			for (localVars[blockIndex] = 0; localVars[blockIndex] < localVars[lastBlockIndex]; localVars[blockIndex]++)
+			{
+				localVars[itemIndex] = Array.IndexOf(memoryBlocksSpan[localVars[blockIndex]], item, 0, localVars[blockSize]);
+				if (localVars[itemIndex] >= 0)
+				{
+					return localVars[itemIndex] + (localVars[blockIndex] * localVars[blockSize]);
+				}
+			}
+
+			localVars[itemIndex] = Array.IndexOf(memoryBlocksSpan[localVars[lastBlockIndex]], item, 0, _nextItemIndex);
+			return localVars[itemIndex] >= 0 ? localVars[itemIndex] + (localVars[blockIndex] * localVars[blockSize]) : ItemNotFoundIndex;
 		}
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
