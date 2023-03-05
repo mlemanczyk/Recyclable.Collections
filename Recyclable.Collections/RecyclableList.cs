@@ -569,7 +569,18 @@ namespace Recyclable.Collections
 				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
 				: DoIndexOf(item, _memoryBlocks, _lastBlockIndex, _blockSize, _nextItemIndex);
 
-		public bool Remove(T item) => throw new NotSupportedException();
+		public bool Remove(T item)
+		{
+			var itemIndex = LongIndexOf(item);
+			if (itemIndex >= 0)
+			{
+				RemoveAt(this, itemIndex, _defaultBlockArrayPool);
+				return true;
+			}
+
+			return false;
+		}
+
 		public void RemoveBlock(int index)
 		{
 			if (_blockSize < RecyclableDefaults.MinPooledArrayLength)

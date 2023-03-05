@@ -187,13 +187,34 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
+		public void RemoveShouldRemoveLastItem()
+		{
+			// Prepare
+			using var list = NewRecyclableList;
+
+			int removedCount = 0;
+			var testData = _testData.ToArray();
+			foreach (var item in _testData.Reverse())
+			{
+				// Act & Validate
+				_ = list.Remove(item).Should().BeTrue($"we search for {item} which should exist");
+				removedCount++;
+				var expectedList = testData[0..(testData.Length - removedCount)];
+				_ = list.LongCount.Should().Be(expectedList.Length);
+				_ = list.Should().ContainInConsecutiveOrder(expectedList);
+			}
+
+			_ = list.Should().BeEmpty();
+		}
+
+		[Fact]
 		public void RemoveShouldRaiseNotSupportedException()
 		{
 			// Prepare
 			using var list = NewRecyclableList;
 
 			// Act
-			_ = Assert.Throws<NotSupportedException>(() => list.Remove(_testData.First()));
+			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Remove(_testData.First()));
 		}
 
 		[Fact]
