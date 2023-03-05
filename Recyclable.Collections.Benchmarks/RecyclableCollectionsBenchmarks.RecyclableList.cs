@@ -125,5 +125,29 @@ namespace Recyclable.Collections.Benchmarks
 				DoNothing(list.IndexOf(data[^(i + 1)]));
 			}
 		}
+
+		//[Benchmark]
+		public void RecyclableList_LongIndexOf_FirstItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.LongIndexOf(data[i]));
+			}
+		}
+
+		//[Benchmark]
+		public void RecyclableList_LongIndexOf_LastItems()
+		{
+			var data = TestObjects;
+			var list = TestObjectsAsRecyclableList;
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.LongIndexOf(data[^(i + 1)]));
+			}
+		}
 	}
 }
