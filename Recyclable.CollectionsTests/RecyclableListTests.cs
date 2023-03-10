@@ -51,6 +51,25 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
+		public void AddShouldAddItemWhenAfterAddRange()
+		{
+			// Prepare
+			int[] testNumbers = new[] { 1, 2, 2, 3 };
+
+			// Act
+			using var list = new RecyclableList<int>();
+			list.AddRange(_testData);
+			foreach (var index in testNumbers)
+			{
+				list.Add(index);
+			}
+
+			// Validate
+			_ = list.LongCount.Should().Be(_totalObjectCount + testNumbers.Length);
+			_ = list.Should().BeEquivalentTo(_testData.Concat(testNumbers));
+		}
+
+		[Fact]
 		public void ConstructorShouldAcceptDuplicates()
 		{
 			// Prepare
@@ -300,7 +319,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToArray();
-			var list = new RecyclableList<int>();
+			using var list = new RecyclableList<int>();
 
 
 			// Act
@@ -309,8 +328,8 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
 			_ = list.Should().HaveCount(testData.Length)
-			.And.ContainInConsecutiveOrder(testData)
-			.And.BeEquivalentTo(testData);
+				.And.ContainInConsecutiveOrder(testData)
+				.And.BeEquivalentTo(testData);
 		}
 
 		[Fact]
@@ -318,7 +337,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var testData = _testData.ToList();
-			var list = new RecyclableList<int>();
+			using var list = new RecyclableList<int>();
 
 			// Act
 			list.AddRange(testData);
@@ -328,6 +347,61 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().HaveCount(testData.Count)
 			.And.ContainInConsecutiveOrder(testData)
 			.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
+		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsRecyclableList()
+		{
+			// Prepare
+			var testData = _testData.ToRecyclableList();
+			using var list = new RecyclableList<int>();
+
+			// Act
+			list.AddRange(testData);
+
+			// Validate
+			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(testData.Count)
+				.And.ContainInConsecutiveOrder(testData)
+				.And.BeEquivalentTo(testData);
+		}
+
+		[Fact]
+		public void AddRangeShouldNotOverrideItemsWhenSourceIsArray()
+		{
+			// Prepare
+			var testData = _testData.ToArray();
+			var list = new RecyclableList<int>();
+
+			// Act
+			list.AddRange(testData);
+			list.AddRange(testData);
+
+			// Validate
+			var expectedData = testData.Concat(testData).ToArray();
+			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(expectedData.Length)
+				.And.ContainInConsecutiveOrder(expectedData)
+				.And.BeEquivalentTo(expectedData);
+		}
+
+		[Fact]
+		public void AddRangeShouldNotOverrideItemsWhenSourceIsRecyclableList()
+		{
+			// Prepare
+			using var testData = _testData.ToRecyclableList();
+			using var list = new RecyclableList<int>();
+
+			// Act
+			list.AddRange(testData);
+			list.AddRange(testData);
+
+			// Validate
+			var expectedData = _testData.Concat(_testData).ToArray();
+			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Should().HaveCount(expectedData.Length)
+				.And.ContainInConsecutiveOrder(expectedData)
+				.And.BeEquivalentTo(expectedData);
 		}
 
 		[Fact]

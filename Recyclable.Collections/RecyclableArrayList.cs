@@ -293,6 +293,8 @@ namespace Recyclable.Collections
 			_count = targetItemIdx;
 		}
 
+		public T[] AsArray() => _memoryBlock;
+
 		public void Clear()
 		{
 			_count = 0;

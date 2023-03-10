@@ -274,39 +274,143 @@ namespace Recyclable.Collections
 
 		public void AddRange(in T[] items)
 		{
-			long sourceItemsCount = items.LongLength;
-			long oldLongCount = _longCount;
-			long targetCapacity = oldLongCount + sourceItemsCount;
+			long targetCapacity = _longCount + items.LongLength;
 			if (_capacity < targetCapacity)
 			{
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			int blockSize = _blockSize;
-			int targetItemIdx = (int)(oldLongCount % blockSize);
-			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy = 0;
+			Span<T> itemsSpan = new(items);
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			int memoryBlocksCount = memoryBlocksSpan.Length;
-			Span<T> targetBlockSpan = new(memoryBlocksSpan[targetBlockIdx]);
-			for (var i = 0L; i < sourceItemsCount; i++)
+			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
+			while (!itemsSpan.IsEmpty)
 			{
-				targetBlockSpan[targetItemIdx++] = items[i];
-				if (targetItemIdx == blockSize)
+				if (targetBlockArraySpan.Length < itemsSpan.Length)
 				{
-					targetBlockIdx++;
-					if (targetBlockIdx == memoryBlocksCount)
+					toCopy = targetBlockArraySpan.Length;
+					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
+					targetBlockIndex++;
+					targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex]);
+				}
+				else
+				{
+					toCopy = itemsSpan.Length;
+					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
+					targetBlockArraySpan = targetBlockArraySpan[..toCopy];
+				}
+
+				itemsSpan = itemsSpan[toCopy..];
+			}
+
+			_nextItemIndex = toCopy;
+			_longCount = targetCapacity;
+			_lastBlockIndex = targetBlockIndex;
+		}
+
+		public void AddRange(in RecyclableArrayList<T> items)
+		{
+			long targetCapacity = _longCount + items.Count;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy = 0;
+			Span<T> itemsSpan = new(items.AsArray());
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
+			while (!itemsSpan.IsEmpty)
+			{
+				if (targetBlockArraySpan.Length < itemsSpan.Length)
+				{
+					toCopy = targetBlockArraySpan.Length;
+					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
+					targetBlockIndex++;
+					targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex]);
+				}
+				else
+				{
+					toCopy = itemsSpan.Length;
+					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
+					targetBlockArraySpan = targetBlockArraySpan[..toCopy];
+				}
+
+				itemsSpan = itemsSpan[toCopy..];
+			}
+
+			_nextItemIndex = toCopy;
+			_longCount = targetCapacity;
+			_lastBlockIndex = targetBlockIndex;
+
+		}
+
+		public void AddRange(in RecyclableList<T> items)
+		{
+			long itemsCount = items.LongCount;
+			long targetCapacity = _longCount + itemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			int blockSize = _blockSize,
+				sourceBlockIndex = 0,
+				targetBlockIndex = _lastBlockIndex,
+				toCopy = 0;
+
+			Span<T[]> sourceMemoryBlocksSpan = new(items._memoryBlocks);
+			Span<T> itemsSpan = new(sourceMemoryBlocksSpan[sourceBlockIndex], 0, items._blockSize);
+			Span<T[]> targetMemoryBlocksSpan = new(_memoryBlocks);
+			Span<T> targetBlockArraySpan = new(targetMemoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
+			long copiedCount = 0;
+			while (copiedCount < itemsCount)
+			{
+				toCopy = (int)Math.Min(itemsCount - copiedCount, itemsSpan.Length);
+				if (targetBlockArraySpan.Length < toCopy)
+				{
+					toCopy = targetBlockArraySpan.Length;
+					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
+					targetBlockIndex++;
+					targetBlockArraySpan = new(targetMemoryBlocksSpan[targetBlockIndex], 0, blockSize);
+					itemsSpan = itemsSpan[toCopy..];
+					copiedCount += toCopy;
+				}
+				else
+				{
+					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
+					targetBlockArraySpan = targetBlockArraySpan[toCopy..];
+					itemsSpan = itemsSpan[toCopy..];
+					if (itemsSpan.IsEmpty && sourceBlockIndex + 1 < sourceMemoryBlocksSpan.Length)
 					{
-						break;
+						sourceBlockIndex++;
+						itemsSpan = new(sourceMemoryBlocksSpan[sourceBlockIndex], 0, items._blockSize);
 					}
 
-					targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
-					targetItemIdx = 0;
+					copiedCount += toCopy;
+					if (targetBlockArraySpan.IsEmpty && copiedCount < itemsCount)
+					{
+						targetBlockIndex++;
+						targetBlockArraySpan = new(targetMemoryBlocksSpan[targetBlockIndex]);
+
+					}
 				}
 			}
 
+			if (targetCapacity % blockSize == 0)
+			{
+				_nextItemIndex = 0;
+				_lastBlockIndex = targetBlockIndex + 1;
+			}
+			else
+			{
+				_nextItemIndex = (int)(targetCapacity % blockSize);
+				_lastBlockIndex = targetBlockIndex;
+
+			}
+
 			_longCount = targetCapacity;
-			_lastBlockIndex = targetBlockIdx;
-			_nextItemIndex = targetItemIdx;
+
 		}
 
 		public void AddRange(in List<T> items)
@@ -324,11 +428,12 @@ namespace Recyclable.Collections
 			int targetBlockIdx = (int)(oldLongCount / blockSize) + (targetItemIdx > 0 ? 1 : 0);
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
 			var memoryBlocksCount = memoryBlocksSpan.Length;
-			Span<T> targetBlockSpan = new(memoryBlocksSpan[targetBlockIdx]);
+			Span<T> targetBlockSpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
+
 			for (int i = 0; i < sourceItemsCount; i++)
 			{
-				targetBlockSpan[targetItemIdx++] = items[i];
-				if (targetItemIdx == blockSize)
+				targetBlockSpan[targetItemIdx] = items[i];
+				if (targetItemIdx + 1 == blockSize)
 				{
 					targetBlockIdx++;
 					if (targetBlockIdx == memoryBlocksCount)
@@ -336,8 +441,12 @@ namespace Recyclable.Collections
 						break;
 					}
 
-					targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+					targetBlockSpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
 					targetItemIdx = 0;
+				}
+				else
+				{
+					targetItemIdx++;
 				}
 			}
 
@@ -383,7 +492,7 @@ namespace Recyclable.Collections
 			_nextItemIndex = targetItemIdx;
 		}
 
-		private void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
 			if (source is T[] sourceArray)
 			{
@@ -400,6 +509,12 @@ namespace Recyclable.Collections
 			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
 			{
 				AddRange(sourceRecyclableArrayList);
+				return;
+			}
+
+			if (source is RecyclableList<T> sourceRecyclableList)
+			{
+				AddRange(sourceRecyclableList);
 				return;
 			}
 
