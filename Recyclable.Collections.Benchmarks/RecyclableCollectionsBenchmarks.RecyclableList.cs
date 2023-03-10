@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark]
 		public void RecyclableList_Create_WithCapacity()
 		{
-			using var list = new RecyclableList<object>(minBlockSize: 102_400, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			DoNothing(list);
 		}
 
@@ -35,11 +35,60 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<object>(minBlockSize: 102_400, expectedItemsCount: dataCount);
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
 			}
+		}
+
+		[Benchmark]
+		public void RecyclableList_AddRangeWhenSourceIsArray()
+		{
+			var data = TestObjects;
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableList_AddRangeWhenSourceIsList()
+		{
+			var data = TestObjectsAsList;
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableList_AddRangeWhenSourceIsIList()
+		{
+			var data = (IList<object>)TestObjectsAsList;
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableList_AddRangeWhenSourceIsIEnumerable()
+		{
+			var data = TestObjectsAsIEnumerable;
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableList_AddRangeWhenSourceIsRecyclableArrayList()
+		{
+			var data = TestObjectsAsRecyclableArrayList;
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			list.AddRange(data);
+		}
+
+		[Benchmark]
+		public void RecyclableList_AddRange_WithCapacity()
+		{
+			var data = TestObjects;
+			var dataCount = TestObjectCount;
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			list.AddRange(data);
 		}
 
 		//[Benchmark]
@@ -102,7 +151,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_IndexOf_FirstItems()
 		{
 			var data = TestObjects;
@@ -114,7 +163,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		//[Benchmark]
 		public void RecyclableList_IndexOf_LastItems()
 		{
 			var data = TestObjects;

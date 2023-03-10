@@ -25,7 +25,8 @@ internal class Program
 			//benchmark.RecyclableList_Add();
 			//benchmark.RecyclableList_Add_WithCapacity();
 			//benchmark.RecyclableList_Contains_LastItems();
-			benchmark.RecyclableList_IndexOf_FirstItems();
+			//benchmark.RecyclableList_IndexOf_FirstItems();
+			benchmark.RecyclableList_AddRangeWhenSourceIsList();
 		}
 
 		benchmark.Cleanup();
