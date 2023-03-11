@@ -525,42 +525,40 @@ namespace Recyclable.Collections
 			long capacity = _capacity;
 			long oldLongCount = _longCount;
 			int blockSize = _blockSize;
-			int targetItemIdx = (int)(oldLongCount % blockSize);
-			int targetBlockIdx = (targetItemIdx / blockSize) + (targetItemIdx > 0 ? 1 : 0);
+			int targetItemIdx = _nextItemIndex;
+			int targetBlockIdx = _lastBlockIndex;
 
 			Span<T[]> memoryBlocksSpan;
 			Span<T> blockArraySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				int requiredCapacity = targetItemIdx + requiredAdditionalCapacity;
+				long requiredCapacity = oldLongCount + requiredAdditionalCapacity;
 				if (capacity < requiredCapacity)
 				{
 					_ = EnsureCapacity(requiredCapacity);
 					blockSize = _blockSize;
-					targetBlockIdx = (targetItemIdx / blockSize) + (targetItemIdx > 0 ? 1 : 0);
-					targetItemIdx = (int)(oldLongCount % blockSize);
 				}
 
-				memoryBlocksSpan = new(_memoryBlocks);
-				var memoryBlocksCount = memoryBlocksSpan.Length;
-				blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+				var memoryBlocksCount = _memoryBlocks.Length;
+				memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
+				blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
 				foreach (var item in source)
 				{
 					blockArraySpan[targetItemIdx++] = item;
 					if (targetItemIdx == blockSize)
-					{
+					{ 
 						targetBlockIdx++;
+						targetItemIdx = 0;
 						if (targetBlockIdx == memoryBlocksCount)
 						{
 							break;
 						}
 
-						targetItemIdx = 0;
-						blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx]);
+						blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
 					}
 				}
 
-				_longCount = (targetBlockIdx * blockSize) + targetItemIdx;
+				_longCount = requiredCapacity;
 				_lastBlockIndex = targetBlockIdx;
 				_nextItemIndex = targetItemIdx;
 				return;
