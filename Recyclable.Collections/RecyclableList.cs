@@ -294,7 +294,7 @@ namespace Recyclable.Collections
 			}
 
 			_nextItemIndex = itemsSpan.Length;
-			itemsSpan[..itemsSpan.Length].CopyTo(targetBlockArraySpan);
+			itemsSpan.CopyTo(targetBlockArraySpan);
 			_longCount = targetCapacity;
 			_lastBlockIndex = targetBlockIndex;
 		}
@@ -320,7 +320,7 @@ namespace Recyclable.Collections
 			}
 
 			_nextItemIndex = itemsSpan.Length;
-			itemsSpan[..itemsSpan.Length].CopyTo(targetBlockArraySpan);
+			itemsSpan.CopyTo(targetBlockArraySpan);
 			_longCount = targetCapacity;
 			_lastBlockIndex = targetBlockIndex;
 		}
