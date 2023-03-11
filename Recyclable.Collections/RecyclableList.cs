@@ -425,47 +425,6 @@ namespace Recyclable.Collections
 
 			_lastBlockIndex = targetBlockIndex;
 			_longCount = targetCapacity;
-
-			// VERSION 2
-			//long targetCapacity = _longCount + items.Count;
-			//if (_capacity < targetCapacity)
-			//{
-			//	_ = EnsureCapacity(targetCapacity);
-			//}
-
-			//int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy,
-			//	copiedCount = 0, targetItemIndex = _nextItemIndex, totalItemsCount = items.Count;
-
-			//Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
-			//T[] targetBlockArray = memoryBlocksSpan[targetBlockIndex];
-			//while (true)
-			//{
-			//	if (blockSize - targetItemIndex <= totalItemsCount - copiedCount)
-			//	{
-			//		toCopy = blockSize - targetItemIndex;
-			//		items.CopyTo(copiedCount, targetBlockArray, targetItemIndex, toCopy);
-			//		targetItemIndex = 0;
-			//		targetBlockIndex++;
-			//		if (targetBlockIndex > memoryBlocksSpan.Length)
-			//		{
-			//			break;
-			//		}
-
-			//		targetBlockArray = memoryBlocksSpan[targetBlockIndex];
-			//		copiedCount += toCopy;
-			//	}
-			//	else
-			//	{
-			//		toCopy = totalItemsCount - copiedCount;
-			//		items.CopyTo(copiedCount, targetBlockArray, targetItemIndex, toCopy);
-			//		targetItemIndex = toCopy;
-			//		break;
-			//	}
-			//}
-
-			//_longCount = targetCapacity;
-			//_lastBlockIndex = targetBlockIndex;
-			//_nextItemIndex = targetItemIndex;
 		}
 
 		public void AddRange(in IList<T> items)
