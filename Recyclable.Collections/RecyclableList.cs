@@ -390,7 +390,6 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
-
 		}
 
 		public void AddRange(List<T> items)
@@ -401,39 +400,72 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy = 0,
-				copiedCount = 0, targetItemIndex = _nextItemIndex, totalItemsCount = items.Count;
+			int blockSize = _blockSize,
+				targetBlockIndex = _lastBlockIndex,
+				copied = blockSize - _nextItemIndex,
+				itemsCount = items.Count;
 
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
-			T[] targetBlockArray = memoryBlocksSpan[targetBlockIndex];
-			while (true)
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
+			items.CopyTo(0, memoryBlocksSpan[targetBlockIndex++], _nextItemIndex, copied);
+			while (blockSize <= itemsCount - copied)
 			{
-				if (blockSize - targetItemIndex <= totalItemsCount - copiedCount)
-				{
-					toCopy = blockSize - targetItemIndex;
-					items.CopyTo(copiedCount, targetBlockArray, targetItemIndex, toCopy);
-					targetItemIndex = 0;
-					targetBlockIndex++;
-					if (targetBlockIndex > memoryBlocksSpan.Length)
-					{
-						break;
-					}
-
-					targetBlockArray = memoryBlocksSpan[targetBlockIndex];
-					copiedCount += toCopy;
-				}
-				else
-				{
-					toCopy = totalItemsCount - copiedCount;
-					items.CopyTo(copiedCount, targetBlockArray, targetItemIndex, toCopy);
-					targetItemIndex = toCopy;
-					break;
-				}
+				items.CopyTo(copied, memoryBlocksSpan[targetBlockIndex++], 0, blockSize);
+				copied += blockSize;
 			}
 
-			_longCount = targetCapacity;
+			if (itemsCount - copied != 0)
+			{
+				_nextItemIndex = itemsCount - copied;
+				items.CopyTo(copied, memoryBlocksSpan[targetBlockIndex], 0, _nextItemIndex);
+			}
+			else
+			{
+				_nextItemIndex = 0;
+			}
+
 			_lastBlockIndex = targetBlockIndex;
-			_nextItemIndex = targetItemIndex;
+			_longCount = targetCapacity;
+
+			// VERSION 2
+			//long targetCapacity = _longCount + items.Count;
+			//if (_capacity < targetCapacity)
+			//{
+			//	_ = EnsureCapacity(targetCapacity);
+			//}
+
+			//int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy,
+			//	copiedCount = 0, targetItemIndex = _nextItemIndex, totalItemsCount = items.Count;
+
+			//Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
+			//T[] targetBlockArray = memoryBlocksSpan[targetBlockIndex];
+			//while (true)
+			//{
+			//	if (blockSize - targetItemIndex <= totalItemsCount - copiedCount)
+			//	{
+			//		toCopy = blockSize - targetItemIndex;
+			//		items.CopyTo(copiedCount, targetBlockArray, targetItemIndex, toCopy);
+			//		targetItemIndex = 0;
+			//		targetBlockIndex++;
+			//		if (targetBlockIndex > memoryBlocksSpan.Length)
+			//		{
+			//			break;
+			//		}
+
+			//		targetBlockArray = memoryBlocksSpan[targetBlockIndex];
+			//		copiedCount += toCopy;
+			//	}
+			//	else
+			//	{
+			//		toCopy = totalItemsCount - copiedCount;
+			//		items.CopyTo(copiedCount, targetBlockArray, targetItemIndex, toCopy);
+			//		targetItemIndex = toCopy;
+			//		break;
+			//	}
+			//}
+
+			//_longCount = targetCapacity;
+			//_lastBlockIndex = targetBlockIndex;
+			//_nextItemIndex = targetItemIndex;
 		}
 
 		public void AddRange(in IList<T> items)
