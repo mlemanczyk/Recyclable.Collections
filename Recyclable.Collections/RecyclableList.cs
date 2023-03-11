@@ -299,7 +299,7 @@ namespace Recyclable.Collections
 			_lastBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(in RecyclableArrayList<T> items)
+		public void AddRange(RecyclableArrayList<T> items)
 		{
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
@@ -307,30 +307,20 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy = 0;
-			Span<T> itemsSpan = new(items.AsArray());
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex;
+			Span<T> itemsSpan = new(items.AsArray(), 0, items.Count);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
-			while (!itemsSpan.IsEmpty)
+			while (targetBlockArraySpan.Length <= itemsSpan.Length)
 			{
-				if (targetBlockArraySpan.Length < itemsSpan.Length)
-				{
-					toCopy = targetBlockArraySpan.Length;
-					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
-					targetBlockIndex++;
-					targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex]);
-				}
-				else
-				{
-					toCopy = itemsSpan.Length;
-					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
-					targetBlockArraySpan = targetBlockArraySpan[..toCopy];
-				}
-
-				itemsSpan = itemsSpan[toCopy..];
+				itemsSpan[..targetBlockArraySpan.Length].CopyTo(targetBlockArraySpan);
+				itemsSpan = itemsSpan[targetBlockArraySpan.Length..];
+				targetBlockIndex++;
+				targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], 0, blockSize);
 			}
 
-			_nextItemIndex = toCopy;
+			_nextItemIndex = itemsSpan.Length;
+			itemsSpan[..itemsSpan.Length].CopyTo(targetBlockArraySpan);
 			_longCount = targetCapacity;
 			_lastBlockIndex = targetBlockIndex;
 		}
