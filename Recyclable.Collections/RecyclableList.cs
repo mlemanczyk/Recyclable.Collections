@@ -315,15 +315,23 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex;
+			int blockSize = _blockSize,
+				targetBlockIndex = _lastBlockIndex,
+				memoryBlockCount = _memoryBlocks.Length;
+
 			Span<T> itemsSpan = new(items.AsArray(), 0, items.Count);
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlockCount);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
 			while (targetBlockArraySpan.Length <= itemsSpan.Length)
 			{
 				itemsSpan[..targetBlockArraySpan.Length].CopyTo(targetBlockArraySpan);
 				itemsSpan = itemsSpan[targetBlockArraySpan.Length..];
 				targetBlockIndex++;
+				if (targetBlockIndex == memoryBlockCount)
+				{
+					break;
+				}
+
 				targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], 0, blockSize);
 			}
 
