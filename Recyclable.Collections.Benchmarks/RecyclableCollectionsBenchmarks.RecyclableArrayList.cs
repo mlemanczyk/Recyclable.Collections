@@ -61,7 +61,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark]
 		public void RecyclableArrayList_AddRangeWhenSourceIsIList()
 		{
-			var data = (IList<object>)TestObjectsAsList;
+			var data = (IList<object>)TestObjectsAsRecyclableList;
 			using var list = new RecyclableArrayList<object>();
 			list.AddRange(data);
 		}

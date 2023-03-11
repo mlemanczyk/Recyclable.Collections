@@ -30,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = true)]
+		//[Benchmark(Baseline = true)]
 		public void List_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -42,7 +42,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark]
+		[Benchmark(Baseline = true)]
 		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
@@ -61,7 +61,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark]
 		public void List_AddRangeWhenSourceIsIList()
 		{
-			var data = (IList<object>)TestObjectsAsList;
+			var data = (IList<object>)TestObjectsAsRecyclableList;
 			var list = new List<object>();
 			list.AddRange(data);
 		}
