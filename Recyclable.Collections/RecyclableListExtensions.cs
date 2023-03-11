@@ -17,12 +17,12 @@ namespace Recyclable.Collections
 
 		public static void CopyTo<T>(this T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
 		{
-			Memory<T> sourceBlockMemory;
-			Memory<T> destinationArrayMemory;
+			Span<T> sourceBlockMemory;
+			Span<T> destinationArrayMemory;
 			int startingBlockIndex = (int)(startingIndex / blockSize);
 			int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount - (itemsCount / blockSize) > 0 ? 1 : 0)) - 1;
 			Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex - startingBlockIndex + 1);
-			destinationArrayMemory = new Memory<T>(destinationArray, destinationArrayIndex, destinationArray.Length);
+			destinationArrayMemory = new Span<T>(destinationArray, destinationArrayIndex, destinationArray.Length - destinationArrayIndex);
 			int memoryBlockIndex;
 			for (memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
 			{
@@ -33,7 +33,7 @@ namespace Recyclable.Collections
 
 			if (itemsCount % blockSize > 0)
 			{
-				sourceBlockMemory = new(sourceMemoryBlocksSpan[^1], 0, (int)(itemsCount % blockSize));
+				sourceBlockMemory = new(sourceMemoryBlocksSpan[lastBlockIndex], 0, (int)(itemsCount % blockSize));
 				sourceBlockMemory.CopyTo(destinationArrayMemory);
 			}
 		}
