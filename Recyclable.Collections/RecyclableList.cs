@@ -388,7 +388,7 @@ namespace Recyclable.Collections
 					if (targetBlockArraySpan.IsEmpty && copiedCount < itemsCount)
 					{
 						targetBlockIndex++;
-						targetBlockArraySpan = new(targetMemoryBlocksSpan[targetBlockIndex]);
+						targetBlockArraySpan = new(targetMemoryBlocksSpan[targetBlockIndex], 0, blockSize);
 					}
 				}
 			}
@@ -532,7 +532,6 @@ namespace Recyclable.Collections
 			Span<T> blockArraySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-
 				int requiredCapacity = targetItemIdx + requiredAdditionalCapacity;
 				if (capacity < requiredCapacity)
 				{
