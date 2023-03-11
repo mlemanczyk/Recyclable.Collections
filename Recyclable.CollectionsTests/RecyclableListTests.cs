@@ -314,178 +314,115 @@ namespace Recyclable.CollectionsTests
 			_ = list.LongCount.Should().Be(0);
 		}
 
-		[Fact]
-		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsArray()
+		public static IEnumerable<object[]> AddRangeCollectionTypes => new[]
 		{
-			// Prepare
-			var testData = _testData.ToArray();
-			using var list = new RecyclableList<int>();
+			new object[] { "int[]", _testData.ToArray() },
+			new object[] { "List<int>", _testData.ToList() },
+			new object[] { "RecyclableArrayList<int>", _testData.ToRecyclableArrayList() },
+			new object[] { "RecyclableList<int>", _testData.ToRecyclableList() },
+			new object[] { "IList<int>", new CustomIList<int>(_testData) },
+			new object[] { "IEnumerable<int>", _testData },
+		};
 
+		[Theory]
+		[MemberData(nameof(AddRangeCollectionTypes))]
+		public void AddRangeShouldAddItemsInCorrectOrder(string testCase, IEnumerable<int> testData)
+		{
+			try
+			{
+				// Prepare
+				using var list = new RecyclableList<int>();
 
-			// Act
-			list.AddRange(testData);
+				// Act
+				if (testData is int[] testDataArray)
+				{
+					list.AddRange(testDataArray);
+				}
+				else if (testData is List<int> testDataList)
+				{
+					list.AddRange(testDataList);
+				}
+				else if (testData is RecyclableArrayList<int> testDataRecyclableArrayList)
+				{
+					list.AddRange(testDataRecyclableArrayList);
+				}
+				else if (testData is RecyclableList<int> testDataRecyclableList)
+				{
+					list.AddRange(testDataRecyclableList);
+				}
+				else if (testData is IList<int> testDataIList)
+				{
+					list.AddRange(testDataIList);
+				}
+				else if (testData is IEnumerable<int> testDataIEnumerable)
+				{
+					list.AddRange(testDataIEnumerable);
+				}
+				else
+				{
+					throw new InvalidCastException("Unknown type of test data");
+				}
 
-			// Validate
-			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(testData.Length)
-				.And.ContainInConsecutiveOrder(testData);
+				// Validate
+				int expectedItemsCount = testData.Count();
+				_ = list.Capacity.Should().BeGreaterThanOrEqualTo(expectedItemsCount, "when capacity == 0, then we should allocate as much memory as needed, only");
+				_ = list.Should().HaveCount(expectedItemsCount)
+					.And.ContainInConsecutiveOrder(testData);
+			}
+			finally
+			{
+				if (testData is IDisposable disposable)
+				{
+					disposable.Dispose();
+				}
+			}
 		}
 
-		[Fact]
-		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsList()
+		[Theory]
+		[MemberData(nameof(AddRangeCollectionTypes))]
+		public void AddRangeShouldNotOverrideItems(string testCase, IEnumerable<int> testData)
 		{
 			// Prepare
-			var testData = _testData.ToList();
-			using var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-
-			// Validate
-			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(testData.Count)
-				.And.ContainInConsecutiveOrder(testData);
-		}
-
-		[Fact]
-		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsIList()
-		{
-			// Prepare
-			var testData = (IList<int>)_testData.ToList();
-			using var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-
-			// Validate
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo(testData.Count);
-			_ = list.Should().HaveCount(testData.Count)
-				.And.ContainInConsecutiveOrder(testData);
-		}
-
-		[Fact]
-		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsRecyclableArrayList()
-		{
-			// Prepare
-			var testData = _testData.ToRecyclableArrayList();
-			using var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-
-			// Validate
-			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(testData.Count)
-				.And.ContainInConsecutiveOrder(testData)
-				.And.BeEquivalentTo(testData);
-		}
-
-		[Fact]
-		public void AddRangeShouldAddItemsInCorrectOrderWhenSourceIsRecyclableList()
-		{
-			// Prepare
-			var testData = _testData.ToRecyclableList();
-			using var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-
-			// Validate
-			_ = list.Capacity.Should().Be(114_688, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(testData.Count)
-				.And.ContainInConsecutiveOrder(testData)
-				.And.BeEquivalentTo(testData);
-		}
-
-		[Fact]
-		public void AddRangeShouldNotOverrideItemsWhenSourceIsArray()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
 			var list = new RecyclableList<int>();
 
 			// Act
-			list.AddRange(testData);
-			list.AddRange(testData);
+			if (testData is int[] testDataArray)
+			{
+				list.AddRange(testDataArray);
+				list.AddRange(testDataArray);
+			}
+			else if (testData is List<int> testDataList)
+			{
+				list.AddRange(testDataList);
+				list.AddRange(testDataList);
+			}
+			else if (testData is RecyclableArrayList<int> testDataRecyclableArrayList)
+			{
+				list.AddRange(testDataRecyclableArrayList);
+				list.AddRange(testDataRecyclableArrayList);
+			}
+			else if (testData is RecyclableList<int> testDataRecyclableList)
+			{
+				list.AddRange(testDataRecyclableList);
+				list.AddRange(testDataRecyclableList);
+			}
+			else if (testData is IList<int> testDataIList)
+			{
+				list.AddRange(testDataIList);
+				list.AddRange(testDataIList);
+			}
+			else if (testData is IEnumerable<int> testDataIEnumerable)
+			{
+				list.AddRange(testDataIEnumerable);
+				list.AddRange(testDataIEnumerable);
+			}
+			else
+			{
+				throw new InvalidCastException("Unknown type of test data");
+			}
 
 			// Validate
 			var expectedData = testData.Concat(testData).ToArray();
-			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(expectedData.Length)
-				.And.ContainInConsecutiveOrder(expectedData)
-				.And.BeEquivalentTo(expectedData);
-		}
-
-		[Fact]
-		public void AddRangeShouldNotOverrideItemsWhenSourceIsIList()
-		{
-			// Prepare
-			var testData = (IList<int>)_testData.ToList();
-			var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-			list.AddRange(testData);
-
-			// Validate
-			var expectedData = testData.Concat(testData).ToArray();
-			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(expectedData.Length)
-				.And.ContainInConsecutiveOrder(expectedData)
-				.And.BeEquivalentTo(expectedData);
-		}
-
-		[Fact]
-		public void AddRangeShouldNotOverrideItemsWhenSourceIsList()
-		{
-			// Prepare
-			var testData = _testData.ToList();
-			var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-			list.AddRange(testData);
-
-			// Validate
-			var expectedData = testData.Concat(testData).ToArray();
-			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(expectedData.Length)
-				.And.ContainInConsecutiveOrder(expectedData)
-				.And.BeEquivalentTo(expectedData);
-		}
-
-		[Fact]
-		public void AddRangeShouldNotOverrideItemsWhenSourceIsRecyclableArrayList()
-		{
-			// Prepare
-			using var testData = _testData.ToRecyclableArrayList();
-			using var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-			list.AddRange(testData);
-
-			// Validate
-			var expectedData = _testData.Concat(_testData).ToArray();
-			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
-			_ = list.Should().HaveCount(expectedData.Length)
-				.And.ContainInConsecutiveOrder(expectedData)
-				.And.BeEquivalentTo(expectedData);
-		}
-
-		[Fact]
-		public void AddRangeShouldNotOverrideItemsWhenSourceIsRecyclableList()
-		{
-			// Prepare
-			using var testData = _testData.ToRecyclableList();
-			using var list = new RecyclableList<int>();
-
-			// Act
-			list.AddRange(testData);
-			list.AddRange(testData);
-
-			// Validate
-			var expectedData = _testData.Concat(_testData).ToArray();
 			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
 			_ = list.Should().HaveCount(expectedData.Length)
 				.And.ContainInConsecutiveOrder(expectedData)
