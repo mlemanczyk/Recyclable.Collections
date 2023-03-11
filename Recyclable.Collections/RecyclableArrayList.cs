@@ -302,7 +302,7 @@ namespace Recyclable.Collections
 
 		public bool Contains(T item) => _memoryBlock.Contains(item);
 
-		public void CopyTo(T[] array, int arrayIndex) => _memoryBlock.CopyTo(array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(_memoryBlock, 0, array, arrayIndex, _count);
 
 		protected static IEnumerable<T> Enumerate(RecyclableArrayList<T> list)
 		{
