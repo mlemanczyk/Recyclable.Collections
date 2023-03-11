@@ -150,7 +150,6 @@ namespace Recyclable.CollectionsTests
 			_ = list.Contains(1).Should().BeFalse();
 		}
 
-
 		[Fact]
 		public void CopyToShouldCopyAllItems()
 		{
@@ -487,7 +486,6 @@ namespace Recyclable.CollectionsTests
 			_ = list.LongIndexOf(0).Should().Be(-1);
 			_ = list.LongIndexOf(1).Should().Be(-1);
 		}
-
 
 		[Fact]
 		public void ConstructorSourceShouldInitializeList()
