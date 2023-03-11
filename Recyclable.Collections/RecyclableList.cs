@@ -8,6 +8,7 @@ namespace Recyclable.Collections
 	{
 		private const int ItemNotFoundIndex = -1;
 		private const int BatchSize = 8;
+
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
@@ -280,30 +281,20 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex, toCopy = 0;
+			int blockSize = _blockSize, targetBlockIndex = _lastBlockIndex;
 			Span<T> itemsSpan = new(items);
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
-			while (!itemsSpan.IsEmpty)
+			while (targetBlockArraySpan.Length <= itemsSpan.Length)
 			{
-				if (targetBlockArraySpan.Length < itemsSpan.Length)
-				{
-					toCopy = targetBlockArraySpan.Length;
-					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
-					targetBlockIndex++;
-					targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex]);
-				}
-				else
-				{
-					toCopy = itemsSpan.Length;
-					itemsSpan[..toCopy].CopyTo(targetBlockArraySpan);
-					targetBlockArraySpan = targetBlockArraySpan[..toCopy];
-				}
-
-				itemsSpan = itemsSpan[toCopy..];
+				itemsSpan[..targetBlockArraySpan.Length].CopyTo(targetBlockArraySpan);
+				itemsSpan = itemsSpan[targetBlockArraySpan.Length..];
+				targetBlockIndex++;
+				targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], 0, blockSize);
 			}
 
-			_nextItemIndex = toCopy;
+			_nextItemIndex = itemsSpan.Length;
+			itemsSpan[..itemsSpan.Length].CopyTo(targetBlockArraySpan);
 			_longCount = targetCapacity;
 			_lastBlockIndex = targetBlockIndex;
 		}
