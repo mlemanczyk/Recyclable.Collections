@@ -78,6 +78,120 @@ namespace Recyclable.Collections
 			throw new ArgumentOutOfRangeException("index");
 		}
 
+		protected void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
+		{
+			long i, copied = _longCount;
+
+			int blockSize = _blockSize, targetItemIdx = _nextItemIndex, targetBlockIdx = _lastBlockIndex;
+
+			IEnumerator<T> enumerator = source.GetEnumerator();
+			if (!enumerator.MoveNext())
+			{
+				return;
+			}
+
+			long capacity = _capacity;
+			long available = capacity - copied;
+
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
+			Span<T> blockArraySpan;
+			var memoryBlocksCount = memoryBlocksSpan.Length;
+			while (true)
+			{
+				if (copied + growByCount > capacity)
+				{
+					capacity = EnsureCapacity(capacity + growByCount);
+					memoryBlocksCount = _memoryBlocks.Length;
+					if (blockSize != _blockSize)
+					{
+						blockSize = _blockSize;
+					}
+
+					memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
+					available = capacity - copied;
+				}
+
+				blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
+				for (i = 1; i <= available; i++)
+				{
+					blockArraySpan[targetItemIdx++] = enumerator.Current;
+
+					if (!enumerator.MoveNext())
+					{
+						if (targetItemIdx < blockSize)
+						{
+							_lastBlockIndex = targetBlockIdx;
+							_nextItemIndex = targetItemIdx;
+						}
+						else
+						{
+							_lastBlockIndex = targetBlockIdx + 1;
+							_nextItemIndex = 0;
+						}
+
+						_longCount += copied + i - _longCount;
+						return;
+					}
+
+					if (targetItemIdx == blockSize)
+					{
+						targetBlockIdx++;
+						targetItemIdx = 0;
+
+						if (targetBlockIdx == memoryBlocksCount)
+						{
+							break;
+						}
+
+						blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
+					}
+				}
+
+				copied += available;
+			}
+		}
+
+		protected void AddRangeWithKnownCount(IEnumerable<T> source, int requiredAdditionalCapacity)
+		{
+			long copied = _longCount;
+			int blockSize = _blockSize;
+			int targetItemIdx = _nextItemIndex;
+			int targetBlockIdx = _lastBlockIndex;
+
+			Span<T[]> memoryBlocksSpan;
+			Span<T> blockArraySpan;
+			long requiredCapacity = copied + requiredAdditionalCapacity;
+			if (_capacity < requiredCapacity)
+			{
+				_ = EnsureCapacity(requiredCapacity);
+				blockSize = _blockSize;
+			}
+
+			var memoryBlocksCount = _memoryBlocks.Length;
+			memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
+			blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
+			foreach (var item in source)
+			{
+				blockArraySpan[targetItemIdx++] = item;
+				if (targetItemIdx == blockSize)
+				{
+					targetBlockIdx++;
+					targetItemIdx = 0;
+					if (targetBlockIdx == memoryBlocksCount)
+					{
+						break;
+					}
+
+					blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
+				}
+			}
+
+			_longCount = requiredCapacity;
+			_lastBlockIndex = targetBlockIdx;
+			_nextItemIndex = targetItemIdx;
+			return;
+		}
+
 		protected static long DoIndexOf(T item, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
 		{
 			Span<T[]> memoryBlocksSpan = new(memoryBlocks);
@@ -547,113 +661,13 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			long capacity = _capacity;
-			long copied = _longCount;
-			int blockSize = _blockSize;
-			int targetItemIdx = _nextItemIndex;
-			int targetBlockIdx = _lastBlockIndex;
-
-			Span<T[]> memoryBlocksSpan;
-			Span<T> blockArraySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				long requiredCapacity = copied + requiredAdditionalCapacity;
-				if (capacity < requiredCapacity)
-				{
-					_ = EnsureCapacity(requiredCapacity);
-					blockSize = _blockSize;
-				}
-
-				var memoryBlocksCount = _memoryBlocks.Length;
-				memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
-				blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
-				foreach (var item in source)
-				{
-					blockArraySpan[targetItemIdx++] = item;
-					if (targetItemIdx == blockSize)
-					{ 
-						targetBlockIdx++;
-						targetItemIdx = 0;
-						if (targetBlockIdx == memoryBlocksCount)
-						{
-							break;
-						}
-
-						blockArraySpan = new Span<T>(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
-					}
-				}
-
-				_longCount = requiredCapacity;
-				_lastBlockIndex = targetBlockIdx;
-				_nextItemIndex = targetItemIdx;
+				AddRangeWithKnownCount(source, requiredAdditionalCapacity);
 				return;
 			}
 
-			long i;
-			using var enumerator = source.GetEnumerator();
-
-			if (enumerator.MoveNext())
-			{
-				long available = capacity - copied,
-					initialCount = copied;
-
-				memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
-				var memoryBlocksCount = memoryBlocksSpan.Length;
-				while (true)
-				{
-					if (copied + growByCount > capacity)
-					{
-						capacity = EnsureCapacity(capacity + growByCount);
-						memoryBlocksCount = _memoryBlocks.Length;
-						if (blockSize != _blockSize)
-						{
-							blockSize = _blockSize;
-						}
-
-						memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
-						available = capacity - copied;
-					}
-
-					blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
-					for (i = 1; i <= available; i++)
-					{
-						blockArraySpan[targetItemIdx++] = enumerator.Current;
-
-						if (!enumerator.MoveNext())
-						{
-							copied += i;
-							if (targetItemIdx < blockSize)
-							{
-								_lastBlockIndex = targetBlockIdx;
-								_nextItemIndex = targetItemIdx;
-							}
-							else
-							{
-								_lastBlockIndex = targetBlockIdx + 1;
-								_nextItemIndex = 0;
-							}
-
-							_longCount += copied - _longCount;
-							return;
-						}
-
-						if (targetItemIdx == blockSize)
-						{
-							targetBlockIdx++;
-							targetItemIdx = 0;
-							
-							if (targetBlockIdx == memoryBlocksCount)
-							{
-								break;
-							}
-
-							blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
-						}
-					}
-
-					copied += available;
-				}
-			}
+			AddRangeEnumerated(source, growByCount);
 		}
 
 		public void Clear()
