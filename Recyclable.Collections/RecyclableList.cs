@@ -210,7 +210,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, in long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
+		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
 			const int sourceBlockCount = 0, requiredBlockCount = 1, uninitializedBlocksCount = 2, i = 3;
 
@@ -274,7 +274,7 @@ namespace Recyclable.Collections
 			return newMemoryBlocks;
 		}
 
-		protected long EnsureCapacity(in long requestedCapacity)
+		protected long EnsureCapacity(long requestedCapacity)
 		{
 			T[][] memory = _memoryBlocks;
 			long newCapacity;
