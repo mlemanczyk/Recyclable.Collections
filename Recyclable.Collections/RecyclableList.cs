@@ -517,15 +517,9 @@ namespace Recyclable.Collections
 
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
-			if (source is T[] sourceArray)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceArray);
-				return;
-			}
-
-			if (source is List<T> sourceList)
-			{
-				AddRange(sourceList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 
@@ -535,9 +529,15 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			if (source is RecyclableList<T> sourceRecyclableList)
+			if (source is T[] sourceArray)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceArray);
+				return;
+			}
+
+			if (source is List<T> sourceList)
+			{
+				AddRange(sourceList);
 				return;
 			}
 
