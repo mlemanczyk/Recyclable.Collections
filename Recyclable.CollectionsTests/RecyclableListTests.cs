@@ -323,6 +323,17 @@ namespace Recyclable.CollectionsTests
 			new object[] { "IEnumerable<int>", _testData },
 		};
 
+		public static IEnumerable<object[]> AddRangeEmptyCollectionTypes => new[]
+		{
+			new object[] { "int[]", Array.Empty<int>() },
+			new object[] { "List<int>", Array.Empty<int>().ToList() },
+			new object[] { "RecyclableArrayList<int>", Array.Empty<int>().ToRecyclableArrayList() },
+			new object[] { "RecyclableList<int>", Array.Empty<int>().ToRecyclableList() },
+			new object[] { "IList<int>", new CustomIList<int>(Array.Empty<int>()) },
+			new object[] { "IEnumerable<int> with non-enumerated count", Array.Empty<int>().AsEnumerable() },
+			new object[] { "IEnumerable<int> without non-enumerated count", new EnumerableWithoutCount<int>(Array.Empty<int>()) }
+		};
+
 		[Theory]
 		[MemberData(nameof(AddRangeCollectionTypes))]
 		public void AddRangeShouldAddItemsInCorrectOrder(string testCase, IEnumerable<int> testData)
@@ -426,6 +437,48 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().HaveCount(expectedData.Length)
 				.And.ContainInConsecutiveOrder(expectedData)
 				.And.BeEquivalentTo(expectedData);
+		}
+
+		[Theory]
+		[MemberData(nameof(AddRangeEmptyCollectionTypes))]
+		public void AddRangeShouldDoNothingWhenSourceIsEmpty(string testCase, IEnumerable<int> testData)
+		{
+			// Prepare
+			var list = new RecyclableList<int>();
+
+			// Act
+			if (testData is int[] testDataArray)
+			{
+				list.AddRange(testDataArray);
+			}
+			else if (testData is List<int> testDataList)
+			{
+				list.AddRange(testDataList);
+			}
+			else if (testData is RecyclableArrayList<int> testDataRecyclableArrayList)
+			{
+				list.AddRange(testDataRecyclableArrayList);
+			}
+			else if (testData is RecyclableList<int> testDataRecyclableList)
+			{
+				list.AddRange(testDataRecyclableList);
+			}
+			else if (testData is IList<int> testDataIList)
+			{
+				list.AddRange(testDataIList);
+			}
+			else if (testData is IEnumerable<int> testDataIEnumerable)
+			{
+				list.AddRange(testDataIEnumerable);
+			}
+			else
+			{
+				throw new InvalidCastException("Unknown type of test data");
+			}
+
+			// Validate
+			_ = list.Capacity.Should().Be(0);
+			_ = list.Should().BeEmpty().And.HaveCount(0);
 		}
 
 		[Fact]

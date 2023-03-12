@@ -275,6 +275,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(in T[] items)
 		{
+			if (items.LongLength == 0)
+			{
+				return;
+			}
+
 			long targetCapacity = _longCount + items.LongLength;
 			if (_capacity < targetCapacity)
 			{
@@ -309,6 +314,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(RecyclableArrayList<T> items)
 		{
+			if (items.Count == 0)
+			{
+				return;
+			}
+
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
@@ -343,6 +353,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(RecyclableList<T> items)
 		{
+			if (items.LongCount == 0)
+			{
+				return;
+			}
+
 			long itemsCount = items.LongCount,
 				targetCapacity = _longCount + itemsCount;
 
@@ -410,6 +425,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(List<T> items)
 		{
+			if (items.Count == 0)
+			{
+				return;
+			}
+
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
@@ -445,6 +465,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(IList<T> items)
 		{
+			if (items.Count == 0)
+			{
+				return;
+			}
+
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
