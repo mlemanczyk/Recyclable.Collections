@@ -548,7 +548,7 @@ namespace Recyclable.Collections
 			}
 
 			long capacity = _capacity;
-			long oldLongCount = _longCount;
+			long copied = _longCount;
 			int blockSize = _blockSize;
 			int targetItemIdx = _nextItemIndex;
 			int targetBlockIdx = _lastBlockIndex;
@@ -557,7 +557,7 @@ namespace Recyclable.Collections
 			Span<T> blockArraySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				long requiredCapacity = oldLongCount + requiredAdditionalCapacity;
+				long requiredCapacity = copied + requiredAdditionalCapacity;
 				if (capacity < requiredCapacity)
 				{
 					_ = EnsureCapacity(requiredCapacity);
@@ -594,51 +594,66 @@ namespace Recyclable.Collections
 
 			if (enumerator.MoveNext())
 			{
-				long available = capacity - targetItemIdx;
-				memoryBlocksSpan = new(_memoryBlocks);
+				long available = capacity - copied,
+					initialCount = copied;
+
+				memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
 				var memoryBlocksCount = memoryBlocksSpan.Length;
 				while (true)
 				{
-					if (targetItemIdx + growByCount > capacity)
+					if (copied + growByCount > capacity)
 					{
 						capacity = EnsureCapacity(capacity + growByCount);
-						memoryBlocksSpan = new(_memoryBlocks);
-						memoryBlocksCount = memoryBlocksSpan.Length;
-						available = capacity - targetItemIdx;
+						memoryBlocksCount = _memoryBlocks.Length;
+						if (blockSize != _blockSize)
+						{
+							blockSize = _blockSize;
+						}
+
+						memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
+						available = capacity - copied;
 					}
 
-					blockArraySpan = memoryBlocksSpan[targetBlockIdx];
-					for (i = 0; i < available; i++)
+					blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
+					for (i = 1; i <= available; i++)
 					{
 						blockArraySpan[targetItemIdx++] = enumerator.Current;
+
 						if (!enumerator.MoveNext())
 						{
-							break;
+							copied += i;
+							if (targetItemIdx < blockSize)
+							{
+								_lastBlockIndex = targetBlockIdx;
+								_nextItemIndex = targetItemIdx;
+							}
+							else
+							{
+								_lastBlockIndex = targetBlockIdx + 1;
+								_nextItemIndex = 0;
+							}
+
+							_longCount += copied - _longCount;
+							return;
 						}
 
 						if (targetItemIdx == blockSize)
 						{
 							targetBlockIdx++;
+							targetItemIdx = 0;
+							
 							if (targetBlockIdx == memoryBlocksCount)
 							{
 								break;
 							}
 
-							targetItemIdx = 0;
-							blockArraySpan = new(memoryBlocksSpan[targetBlockIdx]);
+							blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
 						}
 					}
 
-					if (i < available)
-					{
-						break;
-					}
+					copied += available;
 				}
 			}
-
-			_longCount = targetItemIdx;
-			_lastBlockIndex = targetBlockIdx;
-			_nextItemIndex = targetItemIdx;
 		}
 
 		public void Clear()

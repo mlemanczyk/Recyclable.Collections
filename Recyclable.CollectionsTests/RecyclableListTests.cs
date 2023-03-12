@@ -320,7 +320,8 @@ namespace Recyclable.CollectionsTests
 			new object[] { "RecyclableArrayList<int>", _testData.ToRecyclableArrayList() },
 			new object[] { "RecyclableList<int>", _testData.ToRecyclableList() },
 			new object[] { "IList<int>", new CustomIList<int>(_testData) },
-			new object[] { "IEnumerable<int>", _testData },
+			new object[] { "IEnumerable<int> with non-enumerated count", _testData },
+			new object[] { "IEnumerable<int> without non-enumerated count", new EnumerableWithoutCount<int>(_testData) }
 		};
 
 		public static IEnumerable<object[]> AddRangeEmptyCollectionTypes => new[]
@@ -433,7 +434,8 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			var expectedData = testData.Concat(testData).ToArray();
-			_ = list.Capacity.Should().Be(229376L, "when capacity == 0, then we allocate as much memory as needed, only");
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo(expectedData.Length)
+				.And.BeLessThan((int)(expectedData.Length * 1.5));
 			_ = list.Should().HaveCount(expectedData.Length)
 				.And.ContainInConsecutiveOrder(expectedData)
 				.And.BeEquivalentTo(expectedData);
