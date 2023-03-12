@@ -137,7 +137,7 @@ namespace Recyclable.Collections
 		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this RecyclableArrayList<T> values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+		public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int minBlockSize = RecyclableDefaults.BlockSize) => new(values, minBlockSize: minBlockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T[] RentArrayFromPool<T>(this int minSize, ArrayPool<T> arrayPool) => (minSize >= _minPooledArraySize)

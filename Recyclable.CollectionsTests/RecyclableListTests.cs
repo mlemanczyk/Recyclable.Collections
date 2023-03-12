@@ -10,44 +10,93 @@ namespace Recyclable.CollectionsTests
 		private static readonly IEnumerable<int> _testData = Enumerable.Range(1, _totalObjectCount);
 		private static RecyclableList<int> CreateReversedRecyclableList(IEnumerable<int> source) => new(source, 1024);
 
-		[Fact]
-		public void AddShouldAddItems()
+		private static IEnumerable<int> ItemsCountVariants => new[]
+		{
+			0, 1, 2, 3, 10, 16, 32, 64, 128, 256, 512, 1_024, 2_048, 4_096, 8_192, 16_384,
+			32_768, 65_536, 131_072, 262_144, 524_288, 1_048_576, 10_000_000 
+		};
+
+		private static IEnumerable<int> BlockSizeVariants = new[]
+		{
+			1, 2, 3, 10, 16, 32, 64, 128, 256, 512, 1_024, 2_048, 4_096,
+			8_192, 16_384, 32_768, 65_536, 131_072, 262_144, 524_288, 1_048_576
+		};
+
+		public static IEnumerable<object[]> TargetTestDataVariants()
+		{
+			foreach (var itemsCount in ItemsCountVariants)
+			{
+				foreach (var targetBlockSize in BlockSizeVariants)
+				{
+					yield return new object[] { itemsCount, targetBlockSize };
+				}
+			}
+		}
+
+		public static IEnumerable<object[]> TestDataVariants()
+		{
+			foreach (var itemsCount in ItemsCountVariants)
+			{
+				foreach (var sourceBlockSize in BlockSizeVariants)
+				{
+					foreach (var targetBlockSize in BlockSizeVariants)
+					{
+						yield return new object[] { itemsCount, sourceBlockSize, targetBlockSize };
+					}
+				}
+			}
+		}
+
+		public static IEnumerable<object[]> TestDataVariantsWithData()
+		{
+			foreach (var testData in AddRangeCollectionTypes)
+			{
+				foreach (var itemsCount in ItemsCountVariants)
+				{
+					foreach (var targetBlockSize in BlockSizeVariants)
+					{
+						yield return new object[] { testData[0], testData[1], itemsCount, targetBlockSize };
+					}
+				}
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(TargetTestDataVariants))]
+		public void AddShouldAddItems(int itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableList<int>();
+			using var list = new RecyclableList<int>(minBlockSize: targetBlockSize);
+			var testData = Enumerable.Range(1, itemsCount);
 
 			// Act
-			const int itemsCount = 5;
-			foreach (var index in Enumerable.Range(1, itemsCount))
+			foreach (var index in testData)
 			{
 				list.Add(index);
 			}
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount, "we added so many items");
-			for (var index = 0; index < itemsCount; index++)
-			{
-				var actual = list[index];
-				_ = actual.Should().Be(index + 1);
-			}
+			_ = list.Should().ContainInConsecutiveOrder(testData);
 		}
 
-		[Fact]
-		public void AddShouldAcceptDuplicates()
+		[Theory]
+		[MemberData(nameof(TargetTestDataVariants))]
+		public void AddShouldAcceptDuplicates(int itemsCount, int targetBlockSize)
 		{
-			// Prepare
-			int[] testNumbers = new[] { 1, 2, 2, 3 };
-
+			IEnumerable<int> testNumbers = Enumerable.Range(1, itemsCount)
+								 .Concat(Enumerable.Range(1, itemsCount))
+								 .ToArray();
 			// Act
-			using var list = new RecyclableList<int>();
+			using var list = new RecyclableList<int>(minBlockSize: targetBlockSize);
 			foreach (var index in testNumbers)
 			{
 				list.Add(index);
 			}
 
 			// Validate
-			_ = list.LongCount.Should().Be(testNumbers.Length);
-			_ = list.Should().BeEquivalentTo(testNumbers);
+			_ = list.LongCount.Should().Be(itemsCount * 2);
+			_ = list.Should().ContainInConsecutiveOrder(testNumbers);
 		}
 
 		[Fact]
@@ -313,16 +362,24 @@ namespace Recyclable.CollectionsTests
 			_ = list.LongCount.Should().Be(0);
 		}
 
-		public static IEnumerable<object[]> AddRangeCollectionTypes => new[]
+		public static IEnumerable<object[]> AddRangeCollectionTypes
 		{
-			new object[] { "int[]", _testData.ToArray() },
-			new object[] { "List<int>", _testData.ToList() },
-			new object[] { "RecyclableArrayList<int>", _testData.ToRecyclableArrayList() },
-			new object[] { "RecyclableList<int>", _testData.ToRecyclableList() },
-			new object[] { "IList<int>", new CustomIList<int>(_testData) },
-			new object[] { "IEnumerable<int> with non-enumerated count", _testData },
-			new object[] { "IEnumerable<int> without non-enumerated count", new EnumerableWithoutCount<int>(_testData) }
-		};
+			get
+			{
+				yield return new object[] { "int[]", _testData.ToArray() };
+				yield return new object[] { "List<int>", _testData.ToList() };
+				yield return new object[] { "RecyclableArrayList<int>", _testData.ToRecyclableArrayList() };
+				foreach (var sourceBlockSize in BlockSizeVariants)
+				{
+					yield return new object[] { $"RecyclableList<int>(minBlockSize: {sourceBlockSize})", _testData.ToRecyclableList(sourceBlockSize) };
+
+				}
+
+				yield return new object[] { "IList<int>", new CustomIList<int>(_testData) };
+				yield return new object[] { "IEnumerable<int> with non-enumerated count", _testData };
+				yield return new object[] { "IEnumerable<int> without non-enumerated count", new EnumerableWithoutCount<int>(_testData) };
+			}
+		}
 
 		public static IEnumerable<object[]> AddRangeEmptyCollectionTypes => new[]
 		{
