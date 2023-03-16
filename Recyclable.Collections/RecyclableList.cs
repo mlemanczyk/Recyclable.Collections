@@ -779,8 +779,15 @@ namespace Recyclable.Collections
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
+		~RecyclableList()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose();
+		}
+
 		public void Dispose()
 		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			if (_capacity > 0)
 			{
 				Clear();
