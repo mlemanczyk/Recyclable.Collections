@@ -32,6 +32,7 @@ namespace Recyclable.Collections
 		public int Count => (int)_longCount;
 
 		protected long _longCount;
+
 		public long LongCount
 		{
 			get => _longCount;
@@ -552,25 +553,31 @@ namespace Recyclable.Collections
 
 			int blockSize = _blockSize,
 				targetBlockIndex = _lastBlockIndex,
-				copied = blockSize - _nextItemIndex,
-				itemsCount = items.Count;
+				itemsCount = items.Count,
+				copied = Math.Min(blockSize - _nextItemIndex, itemsCount);
 
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _memoryBlocks.Length);
-			items.CopyTo(0, memoryBlocksSpan[targetBlockIndex++], _nextItemIndex, copied);
+			items.CopyTo(0, memoryBlocksSpan[targetBlockIndex], _nextItemIndex, copied);
+			if (_nextItemIndex + copied == blockSize)
+			{
+				targetBlockIndex++;
+				_nextItemIndex = 0;
+			}
+			else
+			{
+				_nextItemIndex += copied;
+			}
+
 			while (blockSize <= itemsCount - copied)
 			{
 				items.CopyTo(copied, memoryBlocksSpan[targetBlockIndex++], 0, blockSize);
 				copied += blockSize;
 			}
 
-			if (itemsCount - copied != 0)
+			if ((itemsCount - copied < blockSize) && (itemsCount - copied != 0))
 			{
 				_nextItemIndex = itemsCount - copied;
 				items.CopyTo(copied, memoryBlocksSpan[targetBlockIndex], 0, _nextItemIndex);
-			}
-			else
-			{
-				_nextItemIndex = 0;
 			}
 
 			_lastBlockIndex = targetBlockIndex;
