@@ -70,7 +70,6 @@ namespace Recyclable.CollectionsTests
 			_testCases = null;
 			_sourceDataVariants = null;
 			_targetDataVariants = null;
-			_testDataVariants = null;
 			_sourceTargetDataVariants = null;
 			_emptySourceDataVariants = null;
 			GC.SuppressFinalize(this);
@@ -101,23 +100,6 @@ namespace Recyclable.CollectionsTests
 
 		private static IEnumerable<object[]>? _targetDataVariants;
 		public static IEnumerable<object[]> TargetDataVariants => _targetDataVariants ??= GetTargetDataVariants().ToArray();
-
-		private static IEnumerable<object[]> GetTestDataVariants()
-		{
-			foreach (var itemsCount in ItemsCountVariants)
-			{
-				foreach (var sourceBlockSize in BlockSizeVariants)
-				{
-					foreach (var targetBlockSize in BlockSizeVariants)
-					{
-						yield return new object[] { itemsCount, sourceBlockSize, targetBlockSize };
-					}
-				}
-			}
-		}
-
-		private static IEnumerable<object[]>? _testDataVariants;
-		public static IEnumerable<object[]> TestDataVariants => _testDataVariants ??= GetTestDataVariants().ToArray();
 
 		private static IEnumerable<object[]> CreateSourceDataVariants()
 		{
