@@ -17,12 +17,17 @@ namespace Recyclable.Collections
 
 		public static void CopyTo<T>(this T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
 		{
+			if (itemsCount <= 0)
+			{
+				return;
+			}
+
 			Span<T> sourceBlockMemory;
 			Span<T> destinationArrayMemory;
 			int startingBlockIndex = (int)(startingIndex / blockSize);
-			int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount - (itemsCount / blockSize) > 0 ? 1 : 0)) - 1;
-			Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex - startingBlockIndex + 1);
-			destinationArrayMemory = new Span<T>(destinationArray, destinationArrayIndex, destinationArray.Length - destinationArrayIndex);
+			int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize > 0 ? 1 : 0)) - 1;
+			Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
+			destinationArrayMemory = new Span<T>(destinationArray, destinationArrayIndex, (int)Math.Min(destinationArray.Length - destinationArrayIndex, itemsCount));
 			int memoryBlockIndex;
 			for (memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
 			{
@@ -31,9 +36,9 @@ namespace Recyclable.Collections
 				destinationArrayMemory = destinationArrayMemory[blockSize..];
 			}
 
-			if (itemsCount % blockSize > 0)
+			if (itemsCount - (lastBlockIndex * blockSize) > 0)
 			{
-				sourceBlockMemory = new(sourceMemoryBlocksSpan[lastBlockIndex], 0, (int)(itemsCount % blockSize));
+				sourceBlockMemory = new(sourceMemoryBlocksSpan[lastBlockIndex], 0, (int)(itemsCount - (lastBlockIndex * blockSize)));
 				sourceBlockMemory.CopyTo(destinationArrayMemory);
 			}
 		}
