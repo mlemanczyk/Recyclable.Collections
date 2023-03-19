@@ -11,9 +11,9 @@ namespace Recyclable.Collections
 
 		protected T[] _memoryBlock;
 
-		private static void ThrowArgumentOutOfRangeException()
+		private static void ThrowArgumentOutOfRangeException(in string message)
 		{
-			throw new ArgumentOutOfRangeException("index");
+			throw new ArgumentOutOfRangeException(message, (Exception?)null);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -162,6 +162,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(in T[] items)
 		{
+			if (items.LongLength == 0)
+			{
+				return;
+			}
+
 			int sourceItemsCount = items.Length;
 			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
@@ -177,6 +182,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(List<T> items)
 		{
+			if (items.Count == 0)
+			{
+				return;
+			}
+
 			var sourceItemsCount = items.Count;
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
@@ -190,6 +200,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(IList<T> items)
 		{
+			if (items.Count == 0)
+			{
+				return;
+			}
+
 			var sourceItemsCount = items.Count;
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
@@ -203,6 +218,11 @@ namespace Recyclable.Collections
 
 		public void AddRange(RecyclableArrayList<T> items)
 		{
+			if (items.Count == 0)
+			{
+				return;
+			}
+
 			var sourceItemsCount = items._count;
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
@@ -213,6 +233,58 @@ namespace Recyclable.Collections
 			var targetSpan = new Span<T>(_memoryBlock)[_count..];
 			Span<T> itemsSpan = new(items._memoryBlock);
 			itemsSpan.CopyTo(targetSpan);
+			_count = targetCapacity;
+		}
+
+		public void AddRange(RecyclableList<T> items)
+		{
+			if (items.LongCount == 0)
+			{
+				return;
+			}
+
+			var sourceItemsCount = items.LongCount;
+			if (sourceItemsCount > int.MaxValue)
+			{
+				ThrowArgumentOutOfRangeException($"The number of items exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableList<T>)}, instead");
+			}
+
+			if (_count + sourceItemsCount > int.MaxValue)
+			{
+				ThrowArgumentOutOfRangeException($"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableList<T>)}, instead");
+			}
+
+			int targetCapacity = _count + (int)sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(targetCapacity);
+			}
+
+			Span<T> targetSpan = new Span<T>(_memoryBlock)[_count..],
+				itemsSpan;
+
+			int blockIndex,
+				sourceBlockSize = items.BlockSize,
+				lastBlockIndex = (int)(sourceItemsCount / sourceBlockSize) - 1;
+
+			for (blockIndex = 0; blockIndex <= lastBlockIndex; blockIndex++)
+			{
+				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, sourceBlockSize);
+				itemsSpan.CopyTo(targetSpan);
+				targetSpan = targetSpan[sourceBlockSize..];
+			}
+
+			if (blockIndex == 0)
+			{
+				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, (int)sourceItemsCount);
+				itemsSpan.CopyTo(targetSpan);
+			}
+			else if (blockIndex < items.BlockCount)
+			{
+				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, items.NextItemIndex);
+				itemsSpan.CopyTo(targetSpan);
+			}
+
 			_count = targetCapacity;
 		}
 
@@ -375,7 +447,7 @@ namespace Recyclable.Collections
 
 			if (index >= oldCount)
 			{
-				ThrowArgumentOutOfRangeException();
+				ThrowArgumentOutOfRangeException($"Argument \"{index}\" is out of range. The current version supports removing the last element, only ");
 				return;
 			}
 

@@ -22,6 +22,9 @@ namespace Recyclable.Collections
 		protected ArrayPool<T> _blockArrayPool;
 		protected T[][] _memoryBlocks;
 
+		public int BlockSize => _blockSize;
+		public int BlockCount => _memoryBlocks.Length;
+
 		private long _capacity;
 		public long Capacity
 		{
@@ -29,7 +32,8 @@ namespace Recyclable.Collections
 			protected set => _capacity = value;
 		}
 
-		public int Count => (int)_longCount;
+		public int Count => checked((int)_longCount);
+		public bool IsReadOnly { get; }
 
 		protected long _longCount;
 
@@ -39,8 +43,8 @@ namespace Recyclable.Collections
 			set => _longCount = value;
 		}
 
-		public bool IsReadOnly { get; }
-		public int BlockCount => _memoryBlocks.Length;
+		public int LastBlockIndex => _lastBlockIndex;
+		public int NextItemIndex => _nextItemIndex;
 
 		private static void RemoveAt(RecyclableList<T> list, long index, ArrayPool<T> blockArrayPool)
 		{
