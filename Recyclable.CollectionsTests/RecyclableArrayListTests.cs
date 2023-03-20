@@ -167,32 +167,116 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
-		public void InsertAtTheBeginningShouldMoveItems()
+		public void ContainsShouldNotFindAnythingWhenListEmpty()
 		{
 			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>();
+			using var list = new RecyclableArrayList<int>();
+
+			// Validate
+			_ = list.Contains(0).Should().BeFalse();
+			_ = list.Contains(1).Should().BeFalse();
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void ContainsShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			if (itemsCount == 0)
+			{
+				return;
+			}
+
+			// Prepare
+			using var list = new RecyclableArrayList<long>(testData);
+			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
+
+			// Act
+			foreach (var item in testData)
+			{
+				// Validate
+				_ = list.Contains(-item).Should().BeFalse();
+			}
+
+			// Validate
+			_ = list.Contains(0).Should().BeFalse();
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void CopyToShouldCopyAllItemsInTheCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			var list = new RecyclableArrayList<long>(testData);
+			long[] copiedItems = new long[itemsCount];
+
+			// Act
+			list.CopyTo(copiedItems, 0);
+
+			// Validate
+			_ = copiedItems.Length.Should().Be((int)itemsCount);
+			_ = copiedItems.Should().ContainInConsecutiveOrder(testData);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void EnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			var list = new RecyclableArrayList<long>(testData);
+
+			// Act
+			var yieldedItems = new List<long>((int)itemsCount);
+			foreach (var item in list)
+			{
+				yieldedItems.Add(item);
+			}
+
+			// Validate
+			_ = yieldedItems.Count.Should().Be((int)itemsCount);
+			_ = yieldedItems.Should().ContainInConsecutiveOrder(testData);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void IndexOfShouldFindTheIndexes(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			using var list = new RecyclableArrayList<long>(testData);
+
+			// Act & Validate
+			foreach (var index in testData)
+			{
+				var actual = list.IndexOf(index);
+				_ = actual.Should().Be((int)(index - 1));
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void InsertAtTheBeginningShouldMoveItems(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			var list = new RecyclableArrayList<long>();
 
 			// Act
 			foreach (var item in testData)
 			{
 				list.Insert(0, item);
-				_ = list.Count.Should().Be(item);
+				_ = list.Count.Should().Be((int)item);
 			}
 
 			// Validate
-			_ = list.Capacity.Should().Be(32);
-			_ = list.Should().HaveCount(testData.Length)
-				.And.ContainInConsecutiveOrder(testData.Reverse())
-				.And.BeEquivalentTo(testData);
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			_ = list.Count.Should().Be((int)itemsCount);
+			_ = list.Should().ContainInConsecutiveOrder(testData.Reverse());
 		}
 
-		[Fact]
-		public void LongIndexOfShouldReturnCorrectIndexes()
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void LongIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>(testData);
+			var list = new RecyclableArrayList<long>(testData);
 
 			// Act & Validate
 			foreach (var item in testData)
@@ -201,27 +285,70 @@ namespace Recyclable.CollectionsTests
 				var index = list.IndexOf(item);
 
 				// Validate
-				_ = index.Should().Be(item - 1);
+				_ = index.Should().Be((int)(item - 1));
 			}
 		}
 
-		[Fact]
-		public void RemoveFromTheBeginningShouldRemoveTheCorrectItem()
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void RemoveAtFromTheBeginningShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>(testData);
+			var list = new RecyclableArrayList<long>(testData);
 
 			// Act & Validate
-			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
+			for (var deleted = 1; deleted <= itemsCount; deleted++)
+			{
+				// Act
+				list.RemoveAt(0);
+
+				// Validate
+				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
+			}
+
+			_ = list.Should().BeEmpty();
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void RemoveAtFromTheEndShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			var list = new RecyclableArrayList<long>(testData);
+
+			// Act & Validate
+			for (var deleted = 1; deleted <= itemsCount; deleted++)
+			{
+				// Act
+				list.RemoveAt(list.Count - 1);
+
+				// Validate
+				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.Should().ContainInConsecutiveOrder(testData.Take((int)(itemsCount - deleted)));
+			}
+
+			_ = list.Should().BeEmpty();
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void RemoveFromTheBeginningShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			var list = new RecyclableArrayList<long>(testData);
+
+			// Act & Validate
+			for (var deleted = 1; deleted <= itemsCount; deleted++)
 			{
 				// Act
 				_ = list.Remove(deleted).Should().BeTrue();
 
 				// Validate
-				_ = list.Should().HaveCount(testData.Length - deleted)
-					.And.ContainInConsecutiveOrder(testData.Skip(deleted))
-					.And.BeEquivalentTo(testData.Skip(deleted));
+				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
 			}
 		}
 
@@ -244,135 +371,5 @@ namespace Recyclable.CollectionsTests
 					.And.BeEquivalentTo(testData.Take(testData.Length - deleted));
 			}
 		}
-
-		[Fact]
-		public void RemoveAtFromTheBeginningShouldSucceed()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>(testData);
-
-			// Act & Validate
-			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
-			{
-				// Act
-				list.RemoveAt(0);
-
-				// Validate
-				_ = list.Should().HaveCount(testData.Length - deleted)
-					.And.ContainInConsecutiveOrder(testData.Skip(deleted))
-					.And.BeEquivalentTo(testData.Skip(deleted));
-			}
-
-			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().Be(20);
-		}
-
-		[Fact]
-		public void RemoveAtFromTheEndShouldSucceed()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>(testData);
-
-			// Act & Validate
-			for (var deleted = 1; deleted <= testData.LongLength; deleted++)
-			{
-				// Act
-				list.RemoveAt(list.Count - 1);
-
-				// Validate
-				_ = list.Should().HaveCount(testData.Length - deleted)
-					.And.ContainInConsecutiveOrder(testData.Take(testData.Length - deleted))
-					.And.BeEquivalentTo(testData.Take(testData.Length - deleted));
-			}
-
-			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().Be(20);
-		}
-
-		[Fact]
-		public void EnumerateShouldYieldAllItemsInCorrectOrder()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>(testData);
-
-			// Act
-			var yieldedItems = new List<int>();
-			foreach (var item in list)
-			{
-				yieldedItems.Add(item);
-			}
-
-			// Validate
-			_ = yieldedItems.Should().HaveCount(testData.Length)
-				.And.ContainInConsecutiveOrder(testData)
-				.And.BeEquivalentTo(testData);
-		}
-
-		[Fact]
-		public void CopyToShouldCopyAllItemsInTheCorrectOrder()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			var list = new RecyclableArrayList<int>(testData);
-			int[] yieldedItems = new int[testData.Length];
-
-			// Act
-			list.CopyTo(yieldedItems, 0);
-
-			// Validate
-			_ = yieldedItems.Should().HaveCount(testData.Length)
-				.And.ContainInConsecutiveOrder(testData)
-				.And.BeEquivalentTo(testData);
-		}
-
-		[Fact]
-		public void IndexOfShouldFindTheIndexes()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			using var list = new RecyclableArrayList<int>(testData);
-
-			// Act & Validate
-			foreach (var index in _testData.ToArray())
-			{
-				var actual = list.IndexOf(index);
-				_ = actual.Should().Be(index - 1);
-			}
-		}
-
-		[Fact]
-		public void ContainsShouldNotFindNonExistingItems()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			using var list = new RecyclableArrayList<int>(testData);
-			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
-
-			// Act
-			foreach (var item in testData)
-			{
-				// Validate
-				_ = list.Contains(-item).Should().BeFalse();
-			}
-
-			// Validate
-			_ = list.Contains(0).Should().BeFalse();
-		}
-
-		[Fact]
-		public void ContainsShouldNotFindAnythingWhenListEmpty()
-		{
-			// Prepare
-			var testData = _testData.ToArray();
-			using var list = new RecyclableArrayList<int>(testData);
-
-			// Validate
-			_ = list.Contains(0).Should().BeFalse();
-			_ = list.Contains(1).Should().BeTrue();
-		}
-
 	}
 } 
