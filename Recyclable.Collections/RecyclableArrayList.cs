@@ -279,7 +279,7 @@ namespace Recyclable.Collections
 				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, (int)sourceItemsCount);
 				itemsSpan.CopyTo(targetSpan);
 			}
-			else if (blockIndex < items.BlockCount)
+			else if (blockIndex <= items.LastTakenBlockIndex)
 			{
 				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, items.NextItemIndex);
 				itemsSpan.CopyTo(targetSpan);

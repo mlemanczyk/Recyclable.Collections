@@ -77,8 +77,13 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void InitializeSortClearShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void InitializeSortClearAddRangeRemoveShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
+			if (itemsCount == 0)
+			{
+				return;
+			}
+
 			// Act
 			using RecyclableList<long> list = new(testData, minBlockSize: targetBlockSize);
 			list.QuickSort();
@@ -86,13 +91,26 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount);
 			_ = list.Should().Equal(testData);
-			_ = testData.Should().AllSatisfy(expected => list.Contains(expected));
 
 			// Act
 			list.Clear();
 
 			// Validate
 			_ = list.LongCount.Should().Be(0);
+			_ = list.Should().BeEmpty();
+
+			// Act
+			list.AddRange(testData);
+
+			// Validate
+			_ = list.LongCount.Should().Be(itemsCount);
+			_ = list.Should().ContainInConsecutiveOrder(testData);
+
+			// Act
+			foreach (var item in testData.Reverse())
+			{
+				_ = list.Remove(item).Should().BeTrue();
+			}
 		}
 
 		[Theory]
@@ -273,8 +291,13 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void RemoveShouldRaiseNotSupportedException(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void RemoveShouldRaiseNotSupportedExceptionWhenNotLastItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
+			if (itemsCount is 0 or 1)
+			{
+				return;
+			}
+
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
 
@@ -284,8 +307,13 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void RemoveAtShouldRaiseNotSupportedException(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void RemoveAtShouldRaiseNotSupportedExceptionWhenNotLastItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
+			if (itemsCount is 0 or 1)
+			{
+				return;
+			}
+
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
 
@@ -512,6 +540,11 @@ namespace Recyclable.CollectionsTests
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
 		public void LongIndexOfShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
+			if (itemsCount == 0)
+			{
+				return;
+			}
+
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
