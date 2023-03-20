@@ -49,7 +49,7 @@ namespace Recyclable.Collections
 			LongCount--;
 			if ((List.Capacity * _blockSize) - LongCount == _blockSize)
 			{
-				List.RemoveBlock(List.BlockCount - 1);
+				List.RemoveBlock(List.ReservedBlockCount - 1);
 			}
 
 			return toRemove;
