@@ -155,11 +155,11 @@ namespace Recyclable.Collections
 			: new T[minSize];
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static void ReturnToPool<T>(this T[] array, ArrayPool<T> arrayPool)
+		public static void ReturnToPool<T>(this T[] array, ArrayPool<T> arrayPool, bool needsClearing)
 		{
 			if (array.LongLength is > _minPooledArraySize and <= int.MaxValue)
 			{
-				arrayPool.Return(array);
+				arrayPool.Return(array, needsClearing);
 			}
 		}
 

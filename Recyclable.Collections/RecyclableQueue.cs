@@ -45,6 +45,8 @@ namespace Recyclable.Collections
 			return false;
 		}
 
+		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		protected static long GetAbsoluteIndex(long index, long removedCount) => index + removedCount;
 
@@ -181,7 +183,7 @@ namespace Recyclable.Collections
 		{
 			try
 			{
-				Memory[index].ReturnToPool(_arrayPool);
+				Memory[index].ReturnToPool(_arrayPool, NeedsClearing);
 				Memory.RemoveAt(index);
 			}
 			finally

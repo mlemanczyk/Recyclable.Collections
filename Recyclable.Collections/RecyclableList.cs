@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Recyclable.Collections
 {
 	public class RecyclableList<T> : IDisposable, IList<T>
-	{
+	{		
 		private const int ItemNotFoundIndex = -1;
 		private const int BatchSize = 8;
 
@@ -18,6 +18,9 @@ namespace Recyclable.Collections
 		private int _blockSize;
 		private int _lastBlockIndex;
 		private int _nextItemIndex;
+
+		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
+
 		protected ArrayPool<T[]> _memoryBlocksPool;
 		protected ArrayPool<T> _blockArrayPool;
 		protected T[][] _memoryBlocks;
@@ -70,7 +73,7 @@ namespace Recyclable.Collections
 				T[][] memoryBlocks = list._memoryBlocks;
 				if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					blockArrayPool.Return(memoryBlocks[list.ReservedBlockCount - 1]);
+					blockArrayPool.Return(memoryBlocks[list.ReservedBlockCount - 1], NeedsClearing);
 				}
 
 				list._capacity -= blockSize;
@@ -247,7 +250,7 @@ namespace Recyclable.Collections
 				sourceSpan.CopyTo(newMemoryBlocksSpan);
 				if (localInts[sourceBlockCount] >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					memoryBlocksPool.Return(source!);
+					memoryBlocksPool.Return(source!, NeedsClearing);
 				}
 
 				newMemoryBlocksSpan = newMemoryBlocksSpan[localInts[sourceBlockCount]..];
@@ -648,7 +651,7 @@ namespace Recyclable.Collections
 			{
 				if (items.Count >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					_blockArrayPool.Return(itemsBuffer);
+					_blockArrayPool.Return(itemsBuffer, NeedsClearing);
 				}
 			}
 		}
@@ -703,7 +706,7 @@ namespace Recyclable.Collections
 				ArrayPool<T> blockArrayPool = _blockArrayPool;
 				for (int toRemoveIdx = 0; toRemoveIdx < memoryBlocksCount; toRemoveIdx++)
 				{
-					blockArrayPool.Return(memoryBlocksSpan[toRemoveIdx]);
+					blockArrayPool.Return(memoryBlocksSpan[toRemoveIdx], NeedsClearing);
 				}
 			}
 
@@ -777,7 +780,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_blockArrayPool.Return(_memoryBlocks[index]);
+				_blockArrayPool.Return(_memoryBlocks[index], NeedsClearing);
 			}
 
 			_capacity -= _blockSize;
@@ -810,7 +813,7 @@ namespace Recyclable.Collections
 				Clear();
 				if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					_memoryBlocksPool.Return(_memoryBlocks);
+					_memoryBlocksPool.Return(_memoryBlocks, NeedsClearing);
 				}
 
 				GC.SuppressFinalize(this);
