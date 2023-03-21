@@ -9,6 +9,8 @@ namespace Recyclable.Collections
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
+		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
+
 		protected T[] _memoryBlock;
 
 		private static void ThrowArgumentOutOfRangeException(in string message)
@@ -32,7 +34,7 @@ namespace Recyclable.Collections
 				sourceSpan.CopyTo(newArraySpan);
 				if (sourceLength >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					arrayPool.Return(source!);
+					arrayPool.Return(source!, NeedsClearing);
 				}
 			}
 
@@ -464,7 +466,7 @@ namespace Recyclable.Collections
 			{
 				Clear();
 				_capacity = 0;
-				_memoryBlock.ReturnToPool(_arrayPool);
+				_memoryBlock.ReturnToPool(_arrayPool, NeedsClearing);
 				GC.SuppressFinalize(this);
 			}
 		}
