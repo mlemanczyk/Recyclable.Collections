@@ -374,7 +374,7 @@ namespace Recyclable.Collections
 			_count = 0;
 		}
 
-		public bool Contains(T item) => Array.IndexOf(_memoryBlock, item, 0, _count) >= 0;
+		public bool Contains(T item) => _count > 0 && Array.IndexOf(_memoryBlock, item, 0, _count) >= 0;
 
 		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(_memoryBlock, 0, array, arrayIndex, _count);
 
