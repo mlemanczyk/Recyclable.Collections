@@ -4,37 +4,6 @@ namespace Recyclable.CollectionsTests
 {
 	public class RecyclableListTestData
 	{
-		private static void DisposeTestData(IEnumerable<object[]>? testCases)
-		{
-			if (testCases != null)
-			{
-				foreach (var testData in testCases)
-				{
-					foreach (var item in testData)
-					{
-						if (item is IDisposable disposable)
-						{
-							disposable.Dispose();
-						}
-					}
-				}
-			}
-		}
-
-		private static void DisposeTestData(IEnumerable<IEnumerable<long>>? testCases)
-		{
-			if (testCases != null)
-			{
-				foreach (var testData in testCases)
-				{
-					if (testData is IDisposable disposable)
-					{
-						disposable.Dispose();
-					}
-				}
-			}
-		}
-
 		private static IEnumerable<long> DoCreateTestData(long itemsCount)
 		{
 			for (long index = 1; index <= itemsCount; index++)
