@@ -130,7 +130,7 @@ namespace Recyclable.Collections
 		public static RecyclableList<T> ToRecyclableList<T>(this List<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this IEnumerable<T> values) => new(values, values.TryGetNonEnumeratedCount(out int count) ? count : RecyclableDefaults.Capacity);
+		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this IEnumerable<T> values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this T[] values) => new(values);
