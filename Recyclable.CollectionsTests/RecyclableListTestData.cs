@@ -2,7 +2,7 @@
 
 namespace Recyclable.CollectionsTests
 {
-	public class RecyclableListTestData : IDisposable
+	public class RecyclableListTestData
 	{
 		private static void DisposeTestData(IEnumerable<object[]>? testCases)
 		{
