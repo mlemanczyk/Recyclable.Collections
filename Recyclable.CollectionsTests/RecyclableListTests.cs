@@ -248,6 +248,19 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void ConstructorShouldAddItemsInCorrectOrderWhenSourceIsIEnumerable(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		{
+			// Act
+			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
+
+			// Validate
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount, "when we succeed in taking count without enumerating, then we allocate as much memory as needed, only");
+			_ = list.LongCount.Should().Be(itemsCount);
+			_ = list.Should().ContainInConsecutiveOrder(testData);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
 		public void ConstructorSourceShouldInitializeList(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Act
@@ -320,7 +333,7 @@ namespace Recyclable.CollectionsTests
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
 		//[InlineData("Debuging case", new[] { 1L, 2, }, 2, 2)]
-		public void CopyToShouldCopyAllItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void CopyToShouldCopyAllItemsInTheCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
@@ -348,7 +361,7 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void EnumeratorShouldYieldAllItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void EnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
@@ -564,7 +577,7 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void RemoveShouldRemoveLastItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void RemoveFromTheEndShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
