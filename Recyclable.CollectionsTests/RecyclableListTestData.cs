@@ -35,13 +35,6 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		private static Dictionary<long, IEnumerable<long>>? _testCases = new();
-		
-		public RecyclableListTestData()
-		{
-			_testCases ??= new();
-		}
-
 		private static IEnumerable<long> DoCreateTestData(long itemsCount)
 		{
 			for (long index = 1; index <= itemsCount; index++)
@@ -50,30 +43,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		public static IEnumerable<long> CreateTestData(long itemsCount)
-		{
-			if (_testCases!.TryGetValue(itemsCount, out var testCases))
-			{
-				return testCases;
-			}
-
-			testCases = DoCreateTestData(itemsCount).ToArray();
-			_testCases.Add(itemsCount, testCases);
-			return testCases;
-		}
-
-		public void Dispose()
-		{
-			DisposeTestData(_testCases?.Values);
-			DisposeTestData(_sourceDataVariants);
-			DisposeTestData(_emptySourceDataVariants);
-			_testCases = null;
-			_sourceDataVariants = null;
-			_targetDataVariants = null;
-			_sourceTargetDataVariants = null;
-			_emptySourceDataVariants = null;
-			GC.SuppressFinalize(this);
-		}
+		public static IEnumerable<long> CreateTestData(long itemsCount) => DoCreateTestData(itemsCount).ToArray();
 
 		public static readonly IEnumerable<long> ItemsCountVariants = new long[]
 		{
@@ -98,8 +68,7 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		private static IEnumerable<object[]>? _targetDataVariants;
-		public static IEnumerable<object[]> TargetDataVariants => _targetDataVariants ??= GetTargetDataVariants().ToArray();
+		public static IEnumerable<object[]> TargetDataVariants => GetTargetDataVariants().ToArray();
 
 		private static IEnumerable<object[]> CreateSourceDataVariants()
 		{
@@ -125,9 +94,8 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		private static IEnumerable<object[]>? _sourceDataVariants;
-		public static IEnumerable<object[]> SourceDataVariants => _sourceDataVariants ??= CreateSourceDataVariants().ToArray();
-
+		public static IEnumerable<object[]> SourceDataVariants => CreateSourceDataVariants().ToArray();
+			
 		private static IEnumerable<object[]> CreateSourceEmptyDataVariants() => new[]
 		{
 			new object[] { "int[]", Array.Empty<long>() },
@@ -139,8 +107,7 @@ namespace Recyclable.CollectionsTests
 			new object[] { "IEnumerable<int> without non-enumerated count", new EnumerableWithoutCount<long>(Array.Empty<long>()) }
 		};
 
-		private static IEnumerable<object[]>? _emptySourceDataVariants;
-		public static IEnumerable<object[]> EmptySourceDataVariants => _emptySourceDataVariants ??= CreateSourceEmptyDataVariants().ToArray();
+		public static IEnumerable<object[]> EmptySourceDataVariants => CreateSourceEmptyDataVariants().ToArray();
 
 		private static IEnumerable<object[]> CreateSourceTargetDataVariants()
 		{
@@ -153,7 +120,6 @@ namespace Recyclable.CollectionsTests
 			}
 		}
 
-		private static IEnumerable<object[]>? _sourceTargetDataVariants;
-		public static IEnumerable<object[]> SourceTargetDataVariants => _sourceTargetDataVariants ??= CreateSourceTargetDataVariants().ToArray();
+		public static IEnumerable<object[]> SourceTargetDataVariants => CreateSourceTargetDataVariants().ToArray();
 	}
 }
