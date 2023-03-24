@@ -15,7 +15,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			var actual = new RecyclableList<string>();
-			var enumerator = list.GetEnumerator();
+			using var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
 				actual.Add(enumerator.Current);
