@@ -176,7 +176,7 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			var targetSpan = new Span<T>(_memoryBlock)[_count..];
+			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
 			Span<T> itemsSpan = new(items);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
@@ -232,8 +232,8 @@ namespace Recyclable.Collections
 				_ = EnsureCapacity(targetCapacity);
 			}
 
-			var targetSpan = new Span<T>(_memoryBlock)[_count..];
-			Span<T> itemsSpan = new(items._memoryBlock);
+			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
+			Span<T> itemsSpan = new(items._memoryBlock, 0, sourceItemsCount);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
 		}
@@ -390,8 +390,8 @@ namespace Recyclable.Collections
 
 		public int IndexOf(T itemToFind)
 		{
-			Span<T> memorySpan = new(_memoryBlock);
 			int itemCount = _count;
+			Span<T> memorySpan = new(_memoryBlock, 0, itemCount);
 			var equalityComparer = _equalityComparer;
 			for (var itemIdx = 0; itemIdx < itemCount; itemIdx++)
 			{
@@ -416,8 +416,8 @@ namespace Recyclable.Collections
 
 			if (oldCount > 0)
 			{
-				var sourceSpan = new Span<T>(_memoryBlock)[index..oldCount];
-				var targetSpan = new Span<T>(_memoryBlock)[(index + 1)..];
+				var sourceSpan = new Span<T>(_memoryBlock, index, oldCount);
+				var targetSpan = new Span<T>(_memoryBlock, index + 1, oldCount);
 				sourceSpan.CopyTo(targetSpan);
 			}
 
