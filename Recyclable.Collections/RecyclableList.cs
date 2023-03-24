@@ -91,7 +91,7 @@ namespace Recyclable.Collections
 
 			int blockSize = _blockSize, targetItemIdx = _nextItemIndex, targetBlockIdx = _lastBlockIndex;
 
-			IEnumerator<T> enumerator = source.GetEnumerator();
+			using IEnumerator<T> enumerator = source.GetEnumerator();
 			if (!enumerator.MoveNext())
 			{
 				return;
