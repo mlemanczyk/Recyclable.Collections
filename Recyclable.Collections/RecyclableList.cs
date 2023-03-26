@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Collections;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
@@ -330,6 +331,7 @@ namespace Recyclable.Collections
 			blockArrayPool ??= _defaultBlockArrayPool;
 			_memoryBlocksPool = memoryBlocksPool;
 			_blockArrayPool = blockArrayPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
 			if (expectedItemsCount > 0)
 			{
@@ -357,6 +359,8 @@ namespace Recyclable.Collections
 			blockArrayPool ??= _defaultBlockArrayPool;
 			_memoryBlocksPool = memoryBlocksPool;
 			_blockArrayPool = blockArrayPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
 				_memoryBlocks = SetNewLength(_memoryBlocks, minBlockSize, 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
