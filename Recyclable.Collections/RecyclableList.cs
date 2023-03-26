@@ -46,7 +46,7 @@ namespace Recyclable.Collections
 			set => _longCount = value;
 		}
 
-		public int ReservedBlockCount => (int)(_capacity / _blockSize) + (_capacity % _blockSize > 0 ? 1 : 0);
+		public int ReservedBlockCount => (int)(_capacity >> _blockSizePow2Shift) + ((_capacity & (_blockSize - 1)) > 0 ? 1 : 0);
 		public int BlockSize => _blockSize;
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
@@ -233,11 +233,12 @@ namespace Recyclable.Collections
 		protected static T[][] SetNewLength(in T[][]? source, int minBlockSize, long oldCapacity, long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
 			const int sourceBlockCount = 0, requiredBlockCount = 1, uninitializedBlocksCount = 2, i = 3;
-
+			minBlockSize = (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize);
+			int minBlockSizePowerToShift = MathUtils.GetPow2Shift(minBlockSize);
 			Span<int> localInts = stackalloc int[4]
 			{
-				(int)(oldCapacity / minBlockSize), // sourceBlockCount
-				(int)(newCapacity / minBlockSize) + (newCapacity % minBlockSize > 0 ? 1 : 0), // requiredBlockCount
+				(int)(oldCapacity >> minBlockSizePowerToShift), // sourceBlockCount
+				(int)(newCapacity >> minBlockSizePowerToShift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0), // requiredBlockCount
 				0, // uninitializedBlocksCount
 				0, // i
 			};
@@ -331,7 +332,6 @@ namespace Recyclable.Collections
 			blockArrayPool ??= _defaultBlockArrayPool;
 			_memoryBlocksPool = memoryBlocksPool;
 			_blockArrayPool = blockArrayPool;
-			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
 			if (expectedItemsCount > 0)
 			{
@@ -359,7 +359,6 @@ namespace Recyclable.Collections
 			blockArrayPool ??= _defaultBlockArrayPool;
 			_memoryBlocksPool = memoryBlocksPool;
 			_blockArrayPool = blockArrayPool;
-			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
 			if (expectedItemsCount > 0)
 			{
@@ -554,14 +553,14 @@ namespace Recyclable.Collections
 				}
 			}
 
-			if (targetCapacity % blockSize == 0)
+			if ((targetCapacity & (blockSize - 1)) == 0)
 			{
 				_nextItemIndex = 0;
 				_nextItemBlockIndex = targetBlockIndex + 1;
 			}
 			else
 			{
-				_nextItemIndex = (int)(targetCapacity % blockSize);
+				_nextItemIndex = (int)(targetCapacity & (blockSize - 1));
 				_nextItemBlockIndex = targetBlockIndex;
 
 			}
