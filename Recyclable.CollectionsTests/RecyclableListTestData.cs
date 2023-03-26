@@ -16,12 +16,13 @@ namespace Recyclable.CollectionsTests
 
 		public static readonly IEnumerable<long> ItemsCountVariants = new long[]
 		{
-			0, 1, 2, 3, 10, 16, 32, 64, 128, 256, 333, 512, 1_024, 8_192, 16_384
+			0, 1, 2, 3, 10, 16, 32, 64, 128, 256, 333, 512, 1_024, 8_192, 16_384,
+			1_000_000
 		};
 
 		public static readonly IEnumerable<int> BlockSizeVariants = new int[]
 		{
-			1, 2, 3, 10, 16, 32, 64, 128, 256, 512, 1_024, 2_048, 4_096,
+			1, 2, 4, 8, 10, 16, 32, 64, 128, 256, 512, 1_024, 2_048, 4_096,
 			8_192, 16_384
 		};
 

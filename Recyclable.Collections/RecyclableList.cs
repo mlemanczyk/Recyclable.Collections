@@ -257,7 +257,7 @@ namespace Recyclable.Collections
 			}
 
 			localInts[uninitializedBlocksCount] = newMemoryBlocksSpan.Length;
-			if (localInts[uninitializedBlocksCount] == localInts[requiredBlockCount])
+			if (localInts[uninitializedBlocksCount] >= localInts[requiredBlockCount])
 			{
 				if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
