@@ -16,6 +16,7 @@ namespace Recyclable.Collections
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
 		private int _blockSize;
+		private int _blockSizePow2Shift;
 		private int _nextItemBlockIndex;
 		private int _nextItemIndex;
 
@@ -37,6 +38,8 @@ namespace Recyclable.Collections
 		public int LastTakenBlockIndex => _nextItemBlockIndex - (_nextItemIndex > 0 ? 0 : 1);
 
 		protected long _longCount;
+		//private int _divModMethodCutoffIndex;
+
 		public long LongCount
 		{
 			get => _longCount;
@@ -313,6 +316,8 @@ namespace Recyclable.Collections
 			if (newCapacity > 0 && _capacity == 0)
 			{
 				_blockSize = memory[0].Length;
+				//_divModMethodCutoffIndex = _blockSize << 4;
+				_blockSizePow2Shift = MathUtils.GetPow2Shift(_blockSize);
 			}
 
 			newCapacity = memory.Length * _blockSize;
@@ -337,11 +342,15 @@ namespace Recyclable.Collections
 				}
 
 				_blockSize = minBlockSize;
+				//_divModMethodCutoffIndex = minBlockSize << 4;
+				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_capacity = _memoryBlocks.Length * minBlockSize;
 			}
 			else
 			{
 				_blockSize = minBlockSize;
+				//_divModMethodCutoffIndex = minBlockSize << 4;
+				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
 		}
@@ -361,11 +370,15 @@ namespace Recyclable.Collections
 				}
 
 				_blockSize = minBlockSize;
+				//_divModMethodCutoffIndex = minBlockSize << 4;
+				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_capacity = _memoryBlocks.Length * minBlockSize;
 			}
 			else
 			{
 				_blockSize = minBlockSize;
+				//_divModMethodCutoffIndex = minBlockSize << 4;
+				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
 
@@ -374,15 +387,124 @@ namespace Recyclable.Collections
 
 		public T this[long index]
 		{
-			get => _memoryBlocks[(int)(index / _blockSize)][index % _blockSize];
-			set => new Span<T>(_memoryBlocks[(int)(index / _blockSize)])[(int)(index % _blockSize)] = value;
+			get => _memoryBlocks[index >> _blockSizePow2Shift][index & (_blockSize - 1)];
+			set => new Span<T>(_memoryBlocks[(int)(index >> _blockSizePow2Shift)])[(int)(index & (_blockSize - 1))] = value;
 		}
 
 		public T this[int index]
 		{
-			get => _memoryBlocks[index / _blockSize][index % _blockSize];
-			set => new Span<T>(_memoryBlocks[index / _blockSize])[index % _blockSize] = value;
+			//[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+			get
+			{
+				//************ VERSION 1 *******************
+				//int blockSize = _blockSize;
+				//int remainder;
+				////if (index >= _divModMethodCutoffIndex)
+				////{
+				////	return _memoryBlocks[Math.DivRem(index, blockSize, out remainder)][remainder];
+				////}
+				////else
+				////{
+				//	int result = 0;
+				//	remainder = index;
+				//	while (remainder >= blockSize)
+				//	{
+				//		remainder -= blockSize;
+				//		result++;
+				//	}
+
+				//	return _memoryBlocks[result][remainder];
+				////}
+
+				//************ VERSION 2 *******************
+				//int result = 0;
+				//int totalItems = 0;
+				//int blockSize = _blockSize;
+				//while (totalItems + blockSize <= index)
+				//{
+				//	totalItems += blockSize;
+				//	result++;
+				//}
+
+				//return _memoryBlocks[result][index - totalItems];
+
+				//************ VERSION 3 ******************* 5.65
+				//int result = 0;
+				//int remainder = index;
+				//int blockSize = _blockSize;
+
+				//while (remainder >= blockSize)
+				//{
+				//	remainder -= blockSize;
+				//	result++;
+				//}
+
+				//return _memoryBlocks[result][remainder];
+
+				//************ VERSION 4 ******************* 11.97
+				//int blockSize = _blockSize;
+				//Vector128<int> state = Vector128.Create(0, index, 0, 0);
+				//Vector128<int> increment = Vector128.Create(1, -blockSize, 0, 0);
+
+				//while (state.GetElement(1) >= blockSize)
+				//{
+				//	state = Sse2.Add(state, increment);
+				//}
+
+				//return _memoryBlocks[state.GetElement(0)][state.GetElement(1)];
+
+				//************ VERSION 5 ******************* 85.61
+				//int blockSize = _blockSize;
+				//Vector<int> state = new(new[] { 0, index, 0, 0, 0, 0, 0, 0 });
+				//Vector<int> increment = new(new[] { 1, -blockSize, 0, 0, 0, 0, 0, 0 });
+
+				//while (state[1] >= blockSize)
+				//{
+				//	state += increment;
+				//}
+
+				//return _memoryBlocks[state[0]][state[1]];
+
+				//************ VERSION 5 ******************* 85.61
+				//int blockSize = _blockSize;
+				//var state = Vector128.Create(index, 0);
+				//var increment = Vector128.Create(-blockSize, 1);
+				//while (state.ToScalar() >= blockSize)
+				//{
+				//	state = Sse2.Add(state, increment);
+				//}
+
+				//return _memoryBlocks[state.GetElement(1)][state.ToScalar()];
+
+				//************ VERSION 6 ******************* 3.07
+
+				//return _blockSizePow2Shift >= 0 
+				//	? _memoryBlocks[index >> _blockSizePow2Shift][index & (_blockSize - 1)]
+				//	: GetItemAtIndex(index);
+
+				//************ VERSION 7 ******************* 2.34
+				return _memoryBlocks[index >> _blockSizePow2Shift][index & (_blockSize - 1)];
+			}
+
+			set => new Span<T>(_memoryBlocks[index >> _blockSizePow2Shift])[index & (_blockSize - 1)] = value;
 		}
+
+		//************ VERSION 6 ******************* 3.07
+		//private T GetItemAtIndex(int index)
+		//{
+		//	int remainder;
+		//	int result = 0;
+		//	remainder = index;
+		//	int blockSize = _blockSize;
+
+		//	while (remainder >= blockSize)
+		//	{
+		//		remainder -= blockSize;
+		//		result++;
+		//	}
+
+		//	return _memoryBlocks[result][remainder];
+		//}
 
 		public T[][] MemoryBlocks { get => _memoryBlocks; }
 
