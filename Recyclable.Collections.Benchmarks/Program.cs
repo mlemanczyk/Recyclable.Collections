@@ -10,6 +10,21 @@ using Recyclable.Collections.Benchmarks;
 
 internal class Program
 {
+	static void RunModuloBenchmarks()
+	{
+		var benchmark = new ModuloBenchmarks();
+		//benchmark.AddWithFor();
+		//benchmark.DividerAndModulusOperator();
+		//benchmark.MathDivRem();
+		//benchmark.SubtracWithWhile();
+		//benchmark.XDivYMulX();
+		//benchmark.XDivYMulXWithLocalVar();
+		//benchmark.AddWithForOptimized();
+		//benchmark.MixedApproachWithForLoopOptimized();
+		//benchmark.MixedApproachWithSubtractWithWhile();
+		benchmark.MixedApproachWithSubtractWithWhileAsVector();
+	}
+
 	static void RunBenchmark()
 	{
 		var benchmark = new RecyclableCollectionsBenchmarks();
@@ -39,6 +54,13 @@ internal class Program
 		);
 
 		//RunBenchmark();
+
+
+		//BenchmarkRunner.Run<ModuloBenchmarks>(
+		//	ManualConfig.Create(DefaultConfig.Instance).WithOptions(ConfigOptions.DisableOptimizationsValidator | ConfigOptions.JoinSummary)
+		//);
+
+		//RunModuloBenchmarks();
 	}
 }
 //	benchmark.Setup();
