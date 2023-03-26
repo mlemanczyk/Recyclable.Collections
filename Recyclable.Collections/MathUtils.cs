@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
@@ -13,10 +14,10 @@ namespace Recyclable.Collections
 		};
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static bool IsPow2(int value) => Array.BinarySearch(Pow2, value) >= 0;
+		public static bool IsPow2(long value) => (value != 0) && ((value & (value - 1)) == 0);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int GetPow2Shift(int value) => Array.BinarySearch(Pow2, value);
+		public static int GetPow2Shift(long value) => BitOperations.IsPow2(value) ? 63 - BitOperations.LeadingZeroCount((ulong)value) : -1;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long DivMod(long number, int divider, out long remainder)
