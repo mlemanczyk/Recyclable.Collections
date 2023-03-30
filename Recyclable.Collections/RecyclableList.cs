@@ -8,13 +8,11 @@ namespace Recyclable.Collections
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{		
 		private const int ItemNotFoundIndex = -1;
-		private const int BatchSize = 8;
 
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
-		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
 		private int _blockSize;
 		private int _blockSizePow2Shift;
