@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Collections.Pooled;
 
 namespace Recyclable.Collections.Benchmarks
 {
@@ -7,6 +8,9 @@ namespace Recyclable.Collections.Benchmarks
 		private object[] _testArray;
 		private RecyclableArrayList<object> _testRecyclableArrayList;
 		private RecyclableList<object> _testRecyclableList;
+		private PooledList<object> _testPooledList;
+
+		public PooledList<object> TestObjectsAsPooledList => _testPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 
 		[GlobalSetup]
 		public void Setup()
@@ -19,6 +23,7 @@ namespace Recyclable.Collections.Benchmarks
 			_testObjectsAsList = TestObjects.ToList();
 			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();
 			_testObjectsAsRecyclableList = TestObjects.ToRecyclableList();
+			_testPooledList = new PooledList<object>(TestObjects);
 		}
 
 		[GlobalCleanup]
@@ -27,6 +32,7 @@ namespace Recyclable.Collections.Benchmarks
 			Console.WriteLine("******* GLOBAL CLEANUP *******");
 			_testRecyclableArrayList?.Dispose();
 			_testRecyclableList?.Dispose();
+			_testPooledList?.Dispose();
 			TestObjectsAsRecyclableArrayList?.Dispose();
 			_testObjectsAsRecyclableArrayList = default;
 			_testObjectsAsRecyclableList = default;
