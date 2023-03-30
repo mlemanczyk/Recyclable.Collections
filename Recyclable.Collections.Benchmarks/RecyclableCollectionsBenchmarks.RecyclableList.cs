@@ -4,21 +4,21 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Create()
 		{
 			using var list = new RecyclableList<object>();
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Create_WithCapacity()
 		{
 			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Add()
 		{
 			var data = TestObjects;
@@ -30,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -91,7 +91,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_GetItem()
 		{
 			var data = _testRecyclableList;
@@ -214,7 +214,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_SetItem()
 		{
 			var data = _testRecyclableList;
@@ -225,21 +225,21 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Count()
 		{
 			var data = _testRecyclableList;
 			DoNothing(data.Count);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_LongCount()
 		{
 			var data = _testRecyclableList;
 			DoNothing(data.LongCount);
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Contains_FirstItems()
 		{
 			var data = TestObjects;
@@ -251,7 +251,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_Contains_LastItems()
 		{
 			var data = TestObjects;
@@ -263,7 +263,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_IndexOf_FirstItems()
 		{
 			var data = TestObjects;
@@ -275,7 +275,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_IndexOf_LastItems()
 		{
 			var data = TestObjects;
@@ -287,7 +287,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_LongIndexOf_FirstItems()
 		{
 			var data = TestObjects;
@@ -299,7 +299,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark]
 		public void RecyclableList_LongIndexOf_LastItems()
 		{
 			var data = TestObjects;

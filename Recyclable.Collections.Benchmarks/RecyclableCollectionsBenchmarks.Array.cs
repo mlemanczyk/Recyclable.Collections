@@ -5,14 +5,14 @@ namespace Recyclable.Collections.Benchmarks
 	[MemoryDiagnoser]
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		//[Benchmark(Baseline = false)]
+		[Benchmark(Baseline = true)]
 		public void Array_Create_WithCapacity()
 		{
 			var data = new object[TestObjectCount];
 			DoNothing(data);
 		}
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void Array_SetItem()
 		{
 			var data = TestObjects;
@@ -23,7 +23,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void Array_GetItem()
 		{
 			var data = TestObjects;
@@ -34,14 +34,14 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void Array_Count()
 		{
 			var data = _testArray;
 			DoNothing(data.Length);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void Array_LongCount()
 		{
 			var data = _testArray;
