@@ -1,0 +1,72 @@
+|                                                      Method |                  Mean |              Error |             StdDev |                Median |      Ratio | RatioSD |      Gen0 |      Gen1 |     Gen2 |  Allocated | Alloc Ratio |
+|------------------------------------------------------------ |----------------------:|-------------------:|-------------------:|----------------------:|-----------:|--------:|----------:|----------:|---------:|-----------:|------------:|
+|                                   Array_Create_WithCapacity |     2,026,196.4844 ns |     25,507.5479 ns |     23,859.7761 ns |     2,028,675.0000 ns |      8.466 |    0.10 |   54.6875 |   54.6875 |  54.6875 |  8000029 B |          NA |
+
+|                                               Array_SetItem |     5,108,186.2723 ns |      5,237.9274 ns |      4,643.2862 ns |     5,108,716.0156 ns |     21.343 |    0.02 |         - |         - |        - |        5 B |          NA |
+|                                                List_SetItem |     5,209,882.6823 ns |     63,181.7652 ns |     59,100.2623 ns |     5,175,639.4531 ns |     21.768 |    0.25 |         - |         - |        - |        5 B |          NA |
+|                                          PooledList_SetItem |     5,341,256.3151 ns |      8,251.3008 ns |      6,442.0730 ns |     5,340,014.4531 ns |     22.315 |    0.04 |         - |         - |        - |        5 B |          NA |
+|                                 RecyclableArrayList_SetItem |     4,012,900.8333 ns |      8,775.9740 ns |      8,209.0515 ns |     4,014,782.8125 ns |     16.766 |    0.04 |         - |         - |        - |        5 B |          NA |
+|                                      RecyclableList_SetItem |     4,749,345.8854 ns |     27,832.8301 ns |     26,034.8466 ns |     4,741,316.4062 ns |     19.843 |    0.10 |         - |         - |        - |        5 B |          NA |
+
+|                                                    List_Add |    10,418,761.3911 ns |    204,147.0502 ns |    311,754.1071 ns |    10,363,307.8125 ns |     44.147 |    1.27 |  140.6250 |   78.1250 |  78.1250 | 16777798 B |          NA |
+|                                              PooledList_Add |     7,747,779.9279 ns |     19,784.5733 ns |     16,521.0148 ns |     7,750,001.5625 ns |     32.370 |    0.06 |         - |         - |        - |       63 B |          NA |
+|                                     RecyclableArrayList_Add |     7,237,424.9399 ns |     20,275.5325 ns |     16,930.9879 ns |     7,232,728.1250 ns |     30.238 |    0.08 |         - |         - |        - |     1229 B |          NA |
+|                                          RecyclableList_Add |     5,611,979.0365 ns |      8,138.0172 ns |      6,353.6285 ns |     5,610,862.5000 ns |     23.446 |    0.03 |         - |         - |        - |      733 B |          NA |
+
+|                                               Array_GetItem |       239,342.1403 ns |        174.5315 ns |        163.2569 ns |       239,256.2256 ns |      1.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                                List_GetItem |       362,950.6755 ns |        183.6751 ns |        143.4014 ns |       362,937.7930 ns |      1.516 |    0.00 |         - |         - |        - |          - |          NA |
+|                                          PooledList_GetItem |       362,154.3983 ns |        139.8387 ns |        116.7716 ns |       362,175.5859 ns |      1.513 |    0.00 |         - |         - |        - |          - |          NA |
+|                                 RecyclableArrayList_GetItem |       239,285.5675 ns |        103.7975 ns |         86.6756 ns |       239,275.0000 ns |      1.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                      RecyclableList_GetItem |       580,268.8770 ns |      7,251.9194 ns |      6,783.4499 ns |       577,058.2520 ns |      2.424 |    0.03 |         - |         - |        - |        1 B |          NA |
+|                              RecyclableList_GetItem_AsArray |       239,421.2158 ns |         63.1265 ns |         52.7135 ns |       239,409.4727 ns |      1.000 |    0.00 |         - |         - |        - |          - |          NA |
+
+|                                                 Array_Count |             0.0073 ns |          0.0014 ns |          0.0013 ns |             0.0074 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                             Array_LongCount |             0.0022 ns |          0.0012 ns |          0.0010 ns |             0.0022 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                                  List_Count |             1.2221 ns |          0.0014 ns |          0.0011 ns |             1.2221 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                            PooledList_Count |             0.0046 ns |          0.0043 ns |          0.0040 ns |             0.0023 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                   RecyclableArrayList_Count |             1.2188 ns |          0.0022 ns |          0.0019 ns |             1.2183 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                        RecyclableList_Count |             0.0123 ns |          0.0007 ns |          0.0005 ns |             0.0121 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+|                                    RecyclableList_LongCount |             0.0022 ns |          0.0014 ns |          0.0012 ns |             0.0019 ns |      0.000 |    0.00 |         - |         - |        - |          - |          NA |
+
+|                                       List_Add_WithCapacity |     6,895,420.4314 ns |    135,354.6651 ns |    260,782.4874 ns |     6,854,155.0781 ns |     28.519 |    1.13 |   62.5000 |   62.5000 |  62.5000 |  8000360 B |          NA |
+|                                 PooledList_Add_WithCapacity |     5,321,730.2455 ns |     12,387.1665 ns |     10,980.9005 ns |     5,321,642.5781 ns |     22.235 |    0.05 |         - |         - |        - |       63 B |          NA |
+|                        RecyclableArrayList_Add_WithCapacity |     5,284,050.7212 ns |     18,133.4955 ns |     15,142.2900 ns |     5,280,705.4688 ns |     22.077 |    0.07 |         - |         - |        - |       45 B |          NA |
+|                             RecyclableList_Add_WithCapacity |     5,792,708.2031 ns |      3,343.4720 ns |      3,127.4858 ns |     5,793,183.2031 ns |     24.203 |    0.02 |         - |         - |        - |      173 B |          NA |
+
+|                              List_AddRangeWhenSourceIsArray |     3,749,286.9792 ns |     54,523.3877 ns |     51,001.2107 ns |     3,758,780.4688 ns |     15.665 |    0.21 |   42.9688 |   42.9688 |  42.9688 |  8000363 B |          NA |
+|                        PooledList_AddRangeWhenSourceIsArray |     2,171,012.5601 ns |      3,257.1297 ns |      2,719.8508 ns |     2,170,896.0938 ns |      9.070 |    0.01 |         - |         - |        - |       60 B |          NA |
+|               RecyclableArrayList_AddRangeWhenSourceIsArray |     2,221,883.2552 ns |      6,140.5301 ns |      5,743.8557 ns |     2,223,654.2969 ns |      9.283 |    0.03 |         - |         - |        - |       42 B |          NA |
+|                    RecyclableList_AddRangeWhenSourceIsArray |     2,375,847.7958 ns |      2,930.1660 ns |      2,597.5158 ns |     2,374,959.9609 ns |      9.927 |    0.01 |         - |         - |        - |      170 B |          NA |
+
+|                               List_AddRangeWhenSourceIsList |     3,672,995.1904 ns |     71,114.1123 ns |     69,843.5671 ns |     3,681,876.3672 ns |     15.345 |    0.30 |   42.9688 |   42.9688 |  42.9688 |  8000308 B |          NA |
+|                         PooledList_AddRangeWhenSourceIsList |     2,174,547.5811 ns |      6,715.5228 ns |      5,607.7656 ns |     2,172,790.8203 ns |      9.085 |    0.03 |         - |         - |        - |       60 B |          NA |
+|                RecyclableArrayList_AddRangeWhenSourceIsList |     2,233,371.7849 ns |     23,364.1263 ns |     19,510.1037 ns |     2,239,082.8125 ns |      9.331 |    0.08 |         - |         - |        - |       42 B |          NA |
+|                     RecyclableList_AddRangeWhenSourceIsList |     2,366,026.9252 ns |      2,060.7322 ns |      1,826.7854 ns |     2,366,219.5312 ns |      9.886 |    0.01 |         - |         - |        - |      170 B |          NA |
+
+|                              List_AddRangeWhenSourceIsIList |     3,745,132.7415 ns |     71,613.4245 ns |     87,947.7165 ns |     3,766,088.2812 ns |     15.676 |    0.39 |   46.8750 |   46.8750 |  46.8750 |  8000355 B |          NA |
+|                        PooledList_AddRangeWhenSourceIsIList |     2,181,849.8372 ns |      5,190.8155 ns |      4,052.6473 ns |     2,181,487.5000 ns |      9.115 |    0.02 |         - |         - |        - |       60 B |          NA |
+|               RecyclableArrayList_AddRangeWhenSourceIsIList |     2,196,517.2154 ns |      5,996.6282 ns |      5,315.8547 ns |     2,196,481.2500 ns |      9.177 |    0.02 |         - |         - |        - |       42 B |          NA |
+|                    RecyclableList_AddRangeWhenSourceIsIList |     5,078,413.7835 ns |      4,215.5884 ns |      3,737.0093 ns |     5,078,082.4219 ns |     21.219 |    0.03 |         - |         - |        - |      173 B |          NA |
+
+|                        List_AddRangeWhenSourceIsIEnumerable |    90,967,420.2381 ns |  1,673,003.6192 ns |  1,483,074.1318 ns |    90,862,658.3333 ns |    380.079 |    6.30 | 4333.3333 | 2333.3333 | 500.0000 | 40778028 B |          NA |
+|                  PooledList_AddRangeWhenSourceIsIEnumerable |    61,756,721.3068 ns |  1,225,233.1407 ns |  2,301,284.8288 ns |    61,755,050.0000 ns |    258.529 |   11.85 | 4375.0000 | 2375.0000 | 500.0000 | 24000600 B |          NA |
+|         RecyclableArrayList_AddRangeWhenSourceIsIEnumerable |    60,353,570.2532 ns |  1,156,946.0276 ns |  3,007,056.5522 ns |    60,136,425.0000 ns |    253.210 |   12.57 | 4250.0000 | 2500.0000 | 375.0000 | 24000331 B |          NA |
+|              RecyclableList_AddRangeWhenSourceIsIEnumerable |    60,597,556.2500 ns |  1,206,305.7735 ns |  1,481,451.8228 ns |    60,891,993.7500 ns |    253.050 |    6.19 | 4375.0000 | 2375.0000 | 500.0000 | 24000503 B |          NA |
+
+|                   PooledList_AddRangeWhenSourceIsPooledList |     2,206,735.6220 ns |      2,860.3858 ns |      2,388.5517 ns |     2,206,296.6797 ns |      9.220 |    0.01 |         - |         - |        - |       60 B |          NA |
+| RecyclableArrayList_AddRangeWhenSourceIsRecyclableArrayList |     2,213,033.1771 ns |     26,423.0604 ns |     24,716.1471 ns |     2,227,495.3125 ns |      9.246 |    0.10 |         - |         - |        - |       42 B |          NA |
+|      RecyclableList_AddRangeWhenSourceIsRecyclableArrayList |     2,456,687.9557 ns |     45,977.2836 ns |     43,007.1796 ns |     2,458,159.5703 ns |     10.264 |    0.18 |         - |         - |        - |      170 B |          NA |
+
+|                                  List_AddRange_WithCapacity |     3,688,541.3969 ns |     72,945.5071 ns |     86,836.4373 ns |     3,678,040.4297 ns |     15.440 |    0.38 |   42.9688 |   42.9688 |  42.9688 |  8000363 B |          NA |
+|                            PooledList_AddRange_WithCapacity |     2,215,278.5993 ns |      4,630.4941 ns |      4,104.8124 ns |     2,216,485.9375 ns |      9.256 |    0.02 |         - |         - |        - |       60 B |          NA |
+|                   RecyclableArrayList_AddRange_WithCapacity |     2,194,831.5569 ns |      7,092.2469 ns |      6,287.0921 ns |     2,193,706.8359 ns |      9.170 |    0.03 |         - |         - |        - |       42 B |          NA |
+|                        RecyclableList_AddRange_WithCapacity |     2,863,515.4536 ns |     72,047.1346 ns |    210,164.8733 ns |     2,862,379.4922 ns |     11.665 |    0.69 |         - |         - |        - |      170 B |          NA |
+
+|                                    List_Contains_FirstItems | 7,538,040,293.3333 ns | 64,412,902.0196 ns | 60,251,868.5137 ns | 7,556,011,200.0000 ns | 31,494.854 |  253.82 |         - |         - |        - |      600 B |          NA |
+|                              PooledList_Contains_FirstItems | 7,473,775,857.1429 ns | 51,447,673.7955 ns | 45,607,022.7642 ns | 7,475,783,150.0000 ns | 31,226.686 |  181.41 |         - |         - |        - |      600 B |          NA |
+|                          RecyclableList_Contains_FirstItems | 7,499,097,740.0000 ns | 41,307,956.8328 ns | 38,639,488.4507 ns | 7,477,484,200.0000 ns | 31,332.183 |  171.85 |         - |         - |        - |      600 B |          NA |
+
+|                                     List_IndexOf_FirstItems | 7,556,502,520.0000 ns | 61,900,425.0807 ns | 57,901,696.0262 ns | 7,528,699,800.0000 ns | 31,571.988 |  243.79 |         - |         - |        - |      600 B |          NA |
+|                               PooledList_IndexOf_FirstItems | 7,480,317,953.8462 ns | 61,668,998.5528 ns | 51,496,406.7947 ns | 7,454,337,900.0000 ns | 31,252.779 |  224.30 |         - |         - |        - |      600 B |          NA |
+|                           RecyclableList_IndexOf_FirstItems | 7,528,408,666.6667 ns | 53,978,194.9132 ns | 50,491,237.0123 ns | 7,524,296,300.0000 ns | 31,454.598 |  211.23 |         - |         - |        - |      600 B |          NA |
+|                       RecyclableList_LongIndexOf_FirstItems | 7,478,265,225.0000 ns |  4,283,522.6817 ns |  3,344,292.7517 ns | 7,477,691,600.0000 ns | 31,243.094 |   27.20 |         - |         - |        - |      600 B |          NA |
