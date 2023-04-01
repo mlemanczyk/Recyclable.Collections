@@ -6,6 +6,7 @@ namespace Recyclable.Collections
 {
 	public class RecyclableArrayList<T> : IEnumerable<T>, IList<T>, IDisposable
 	{
+		private const int ItemNotFound = -1;
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
@@ -388,7 +389,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public int IndexOf(T itemToFind) => Array.IndexOf(_memoryBlock, itemToFind, 0, _count);
+		public int IndexOf(T itemToFind) => _count > 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : ItemNotFound;
 
 		public void Insert(int index, T item)
 		{
