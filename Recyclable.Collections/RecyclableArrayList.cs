@@ -388,22 +388,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public int IndexOf(T itemToFind)
-		{
-			int itemCount = _count;
-			Span<T> memorySpan = new(_memoryBlock, 0, itemCount);
-			var equalityComparer = _equalityComparer;
-			for (var itemIdx = 0; itemIdx < itemCount; itemIdx++)
-			{
-				var item = memorySpan[itemIdx];
-				if (equalityComparer.Equals(item, itemToFind))
-				{
-					return itemIdx;
-				}
-			}
-
-			return -1;
-		}
+		public int IndexOf(T itemToFind) => Array.IndexOf(_memoryBlock, itemToFind, 0, _count);
 
 		public void Insert(int index, T item)
 		{
