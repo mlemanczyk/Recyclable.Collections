@@ -209,7 +209,7 @@ namespace Recyclable.Collections
 				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
 				if (itemIndex >= 0)
 				{
-					return itemIndex + (blockIndex * blockSize);
+					return itemIndex + (blockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize)));
 				}
 			}
 
@@ -224,7 +224,7 @@ namespace Recyclable.Collections
 				return ItemNotFoundIndex;
 			}
 
-			return itemIndex >= 0 ? itemIndex + (lastBlockIndex * blockSize) : ItemNotFoundIndex;
+			return itemIndex >= 0 ? itemIndex + (lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndex;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
