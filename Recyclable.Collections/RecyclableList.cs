@@ -69,7 +69,7 @@ namespace Recyclable.Collections
 				list._nextItemIndex = blockSize;
 			}
 
-			if ((list._capacity * blockSize) - oldCountMinus1 == blockSize)
+			if (list._capacity - oldCountMinus1 == blockSize)
 			{
 				T[][] memoryBlocks = list._memoryBlocks;
 				if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
