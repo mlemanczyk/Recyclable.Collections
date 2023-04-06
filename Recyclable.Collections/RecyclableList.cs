@@ -49,42 +49,73 @@ namespace Recyclable.Collections
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
 
-		private static void RemoveAt(RecyclableList<T> list, long index, ArrayPool<T> blockArrayPool)
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		private void DoRemoveAt(long index)
 		{
-			long oldCountMinus1 = list._longCount - 1;
-			if (index != oldCountMinus1)
+			int blockSize = _blockSize;
+			int nextItemIndex = _nextItemIndex;
+			T[][] memoryBlocks = _memoryBlocks;
+			_longCount--;
+			if (index < _longCount)
 			{
-				ThrowArgumentOutOfRangeException();
+				int sourceBlockIndex = (int)((index + 1) >> _blockSizePow2Shift);
+				int sourceItemIndex = (int)((index + 1) & (blockSize - 1));
+
+				int targetBlockIndex = (int)(index >> _blockSizePow2Shift);
+				int targetItemIndex = (int)(index & (blockSize - 1));
+
+				int lastTakenBlockIndex = LastTakenBlockIndex;
+				while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != _nextItemBlockIndex)))
+				{
+					int toCopy = sourceBlockIndex < lastTakenBlockIndex || nextItemIndex == 0
+						? Math.Min(blockSize - sourceItemIndex, blockSize - targetItemIndex)
+						: Math.Min(nextItemIndex, blockSize - targetItemIndex);
+
+					Array.Copy(memoryBlocks[sourceBlockIndex], sourceItemIndex, memoryBlocks[targetBlockIndex], targetItemIndex, toCopy);
+					// We didn't have enough room in the target array block. There are still items in the source array block to copy.
+					if (sourceItemIndex + toCopy < blockSize)
+					{
+						sourceItemIndex += toCopy;
+						targetBlockIndex++;
+						targetItemIndex = 0;
+					}
+					// We copied all the source items in the current array block. But have we filled the target?
+					else
+					{
+						sourceItemIndex = 0;
+						sourceBlockIndex++;
+						if (targetItemIndex + toCopy < blockSize)
+						{
+							targetItemIndex += toCopy;
+						}
+						else
+						{
+							targetBlockIndex++;
+							targetItemIndex = 0;
+						}
+					}
+				}
 			}
 
-			list._longCount--;
-			int blockSize = list._blockSize;
-			if (list._nextItemIndex > 0)
+			if (nextItemIndex > 0)
 			{
-				list._nextItemIndex--;
+				_nextItemIndex--;
 			}
 			else
 			{
-				list._nextItemBlockIndex--;
-				list._nextItemIndex = blockSize;
+				_nextItemIndex = blockSize - 1;
+				_nextItemBlockIndex--;
 			}
 
-			if (list._capacity - oldCountMinus1 == blockSize)
+			if (NeedsClearing)
 			{
-				T[][] memoryBlocks = list._memoryBlocks;
-				if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
-				{
-					blockArrayPool.Return(memoryBlocks[list.ReservedBlockCount - 1], NeedsClearing);
-				}
-
-				list._capacity -= blockSize;
+#pragma warning disable CS8601 // In real use cases we'll never access it
+				new Span<T>(memoryBlocks[_nextItemBlockIndex], _nextItemIndex, 1)[0] = default;
+#pragma warning restore CS8601
 			}
 		}
 
-		private static void ThrowArgumentOutOfRangeException()
-		{
-			throw new ArgumentOutOfRangeException("index");
-		}
+		private static void ThrowArgumentOutOfRangeException(in string message) => throw new ArgumentOutOfRangeException("index", message);
 
 		protected void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
 		{
@@ -765,7 +796,7 @@ namespace Recyclable.Collections
 			var itemIndex = LongIndexOf(item);
 			if (itemIndex >= 0)
 			{
-				RemoveAt(this, itemIndex, _defaultBlockArrayPool);
+				DoRemoveAt(itemIndex);
 				return true;
 			}
 
@@ -794,8 +825,25 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void RemoveAt(int index) => RemoveAt(this, index, _blockArrayPool);
-		public void RemoveAt(long index) => RemoveAt(this, index, _blockArrayPool);
+		public void RemoveAt(int index)
+		{
+			if (index > _longCount - 1 || index < 0)
+			{
+				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
+			}
+
+			DoRemoveAt(index);
+		}
+
+		public void RemoveAt(long index)
+		{
+			if (index > _longCount - 1 || index < 0)
+			{
+				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
+			}
+
+			DoRemoveAt(index);
+		}
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 

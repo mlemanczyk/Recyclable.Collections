@@ -545,34 +545,65 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void RemoveAtShouldRaiseNotSupportedExceptionWhenNotLastItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void RemoveAtFromTheBeginningShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
-			if (itemsCount is 0 or 1)
-			{
-				return;
-			}
-
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
 
-			// Act
-			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.RemoveAt(0));
+			// Act & Validate
+			for (var deleted = 1; deleted <= itemsCount; deleted++)
+			{
+				// Act
+				list.RemoveAt(0);
+
+				// Validate
+				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
+			}
+
+			_ = list.Should().BeEmpty();
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
 		}
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
-		public void RemoveShouldRaiseNotSupportedExceptionWhenNotLastItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void RemoveAtFromTheEndShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
-			if (itemsCount is 0 or 1)
-			{
-				return;
-			}
-
 			// Prepare
 			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
 
-			// Act
-			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Remove(testData.First()));
+			// Act & Validate
+			for (var deleted = 1; deleted <= itemsCount; deleted++)
+			{
+				// Act
+				list.RemoveAt(list.Count - 1);
+
+				// Validate
+				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.Should().ContainInConsecutiveOrder(testData.Take((int)(itemsCount - deleted)));
+			}
+
+			_ = list.Should().BeEmpty();
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void RemoveFromTheBeginningShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
+
+			// Act & Validate
+			for (var deleted = 1; deleted <= itemsCount; deleted++)
+			{
+				// Act
+				_ = list.Remove(deleted).Should().BeTrue();
+
+				// Validate
+				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
+			}
 		}
 
 		[Theory]

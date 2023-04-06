@@ -411,6 +411,7 @@ namespace Recyclable.Collections
 			_count++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Remove(T itemToRemove)
 		{
 			var itemIdx = IndexOf(itemToRemove);
@@ -423,24 +424,28 @@ namespace Recyclable.Collections
 			return false;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void RemoveAt(int index)
 		{
-			int oldCount = _count;
-			int oldCountMinus1 = oldCount - 1;
-			if (index == oldCountMinus1)
+			if (index == _count - 1)
 			{
 				_count--;
-				return;
 			}
-
-			if (index >= oldCount)
+			else if (index > _count - 1)
 			{
-				ThrowArgumentOutOfRangeException($"Argument \"{index}\" is out of range. The current version supports removing the last element, only ");
-				return;
+				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range");
+			}
+			else if (index < --_count)
+			{
+				Array.Copy(_memoryBlock, index + 1, _memoryBlock, index, _count - index);
 			}
 
-			_memoryBlock.CopyItems(index, oldCountMinus1, ref _memoryBlock);
-			_count--;
+			if (NeedsClearing)
+			{
+#pragma warning disable CS8601 // In real use cases we'll never access it
+				new Span<T>(_memoryBlock, _count, 1)[0] = default;
+#pragma warning restore CS8601
+			}
 		}
 
 		public IEnumerator<T> GetEnumerator() => Enumerate(this).GetEnumerator();
