@@ -50,68 +50,74 @@ namespace Recyclable.Collections
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private void DoRemoveAt(long index)
+		private static void DoRemoveAt(RecyclableList<T> list, long index)
 		{
-			int blockSize = _blockSize;
-			int nextItemIndex = _nextItemIndex;
-			T[][] memoryBlocks = _memoryBlocks;
-			_longCount--;
-			if (index < _longCount)
+			list._longCount--;
+			if (index < list._longCount)
 			{
-				int sourceBlockIndex = (int)((index + 1) >> _blockSizePow2Shift);
-				int sourceItemIndex = (int)((index + 1) & (blockSize - 1));
-
-				int targetBlockIndex = (int)(index >> _blockSizePow2Shift);
-				int targetItemIndex = (int)(index & (blockSize - 1));
-
-				int lastTakenBlockIndex = LastTakenBlockIndex;
-				while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != _nextItemBlockIndex)))
-				{
-					int toCopy = sourceBlockIndex < lastTakenBlockIndex || nextItemIndex == 0
-						? Math.Min(blockSize - sourceItemIndex, blockSize - targetItemIndex)
-						: Math.Min(nextItemIndex, blockSize - targetItemIndex);
-
-					Array.Copy(memoryBlocks[sourceBlockIndex], sourceItemIndex, memoryBlocks[targetBlockIndex], targetItemIndex, toCopy);
-					// We didn't have enough room in the target array block. There are still items in the source array block to copy.
-					if (sourceItemIndex + toCopy < blockSize)
-					{
-						sourceItemIndex += toCopy;
-						targetBlockIndex++;
-						targetItemIndex = 0;
-					}
-					// We copied all the source items in the current array block. But have we filled the target?
-					else
-					{
-						sourceItemIndex = 0;
-						sourceBlockIndex++;
-						if (targetItemIndex + toCopy < blockSize)
-						{
-							targetItemIndex += toCopy;
-						}
-						else
-						{
-							targetBlockIndex++;
-							targetItemIndex = 0;
-						}
-					}
-				}
+				CopyItems(list, index);
 			}
 
-			if (nextItemIndex > 0)
+			if (list._nextItemIndex > 0)
 			{
-				_nextItemIndex--;
+				list._nextItemIndex--;
 			}
 			else
 			{
-				_nextItemIndex = blockSize - 1;
-				_nextItemBlockIndex--;
+				list._nextItemIndex = list._blockSize - 1;
+				list._nextItemBlockIndex--;
 			}
 
 			if (NeedsClearing)
 			{
 #pragma warning disable CS8601 // In real use cases we'll never access it
-				new Span<T>(memoryBlocks[_nextItemBlockIndex], _nextItemIndex, 1)[0] = default;
+				new Span<T>(list._memoryBlocks[list._nextItemBlockIndex], list._nextItemIndex, 1)[0] = default;
 #pragma warning restore CS8601
+			}
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		private static void CopyItems(RecyclableList<T> list, long index)
+		{
+			T[][] memoryBlocks = list._memoryBlocks;
+			int nextItemIndex = list._nextItemIndex;
+			int blockSize = list._blockSize;
+			int sourceBlockIndex = (int)((index + 1) >> list._blockSizePow2Shift);
+			int sourceItemIndex = (int)((index + 1) & (blockSize - 1));
+
+			int targetBlockIndex = (int)(index >> list._blockSizePow2Shift);
+			int targetItemIndex = (int)(index & (blockSize - 1));
+
+			int lastTakenBlockIndex = list.LastTakenBlockIndex;
+			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
+			{
+				int toCopy = sourceBlockIndex < lastTakenBlockIndex || nextItemIndex == 0
+					? Math.Min(blockSize - sourceItemIndex, blockSize - targetItemIndex)
+					: Math.Min(nextItemIndex, blockSize - targetItemIndex);
+
+				Array.Copy(memoryBlocks[sourceBlockIndex], sourceItemIndex, memoryBlocks[targetBlockIndex], targetItemIndex, toCopy);
+				// We didn't have enough room in the target array block. There are still items in the source array block to copy.
+				if (sourceItemIndex + toCopy < blockSize)
+				{
+					sourceItemIndex += toCopy;
+					targetBlockIndex++;
+					targetItemIndex = 0;
+				}
+				// We copied all the source items in the current array block. But have we filled the target?
+				else
+				{
+					sourceItemIndex = 0;
+					sourceBlockIndex++;
+					if (targetItemIndex + toCopy < blockSize)
+					{
+						targetItemIndex += toCopy;
+					}
+					else
+					{
+						targetBlockIndex++;
+						targetItemIndex = 0;
+					}
+				}
 			}
 		}
 
@@ -231,6 +237,7 @@ namespace Recyclable.Collections
 			return;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 		protected static long DoIndexOf(T item, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
 		{
 			Span<T[]> memoryBlocksSpan = new(memoryBlocks, 0, lastBlockIndex + 1);
@@ -258,7 +265,7 @@ namespace Recyclable.Collections
 			return itemIndex >= 0 ? itemIndex + (lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndex;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static long Resize(ref T[][]? source, int minBlockSize, long oldCapacity, long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
 			int minBlockSizePowerToShift = 31 - BitOperations.LeadingZeroCount((uint)minBlockSize);
@@ -796,7 +803,7 @@ namespace Recyclable.Collections
 			var itemIndex = LongIndexOf(item);
 			if (itemIndex >= 0)
 			{
-				DoRemoveAt(itemIndex);
+				DoRemoveAt(this, itemIndex);
 				return true;
 			}
 
@@ -825,6 +832,7 @@ namespace Recyclable.Collections
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(int index)
 		{
 			if (index > _longCount - 1 || index < 0)
@@ -832,7 +840,28 @@ namespace Recyclable.Collections
 				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
 
-			DoRemoveAt(index);
+			_longCount--;
+			if (index < _longCount)
+			{
+				CopyItems(this, index);
+			}
+
+			if (_nextItemIndex > 0)
+			{
+				_nextItemIndex--;
+			}
+			else
+			{
+				_nextItemIndex = _blockSize - 1;
+				_nextItemBlockIndex--;
+			}
+
+			if (NeedsClearing)
+			{
+#pragma warning disable CS8601 // In real use cases we'll never access it
+				new Span<T>(_memoryBlocks[_nextItemBlockIndex], _nextItemIndex, 1)[0] = default;
+#pragma warning restore CS8601
+			}
 		}
 
 		public void RemoveAt(long index)
@@ -842,7 +871,28 @@ namespace Recyclable.Collections
 				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
 
-			DoRemoveAt(index);
+			_longCount--;
+			if (index < _longCount)
+			{
+				CopyItems(this, index);
+			}
+
+			if (_nextItemIndex > 0)
+			{
+				_nextItemIndex--;
+			}
+			else
+			{
+				_nextItemIndex = _blockSize - 1;
+				_nextItemBlockIndex--;
+			}
+
+			if (NeedsClearing)
+			{
+#pragma warning disable CS8601 // In real use cases we'll never access it
+				new Span<T>(_memoryBlocks[_nextItemBlockIndex], _nextItemIndex, 1)[0] = default;
+#pragma warning restore CS8601
+			}
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
