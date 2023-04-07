@@ -49,33 +49,6 @@ namespace Recyclable.Collections
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void DoRemoveAt(RecyclableList<T> list, long index)
-		{
-			list._longCount--;
-			if (index < list._longCount)
-			{
-				CopyItems(list, index);
-			}
-
-			if (list._nextItemIndex > 0)
-			{
-				list._nextItemIndex--;
-			}
-			else
-			{
-				list._nextItemIndex = list._blockSize - 1;
-				list._nextItemBlockIndex--;
-			}
-
-			if (NeedsClearing)
-			{
-#pragma warning disable CS8601 // In real use cases we'll never access it
-				new Span<T>(list._memoryBlocks[list._nextItemBlockIndex], list._nextItemIndex, 1)[0] = default;
-#pragma warning restore CS8601
-			}
-		}
-
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		private static void CopyItems(RecyclableList<T> list, long index)
 		{
@@ -792,18 +765,43 @@ namespace Recyclable.Collections
 				: (int)DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex);
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public long LongIndexOf(T item) => _longCount == 0
 				? ItemNotFoundIndex
 				: _nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0)
 				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
 				: DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex);
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public bool Remove(T item)
 		{
-			var itemIndex = LongIndexOf(item);
-			if (itemIndex >= 0)
+			var index = LongIndexOf(item);
+			if (index >= 0)
 			{
-				DoRemoveAt(this, itemIndex);
+				_longCount--;
+				if (index < _longCount)
+				{
+					CopyItems(this, index);
+				}
+
+				if (_nextItemIndex > 0)
+				{
+					_nextItemIndex--;
+				}
+				else
+				{
+					_nextItemIndex = _blockSize - 1;
+					_nextItemBlockIndex--;
+				}
+
+				if (NeedsClearing)
+				{
+#pragma warning disable CS8601 // In real use cases we'll never access it
+					_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
+#pragma warning restore CS8601
+				}
+
 				return true;
 			}
 
@@ -835,7 +833,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(int index)
 		{
-			if (index > _longCount - 1 || index < 0)
+			if (index >= _longCount || index < 0)
 			{
 				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
@@ -859,14 +857,15 @@ namespace Recyclable.Collections
 			if (NeedsClearing)
 			{
 #pragma warning disable CS8601 // In real use cases we'll never access it
-				new Span<T>(_memoryBlocks[_nextItemBlockIndex], _nextItemIndex, 1)[0] = default;
+				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
 #pragma warning restore CS8601
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(long index)
 		{
-			if (index > _longCount - 1 || index < 0)
+			if (index >= _longCount || index < 0)
 			{
 				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
@@ -890,7 +889,7 @@ namespace Recyclable.Collections
 			if (NeedsClearing)
 			{
 #pragma warning disable CS8601 // In real use cases we'll never access it
-				new Span<T>(_memoryBlocks[_nextItemBlockIndex], _nextItemIndex, 1)[0] = default;
+				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
 #pragma warning restore CS8601
 			}
 		}
