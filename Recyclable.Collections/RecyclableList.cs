@@ -69,6 +69,7 @@ namespace Recyclable.Collections
 					: Math.Min(nextItemIndex, blockSize - targetItemIndex);
 
 				Array.Copy(memoryBlocks[sourceBlockIndex], sourceItemIndex, memoryBlocks[targetBlockIndex], targetItemIndex, toCopy);
+
 				// We didn't have enough room in the target array block. There are still items in the source array block to copy.
 				if (sourceItemIndex + toCopy < blockSize)
 				{
