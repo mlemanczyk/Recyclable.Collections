@@ -4,21 +4,21 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Create()
 		{
 			var list = new List<object>();
 			DoNothing(list);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Create_WithCapacity()
 		{
 			var list = new List<object>(TestObjectCount);
 			DoNothing(list);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Add()
 		{
 			var data = TestObjects;
@@ -30,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -42,7 +42,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
@@ -50,7 +50,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_AddRangeWhenSourceIsList()
 		{
 			var data = TestObjectsAsList;
@@ -58,7 +58,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<object>)TestObjectsAsRecyclableList;
@@ -66,7 +66,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
@@ -74,7 +74,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_AddRange_WithCapacity()
 		{
 			var data = TestObjects;
@@ -83,7 +83,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_SetItem()
 		{
 			var data = TestObjectsAsList;
@@ -94,7 +94,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_GetItem()
 		{
 			var data = TestObjectsAsList;
@@ -105,14 +105,14 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Count()
 		{
 			var data = TestObjectsAsList;
 			DoNothing(data.Count);
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Contains_FirstItems()
 		{
 			var data = TestObjects;
@@ -124,7 +124,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_Contains_LastItems()
 		{
 			var data = TestObjects;
@@ -136,7 +136,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_IndexOf_FirstItems()
 		{
 			var data = TestObjects;
@@ -148,7 +148,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
+		//[Benchmark(Baseline = false)]
 		public void List_IndexOf_LastItems()
 		{
 			var data = TestObjects;
@@ -157,6 +157,54 @@ namespace Recyclable.Collections.Benchmarks
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[^(i + 1)]));
+			}
+		}
+
+		//[Benchmark(Baseline = true)]
+		public void List_RemoveAt_FirstItems()
+		{
+			var data = TestObjects;
+			var list = new List<object>(data);
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				list.RemoveAt(i);
+			}
+		}
+
+		//[Benchmark(Baseline = false)]
+		public void List_RemoveAt_LastItems()
+		{
+			var data = TestObjects;
+			var list = new List<object>(data);
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = data.Length - 1; i > data.Length - dataCount - 1; i--)
+			{
+				list.RemoveAt(i);
+			}
+		}
+
+		//[Benchmark(Baseline = false)]
+		public void List_Remove_FirstItems()
+		{
+			var data = TestObjects;
+			var list = new List<object>(data);
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(list.Remove(data[i]));
+			}
+		}
+
+		//[Benchmark(Baseline = false)]
+		public void List_Remove_LastItems()
+		{
+			var data = TestObjects;
+			var list = new List<object>(data);
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = data.Length - 1; i > data.Length - dataCount - 1; i--)
+			{
+				DoNothing(list.Remove(data[i]));
 			}
 		}
 	}
