@@ -411,31 +411,41 @@ namespace Recyclable.Collections
 			_count++;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public bool Remove(T itemToRemove)
 		{
-			var itemIdx = IndexOf(itemToRemove);
-			if (itemIdx >= 0)
+			var index = IndexOf(itemToRemove);
+			if (index >= 0)
 			{
-				RemoveAt(itemIdx);
+				_count--;
+				if (index < _count)
+				{
+					Array.Copy(_memoryBlock, index + 1, _memoryBlock, index, _count - index);
+				}
+
+				if (NeedsClearing)
+				{
+#pragma warning disable CS8601 // In real use cases we'll never access it
+					_memoryBlock[_count] = default;
+#pragma warning restore CS8601
+				}
+
 				return true;
 			}
 
 			return false;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(int index)
 		{
-			if (index == _count - 1)
-			{
-				_count--;
-			}
-			else if (index > _count - 1)
+			if (index > _count - 1)
 			{
 				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range");
 			}
-			else if (index < --_count)
+
+			_count--;
+			if (index < _count)
 			{
 				Array.Copy(_memoryBlock, index + 1, _memoryBlock, index, _count - index);
 			}
@@ -443,7 +453,7 @@ namespace Recyclable.Collections
 			if (NeedsClearing)
 			{
 #pragma warning disable CS8601 // In real use cases we'll never access it
-				new Span<T>(_memoryBlock, _count, 1)[0] = default;
+				_memoryBlock[_count] = default;
 #pragma warning restore CS8601
 			}
 		}
