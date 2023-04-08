@@ -119,7 +119,7 @@ namespace Recyclable.Collections
 			{
 				if (copied + growByCount > capacity)
 				{
-					capacity = EnsureCapacity(capacity + growByCount);
+					capacity = EnsureCapacity(this, capacity + growByCount);
 					memoryBlocksCount = _memoryBlocks.Length;
 					if (blockSize != _blockSize)
 					{
@@ -182,7 +182,7 @@ namespace Recyclable.Collections
 			long requiredCapacity = copied + requiredAdditionalCapacity;
 			if (_capacity < requiredCapacity)
 			{
-				_ = EnsureCapacity(requiredCapacity);
+				_ = EnsureCapacity(this, requiredCapacity);
 				blockSize = _blockSize;
 			}
 
@@ -313,20 +313,21 @@ namespace Recyclable.Collections
 			return (long)newMemoryBlocks.Length << minBlockSizePowerToShift;
 		}
 
-		protected long EnsureCapacity(long requestedCapacity)
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public static long EnsureCapacity(RecyclableList<T> list, long requestedCapacity)
 		{
-			long newCapacity = _capacity > 0
+			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
 				: requestedCapacity;
 
-			newCapacity = Resize(ref _memoryBlocks!, _blockSize, _capacity, newCapacity, _memoryBlocksPool, _blockArrayPool);
-			if (newCapacity > 0 && _capacity == 0)
+			newCapacity = Resize(ref list._memoryBlocks!, list._blockSize, list._capacity, newCapacity, list._memoryBlocksPool, list._blockArrayPool);
+			if (newCapacity > 0 && list._capacity == 0)
 			{
-				_blockSize = _memoryBlocks[0].Length;
-				_blockSizePow2Shift = MathUtils.GetPow2Shift(_blockSize);
+				list._blockSize = list._memoryBlocks[0].Length;
+				list._blockSizePow2Shift = MathUtils.GetPow2Shift(list._blockSize);
 			}
 
-			_capacity = newCapacity;
+			list._capacity = newCapacity;
 			return newCapacity;
 		}
 
@@ -403,7 +404,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _longCount + 1)
 			{
-				_ = EnsureCapacity(_longCount + 1);
+				_ = EnsureCapacity(this, _longCount + 1);
 			}
 
 			_memoryBlocks[_nextItemBlockIndex][_nextItemIndex++] = item;
@@ -426,7 +427,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.LongLength;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			int blockSize = _blockSize,
@@ -469,7 +470,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			int blockSize = _blockSize,
@@ -510,7 +511,7 @@ namespace Recyclable.Collections
 
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			int blockSize = _blockSize,
@@ -580,7 +581,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			int blockSize = _blockSize,
@@ -626,7 +627,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			int blockSize = _blockSize,
