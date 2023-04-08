@@ -44,7 +44,7 @@ namespace Recyclable.Collections
 			set => _longCount = value;
 		}
 
-		public int ReservedBlockCount => (int)(_capacity >> _blockSizePow2Shift) + ((_capacity & (_blockSize - 1)) > 0 ? 1 : 0);
+		public int ReservedBlockCount => checked((int)(_capacity >> _blockSizePow2Shift) + ((_capacity & (_blockSize - 1)) > 0 ? 1 : 0));
 		public int BlockSize => _blockSize;
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
@@ -55,11 +55,11 @@ namespace Recyclable.Collections
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
 			int blockSize = list._blockSize;
-			int sourceBlockIndex = (int)((index + 1) >> list._blockSizePow2Shift);
-			int sourceItemIndex = (int)((index + 1) & (blockSize - 1));
+			int sourceBlockIndex = checked((int)((index + 1) >> list._blockSizePow2Shift));
+			int sourceItemIndex = checked((int)((index + 1) & (blockSize - 1)));
 
-			int targetBlockIndex = (int)(index >> list._blockSizePow2Shift);
-			int targetItemIndex = (int)(index & (blockSize - 1));
+			int targetBlockIndex = checked((int)(index >> list._blockSizePow2Shift));
+			int targetItemIndex = checked((int)(index & (blockSize - 1)));
 
 			int lastTakenBlockIndex = list.LastTakenBlockIndex;
 			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
@@ -221,7 +221,7 @@ namespace Recyclable.Collections
 				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
 				if (itemIndex >= 0)
 				{
-					return itemIndex + (blockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize)));
+					return itemIndex + ((long)blockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize)));
 				}
 			}
 
@@ -236,15 +236,15 @@ namespace Recyclable.Collections
 				return ItemNotFoundIndex;
 			}
 
-			return itemIndex >= 0 ? itemIndex + (lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndex;
+			return itemIndex >= 0 ? itemIndex + ((long)lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndex;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static long Resize(ref T[][]? source, int minBlockSize, long oldCapacity, long newCapacity, ArrayPool<T[]> memoryBlocksPool, ArrayPool<T> blockArrayPool)
 		{
 			int minBlockSizePowerToShift = 31 - BitOperations.LeadingZeroCount((uint)minBlockSize);
-			int sourceBlockCount = (int)(oldCapacity >> minBlockSizePowerToShift);
-			int requiredBlockCount = (int)(newCapacity >> minBlockSizePowerToShift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0);
+			int sourceBlockCount = checked((int)(oldCapacity >> minBlockSizePowerToShift));
+			int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePowerToShift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0));
 			int blockIndex;
 			T[][]? newMemoryBlocks;
 			Span<T[]> memoryBlocksSpan;
@@ -310,13 +310,13 @@ namespace Recyclable.Collections
 				}
 			}
 
-			return newMemoryBlocks.Length << minBlockSizePowerToShift;
+			return (long)newMemoryBlocks.Length << minBlockSizePowerToShift;
 		}
 
 		protected long EnsureCapacity(long requestedCapacity)
 		{
 			long newCapacity = _capacity > 0
-				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
+				? checked((long)(BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity) - 1))
 				: requestedCapacity;
 
 			newCapacity = Resize(ref _memoryBlocks!, _blockSize, _capacity, newCapacity, _memoryBlocksPool, _blockArrayPool);
@@ -339,7 +339,7 @@ namespace Recyclable.Collections
 
 			if (expectedItemsCount > 0)
 			{
-				_capacity = Resize(ref _memoryBlocks!, (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
+				_capacity = Resize(ref _memoryBlocks!, checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1)), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
 				if (_memoryBlocks.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
@@ -350,7 +350,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_blockSize = (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize);
+				_blockSize = checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1));
 				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -365,7 +365,7 @@ namespace Recyclable.Collections
 
 			if (expectedItemsCount > 0)
 			{
-				_capacity = Resize(ref _memoryBlocks!, (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
+				_capacity = Resize(ref _memoryBlocks!, checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1)), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
 				if (_memoryBlocks.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
@@ -376,7 +376,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_blockSize = (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize);
+				_blockSize = checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1));
 				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -387,7 +387,7 @@ namespace Recyclable.Collections
 		public T this[long index]
 		{
 			get => _memoryBlocks[index >> _blockSizePow2Shift][index & (_blockSize - 1)];
-			set => new Span<T>(_memoryBlocks[(int)(index >> _blockSizePow2Shift)])[(int)(index & (_blockSize - 1))] = value;
+			set => new Span<T>(_memoryBlocks[checked((int)(index >> _blockSizePow2Shift))])[checked((int)(index & (_blockSize - 1)))] = value;
 		}
 
 		public T this[int index]
@@ -525,7 +525,7 @@ namespace Recyclable.Collections
 			long copiedCount = 0;
 			while (copiedCount < itemsCount)
 			{
-				toCopy = (int)Math.Min(itemsCount - copiedCount, itemsSpan.Length);
+				toCopy = checked((int)Math.Min(itemsCount - copiedCount, itemsSpan.Length));
 				if (targetBlockArraySpan.Length < toCopy)
 				{
 					toCopy = targetBlockArraySpan.Length;
@@ -562,7 +562,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_nextItemIndex = (int)(targetCapacity & (blockSize - 1));
+				_nextItemIndex = checked((int)(targetCapacity & (blockSize - 1)));
 				_nextItemBlockIndex = targetBlockIndex;
 
 			}
@@ -738,7 +738,7 @@ namespace Recyclable.Collections
 
 			if (_nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0))
 			{
-				return Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount) >= 0;
+				return Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount)) >= 0;
 			}
 
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
@@ -762,8 +762,8 @@ namespace Recyclable.Collections
 		public int IndexOf(T item) => _longCount == 0
 				? ItemNotFoundIndex
 				: _nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0)
-				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
-				: (int)DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex);
+				? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
+				: checked((int)DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex));
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
 
@@ -771,7 +771,7 @@ namespace Recyclable.Collections
 		public long LongIndexOf(T item) => _longCount == 0
 				? ItemNotFoundIndex
 				: _nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0)
-				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
+				? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
 				: DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
