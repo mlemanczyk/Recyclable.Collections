@@ -316,7 +316,7 @@ namespace Recyclable.Collections
 		protected long EnsureCapacity(long requestedCapacity)
 		{
 			long newCapacity = _capacity > 0
-				? checked((long)(BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity) - 1))
+				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
 				: requestedCapacity;
 
 			newCapacity = Resize(ref _memoryBlocks!, _blockSize, _capacity, newCapacity, _memoryBlocksPool, _blockArrayPool);
@@ -339,7 +339,7 @@ namespace Recyclable.Collections
 
 			if (expectedItemsCount > 0)
 			{
-				_capacity = Resize(ref _memoryBlocks!, checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1)), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
+				_capacity = Resize(ref _memoryBlocks!, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
 				if (_memoryBlocks.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
@@ -350,7 +350,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_blockSize = checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1));
+				_blockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -365,7 +365,7 @@ namespace Recyclable.Collections
 
 			if (expectedItemsCount > 0)
 			{
-				_capacity = Resize(ref _memoryBlocks!, checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1)), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
+				_capacity = Resize(ref _memoryBlocks!, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
 				if (_memoryBlocks.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
@@ -376,7 +376,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_blockSize = checked((int)(BitOperations.RoundUpToPowerOf2((uint)minBlockSize) - 1));
+				_blockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 				_blockSizePow2Shift = MathUtils.GetPow2Shift(minBlockSize);
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
