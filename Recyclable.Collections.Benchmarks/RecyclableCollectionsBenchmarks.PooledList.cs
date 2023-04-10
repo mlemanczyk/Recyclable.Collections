@@ -5,21 +5,21 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Create()
 		{
 			using var list = new PooledList<object>(ClearMode.Always);
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Create_WithCapacity()
 		{
 			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount), ClearMode.Always);
 			DoNothing(list);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Add()
 		{
 			var data = TestObjects;
@@ -31,7 +31,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Add_WithCapacity()
 		{
 			var data = TestObjects;
@@ -43,7 +43,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
@@ -51,7 +51,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_AddRangeWhenSourceIsList()
 		{
 			var data = TestObjectsAsList;
@@ -59,7 +59,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<object>)TestObjectsAsPooledList;
@@ -67,7 +67,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
@@ -75,7 +75,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_AddRangeWhenSourceIsPooledList()
 		{
 			var data = TestObjectsAsPooledList;
@@ -83,7 +83,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_AddRange_WithCapacity()
 		{
 			var data = TestObjects;
@@ -92,7 +92,7 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_GetItem()
 		{
 			var data = _testPooledList;
@@ -103,7 +103,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_SetItem()
 		{
 			var data = _testPooledList;
@@ -114,14 +114,14 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Count()
 		{
 			var data = _testPooledList;
 			DoNothing(data.Count);
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Contains_FirstItems()
 		{
 			var data = TestObjects;
@@ -133,7 +133,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Contains_LastItems()
 		{
 			var data = TestObjects;
@@ -145,7 +145,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_IndexOf_FirstItems()
 		{
 			var data = TestObjects;
@@ -157,7 +157,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark]
+		[Benchmark(Baseline = false)]
 		public void PooledList_IndexOf_LastItems()
 		{
 			var data = TestObjects;
@@ -169,7 +169,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Remove_FirstItems()
 		{
 			var data = TestObjects;
@@ -181,7 +181,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void PooledList_Remove_LastItems()
 		{
 			var data = TestObjects;
@@ -193,7 +193,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void PooledList_RemoveAt_FirstItems()
 		{
 			var data = TestObjects;
@@ -205,7 +205,7 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void PooledList_RemoveAt_LastItems()
 		{
 			var data = TestObjects;

@@ -6,7 +6,7 @@ namespace Recyclable.Collections.Benchmarks
 	[MemoryDiagnoser]
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		[Benchmark(Baseline = true)]
+		[Benchmark(Baseline = false)]
 		public void Array_Create_WithCapacity()
 		{
 			var data = new object[TestObjectCount];
