@@ -238,6 +238,19 @@ namespace Recyclable.Collections
 			return itemIndex >= 0 ? itemIndex + ((long)lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndex;
 		}
 
+		/// <summary>
+		/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
+		/// </summary>
+		/// <param name="list"><see cref="RecyclableList{T}"/> that needs to be resized.</param>
+		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
+		/// <param name="minBlockSizeBitShift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
+		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
+		/// <remarks>For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
+		/// index calculations, i.e. makes them logical operations on bits.
+		/// 
+		/// This method checks for integral overflow.
+		/// </remarks>
+		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static long Resize(RecyclableList<T> list, int minBlockSize, byte minBlockSizeBitShift, long newCapacity)
 		{
@@ -247,7 +260,7 @@ namespace Recyclable.Collections
 			int blockIndex;
 			Span<T[]> memoryBlocksSpan;
 
-			// Release excesive blocks if we're downsizing
+			// Release excessive blocks if we're downsizing
 			if (requiredBlockCount < sourceBlockCount && (minBlockSize >= RecyclableDefaults.MinPooledArrayLength))
 			{
 				memoryBlocksSpan = new(list._memoryBlocks, requiredBlockCount, sourceBlockCount - requiredBlockCount);
