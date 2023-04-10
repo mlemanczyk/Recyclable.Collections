@@ -186,6 +186,20 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
+		public void GetByIndexShouldReturnCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData, minBlockSize: targetBlockSize);
+
+			// Act & Validate
+			foreach (var item in testData)
+			{
+				_ = list[item - 1].Should().Be(item);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableListTestData))]
 		//[InlineData("Debugging case", new long[1] { 1 }, 1, 2)]
 		public void AddShouldAddItemWhenAfterAddRange(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
