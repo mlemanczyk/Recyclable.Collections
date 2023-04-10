@@ -23,7 +23,7 @@ namespace Recyclable.Collections.Benchmarks
 			_testObjectsAsList = TestObjects.ToList();
 			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();
 			_testObjectsAsRecyclableList = TestObjects.ToRecyclableList();
-			_testPooledList = new PooledList<object>(TestObjects);
+			_testPooledList = new PooledList<object>(TestObjects, ClearMode.Always);
 		}
 
 		private IEnumerable<object> EnumerateTestObjects()
