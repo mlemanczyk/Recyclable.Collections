@@ -49,5 +49,17 @@ namespace Recyclable.Collections.Benchmarks
 			var data = _testArray;
 			DoNothing(data.LongLength);
 		}
+
+		[Benchmark(Baseline = false)]
+		public void Array_IndexOf_FirstItems()
+		{
+			var data = TestObjects;
+			var list = TestObjects;
+			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			for (var i = 0; i < dataCount; i++)
+			{
+				DoNothing(Array.IndexOf(list, data[i]));
+			}
+		}
 	}
 }
