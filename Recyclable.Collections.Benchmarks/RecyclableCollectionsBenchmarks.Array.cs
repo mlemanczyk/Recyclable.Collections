@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using MoreLinq.Extensions;
 
 namespace Recyclable.Collections.Benchmarks
 {
@@ -17,9 +18,10 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			long index = 0;
+			for(var i = 0; i < dataCount; i++)
 			{
-				data[i] = TestObjects[i];
+				data[index] = TestObjects[index++];
 			}
 		}
 

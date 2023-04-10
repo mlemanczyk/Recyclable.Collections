@@ -176,7 +176,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_GetItem_AsWhile()
 		{
 			var data = _testRecyclableList;
-			int dataCount = TestObjectCount;
+			long dataCount = TestObjectCount;
 			if (dataCount == 0)
 			{
 				return;
@@ -315,7 +315,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_Remove_FirstItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<object>(data);
+			using var list = new RecyclableList<object>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -327,7 +327,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_Remove_LastItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<object>(data);
+			using var list = new RecyclableList<object>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = data.Length - 1; i > data.Length - dataCount - 1; i--)
 			{
@@ -339,7 +339,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_RemoveAt_FirstItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<object>(data);
+			using var list = new RecyclableList<object>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -351,7 +351,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_RemoveAt_LastItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<object>(data);
+			using var list = new RecyclableList<object>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = data.Length - 1; i > data.Length - dataCount - 1; i--)
 			{

@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark]
 		public void RecyclableArrayList_Create_WithCapacity()
 		{
-			using var list = new RecyclableArrayList<object>(TestObjectCount);
+			using var list = new RecyclableArrayList<object>(checked((int)TestObjectCount));
 			DoNothing(list);
 		}
 
@@ -35,7 +35,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableArrayList<object>(dataCount);
+			using var list = new RecyclableArrayList<object>(checked((int)dataCount));
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -87,7 +87,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableArrayList<object>(dataCount);
+			using var list = new RecyclableArrayList<object>(checked((int)dataCount));
 			list.AddRange(data);
 		}
 

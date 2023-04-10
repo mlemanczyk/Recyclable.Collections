@@ -15,7 +15,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark]
 		public void PooledList_Create_WithCapacity()
 		{
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			DoNothing(list);
 		}
 
@@ -36,7 +36,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new PooledList<object>(capacity: dataCount);
+			using var list = new PooledList<object>(capacity: checked((int)dataCount));
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -47,7 +47,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void PooledList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			list.AddRange(data);
 		}
 
@@ -55,7 +55,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void PooledList_AddRangeWhenSourceIsList()
 		{
 			var data = TestObjectsAsList;
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			list.AddRange(data);
 		}
 
@@ -63,7 +63,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void PooledList_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<object>)TestObjectsAsPooledList;
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			list.AddRange(data);
 		}
 
@@ -71,7 +71,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void PooledList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			list.AddRange(data);
 		}
 
@@ -79,7 +79,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void PooledList_AddRangeWhenSourceIsPooledList()
 		{
 			var data = TestObjectsAsPooledList;
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			list.AddRange(data);
 		}
 
@@ -88,7 +88,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new PooledList<object>(capacity: TestObjectCount);
+			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount));
 			list.AddRange(data);
 		}
 

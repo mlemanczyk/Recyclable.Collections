@@ -16,14 +16,22 @@ namespace Recyclable.Collections.Benchmarks
 		public void Setup()
 		{
 			Console.WriteLine("******* GLOBAL SETUP RAISED *******");
-			_testObjects = Enumerable.Range(1, TestObjectCount).Select(x => new object()).ToArray();
-			_testRecyclableArrayList = new(TestObjects, initialCapacity: TestObjectCount);
-			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+			_testObjects = EnumerateTestObjects().ToArray();
+			_testRecyclableArrayList = new(TestObjects, initialCapacity: checked((int)TestObjectCount));
+			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: checked((int)TestObjectCount));
 			_testArray = TestObjects.ToArray();
 			_testObjectsAsList = TestObjects.ToList();
 			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();
 			_testObjectsAsRecyclableList = TestObjects.ToRecyclableList();
 			_testPooledList = new PooledList<object>(TestObjects);
+		}
+
+		private IEnumerable<object> EnumerateTestObjects()
+		{
+			for (long i = 0; i < TestObjectCount; i++)
+			{
+				yield return new object();
+			}
 		}
 
 		[GlobalCleanup]

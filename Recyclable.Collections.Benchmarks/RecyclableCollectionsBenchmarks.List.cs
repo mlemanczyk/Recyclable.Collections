@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = false)]
 		public void List_Create_WithCapacity()
 		{
-			var list = new List<object>(TestObjectCount);
+			var list = new List<object>(checked((int)TestObjectCount));
 			DoNothing(list);
 		}
 
@@ -35,7 +35,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			var list = new List<object>(dataCount);
+			var list = new List<object>(checked((int)dataCount));
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -79,7 +79,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			var list = new List<object>(dataCount);
+			var list = new List<object>(checked((int)dataCount));
 			list.AddRange(data);
 		}
 
