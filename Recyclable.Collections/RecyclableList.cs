@@ -16,6 +16,7 @@ namespace Recyclable.Collections
 
 		private int _blockSize;
 		private byte _blockSizePow2Shift;
+		private int _blockSizeMinus1;
 		private int _nextItemBlockIndex;
 		private int _nextItemIndex;
 
@@ -44,7 +45,7 @@ namespace Recyclable.Collections
 			set => _longCount = value;
 		}
 
-		public int ReservedBlockCount => checked((int)(_capacity >> _blockSizePow2Shift) + ((_capacity & (_blockSize - 1)) > 0 ? 1 : 0));
+		public int ReservedBlockCount => checked((int)(_capacity >> _blockSizePow2Shift) + ((_capacity & _blockSizeMinus1) > 0 ? 1 : 0));
 		public int BlockSize => _blockSize;
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
@@ -56,10 +57,10 @@ namespace Recyclable.Collections
 			int nextItemIndex = list._nextItemIndex;
 			int blockSize = list._blockSize;
 			int sourceBlockIndex = checked((int)((index + 1) >> list._blockSizePow2Shift));
-			int sourceItemIndex = checked((int)((index + 1) & (blockSize - 1)));
+			int sourceItemIndex = checked((int)((index + 1) & list._blockSizeMinus1));
 
 			int targetBlockIndex = checked((int)(index >> list._blockSizePow2Shift));
-			int targetItemIndex = checked((int)(index & (blockSize - 1)));
+			int targetItemIndex = checked((int)(index & list._blockSizeMinus1));
 
 			int lastTakenBlockIndex = list.LastBlockWithData;
 			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
@@ -345,6 +346,7 @@ namespace Recyclable.Collections
 
 				list._blockSizePow2Shift = (byte)MathUtils.GetPow2Shift(blockSize);
 				list._blockSize = blockSize;
+				list._blockSizeMinus1 = blockSize - 1;
 			}
 
 			list._capacity = newCapacity;
@@ -368,6 +370,7 @@ namespace Recyclable.Collections
 				if (_memoryBlocks!.Length > 0 && _blockSize != _memoryBlocks[0].Length)
 				{
 					_blockSize = _memoryBlocks[0].Length;
+					_blockSizeMinus1 = _blockSize - 1;
 					_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)_blockSize));
 					if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 					{
@@ -377,11 +380,13 @@ namespace Recyclable.Collections
 				else
 				{
 					_blockSize = minBlockSize;
+					_blockSizeMinus1 = minBlockSize - 1;
 				}
 			}
 			else
 			{
 				_blockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+				_blockSizeMinus1 = _blockSize - 1;
 				_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)_blockSize));
 				_blockArrayPool = _blockSize >= RecyclableDefaults.MinPooledArrayLength
 					? blockArrayPool ?? RecyclableArrayPool<T>.Shared(_blockSize)
@@ -405,9 +410,10 @@ namespace Recyclable.Collections
 
 				_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
 				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
-				if (_memoryBlocks?.Length > 0 && minBlockSize != _memoryBlocks[0].Length)
+				if (_memoryBlocks!.Length > 0 && minBlockSize != _memoryBlocks[0].Length)
 				{
 					_blockSize = _memoryBlocks[0].Length;
+					_blockSizeMinus1 = _blockSize - 1;
 					_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
 					if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 					{
@@ -417,6 +423,7 @@ namespace Recyclable.Collections
 				else
 				{
 					_blockSize = minBlockSize;
+					_blockSizeMinus1 = minBlockSize - 1;
 				}
 			}
 			else
@@ -426,6 +433,7 @@ namespace Recyclable.Collections
 					? blockArrayPool ?? RecyclableArrayPool<T>.Shared(_blockSize)
 					: RecyclableArrayPool<T>.Null;
 
+				_blockSizeMinus1 = _blockSize - 1;
 				_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)_blockSize));
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -435,14 +443,14 @@ namespace Recyclable.Collections
 
 		public T this[long index]
 		{
-			get => _memoryBlocks[index >> _blockSizePow2Shift][index & (_blockSize - 1)];
-			set => new Span<T>(_memoryBlocks[checked((int)(index >> _blockSizePow2Shift))])[checked((int)(index & (_blockSize - 1)))] = value;
+			get => _memoryBlocks[index >> _blockSizePow2Shift][index & _blockSizeMinus1];
+			set => new Span<T>(_memoryBlocks[checked((int)(index >> _blockSizePow2Shift))])[checked((int)(index & _blockSizeMinus1))] = value;
 		}
 
 		public T this[int index]
 		{
-			get => _memoryBlocks[index >> _blockSizePow2Shift][index & (_blockSize - 1)];
-			set => new Span<T>(_memoryBlocks[index >> _blockSizePow2Shift])[index & (_blockSize - 1)] = value;
+			get => _memoryBlocks[index >> _blockSizePow2Shift][index & _blockSizeMinus1];
+			set => new Span<T>(_memoryBlocks[index >> _blockSizePow2Shift])[index & _blockSizeMinus1] = value;
 		}
 
 		public T[][] MemoryBlocks { get => _memoryBlocks; }
@@ -604,14 +612,14 @@ namespace Recyclable.Collections
 				}
 			}
 
-			if ((targetCapacity & (blockSize - 1)) == 0)
+			if ((targetCapacity & _blockSizeMinus1) == 0)
 			{
 				_nextItemIndex = 0;
 				_nextItemBlockIndex = targetBlockIndex + 1;
 			}
 			else
 			{
-				_nextItemIndex = checked((int)(targetCapacity & (blockSize - 1)));
+				_nextItemIndex = checked((int)(targetCapacity & _blockSizeMinus1));
 				_nextItemBlockIndex = targetBlockIndex;
 
 			}
@@ -719,7 +727,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
 		{
 			if (source is RecyclableList<T> sourceRecyclableList)
 			{
@@ -843,7 +851,7 @@ namespace Recyclable.Collections
 				}
 				else
 				{
-					_nextItemIndex = _blockSize - 1;
+					_nextItemIndex = _blockSizeMinus1;
 					_nextItemBlockIndex--;
 				}
 
@@ -902,7 +910,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_nextItemIndex = _blockSize - 1;
+				_nextItemIndex = _blockSizeMinus1;
 				_nextItemBlockIndex--;
 			}
 
@@ -934,7 +942,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_nextItemIndex = _blockSize - 1;
+				_nextItemIndex = _blockSizeMinus1;
 				_nextItemBlockIndex--;
 			}
 
