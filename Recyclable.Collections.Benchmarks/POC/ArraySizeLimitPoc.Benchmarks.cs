@@ -11,45 +11,52 @@ namespace Recyclable.Collections.Benchmarks.POC
 			benchmark.FindArraySizeLimit();
 		}
 
-		[Benchmark]
+		private const int _maxArraySize = 2_147_483_605;
+
+
+		[Benchmark(OperationsPerInvoke = 1)]
+		public void Max_Allowed_Size_2_147_483_605()
+		{
+			var arr = ArrayPool<object>.Shared.Rent(_maxArraySize);
+		}
+
+		[Benchmark(OperationsPerInvoke = 1)]
 		public void FindArraySizeLimit()
 		{
 			var pool = ArrayPool<object>.Shared;
-			var bufferSize = int.MaxValue;
+			var bufferSize = int.MaxValue / 2;
 			var oldValue = 0;
 			while (true)
 			{
 				try
 				{
-					Console.WriteLine($"Allocating {bufferSize}");
+					Console.Write($"Allocating {bufferSize}...");
 					var arr = pool.Rent((int)bufferSize);
-					var nextValue = (oldValue - bufferSize) >> 1;
-					if (nextValue == 0)
-					{
-						break;
-					}
-
-					oldValue = bufferSize;
-					bufferSize += nextValue;
-
+					Console.WriteLine("success");
 					pool.Return(arr);
+					arr = null;
+
+					var nextValue = bufferSize - oldValue;
+					oldValue = bufferSize;
+					bufferSize = checked(bufferSize + nextValue);
+
 					GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 				}
 				catch (Exception)
 				{
-					Console.WriteLine($"Error during array creation when {nameof(bufferSize)} = {bufferSize}");
-					var nextValue = (oldValue - bufferSize) >> 1;
+					Console.WriteLine($"error");
+					var nextValue = (bufferSize - oldValue) >> 1;
 					if (nextValue == 0)
 					{
 						break;
 					}
 
-					oldValue = bufferSize;
-					bufferSize -= nextValue;
+					bufferSize = oldValue + nextValue;
 				}
 			}
 
 			Console.WriteLine("All done");
+			throw new Exception($"Everything was successful. You can create {oldValue} byte big arrays. Exception is logged to prevent more benchmarks.");
 		}
 	}
 }
