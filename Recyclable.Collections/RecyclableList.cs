@@ -34,7 +34,7 @@ namespace Recyclable.Collections
 
 		public int Count => checked((int)_longCount);
 		public bool IsReadOnly { get; }
-		public int LastTakenBlockIndex => _nextItemBlockIndex - (_nextItemIndex > 0 ? 0 : 1);
+		public int LastBlockWithData => _nextItemBlockIndex - (_nextItemIndex > 0 ? 0 : 1);
 
 		protected long _longCount;
 
@@ -61,7 +61,7 @@ namespace Recyclable.Collections
 			int targetBlockIndex = checked((int)(index >> list._blockSizePow2Shift));
 			int targetItemIndex = checked((int)(index & (blockSize - 1)));
 
-			int lastTakenBlockIndex = list.LastTakenBlockIndex;
+			int lastTakenBlockIndex = list.LastBlockWithData;
 			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
 			{
 				int toCopy = sourceBlockIndex < lastTakenBlockIndex || nextItemIndex == 0
@@ -334,7 +334,7 @@ namespace Recyclable.Collections
 				: requestedCapacity;
 
 			int blockSize = list._blockSize;
-			newCapacity = RecyclableList<T>.Resize(list, blockSize, list._blockSizePow2Shift, newCapacity);
+			newCapacity = Resize(list, blockSize, list._blockSizePow2Shift, newCapacity);
 			if (newCapacity > 0 && blockSize != list._memoryBlocks[0].Length)
 			{
 				blockSize = list._memoryBlocks[0].Length;
@@ -814,7 +814,7 @@ namespace Recyclable.Collections
 				? ItemNotFoundIndex
 				: _nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0)
 				? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
-				: checked((int)DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex));
+				: checked((int)DoIndexOf(item, _memoryBlocks, LastBlockWithData, _blockSize, _nextItemIndex));
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
 
@@ -823,7 +823,7 @@ namespace Recyclable.Collections
 				? ItemNotFoundIndex
 				: _nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0)
 				? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
-				: DoIndexOf(item, _memoryBlocks, LastTakenBlockIndex, _blockSize, _nextItemIndex);
+				: DoIndexOf(item, _memoryBlocks, LastBlockWithData, _blockSize, _nextItemIndex);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public bool Remove(T item)

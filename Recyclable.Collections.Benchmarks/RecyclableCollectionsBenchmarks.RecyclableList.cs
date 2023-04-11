@@ -110,7 +110,7 @@ namespace Recyclable.Collections.Benchmarks
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 			
-			var memoryBlocks = new Span<object[]>(data.MemoryBlocks, 0, data.LastTakenBlockIndex + 1);
+			var memoryBlocks = new Span<object[]>(data.MemoryBlocks, 0, data.LastBlockWithData + 1);
 			for (var blockIndex = 0; blockIndex < nextItemBlockIndex; blockIndex++)
 			{
 				var memoryBlock = new Span<object>(memoryBlocks[blockIndex], 0, blockSize);
@@ -120,7 +120,7 @@ namespace Recyclable.Collections.Benchmarks
 				}
 			}
 
-			if (nextItemBlockIndex == data.LastTakenBlockIndex)
+			if (nextItemBlockIndex == data.LastBlockWithData)
 			{
 
 				var memoryBlock = new Span<object>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
@@ -149,7 +149,7 @@ namespace Recyclable.Collections.Benchmarks
 				}
 			}
 
-			if (nextItemBlockIndex == data.LastTakenBlockIndex)
+			if (nextItemBlockIndex == data.LastBlockWithData)
 			{
 				var memoryBlock = memoryBlocks[nextItemBlockIndex];
 				blockSize = data.NextItemIndex;
@@ -203,7 +203,7 @@ namespace Recyclable.Collections.Benchmarks
 				}
 			}
 
-			if (nextItemBlockIndex == data.LastTakenBlockIndex)
+			if (nextItemBlockIndex == data.LastBlockWithData)
 			{
 				memoryBlock = memoryBlocks[nextItemBlockIndex];
 				blockSize = data.NextItemIndex;
