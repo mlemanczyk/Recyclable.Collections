@@ -344,7 +344,7 @@ namespace Recyclable.Collections
 					list._blockArrayPool = RecyclableArrayPool<T>.Shared(blockSize);
 				}
 
-				list._blockSizePow2Shift = (byte)MathUtils.GetPow2Shift(blockSize);
+				list._blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
 				list._blockSize = blockSize;
 				list._blockSizeMinus1 = blockSize - 1;
 			}
