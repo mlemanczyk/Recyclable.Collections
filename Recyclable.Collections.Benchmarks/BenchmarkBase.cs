@@ -1,24 +1,9 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using Recyclable.Collections.Benchmarks.POC;
 
 namespace Recyclable.Collections.Benchmarks
 {
-	public class BenchmarkBase
+	public class BenchmarkBase : PocBenchmarkBase
 	{
-		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 32, 40, 50, 60, 80, 90, 100, 128, 256, 512, 1024, 2048, 4096, 8192, 1_000_000)]
-		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 30, 32, 40, 50, 60, 80, 90, 100, 128, 256, 512, 1024, 2048, 4096, 8192, 1_000_000)]
-		public long TestObjectCount = 1_000_000;
-
-		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200)]
-		//[Params(10, 20, 50, 100)]
-		//[Params(1, 10)]
-		public int Divider = 10;
-		public int BlockSize => TestObjectCount switch
-		{
-			0 => 1,
-			> 0 and <= 10 => (int)TestObjectCount,
-			_ => TestObjectCount / Divider > 0 ? checked((int)(TestObjectCount / Divider)) : checked((int)TestObjectCount)
-		};
-
 		protected object[]? _testObjects;
 		protected object[] TestObjects => _testObjects ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 
