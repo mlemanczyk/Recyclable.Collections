@@ -3,7 +3,8 @@ using Collections.Pooled;
 
 namespace Recyclable.Collections.Benchmarks
 {
-	public partial class RecyclableCollectionsBenchmarks
+	[MemoryDiagnoser]
+	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
 		private object[] _testArray;
 		private RecyclableArrayList<object> _testRecyclableArrayList;
