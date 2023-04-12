@@ -330,6 +330,23 @@ namespace Recyclable.Collections
 			return (long)newMemoryBlocks.Length << minBlockSizePow2Shift;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		protected static void SetupBlockArrayPooling(RecyclableList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		{
+			list._blockSize = blockSize;
+			list._blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
+			if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				list._blockPoolingRequired = true;
+				list._blockArrayPool = blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize);
+			}
+			else
+			{
+				list._blockPoolingRequired = false;
+				list._blockArrayPool = RecyclableArrayPool<T>.Null;
+			}
+		}
+
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public static long EnsureCapacity(RecyclableList<T> list, long requestedCapacity)
 		{
@@ -347,23 +364,6 @@ namespace Recyclable.Collections
 
 			list._capacity = newCapacity;
 			return newCapacity;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
-		{
-			list._blockSize = blockSize;
-			list._blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
-			if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
-			{
-				list._blockPoolingRequired = true;
-				list._blockArrayPool = blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize);
-			}
-			else
-			{
-				list._blockPoolingRequired = false;
-				list._blockArrayPool = RecyclableArrayPool<T>.Null;
-			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
