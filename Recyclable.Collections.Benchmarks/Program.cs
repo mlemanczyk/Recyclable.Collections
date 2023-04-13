@@ -42,6 +42,7 @@ internal class Program
 		_ = BenchmarkRunner.Run<ModuloPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
 	}
 
 	private static void Main(string[] args)
