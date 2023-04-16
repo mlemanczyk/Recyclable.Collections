@@ -17,7 +17,6 @@ namespace Recyclable.Collections
 		private int _blockSize;
 		private byte _blockSizePow2Shift;
 		private int _blockSizeMinus1;
-		private bool _blockPoolingRequired;
 		private int _nextItemBlockIndex;
 		private int _nextItemIndex;
 		private int _reservedBlockCount;
@@ -290,7 +289,7 @@ namespace Recyclable.Collections
 			if (requiredBlockCount > sourceBlockCount)
 			{
 				memoryBlocksSpan = new(list._memoryBlocks!, sourceBlockCount, requiredBlockCount - sourceBlockCount);
-				if (list._blockPoolingRequired)
+				if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					if (sourceBlockCount == 0)
 					{
@@ -347,16 +346,9 @@ namespace Recyclable.Collections
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
-			if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
-			{
-				list._blockPoolingRequired = true;
-				list._blockArrayPool = blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize);
-			}
-			else
-			{
-				list._blockPoolingRequired = false;
-				list._blockArrayPool = RecyclableArrayPool<T>.Null;
-			}
+			list._blockArrayPool = blockSize >= RecyclableDefaults.MinPooledArrayLength
+				? blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize)
+				: RecyclableArrayPool<T>.Null;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -767,7 +759,7 @@ namespace Recyclable.Collections
 
 		public void Clear()
 		{
-			if (_blockPoolingRequired)
+			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
 				Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _reservedBlockCount);
 				int memoryBlocksCount = memoryBlocksSpan.Length;
@@ -869,7 +861,7 @@ namespace Recyclable.Collections
 
 		public void RemoveBlock(int index)
 		{
-			if (_blockPoolingRequired)
+			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
 				_blockArrayPool.Return(_memoryBlocks[index], NeedsClearing);
 			}
