@@ -253,6 +253,10 @@ namespace Recyclable.Collections
 		/// 
 		/// This method checks for integral overflow.
 		/// </remarks>
+		/// <remarks>
+		/// This method doesn't support downsizing the memory block. As such it doesn't release excessive blocks. This is to for additional performance
+		/// gain - 1+ operation less for each call. If you need this functionality, you need to implement it on a higher level.
+		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static long Resize(RecyclableList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
@@ -263,70 +267,79 @@ namespace Recyclable.Collections
 			int blockIndex;
 			Span<T[]> memoryBlocksSpan;
 
-			// Release excessive blocks if we're downsizing
-			if (requiredBlockCount < sourceBlockCount && list._blockPoolingRequired)
+			if (requiredBlockCount > (list._memoryBlocks?.Length ?? 0))
 			{
-				memoryBlocksSpan = new(list._memoryBlocks, requiredBlockCount, requiredBlockCount - sourceBlockCount);
-				blockIndex = 0;
-				while (blockIndex < memoryBlocksSpan.Length)
+				// Allocate new memory block for all arrays
+				T[][] newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? list._memoryBlocksPool.Rent(requiredBlockCount) : new T[requiredBlockCount][];
+
+				// Copy arrays from the old memory block for all arrays
+				if (sourceBlockCount > 0)
 				{
-					blockArrayPool.Return(memoryBlocksSpan[blockIndex++], NeedsClearing);
+					Array.Copy(list._memoryBlocks!, newMemoryBlocks, sourceBlockCount);
+					// We can now return the old memory block for all arrays itself
+					if (sourceBlockCount >= RecyclableDefaults.MinPooledArrayLength)
+					{
+						list._memoryBlocksPool.Return(list._memoryBlocks!, true);
+					}
 				}
+
+				list._memoryBlocks = newMemoryBlocks;
 			}
-
-			ArrayPool<T[]> memoryBlocksPool = list._memoryBlocksPool;
-
-			// Allocate new memory block for all arrays
-			bool memoryBlockPoolingRequired = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength;
-			T[][] newMemoryBlocks = memoryBlockPoolingRequired ? memoryBlocksPool.Rent(requiredBlockCount) : new T[requiredBlockCount][];
-
-			// Copy arrays from the old memory block for all arrays
-			if (sourceBlockCount > 0)
-			{
-				Array.Copy(list._memoryBlocks, newMemoryBlocks, sourceBlockCount);
-				// We can now return the old memory block for all arrays itself
-				if (sourceBlockCount >= RecyclableDefaults.MinPooledArrayLength)
-				{
-					memoryBlocksPool.Return(list._memoryBlocks, true);
-				}
-			}
-
-			list._memoryBlocks = newMemoryBlocks;
 
 			// Allocate arrays for any new blocks
 			if (requiredBlockCount > sourceBlockCount)
 			{
-				memoryBlocksSpan = new(newMemoryBlocks, sourceBlockCount, requiredBlockCount - sourceBlockCount);
+				memoryBlocksSpan = new(list._memoryBlocks!, sourceBlockCount, requiredBlockCount - sourceBlockCount);
 				if (list._blockPoolingRequired)
 				{
 					if (sourceBlockCount == 0)
 					{
-						memoryBlocksSpan[0] = blockArrayPool.Rent(minBlockSize);
-						minBlockSize = memoryBlocksSpan[0].Length;
-						blockIndex = 1;
-					}
-					else
-					{
-						blockIndex = 0;
+						minBlockSize = GetEstimatedBlockSize(minBlockSize, blockArrayPool);
 					}
 
-					while (blockIndex < memoryBlocksSpan.Length)
+					blockIndex = 0;
+					do
 					{
-						memoryBlocksSpan[blockIndex++] = blockArrayPool.Rent(minBlockSize);
-					}
+						memoryBlocksSpan[blockIndex] = blockArrayPool.Rent(minBlockSize);
+						if (blockIndex + 1 < memoryBlocksSpan.Length)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					} while (true);
 				}
 				else
 				{
 					blockIndex = 0;
-					while (blockIndex < memoryBlocksSpan.Length)
+					do
 					{
-						memoryBlocksSpan[blockIndex++] = new T[minBlockSize];
-					}
+						memoryBlocksSpan[blockIndex] = new T[minBlockSize];
+						if (blockIndex + 1 < memoryBlocksSpan.Length)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					} while (true);
 				}
 			}
 
 			list._reservedBlockCount = requiredBlockCount;
 			return (long)requiredBlockCount << minBlockSizePow2Shift;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		private static int GetEstimatedBlockSize(int minBlockSize, ArrayPool<T> blockArrayPool)
+		{
+			var array = blockArrayPool.Rent(minBlockSize);
+			minBlockSize = array.Length;
+			blockArrayPool.Return(array);
+			return minBlockSize;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -347,7 +360,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static long EnsureCapacity(RecyclableList<T> list, long requestedCapacity)
+		protected static long EnsureCapacity(RecyclableList<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
@@ -377,7 +390,7 @@ namespace Recyclable.Collections
 				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 				SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
 				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
-				if (_blockSize != _memoryBlocks[0].Length && _capacity > 0)
+				if (_blockSize != _memoryBlocks![0].Length && _capacity > 0)
 				{
 					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
 					_blockSizeMinus1 = _blockSize - 1;
