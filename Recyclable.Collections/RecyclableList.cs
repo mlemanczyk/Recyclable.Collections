@@ -264,12 +264,12 @@ namespace Recyclable.Collections
 			int sourceBlockCount = list._reservedBlockCount;
 			int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0));
 			int blockIndex;
-			Span<T[]> memoryBlocksSpan;
 
+			T[][] newMemoryBlocks;
 			if (requiredBlockCount > (list._memoryBlocks?.Length ?? 0))
 			{
 				// Allocate new memory block for all arrays
-				T[][] newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? list._memoryBlocksPool.Rent(requiredBlockCount) : new T[requiredBlockCount][];
+				newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? list._memoryBlocksPool.Rent(requiredBlockCount) : new T[requiredBlockCount][];
 
 				// Copy arrays from the old memory block for all arrays
 				if (sourceBlockCount > 0)
@@ -284,11 +284,14 @@ namespace Recyclable.Collections
 
 				list._memoryBlocks = newMemoryBlocks;
 			}
+			else
+			{
+				newMemoryBlocks = list._memoryBlocks!;
+			}
 
 			// Allocate arrays for any new blocks
 			if (requiredBlockCount > sourceBlockCount)
 			{
-				memoryBlocksSpan = new(list._memoryBlocks!, sourceBlockCount, requiredBlockCount - sourceBlockCount);
 				if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					if (sourceBlockCount == 0)
@@ -296,11 +299,11 @@ namespace Recyclable.Collections
 						minBlockSize = GetEstimatedBlockSize(minBlockSize, blockArrayPool);
 					}
 
-					blockIndex = 0;
+					blockIndex = sourceBlockCount;
 					do
 					{
-						memoryBlocksSpan[blockIndex] = blockArrayPool.Rent(minBlockSize);
-						if (blockIndex + 1 < memoryBlocksSpan.Length)
+						newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
+						if (blockIndex + 1 < requiredBlockCount)
 						{
 							blockIndex++;
 						}
@@ -312,11 +315,11 @@ namespace Recyclable.Collections
 				}
 				else
 				{
-					blockIndex = 0;
+					blockIndex = sourceBlockCount;
 					do
 					{
-						memoryBlocksSpan[blockIndex] = new T[minBlockSize];
-						if (blockIndex + 1 < memoryBlocksSpan.Length)
+						newMemoryBlocks[blockIndex] = new T[minBlockSize];
+						if (blockIndex + 1 < requiredBlockCount)
 						{
 							blockIndex++;
 						}
@@ -759,18 +762,24 @@ namespace Recyclable.Collections
 
 		public void Clear()
 		{
+			if (_longCount == 0)
+			{
+				return;
+			}
+
 			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _reservedBlockCount);
-				int memoryBlocksCount = memoryBlocksSpan.Length;
+				T[][] memoryBlocks = _memoryBlocks;
+				int memoryBlocksCount = _reservedBlockCount;
 				ArrayPool<T> blockArrayPool = _blockArrayPool;
-				for (int toRemoveIdx = 0; toRemoveIdx < memoryBlocksCount; toRemoveIdx++)
+				int toRemoveIdx = 0;
+				while (toRemoveIdx < memoryBlocksCount)
 				{
-					blockArrayPool.Return(memoryBlocksSpan[toRemoveIdx], NeedsClearing);
-					memoryBlocksSpan[toRemoveIdx] = _emptyBlockArray;
+					blockArrayPool.Return(memoryBlocks[toRemoveIdx++], NeedsClearing);
 				}
 			}
 
+			Array.Fill(_memoryBlocks, _emptyBlockArray, 0, _reservedBlockCount);
 			_capacity = 0;
 			_reservedBlockCount = 0;
 			_nextItemBlockIndex = 0;
