@@ -873,6 +873,7 @@ namespace Recyclable.Collections
 			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
 				_blockArrayPool.Return(_memoryBlocks[index], NeedsClearing);
+				_memoryBlocks[index] = _emptyBlockArray;
 			}
 			else
 			{
