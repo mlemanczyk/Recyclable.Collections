@@ -19,7 +19,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount), ClearMode.Always);
+			using var list = new PooledList<object>(capacity: checked((int)dataCount), ClearMode.Always);
 			list.AddRange(data);
 		}
 
@@ -37,7 +37,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
 			list.AddRange(data);
 		}
 	}

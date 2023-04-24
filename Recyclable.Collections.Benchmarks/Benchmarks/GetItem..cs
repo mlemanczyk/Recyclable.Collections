@@ -63,7 +63,6 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_GetItem_AsSpan()
 		{
 			var data = _testRecyclableList;
-			var dataCount = TestObjectCount;
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
@@ -92,7 +91,6 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_GetItem_AsArray()
 		{
 			var data = _testRecyclableList;
-			var dataCount = TestObjectCount;
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
