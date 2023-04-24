@@ -15,7 +15,7 @@ namespace Recyclable.Collections
 		private static readonly T[] _emptyBlockArray = new T[0];
 
 		private int _blockSize;
-		private byte _blockSizePow2Shift;
+		private byte _blockSizePow2BitShift;
 		private int _blockSizeMinus1;
 		private int _nextItemBlockIndex;
 		private int _nextItemIndex;
@@ -48,6 +48,8 @@ namespace Recyclable.Collections
 
 		public int ReservedBlockCount => _reservedBlockCount;
 		public int BlockSize => _blockSize;
+		public byte BlockSizePow2BitShift => _blockSizePow2BitShift;
+
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
 
@@ -57,10 +59,10 @@ namespace Recyclable.Collections
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
 			int blockSize = list._blockSize;
-			int sourceBlockIndex = checked((int)((index + 1) >> list._blockSizePow2Shift));
+			int sourceBlockIndex = checked((int)((index + 1) >> list._blockSizePow2BitShift));
 			int sourceItemIndex = checked((int)((index + 1) & list._blockSizeMinus1));
 
-			int targetBlockIndex = checked((int)(index >> list._blockSizePow2Shift));
+			int targetBlockIndex = checked((int)(index >> list._blockSizePow2BitShift));
 			int targetItemIndex = checked((int)(index & list._blockSizeMinus1));
 
 			int lastTakenBlockIndex = list.LastBlockWithData;
@@ -348,7 +350,7 @@ namespace Recyclable.Collections
 		protected static void SetupBlockArrayPooling(RecyclableList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
-			list._blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
+			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
 			list._blockArrayPool = blockSize >= RecyclableDefaults.MinPooledArrayLength
 				? blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize)
 				: RecyclableArrayPool<T>.Null;
@@ -362,7 +364,7 @@ namespace Recyclable.Collections
 				: requestedCapacity;
 
 			int blockSize = list._blockSize;
-			newCapacity = Resize(list, blockSize, list._blockSizePow2Shift, newCapacity);
+			newCapacity = Resize(list, blockSize, list._blockSizePow2BitShift, newCapacity);
 			if (blockSize != list._memoryBlocks[0].Length && newCapacity > 0)
 			{
 				SetupBlockArrayPooling(list, list._memoryBlocks[0].Length);
@@ -384,7 +386,7 @@ namespace Recyclable.Collections
 			{
 				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 				SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
+				_capacity = Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
 				if (_blockSize != _memoryBlocks![0].Length && _capacity > 0)
 				{
 					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
@@ -412,7 +414,7 @@ namespace Recyclable.Collections
 			{
 				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 				SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
+				_capacity = Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
 				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
 				{
 					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
@@ -435,14 +437,14 @@ namespace Recyclable.Collections
 
 		public T this[long index]
 		{
-			get => _memoryBlocks[index >> _blockSizePow2Shift][index & _blockSizeMinus1];
-			set => new Span<T>(_memoryBlocks[checked((int)(index >> _blockSizePow2Shift))])[checked((int)(index & _blockSizeMinus1))] = value;
+			get => _memoryBlocks[index >> _blockSizePow2BitShift][index & _blockSizeMinus1];
+			set => new Span<T>(_memoryBlocks[checked((int)(index >> _blockSizePow2BitShift))])[checked((int)(index & _blockSizeMinus1))] = value;
 		}
 
 		public T this[int index]
 		{
-			get => _memoryBlocks[index >> _blockSizePow2Shift][index & _blockSizeMinus1];
-			set => new Span<T>(_memoryBlocks[index >> _blockSizePow2Shift])[index & _blockSizeMinus1] = value;
+			get => _memoryBlocks[index >> _blockSizePow2BitShift][index & _blockSizeMinus1];
+			set => new Span<T>(_memoryBlocks[index >> _blockSizePow2BitShift])[index & _blockSizeMinus1] = value;
 		}
 
 		public T[][] MemoryBlocks { get => _memoryBlocks; }
