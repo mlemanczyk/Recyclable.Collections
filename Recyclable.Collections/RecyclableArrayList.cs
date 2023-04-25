@@ -272,19 +272,19 @@ namespace Recyclable.Collections
 
 			for (blockIndex = 0; blockIndex <= lastBlockIndex; blockIndex++)
 			{
-				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, sourceBlockSize);
+				itemsSpan = new(items.AsArray[blockIndex], 0, sourceBlockSize);
 				itemsSpan.CopyTo(targetSpan);
 				targetSpan = targetSpan[sourceBlockSize..];
 			}
 
 			if (blockIndex == 0)
 			{
-				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, (int)sourceItemsCount);
+				itemsSpan = new(items.AsArray[blockIndex], 0, (int)sourceItemsCount);
 				itemsSpan.CopyTo(targetSpan);
 			}
 			else if (blockIndex <= items.LastTakenBlockIndex)
 			{
-				itemsSpan = new(items.MemoryBlocks[blockIndex], 0, items.NextItemIndex);
+				itemsSpan = new(items.AsArray[blockIndex], 0, items.NextItemIndex);
 				itemsSpan.CopyTo(targetSpan);
 			}
 
