@@ -7,6 +7,7 @@ namespace Recyclable.Collections
 {
 	public class RecyclableList<T> : IDisposable, IList<T>
 	{
+		private const long ItemNotFoundIndexLong = -1L;
 		private const int ItemNotFoundIndex = -1;
 		private const double OptimalParallelSearchStep = 0.329;
 
@@ -231,7 +232,7 @@ namespace Recyclable.Collections
 			int index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, itemRange.StartingItemIndex, (int)Math.Min(blockSize - itemRange.StartingItemIndex, itemsToSearchCount));
 			if (itemFoundSignal.IsSet)
 			{
-				return ItemNotFoundIndex;
+				return ItemNotFoundIndexLong;
 			}
 			else if (index >= 0)
 			{
@@ -244,7 +245,7 @@ namespace Recyclable.Collections
 			itemsToSearchCount -= blockSize - itemRange.StartingItemIndex;
 			if (itemsToSearchCount <= 0)
 			{
-				return ItemNotFoundIndex;
+				return ItemNotFoundIndexLong;
 			}
 
 			//T itemToFind = itemRange.ItemToFind;
@@ -255,7 +256,7 @@ namespace Recyclable.Collections
 				index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, blockSize);
 				if (itemFoundSignal.IsSet)
 				{
-					return ItemNotFoundIndex;
+					return ItemNotFoundIndexLong;
 				}
 				else if (index >= 0)
 				{
@@ -267,14 +268,14 @@ namespace Recyclable.Collections
 			}
 
 			index = itemsToSearchCount <= 0 || blockIndex > list.LastBlockWithData
-				? -1
+				? ItemNotFoundIndex
 				: blockIndex == list._nextItemBlockIndex
 				? Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount)
 				: Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount);
 				//? Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(itemRange.List._nextItemIndex, itemsToSearchCount)))
 				//: Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(blockSize, itemsToSearchCount)));
 
-			return index >= 0 ? ((long)blockIndex << list._blockSizePow2BitShift) + index : ItemNotFoundIndex;
+			return index >= 0 ? ((long)blockIndex << list._blockSizePow2BitShift) + index : ItemNotFoundIndexLong;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
@@ -282,7 +283,7 @@ namespace Recyclable.Collections
 		{
 			using var itemFoundSignal = ManualResetEventSlimmer.Create(false);
 			using var allDoneSignal = new Barrier(1);
-			long foundItemIndex = -1L;
+			long foundItemIndex = ItemNotFoundIndexLong;
 			Exception? ex = null;
 
 			// (long)(_longCount * 0.329) => most efficient step, based on benchmarks
@@ -294,7 +295,7 @@ namespace Recyclable.Collections
 			}
 
 			ex.CaptureAndRethrow();
-			return ItemNotFoundIndex;
+			return ItemNotFoundIndexLong;
 
 			//int blockIndex = 0;
 			//int itemIndex = 0;
@@ -386,10 +387,10 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				return ItemNotFoundIndex;
+				return ItemNotFoundIndexLong;
 			}
 
-			return itemIndex >= 0 ? itemIndex + ((long)lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndex;
+			return itemIndex >= 0 ? itemIndex + ((long)lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndexLong;
 		}
 
 		/// <summary>
@@ -988,7 +989,7 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public long LongIndexOf(T item) => _longCount == 0
-				? ItemNotFoundIndex
+				? ItemNotFoundIndexLong
 				: _longCount <= _blockSize
 					? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
 					: DoIndexOfParallel(item);
