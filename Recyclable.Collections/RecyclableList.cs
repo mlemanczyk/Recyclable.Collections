@@ -980,10 +980,11 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => _longCount == 0
-				? ItemNotFoundIndex
-				: _longCount <= _blockSize
-					? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
-					: checked((int)DoIndexOfParallel(item));
+			? ItemNotFoundIndex
+			//// Optimization for tiny collections to avoid any vars etc.
+			: _longCount <= _blockSize
+				? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
+				: checked((int)DoIndexOfParallel(item));
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
 
