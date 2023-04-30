@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    ".Net": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
