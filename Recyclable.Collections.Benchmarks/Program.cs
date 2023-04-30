@@ -37,12 +37,15 @@ internal class Program
 
 	static void RunPocBenchmarks()
 	{
-		_ = BenchmarkRunner.Run<RecyclableListPocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<DelegateVsComparerPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<ModuloPocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<RecyclableListPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
-		_ = BenchmarkRunner.Run<ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
-		_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<WhenParallelSearchBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
+		 _ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
+		//ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 	}
 
 	private static void Main(string[] args)
