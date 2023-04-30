@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections.Benchmarks.POC
@@ -29,6 +30,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 			> 0 and <= 10 => (int)TestObjectCount,
 			_ => TestObjectCount / Divider > 0 ? checked((int)(TestObjectCount / Divider)) : checked((int)TestObjectCount)
 		};
+
+		public byte BlockSizePow2BitShift => checked((byte)(31 - BitOperations.LeadingZeroCount((uint)BlockSize)));
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		protected static void DoNothing<T>(in T item)
