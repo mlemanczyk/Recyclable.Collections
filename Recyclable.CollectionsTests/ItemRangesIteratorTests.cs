@@ -15,14 +15,14 @@ namespace Recyclable.CollectionsTests
 			var actual = new List<(int BlockIndex, int StartingItemIndex, long ItemsCount)>();
 
 			// Act
-			//ItemRangesIterator.Iterate(startingBlockIndex, blockSize, blockSizePow2BitShift, itemsCount, step, (searchInfo) =>
-			//{
-			//	actual.Add((searchInfo.BlockIndex, searchInfo.StartingItemIndex, searchInfo.ItemsToSearchCount));
-			//	return true;
-			//});
+			ItemRangesIterator.Iterate(startingBlockIndex, blockSize, blockSizePow2BitShift, itemsCount, step, (searchInfo) =>
+			{
+				actual.Add((searchInfo.BlockIndex, searchInfo.StartingItemIndex, searchInfo.ItemsToSearchCount));
+				return true;
+			});
 
 			// Validate
-			//_ = actual.Should().HaveCount(expected.Count()).And.ContainInConsecutiveOrder(expected);
+			_ = actual.Should().HaveCount(expected.Count()).And.ContainInConsecutiveOrder(expected);
 		}
 
 		public static IEnumerable<object[]> TestCases => new[]
