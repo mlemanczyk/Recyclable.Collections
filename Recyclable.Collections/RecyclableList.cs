@@ -228,9 +228,7 @@ namespace Recyclable.Collections
 			int blockSize = list._blockSize;
 			int blockIndex = itemRange.BlockIndex;
 			long itemsToSearchCount = itemRange.ItemsToSearchCount;
-			int startingItemIndex = itemRange.StartingItemIndex;
-			T[][] memoryBlocks = list._memoryBlocks;
-			int index = Array.IndexOf(memoryBlocks[blockIndex], itemToFind, startingItemIndex, (int)Math.Min(blockSize - startingItemIndex, itemsToSearchCount));
+			int index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, itemRange.StartingItemIndex, (int)Math.Min(blockSize - itemRange.StartingItemIndex, itemsToSearchCount));
 			if (itemFoundSignal.IsSet)
 			{
 				return ItemNotFoundIndex;
@@ -243,7 +241,7 @@ namespace Recyclable.Collections
 			// We don't need Math.Min here, because if itemsToSearchCount < blockSize - itemRange.StartingItemIndex, then it would mean that
 			// there are no more items and we already scanned all. We want to break the loop. Subtracting a higher value from itemsToSearchCount
 			// will always result in a negative result.
-			itemsToSearchCount -= blockSize - startingItemIndex;
+			itemsToSearchCount -= blockSize - itemRange.StartingItemIndex;
 			if (itemsToSearchCount <= 0)
 			{
 				return ItemNotFoundIndex;
@@ -254,7 +252,7 @@ namespace Recyclable.Collections
 			blockIndex++;
 			while (itemsToSearchCount > blockSize)
 			{
-				index = Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, blockSize);
+				index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, blockSize);
 				if (itemFoundSignal.IsSet)
 				{
 					return ItemNotFoundIndex;
@@ -271,8 +269,8 @@ namespace Recyclable.Collections
 			index = itemsToSearchCount <= 0 || blockIndex > list.LastBlockWithData
 				? -1
 				: blockIndex == list._nextItemBlockIndex
-				? Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount)
-				: Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount);
+				? Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount)
+				: Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount);
 				//? Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(itemRange.List._nextItemIndex, itemsToSearchCount)))
 				//: Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(blockSize, itemsToSearchCount)));
 
