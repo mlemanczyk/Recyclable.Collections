@@ -11,6 +11,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public long[] TestObjects => _testArray ?? throw new NullReferenceException("Something is wrong and test objects are null");
 		private RecyclableList<long>? _testRecyclableList;
 		public RecyclableList<long> TestObjectsAsRecyclableList => _testRecyclableList ?? throw new NullReferenceException("Something is wrong and RecyclableList is null");
+		private RecyclableListIndexOfV1<long>? _testRecyclableListIndexOfV1;
+		internal RecyclableListIndexOfV1<long> TestObjectsAsRecyclableListIndexOfV1 => _testRecyclableListIndexOfV1 ?? throw new NullReferenceException("Something is wrong and RecyclableListIndexOfV1 is null");
 
 		private static readonly MethodInfo _ensureCapacityNewFunc;
 		private static readonly MethodInfo _ensureCapacityV1Func;
@@ -30,12 +32,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 			_ensureCapacityV3Func = typeof(RecyclableListV3<long>).GetMethod("EnsureCapacity", BindingFlags.Static | BindingFlags.NonPublic)
 				?? throw new NullReferenceException($"Method EnsureCapacity not found in class {nameof(RecyclableListV3<long>)}");
-
-			_indexOfFunc = typeof(RecyclableList<long>).GetMethod("IndexOf", BindingFlags.Public | BindingFlags.Instance)
-				?? throw new NullReferenceException($"Method IndexOf not found in class {nameof(RecyclableList<long>)}");
-
-			_indexOfV4Func = typeof(RecyclableListIndexOfV1<long>).GetMethod("IndexOf", BindingFlags.Public | BindingFlags.Instance)
-				?? throw new NullReferenceException($"Method IndexOf not found in class {nameof(RecyclableListIndexOfV1<long>)}");
 		}
 
 		public static void Run()
@@ -49,6 +45,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 			benchmark.RecyclableList_EnsureCapacityV1_ByBlockSize();
 			benchmark.RecyclableList_EnsureCapacityV2_ByBlockSize();
 			benchmark.RecyclableList_EnsureCapacityV3_ByBlockSize();
+			benchmark.RecyclableList_IndexOf();
+			benchmark.RecyclableList_IndexOfV1();
 		}
 
 		[GlobalSetup]
@@ -56,12 +54,15 @@ namespace Recyclable.Collections.Benchmarks.POC
 		{
 			_testArray = DataGenerator.EnumerateTestObjects(TestObjectCount);
 			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+			_testRecyclableListIndexOfV1 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
 
 			// Warm up memory pools for fair comparison with 1st run
 			RecyclableList_EnsureCapacity_ByPowOf2();
 			RecyclableList_EnsureCapacityV1_ByPowOf2();
 			RecyclableList_EnsureCapacityV2_ByPowOf2();
 			RecyclableList_EnsureCapacityV3_ByPowOf2();
+			RecyclableList_IndexOf();
+			RecyclableList_IndexOfV1();
 		}
 
 		[GlobalCleanup]
@@ -70,6 +71,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_testArray = null;
 			_testRecyclableList?.Dispose();
 			_testRecyclableList = null;
+			_testRecyclableListIndexOfV1?.Dispose();
+			_testRecyclableListIndexOfV1 = null;
 		}
 	}
 }
