@@ -681,7 +681,7 @@ namespace Recyclable.Collections
 				targetBlockIndex = _nextItemBlockIndex,
 				memoryBlockCount = _reservedBlockCount;
 
-			Span<T> itemsSpan = new(items.AsArray(), 0, items.Count);
+			Span<T> itemsSpan = new(items.AsArray, 0, items.Count);
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlockCount);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
 			while (targetBlockArraySpan.Length <= itemsSpan.Length)

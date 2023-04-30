@@ -498,7 +498,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				targetBlockIndex = _nextItemBlockIndex,
 				memoryBlockCount = _memoryBlocks.Length;
 
-			Span<T> itemsSpan = new(items.AsArray(), 0, items.Count);
+			Span<T> itemsSpan = new(items.AsArray, 0, items.Count);
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlockCount);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
 			while (targetBlockArraySpan.Length <= itemsSpan.Length)
@@ -1397,7 +1397,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				targetBlockIndex = _nextItemBlockIndex,
 				memoryBlockCount = _memoryBlocks.Length;
 
-			Span<T> itemsSpan = new(items.AsArray(), 0, items.Count);
+			Span<T> itemsSpan = new(items.AsArray, 0, items.Count);
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlockCount);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
 			while (targetBlockArraySpan.Length <= itemsSpan.Length)
