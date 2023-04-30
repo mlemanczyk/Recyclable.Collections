@@ -66,11 +66,11 @@ namespace Recyclable.Collections
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
 			int blockSize = list._blockSize;
-			int sourceBlockIndex = checked((int)((index + 1) >> list._blockSizePow2BitShift));
-			int sourceItemIndex = checked((int)((index + 1) & list._blockSizeMinus1));
+			int sourceBlockIndex = (int)((index + 1) >> list._blockSizePow2BitShift);
+			int sourceItemIndex = (int)((index + 1) & list._blockSizeMinus1);
 
-			int targetBlockIndex = checked((int)(index >> list._blockSizePow2BitShift));
-			int targetItemIndex = checked((int)(index & list._blockSizeMinus1));
+			int targetBlockIndex = (int)(index >> list._blockSizePow2BitShift);
+			int targetItemIndex = (int)(index & list._blockSizeMinus1);
 
 			int lastTakenBlockIndex = list.LastBlockWithData;
 			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
@@ -980,9 +980,9 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => _longCount == 0
 			? ItemNotFoundIndex
-			//// Optimization for tiny collections to avoid any vars etc.
+			// Optimization for tiny collections to avoid any vars etc.
 			: _longCount <= _blockSize
-				? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
+				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
 				: checked((int)DoIndexOfParallel(item));
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
