@@ -8,7 +8,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = false)]
 		public void Array_Count()
 		{
-			var data = _testArray;
+			var data = TestObjects;
 			DoNothing(data.Length);
 		}
 
@@ -22,7 +22,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = true)]
 		public void PooledList_Count()
 		{
-			var data = _testPooledList;
+			var data = TestObjectsAsPooledList;
 			DoNothing(data.Count);
 		}
 
@@ -36,7 +36,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = false)]
 		public void RecyclableList_Count()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			DoNothing(data.Count);
 		}
 	}

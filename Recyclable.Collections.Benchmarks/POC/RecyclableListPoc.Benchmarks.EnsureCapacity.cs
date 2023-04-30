@@ -1277,7 +1277,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 				_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
 				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
-				if (_memoryBlocks?.Length > 0 && minBlockSize != _memoryBlocks[0].Length)
+				if (_memoryBlocks!.Length > 0 && minBlockSize != _memoryBlocks[0].Length)
 				{
 					_blockSize = _memoryBlocks[0].Length;
 					_blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));

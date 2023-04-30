@@ -6,10 +6,10 @@ namespace Recyclable.Collections.Benchmarks
 	[MemoryDiagnoser]
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		private long[] _testArray;
-		private RecyclableArrayList<long> _testRecyclableArrayList;
-		private RecyclableList<long> _testRecyclableList;
-		private PooledList<long> _testPooledList;
+		private long[]? _testArray;
+		private RecyclableArrayList<long>? _testRecyclableArrayList;
+		private RecyclableList<long>? _testRecyclableList;
+		private PooledList<long>? _testPooledList;
 
 		public PooledList<long> TestObjectsAsPooledList => _testPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 

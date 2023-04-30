@@ -7,14 +7,14 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = false)]
 		public void Array_LongCount()
 		{
-			var data = _testArray;
+			var data = TestObjects;
 			DoNothing(data.LongLength);
 		}
 
 		//[Benchmark(Baseline = false)]
 		public void RecyclableList_LongCount()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			DoNothing(data.LongCount);
 		}
 

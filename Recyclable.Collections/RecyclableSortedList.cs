@@ -38,7 +38,7 @@
 
 		public void BeginUpdate() => _isUpdating++;
 
-		public void Clear()
+		public new void Clear()
 		{
 			BeginUpdate();
 			try

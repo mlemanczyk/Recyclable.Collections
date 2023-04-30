@@ -29,7 +29,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark(Baseline = true)]
 		public void PooledList_GetItem()
 		{
-			var data = _testPooledList;
+			var data = TestObjectsAsPooledList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -51,7 +51,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -62,7 +62,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsSpan()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
@@ -90,7 +90,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsArray()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
@@ -118,7 +118,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsForEach()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			var dataCount = TestObjectCount;
 
 			foreach (var item in data)
@@ -130,7 +130,7 @@ namespace Recyclable.Collections.Benchmarks
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsWhile()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			long dataCount = TestObjectCount;
 			if (dataCount == 0)
 			{

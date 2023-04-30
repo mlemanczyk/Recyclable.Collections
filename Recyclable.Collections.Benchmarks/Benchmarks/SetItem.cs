@@ -31,7 +31,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = true)]
 		public void PooledList_SetItem()
 		{
-			var data = _testPooledList;
+			var data = TestObjectsAsPooledList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -53,7 +53,7 @@ namespace Recyclable.Collections.Benchmarks
 		//[Benchmark(Baseline = false)]
 		public void RecyclableList_SetItem()
 		{
-			var data = _testRecyclableList;
+			var data = TestObjectsAsRecyclableList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
