@@ -10,7 +10,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			var list = new List<object>(checked((int)dataCount));
+			var list = new List<long>(dataCount);
 			list.AddRange(data);
 		}
 
@@ -19,7 +19,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new PooledList<object>(capacity: checked((int)dataCount), ClearMode.Always);
+			using var list = new PooledList<long>(capacity: dataCount, ClearMode.Auto);
 			list.AddRange(data);
 		}
 
@@ -28,7 +28,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableArrayList<object>(checked((int)dataCount));
+			using var list = new RecyclableArrayList<long>(dataCount);
 			list.AddRange(data);
 		}
 
@@ -37,7 +37,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
+			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
 			list.AddRange(data);
 		}
 	}

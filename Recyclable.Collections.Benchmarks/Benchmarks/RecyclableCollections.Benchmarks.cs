@@ -6,32 +6,32 @@ namespace Recyclable.Collections.Benchmarks
 	[MemoryDiagnoser]
 	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
 	{
-		private object[] _testArray;
-		private RecyclableArrayList<object> _testRecyclableArrayList;
-		private RecyclableList<object> _testRecyclableList;
-		private PooledList<object> _testPooledList;
+		private long[] _testArray;
+		private RecyclableArrayList<long> _testRecyclableArrayList;
+		private RecyclableList<long> _testRecyclableList;
+		private PooledList<long> _testPooledList;
 
-		public PooledList<object> TestObjectsAsPooledList => _testPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+		public PooledList<long> TestObjectsAsPooledList => _testPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 
 		[GlobalSetup]
 		public void Setup()
 		{
 			Console.WriteLine("******* GLOBAL SETUP RAISED *******");
 			_testObjects = EnumerateTestObjects().ToArray();
-			_testRecyclableArrayList = new(TestObjects, initialCapacity: checked((int)TestObjectCount));
-			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: checked((int)TestObjectCount));
+			_testRecyclableArrayList = new(TestObjects, initialCapacity: TestObjectCount);
+			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
 			_testArray = TestObjects.ToArray();
 			_testObjectsAsList = TestObjects.ToList();
 			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();
 			_testObjectsAsRecyclableList = TestObjects.ToRecyclableList();
-			_testPooledList = new PooledList<object>(TestObjects, ClearMode.Always);
+			_testPooledList = new PooledList<long>(TestObjects, ClearMode.Always);
 		}
 
-		private IEnumerable<object> EnumerateTestObjects()
+		private IEnumerable<long> EnumerateTestObjects()
 		{
 			for (long i = 0; i < TestObjectCount; i++)
 			{
-				yield return new object();
+				yield return i;
 			}
 		}
 

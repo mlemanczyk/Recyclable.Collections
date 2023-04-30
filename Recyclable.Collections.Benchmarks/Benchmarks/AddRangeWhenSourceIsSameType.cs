@@ -9,7 +9,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void PooledList_AddRangeWhenSourceIsPooledList()
 		{
 			var data = TestObjectsAsPooledList;
-			using var list = new PooledList<object>(capacity: checked((int)TestObjectCount), ClearMode.Always);
+			using var list = new PooledList<long>(capacity: TestObjectCount, ClearMode.Auto);
 			list.AddRange(data);
 		}
 
@@ -17,7 +17,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableArrayList_AddRangeWhenSourceIsRecyclableArrayList()
 		{
 			var data = TestObjectsAsRecyclableArrayList;
-			using var list = new RecyclableArrayList<object>();
+			using var list = new RecyclableArrayList<long>();
 			list.AddRange(data);
 		}
 
@@ -25,7 +25,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_AddRangeWhenSourceIsRecyclableArrayList()
 		{
 			var data = TestObjectsAsRecyclableArrayList;
-			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			list.AddRange(data);
 		}
 	}

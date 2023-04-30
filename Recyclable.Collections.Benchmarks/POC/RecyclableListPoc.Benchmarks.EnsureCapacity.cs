@@ -1845,47 +1845,46 @@ namespace Recyclable.Collections.Benchmarks.POC
 	#endregion
 	public partial class RecyclableListPocBenchmarks
 	{
-
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_EnsureCapacityV1_ByPowOf2()
 		{
-			using var list = new RecyclableListV1<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableListV1<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			_ = list.EnsureCapacity(TestObjectCount);
 		}
 
 		[Benchmark(Baseline = true)]
 		public void RecyclableList_EnsureCapacityV2_ByPowOf2()
 		{
-			using var list = new RecyclableListV2<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
-			_ = RecyclableListV2<object>.EnsureCapacity(list, TestObjectCount);
+			using var list = new RecyclableListV2<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			_ = RecyclableListV2<long>.EnsureCapacity(list, TestObjectCount);
 		}
 
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_EnsureCapacity_ByPowOf2()
 		{
-			using var list = new RecyclableList<object>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
-			_ = RecyclableList<object>.EnsureCapacity(list, TestObjectCount);
+			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			_ = RecyclableList<long>.EnsureCapacity(list, TestObjectCount);
 		}
 
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_EnsureCapacityV1_ByBlockSize()
 		{
-			using var list = new RecyclableListV1<object>();
+			using var list = new RecyclableListV1<long>();
 			_ = list.EnsureCapacity(TestObjectCount);
 		}
 
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_EnsureCapacityV2_ByBlockSize()
 		{
-			using var list = new RecyclableListV2<object>();
-			_ = RecyclableListV2<object>.EnsureCapacity(list, TestObjectCount);
+			using var list = new RecyclableListV2<long>();
+			_ = RecyclableListV2<long>.EnsureCapacity(list, TestObjectCount);
 		}
 
 		[Benchmark(Baseline = false)]
 		public void RecyclableList_EnsureCapacity_ByBlockSize()
 		{
-			using var list = new RecyclableList<object>();
-			_ = RecyclableList<object>.EnsureCapacity(list, TestObjectCount);
+			using var list = new RecyclableList<long>();
+			_ = RecyclableList<long>.EnsureCapacity(list, TestObjectCount);
 		}
 	}
 }

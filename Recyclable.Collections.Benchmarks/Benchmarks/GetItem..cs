@@ -66,10 +66,10 @@ namespace Recyclable.Collections.Benchmarks
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
-			var memoryBlocks = new Span<object[]>(data.AsArray, 0, data.LastBlockWithData + 1);
+			var memoryBlocks = new Span<long[]>(data.AsArray, 0, data.LastBlockWithData + 1);
 			for (var blockIndex = 0; blockIndex < nextItemBlockIndex; blockIndex++)
 			{
-				var memoryBlock = new Span<object>(memoryBlocks[blockIndex], 0, blockSize);
+				var memoryBlock = new Span<long>(memoryBlocks[blockIndex], 0, blockSize);
 				for (var itemIndex = 0; itemIndex < blockSize; itemIndex++)
 				{
 					DoNothing(memoryBlock[itemIndex]);
@@ -79,7 +79,7 @@ namespace Recyclable.Collections.Benchmarks
 			if (nextItemBlockIndex == data.LastBlockWithData)
 			{
 
-				var memoryBlock = new Span<object>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
+				var memoryBlock = new Span<long>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
 				for (var itemIndex = 0; itemIndex < memoryBlock.Length; itemIndex++)
 				{
 					DoNothing(memoryBlock[itemIndex]);

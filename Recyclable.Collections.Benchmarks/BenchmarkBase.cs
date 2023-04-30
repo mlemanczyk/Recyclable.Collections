@@ -4,23 +4,23 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public class BenchmarkBase : PocBenchmarkBase
 	{
-		protected object[]? _testObjects;
-		protected object[] TestObjects => _testObjects ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+		protected long[]? _testObjects;
+		protected long[] TestObjects => _testObjects ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 
-		protected List<object>? _testObjectsAsList;
-		protected List<object> TestObjectsAsList => _testObjectsAsList ?? throw new NullReferenceException("Something went wront and the field is not initialized");
+		protected List<long>? _testObjectsAsList;
+		protected List<long> TestObjectsAsList => _testObjectsAsList ?? throw new NullReferenceException("Something went wront and the field is not initialized");
 
-		protected RecyclableArrayList<object>? _testObjectsAsRecyclableArrayList;
-		protected RecyclableArrayList<object> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
-		protected RecyclableList<object>? _testObjectsAsRecyclableList;
-		protected RecyclableList<object> TestObjectsAsRecyclableList => _testObjectsAsRecyclableList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
-		protected IEnumerable<object> TestObjectsAsIEnumerable
+		protected RecyclableArrayList<long>? _testObjectsAsRecyclableArrayList;
+		protected RecyclableArrayList<long> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+		protected RecyclableList<long>? _testObjectsAsRecyclableList;
+		protected RecyclableList<long> TestObjectsAsRecyclableList => _testObjectsAsRecyclableList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+		protected IEnumerable<long> TestObjectsAsIEnumerable
 		{
 			get
 			{
 				for (long i = 0; i < TestObjectCount; i++)
 				{
-					yield return new object();
+					yield return i;
 				}
 			}
 		}
