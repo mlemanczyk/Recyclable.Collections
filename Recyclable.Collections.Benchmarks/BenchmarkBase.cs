@@ -1,4 +1,6 @@
-﻿using Recyclable.Collections.Benchmarks.POC;
+﻿using BenchmarkDotNet.Attributes;
+using Recyclable.Collections.Benchmarks.Core;
+using Recyclable.Collections.Benchmarks.POC;
 
 namespace Recyclable.Collections.Benchmarks
 {
@@ -25,9 +27,26 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		protected static void DoNothing<T>(T obj)
+		[GlobalSetup]
+		public virtual void Setup()
 		{
-			_ = obj;
+			Console.WriteLine("******* GLOBAL SETUP *******");
+			_testObjects = DataGenerator.EnumerateTestObjects(TestObjectCount);
+			Console.WriteLine("******* TEST DATA CREATED *******");
+		}
+
+		[GlobalCleanup]
+		public virtual void Cleanup()
+		{
+			Console.WriteLine("******* GLOBAL CLEANUP *******");
+			// Enable this if item type is changed to reference type
+			//if (_testObjects != null)
+			//{
+			//	Array.Fill(_testObjects, 0);
+			//}
+
+			_testObjects = default;
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 		}
 	}
 

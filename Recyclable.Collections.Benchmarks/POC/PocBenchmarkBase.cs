@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections.Benchmarks.POC
+﻿using System.Runtime.CompilerServices;
+
+namespace Recyclable.Collections.Benchmarks.POC
 {
 	public class PocBenchmarkBase
 	{
@@ -21,5 +23,11 @@
 			> 0 and <= 10 => (int)TestObjectCount,
 			_ => TestObjectCount / Divider > 0 ? checked((int)(TestObjectCount / Divider)) : checked((int)TestObjectCount)
 		};
+
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		protected static void DoNothing<T>(in T item)
+		{
+			_ = item;
+		}
 	}
 }

@@ -13,11 +13,9 @@ namespace Recyclable.Collections.Benchmarks
 
 		public PooledList<long> TestObjectsAsPooledList => _testPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 
-		[GlobalSetup]
-		public void Setup()
+		public override void Setup()
 		{
-			Console.WriteLine("******* GLOBAL SETUP RAISED *******");
-			_testObjects = EnumerateTestObjects().ToArray();
+			base.Setup();
 			_testRecyclableArrayList = new(TestObjects, initialCapacity: TestObjectCount);
 			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
 			_testArray = TestObjects.ToArray();
@@ -27,18 +25,8 @@ namespace Recyclable.Collections.Benchmarks
 			_testPooledList = new PooledList<long>(TestObjects, ClearMode.Always);
 		}
 
-		private IEnumerable<long> EnumerateTestObjects()
+		public override void Cleanup()
 		{
-			for (long i = 0; i < TestObjectCount; i++)
-			{
-				yield return i;
-			}
-		}
-
-		[GlobalCleanup]
-		public void Cleanup()
-		{
-			Console.WriteLine("******* GLOBAL CLEANUP *******");
 			_testRecyclableArrayList?.Dispose();
 			_testRecyclableList?.Dispose();
 			_testPooledList?.Dispose();
@@ -46,7 +34,7 @@ namespace Recyclable.Collections.Benchmarks
 			_testObjectsAsRecyclableArrayList = default;
 			_testObjectsAsRecyclableList = default;
 			_testObjectsAsList = default;
-			_testObjects = default;
+			base.Cleanup();
 		}
 	}
 }
