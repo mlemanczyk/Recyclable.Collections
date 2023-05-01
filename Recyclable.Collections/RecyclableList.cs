@@ -275,10 +275,10 @@ namespace Recyclable.Collections
 				//? Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(itemRange.List._nextItemIndex, itemsToSearchCount)))
 				//: Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(blockSize, itemsToSearchCount)));
 
-			return index >= 0 ? ((long)blockIndex << list._blockSizePow2BitShift) + index : ItemNotFoundIndexLong;
+			return !itemFoundSignal.IsSet && index >= 0 ? ((long)blockIndex << list._blockSizePow2BitShift) + index : ItemNotFoundIndexLong;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
+		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
 		private long DoIndexOfParallel(T item)
 		{
 			using var itemFoundSignal = ManualResetEventSlimmer.Create(false);
@@ -980,10 +980,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => _longCount == 0
 			? ItemNotFoundIndex
-			// Optimization for tiny collections to avoid any vars etc.
-			: _longCount <= _blockSize
-				? Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount)
-				: checked((int)DoIndexOfParallel(item));
+			: checked((int)DoIndexOfParallel(item));
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
 
