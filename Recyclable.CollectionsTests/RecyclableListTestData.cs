@@ -54,7 +54,6 @@ namespace Recyclable.CollectionsTests
 							CreateTestData(itemsCount).ToRecyclableList(sourceBlockSize),
 							itemsCount
 					};
-
 				}
 
 				yield return new object[] { $"IList<int>(itemsCount: {itemsCount})", new CustomIList<long>(CreateTestData(itemsCount)), itemsCount };
@@ -64,7 +63,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		public static IEnumerable<object[]> SourceDataVariants => CreateSourceDataVariants().ToArray();
-			
+
 		private static IEnumerable<object[]> CreateSourceEmptyDataVariants() => new[]
 		{
 			new object[] { "int[]", Array.Empty<long>() },

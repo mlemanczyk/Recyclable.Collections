@@ -4,7 +4,7 @@ namespace Recyclable.CollectionsTests
 {
 	public class EnumerableWithoutCount<T> : IEnumerable<T>
 	{
-		private IEnumerable<T> _testData;
+		private readonly IEnumerable<T> _testData;
 
 		public EnumerableWithoutCount(IEnumerable<T> testData)
 		{

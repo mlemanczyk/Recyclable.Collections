@@ -27,7 +27,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             benchmark.XDivYMulX();
             benchmark.XDivYMulXWithLocalVar();
 		}
-		
+
         private long _cutoff;
         private Vector128<long> _increment;
         private long _lastCaseIndex;

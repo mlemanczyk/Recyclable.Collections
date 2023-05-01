@@ -22,12 +22,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 		//[Params(329_000, 512_000, 750_000, 1_000_000, 3_290_000)]
 		//public int Step { get; set; } = 329_000; // This was the fastest so far
 
-		private static readonly int _numberOfProcessors = Environment.ProcessorCount;
 		private RecyclableList<long>? _testData;
 
 		public object? ItemToFind { get; set; }
 
-		[GlobalSetup] 
+		[GlobalSetup]
 		public void Setup()
 		{
 			_testData = Enumerable.Range(1, TestObjectCount).Cast<long>().ToRecyclableList(BlockSize);
@@ -40,7 +39,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_testData = default;
 		}
 
-		
 		[Benchmark(Baseline = true)]
 		public void IndexOfSequentially()
 		{
@@ -261,7 +259,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			//		//}
 
 			//	}
-
 
 			//	if (threadIndex + 1 < numberOfRanges && blockIndex <= _testData.LastBlockWithData)
 			//	{

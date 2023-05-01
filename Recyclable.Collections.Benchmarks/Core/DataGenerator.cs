@@ -1,6 +1,6 @@
 namespace Recyclable.Collections.Benchmarks.Core
 {
-    public class DataGenerator
+    public static class DataGenerator
     {
 		public static long[] EnumerateTestObjects(long testObjectCount)
 		{
@@ -15,6 +15,5 @@ namespace Recyclable.Collections.Benchmarks.Core
 
 			return result;
 		}
-
     }
 }

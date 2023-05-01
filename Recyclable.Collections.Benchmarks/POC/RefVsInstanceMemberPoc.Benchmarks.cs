@@ -26,7 +26,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             benchmark.RefToInt2();
             benchmark.RefToInt3();
 		}
-		
+
         private readonly TestCase _testCase = new();
         private static void DoNothing(int count)
         {

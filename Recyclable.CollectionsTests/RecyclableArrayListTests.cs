@@ -217,7 +217,6 @@ namespace Recyclable.CollectionsTests
 			// Validate			
 			_ = list.Count.Should().Be(0);
 			_ = list.Should().BeEmpty();
-
 		}
 
 		[Theory]
@@ -350,10 +349,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			var yieldedItems = new List<long>((int)itemsCount);
-			foreach (var item in list)
-			{
-				yieldedItems.Add(item);
-			}
+			yieldedItems.AddRange(list);
 
 			// Validate
 			_ = yieldedItems.Count.Should().Be((int)itemsCount);
@@ -549,8 +545,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.Should().ContainInConsecutiveOrder(testData.Take((int)(itemsCount - deleted)));
-
 			}
 		}
 	}
-} 
+}

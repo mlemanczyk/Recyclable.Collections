@@ -8,7 +8,6 @@ namespace Recyclable.Collections
 	{
 		private const int ItemNotFound = -1;
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
-		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
 
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
@@ -129,7 +128,7 @@ namespace Recyclable.Collections
 		}
 
 		protected int _capacity;
-		public int Capacity 
+		public int Capacity
 		{
 			get => _capacity;
 			set
@@ -340,30 +339,26 @@ namespace Recyclable.Collections
 			if (enumerator.MoveNext())
 			{
 				int available = capacity - targetItemIdx;
-				while (true)
-				{
-					if (targetItemIdx + growByCount > capacity)
-					{
+                do
+                {
+                    if (targetItemIdx + growByCount > capacity)
+                    {
 						capacity = EnsureCapacity(capacity + growByCount);
-						memorySpan = new(_memoryBlock);
-						available = capacity - targetItemIdx;
-					}
+                        memorySpan = new(_memoryBlock);
+                        available = capacity - targetItemIdx;
+                    }
 
-					for (i = 0; i < available; i++)
-					{
-						memorySpan[targetItemIdx++] = enumerator.Current;
-						if (!enumerator.MoveNext())
-						{
-							break;
-						}
-					}
-
-					if (i < available)
-					{
-						break;
-					}
-				}
-			}
+                    for (i = 0; i < available; i++)
+                    {
+                        memorySpan[targetItemIdx++] = enumerator.Current;
+                        if (!enumerator.MoveNext())
+                        {
+                            break;
+                        }
+                    }
+                }
+                while (i >= available);
+            }
 
 			_count = targetItemIdx;
 		}
@@ -459,6 +454,7 @@ namespace Recyclable.Collections
 		}
 
 		public IEnumerator<T> GetEnumerator() => Enumerate(this).GetEnumerator();
+
 		IEnumerator IEnumerable.GetEnumerator() => Enumerate(this).GetEnumerator();
 
 		public void Dispose()

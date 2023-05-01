@@ -75,6 +75,5 @@ namespace Recyclable.Collections.Benchmarks
 				DoNothing(list.LongIndexOf(data[i]));
 			}
 		}
-
 	}
 }

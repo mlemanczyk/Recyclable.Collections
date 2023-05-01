@@ -112,7 +112,7 @@ namespace Recyclable.Collections
 						return scannedCount;
 					}
 
-					scannedCount++;					
+					scannedCount++;
 					if (scannedCount == itemsCount)
 					{
 						return -1;

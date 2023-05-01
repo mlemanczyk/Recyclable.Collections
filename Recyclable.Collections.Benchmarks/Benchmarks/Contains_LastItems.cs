@@ -63,6 +63,5 @@ namespace Recyclable.Collections.Benchmarks
 				DoNothing(list.Contains(data[^(i + 1)]));
 			}
 		}
-
 	}
 }

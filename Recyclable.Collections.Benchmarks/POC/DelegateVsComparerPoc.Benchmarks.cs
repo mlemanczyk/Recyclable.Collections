@@ -64,13 +64,13 @@ namespace Recyclable.Collections.Benchmarks.POC
 
         private const int _objectCount = 1_000_000;
         private static readonly IEnumerable<long> _testObjects = Enumerable.Range(1, _objectCount).Select(x => (long)x);
-        private static readonly IEnumerable<Func<long, long, int>> _testListOfFunctions = _testObjects.Select<long, Func<long, long, int>>(static x => new MyComparer().Compare);
-        private static readonly IEnumerable<IComparer<long>> _testListOfComparers = _testObjects.Select(x => (IComparer<long>)new MyComparer());
-        private static readonly IEnumerable<Compare<long>> _testListOfDelegates = _testObjects.Select(x => new Compare<long>((x, y) => new MyComparer().Compare(x, y)));
+        private static readonly IEnumerable<Func<long, long, int>> _testListOfFunctions = _testObjects.Select<long, Func<long, long, int>>(static _ => new MyComparer().Compare);
+        private static readonly IEnumerable<IComparer<long>> _testListOfComparers = _testObjects.Select(_ => (IComparer<long>)new MyComparer());
+        private static readonly IEnumerable<Compare<long>> _testListOfDelegates = _testObjects.Select(_ => new Compare<long>((x, y) => new MyComparer().Compare(x, y)));
         private static readonly IEnumerable<Func<long, long, int>> _testListOfLocalFunctions = GetLocalFunctions(_testObjects);
-        private static readonly IEnumerable<MyComparer> _testListOfClasses = _testObjects.Select(x => new MyComparer());
-        private static readonly IEnumerable<MyComparerStruct<long>> _testListOfStructs = _testObjects.Select(x => new MyComparerStruct<long>());
-        private static readonly IEnumerable<IComparer<long>> _testListOfBoxedStructs = _testObjects.Select(x => (IComparer<long>)new MyComparerStruct<long>());
+        private static readonly IEnumerable<MyComparer> _testListOfClasses = _testObjects.Select(_ => new MyComparer());
+        private static readonly IEnumerable<MyComparerStruct<long>> _testListOfStructs = _testObjects.Select(_ => new MyComparerStruct<long>());
+        private static readonly IEnumerable<IComparer<long>> _testListOfBoxedStructs = _testObjects.Select(_ => (IComparer<long>)new MyComparerStruct<long>());
         private static IEnumerable<TComparer> _testListOfUnboxedStructs<TComparer, TValue>() where TComparer : IComparer<TValue>, new()
         {
             foreach (var item in _testObjects)

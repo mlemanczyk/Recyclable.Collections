@@ -12,14 +12,14 @@ namespace Recyclable.Collections.Benchmarks.POC
 			benchmark.Bool();
 			benchmark.Compare();
 		}
-		
+
 		private static void DoNothing<T>(T result, [CallerMemberName] string? callerName = null)
 		{
 			//Console.WriteLine($"{callerName}: result = {result}");
 		}
 
-		private bool _testBool = true;
-		private int _blockSize = 8;
+		private readonly bool _testBool = true;
+		private readonly int _blockSize = 8;
 
 		[Benchmark(Baseline = false)]
 		public void Bool()
