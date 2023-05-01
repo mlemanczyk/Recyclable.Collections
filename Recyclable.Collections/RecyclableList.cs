@@ -287,42 +287,7 @@ namespace Recyclable.Collections
 			Exception? ex = null;
 
 			// (long)(_longCount * 0.329) => most efficient step, based on benchmarks
-			ItemRangesIterator.Iterate(0, _blockSize, _blockSizePow2BitShift, _longCount, _longCountIndexOfStep, LocalIndexOf);
-			allDoneSignal.SignalAndWait();
-			if (ex == null)
-			{
-				return foundItemIndex;
-			}
-
-			ex.CaptureAndRethrow();
-			return ItemNotFoundIndexLong;
-
-			//int blockIndex = 0;
-			//int itemIndex = 0;
-			//long itemsCount = _longCount;
-			//while (itemsCount > step)
-			//{
-			//	if (!LocalIndexOf(new(blockIndex, itemIndex, step)))
-			//	{
-			//		break;
-			//	}
-
-			//	itemsCount -= step;
-			//	//blockIndex = (int)Math.DivRem(itemIndex + step, blockSize, out itemIndex);
-			//	blockIndex += (int)((itemIndex + step) >> _blockSizePow2BitShift);
-			//	itemIndex = (int)((itemIndex + step) & _blockSizeMinus1);
-			//	//itemIndex += step;
-			//	//while (itemIndex >= blockSize)
-			//	//{
-			//	//	blockIndex++;
-			//	//	itemIndex -= blockSize;
-			//	//}
-			//}
-
-			//_ = LocalIndexOf(new(blockIndex, itemIndex, itemsCount));
-
-			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-			bool LocalIndexOf(ItemRange itemRange)
+			ItemRangesIterator.Iterate(0, _blockSize, _blockSizePow2BitShift, _longCount, _longCountIndexOfStep, itemRange =>
 			{
 				_ = allDoneSignal.AddParticipant();
 				_ = Task.Factory.StartNew(() =>
@@ -362,7 +327,15 @@ namespace Recyclable.Collections
 					//});
 
 				return !itemFoundSignal.IsSet;
+			});
+			allDoneSignal.SignalAndWait();
+			if (ex == null)
+			{
+				return foundItemIndex;
 			}
+
+			ex.CaptureAndRethrow();
+			return ItemNotFoundIndexLong;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
