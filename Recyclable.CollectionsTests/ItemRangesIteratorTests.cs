@@ -127,7 +127,6 @@ namespace Recyclable.CollectionsTests
 					(9, 0, 1),
 				}
 			},
-
 		};
 	}
 }

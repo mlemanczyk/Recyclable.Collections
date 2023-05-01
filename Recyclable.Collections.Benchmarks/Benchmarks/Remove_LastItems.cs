@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Collections.Pooled;
 
-
 namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks

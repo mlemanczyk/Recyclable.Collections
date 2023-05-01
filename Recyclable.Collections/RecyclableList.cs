@@ -373,10 +373,11 @@ namespace Recyclable.Collections
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
 		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
-		/// <remarks>For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
+		/// <remarks><para>
+		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
-		/// 
-		/// This method checks for integral overflow.
+		/// </para>
+		/// <para>This method checks for integral overflow.</para>
 		/// </remarks>
 		/// <remarks>
 		/// This method doesn't support downsizing the memory block. As such it doesn't release excessive blocks. This is to for additional performance
@@ -426,35 +427,35 @@ namespace Recyclable.Collections
 					}
 
 					blockIndex = sourceBlockCount;
-					do
-					{
-						newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
-						if (blockIndex + 1 < requiredBlockCount)
-						{
-							blockIndex++;
-						}
-						else
-						{
-							break;
-						}
-					} while (true);
-				}
+                    while (true)
+                    {
+                        newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
+                        if (blockIndex + 1 < requiredBlockCount)
+                        {
+                            blockIndex++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
 				else
 				{
 					blockIndex = sourceBlockCount;
-					do
-					{
-						newMemoryBlocks[blockIndex] = new T[minBlockSize];
-						if (blockIndex + 1 < requiredBlockCount)
-						{
-							blockIndex++;
-						}
-						else
-						{
-							break;
-						}
-					} while (true);
-				}
+                    while (true)
+                    {
+                        newMemoryBlocks[blockIndex] = new T[minBlockSize];
+                        if (blockIndex + 1 < requiredBlockCount)
+                        {
+                            blockIndex++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
 			}
 
 			list._reservedBlockCount = requiredBlockCount;
@@ -742,7 +743,6 @@ namespace Recyclable.Collections
 			{
 				_nextItemIndex = checked((int)(targetCapacity & _blockSizeMinus1));
 				_nextItemBlockIndex = targetBlockIndex;
-
 			}
 
 			_longCount = targetCapacity;

@@ -586,7 +586,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			{
 				_nextItemIndex = (int)(targetCapacity & (blockSize - 1));
 				_nextItemBlockIndex = targetBlockIndex;
-
 			}
 
 			_longCount = targetCapacity;
@@ -872,7 +871,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 	}
 
-
 	#endregion
 
 	#region RecyclableList v2
@@ -1117,10 +1115,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizeBitShift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
 		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableListV2{T}.Resize(RecyclableListV2{T}, int, byte, long)"/>.</param>
-		/// <remarks>For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
+		/// <remarks><para>
+		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
-		/// 
-		/// This method checks for integral overflow.
+		/// </para>
+		/// <para>This method checks for integral overflow.</para>
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1485,7 +1484,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			{
 				_nextItemIndex = checked((int)(targetCapacity & (blockSize - 1)));
 				_nextItemBlockIndex = targetBlockIndex;
-
 			}
 
 			_longCount = targetCapacity;
@@ -2089,10 +2087,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
 		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
-		/// <remarks>For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
+		/// <remarks><para>
+		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
-		/// 
-		/// This method checks for integral overflow.
+		/// </para>
+		/// <para>This method checks for integral overflow.</para>
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -2446,7 +2445,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			{
 				_nextItemIndex = checked((int)(targetCapacity & _blockSizeMinus1));
 				_nextItemBlockIndex = targetBlockIndex;
-
 			}
 
 			_longCount = targetCapacity;
@@ -2804,7 +2802,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 	}
-	
+
 	#endregion
 
 	public partial class RecyclableListPocBenchmarks

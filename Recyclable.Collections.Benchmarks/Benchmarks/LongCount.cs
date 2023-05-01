@@ -17,6 +17,5 @@ namespace Recyclable.Collections.Benchmarks
 			var data = TestObjectsAsRecyclableList;
 			DoNothing(data.LongCount);
 		}
-
 	}
 }

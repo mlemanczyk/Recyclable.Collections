@@ -78,7 +78,6 @@ namespace Recyclable.Collections.Benchmarks
 
 			if (nextItemBlockIndex == data.LastBlockWithData)
 			{
-
 				var memoryBlock = new Span<long>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
 				for (var itemIndex = 0; itemIndex < memoryBlock.Length; itemIndex++)
 				{
@@ -119,8 +118,6 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_GetItem_AsForEach()
 		{
 			var data = TestObjectsAsRecyclableList;
-			var dataCount = TestObjectCount;
-
 			foreach (var item in data)
 			{
 				DoNothing(item);

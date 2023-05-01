@@ -27,7 +27,7 @@
 			QuickSort();
 		}
 
-		public RecyclableSortedList(int blockSize = RecyclableDefaults.BlockSize) 
+		public RecyclableSortedList(int blockSize = RecyclableDefaults.BlockSize)
 			: base(blockSize)
 		{
 		}
@@ -73,7 +73,7 @@
 			finally
 			{
 				EndUpdate(false);
-			}		
+			}
 		}
 	}
 }
