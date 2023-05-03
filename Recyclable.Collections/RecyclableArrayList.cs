@@ -18,21 +18,23 @@ namespace Recyclable.Collections
 			throw new ArgumentOutOfRangeException(message, (Exception?)null);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected static T[] SetNewLength(in T[]? source, in int newSize)
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		protected static T[] Resize(in T[]? source, int newSize)
 		{
 			ArrayPool<T> arrayPool = _arrayPool;
-			var sourceLength = source?.Length ?? 0;
 			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
 				? arrayPool.Rent(newSize)
 				: new T[newSize];
 
-			if (sourceLength > 0)
+			if (source?.Length > 0)
 			{
-				var sourceSpan = new Memory<T>(source);
-				var newArraySpan = new Memory<T>(newMemoryBlock);
-				sourceSpan.CopyTo(newArraySpan);
-				if (sourceLength >= RecyclableDefaults.MinPooledArrayLength)
+				Array.Copy(source!, 0, newMemoryBlock, 0, source!.Length);
+				//var sourceSpan = new Memory<T>(source);
+				//var newArraySpan = new Memory<T>(newMemoryBlock);
+
+				//sourceSpan.CopyTo(newArraySpan);
+
+				if (source!.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					arrayPool.Return(source!, NeedsClearing);
 				}
@@ -41,19 +43,17 @@ namespace Recyclable.Collections
 			return newMemoryBlock;
 		}
 
-		protected int EnsureCapacity(in int requestedCapacity)
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		protected static int EnsureCapacity(RecyclableArrayList<T> list, int requestedCapacity)
 		{
-			int oldCapacity = _capacity;
-			ref T[] memory = ref _memoryBlock;
-
 			int newCapacity;
-			switch (oldCapacity > 0)
+			switch (list._capacity > 0)
 			{
 				case true:
-					newCapacity = oldCapacity;
+					newCapacity = list._capacity;
 					while (newCapacity < requestedCapacity)
 					{
-						newCapacity *= 2;
+						newCapacity <<= 1;
 					}
 
 					break;
@@ -63,9 +63,9 @@ namespace Recyclable.Collections
 					break;
 			}
 
-			memory = SetNewLength(memory, newCapacity);
-			newCapacity = memory.Length;
-			_capacity = newCapacity;
+			list._memoryBlock = Resize(list._memoryBlock, newCapacity);
+			newCapacity = list._memoryBlock.Length;
+			list._capacity = newCapacity;
 			return newCapacity;
 		}
 
@@ -81,7 +81,7 @@ namespace Recyclable.Collections
 		{
 			if (initialCapacity > 0)
 			{
-				_memoryBlock = SetNewLength(_memoryBlock, initialCapacity);
+				_memoryBlock = Resize(_memoryBlock, initialCapacity);
 				_capacity = _memoryBlock.Length;
 			}
 		}
@@ -116,15 +116,18 @@ namespace Recyclable.Collections
 
 		public RecyclableArrayList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
-			_memoryBlock = SetNewLength(_memoryBlock, initialCapacity);
+			_memoryBlock = Resize(_memoryBlock, initialCapacity);
 			_capacity = _memoryBlock.Length;
 			AddRange(source);
 		}
 
 		public T this[int index]
 		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _memoryBlock[index];
-			set => new Span<T>(_memoryBlock)[index] = value;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			set => _memoryBlock[index] = value;
 		}
 
 		protected int _capacity;
@@ -135,7 +138,7 @@ namespace Recyclable.Collections
 			{
 				if (_capacity != value)
 				{
-					_memoryBlock = SetNewLength(_memoryBlock, value);
+					_memoryBlock = Resize(_memoryBlock, value);
 					_capacity = _memoryBlock.Length;
 				}
 			}
@@ -144,7 +147,10 @@ namespace Recyclable.Collections
 		protected int _count;
 		public int Count
 		{
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get => _count;
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			set => _count = value;
 		}
 
@@ -156,12 +162,13 @@ namespace Recyclable.Collections
 			int requiredCapacity = _count + 1;
 			if (_capacity < requiredCapacity)
 			{
-				_ = EnsureCapacity(requiredCapacity);
+				_ = EnsureCapacity(this, requiredCapacity);
 			}
 
 			_memoryBlock[_count++] = item;
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(in T[] items)
 		{
 			if (items.LongLength == 0)
@@ -173,7 +180,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -182,6 +189,7 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(List<T> items)
 		{
 			if (items.Count == 0)
@@ -193,13 +201,14 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
 			_count = targetCapacity;
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(IList<T> items)
 		{
 			if (items.Count == 0)
@@ -211,13 +220,14 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
 			_count = targetCapacity;
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(RecyclableArrayList<T> items)
 		{
 			if (items.Count == 0)
@@ -229,7 +239,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -238,6 +248,7 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.LongCount == 0)
@@ -259,7 +270,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + (int)sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(targetCapacity);
+				_ = EnsureCapacity(this, targetCapacity);
 			}
 
 			Span<T> targetSpan = new Span<T>(_memoryBlock)[_count..],
@@ -281,7 +292,7 @@ namespace Recyclable.Collections
 				itemsSpan = new(items.AsArray[blockIndex], 0, (int)sourceItemsCount);
 				itemsSpan.CopyTo(targetSpan);
 			}
-			else if (blockIndex <= items.LastTakenBlockIndex)
+			else if (blockIndex <= items.LastBlockWithData)
 			{
 				itemsSpan = new(items.AsArray[blockIndex], 0, items.NextItemIndex);
 				itemsSpan.CopyTo(targetSpan);
@@ -290,6 +301,7 @@ namespace Recyclable.Collections
 			_count = targetCapacity;
 		}
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
 			if (source is T[] sourceArray)
@@ -320,7 +332,7 @@ namespace Recyclable.Collections
 			Span<T> memorySpan;
 			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				_ = EnsureCapacity(targetItemIdx + requiredAdditionalCapacity);
+				_ = EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
 				memorySpan = new(_memoryBlock);
 				foreach (var item in source)
 				{
@@ -343,7 +355,7 @@ namespace Recyclable.Collections
                 {
                     if (targetItemIdx + growByCount > capacity)
                     {
-						capacity = EnsureCapacity(capacity + growByCount);
+                        capacity = EnsureCapacity(this, capacity + growByCount);
                         memorySpan = new(_memoryBlock);
                         available = capacity - targetItemIdx;
                     }
@@ -365,13 +377,21 @@ namespace Recyclable.Collections
 
 		public T[] AsArray => _memoryBlock;
 
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void Clear()
 		{
+			if (NeedsClearing)
+			{
+				Array.Clear(_memoryBlock, 0, _count);
+			}
+
 			_count = 0;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Contains(T item) => _count > 0 && Array.IndexOf(_memoryBlock, item, 0, _count) >= 0;
 
+		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(_memoryBlock, 0, array, arrayIndex, _count);
 
 		protected static IEnumerable<T> Enumerate(RecyclableArrayList<T> list)
@@ -384,15 +404,17 @@ namespace Recyclable.Collections
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T itemToFind) => _count > 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : ItemNotFound;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void Insert(int index, T item)
 		{
 			int oldCount = _count;
 			int requestedCapacity = oldCount + 1;
 			if (_capacity < requestedCapacity)
 			{
-				_ = EnsureCapacity(requestedCapacity);
+				_ = EnsureCapacity(this, requestedCapacity);
 			}
 
 			if (oldCount > 0)
@@ -434,7 +456,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(int index)
 		{
-			if (index > _count - 1)
+			if (index >= _count)
 			{
 				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range");
 			}
@@ -453,8 +475,10 @@ namespace Recyclable.Collections
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IEnumerator<T> GetEnumerator() => Enumerate(this).GetEnumerator();
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		IEnumerator IEnumerable.GetEnumerator() => Enumerate(this).GetEnumerator();
 
 		public void Dispose()
