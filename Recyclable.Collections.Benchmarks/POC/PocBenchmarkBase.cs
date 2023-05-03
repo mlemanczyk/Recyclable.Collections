@@ -27,8 +27,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public int BlockSize => TestObjectCount switch
 		{
 			0 => 1,
-			> 0 and <= 10 => (int)TestObjectCount,
-			_ => TestObjectCount / Divider > 0 ? checked((int)(TestObjectCount / Divider)) : checked((int)TestObjectCount)
+			> 0 and <= 10 => TestObjectCount,
+			_ => TestObjectCount / Divider > 0 ? TestObjectCount / Divider : TestObjectCount
 		};
 
 		public byte BlockSizePow2BitShift => checked((byte)(31 - BitOperations.LeadingZeroCount((uint)BlockSize)));

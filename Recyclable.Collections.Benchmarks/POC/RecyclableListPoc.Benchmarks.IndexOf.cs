@@ -4654,11 +4654,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 	}
+	
 	#endregion
 
 	public partial class RecyclableListPocBenchmarks
 	{
-		// [Benchmark(Baseline = true)]
 		public void RecyclableList_IndexOfV1()
 		{
 			var data = TestObjects;
@@ -4670,7 +4670,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		// [Benchmark(Baseline = true)]
 		public void PooledList_IndexOf()
 		{
 			var data = TestObjects;
@@ -4682,7 +4681,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		// [Benchmark(Baseline = false)]
 		public void RecyclableList_IndexOfV2()
 		{
 			var data = TestObjects;
@@ -4694,7 +4692,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		// [Benchmark(Baseline = false)]
 		public void RecyclableList_IndexOfV3()
 		{
 			var data = TestObjects;
@@ -4706,7 +4703,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		// [Benchmark(Baseline = true)]
 		public void RecyclableList_IndexOfV4()
 		{
 			var data = TestObjects;
@@ -4718,7 +4714,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableList_IndexOf()
 		{
 			var data = TestObjects;
