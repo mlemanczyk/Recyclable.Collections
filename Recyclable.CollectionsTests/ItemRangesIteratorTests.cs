@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Recyclable.Collections;
+using Recyclable.Collections.Parallel;
 using System.Numerics;
 
 namespace Recyclable.CollectionsTests
@@ -11,18 +12,31 @@ namespace Recyclable.CollectionsTests
 		public void IterateShouldYieldAllItems(int startingBlockIndex, int blockSize, long itemsCount, int step, IEnumerable<(int BlockIndex, int StartingItemIndex, long ItemsCount)> expected)
 		{
 			// Prepare
+			var mockList = new RecyclableList<long>();
 			byte blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
-			var actual = new List<(int BlockIndex, int StartingItemIndex, long ItemsCount)>();
+
+			var synchronizationContext = new ParallelSynchronizationContext(1);
+			var search = new SearchConfiguration<RecyclableList<long>, long>()
+			{
+				List = mockList,
+				ItemToFind = 0,
+				BlockSizeMinus1 = blockSize - 1,
+				BlockSizePow2BitShift = blockSizePow2BitShift,
+				ItemsCount = itemsCount,
+				Step = step,
+			};
+
+			var actualItemRanges = new List<(int BlockIndex, int StartingItemIndex, long ItemsCount)>();
 
 			// Act
-			ItemRangesIterator.Iterate(startingBlockIndex, blockSize, blockSizePow2BitShift, itemsCount, step, (searchInfo) =>
+			ItemRangesIterator.Iterate(synchronizationContext, search, (context, search, itemRange) =>
 			{
-				actual.Add((searchInfo.BlockIndex, searchInfo.StartingItemIndex, searchInfo.ItemsToSearchCount));
+				actualItemRanges.Add((itemRange.BlockIndex, itemRange.StartingItemIndex, itemRange.ItemsToSearchCount));
 				return true;
 			});
 
 			// Validate
-			_ = actual.Should().HaveCount(expected.Count()).And.ContainInConsecutiveOrder(expected);
+			_ = actualItemRanges.Should().HaveCount(expected.Count()).And.ContainInConsecutiveOrder(expected);
 		}
 
 		public static IEnumerable<object[]> TestCases => new[]

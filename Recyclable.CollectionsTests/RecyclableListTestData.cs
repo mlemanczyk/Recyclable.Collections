@@ -2,7 +2,7 @@
 
 namespace Recyclable.CollectionsTests
 {
-	public class RecyclableListTestData
+	public static class RecyclableListTestData
 	{
 		private static IEnumerable<long> DoCreateTestData(long itemsCount)
 		{

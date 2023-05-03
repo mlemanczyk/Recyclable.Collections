@@ -6,6 +6,8 @@ namespace Recyclable.Collections
 	public static class RecyclableListExtensions
 	{
 		private const int _minPooledArraySize = RecyclableDefaults.MinPooledArrayLength;
+		private const long ItemNotFoundIndexLong = -1L;
+		private const int ItemNotFoundIndex = -1;
 
 		public static void CopyItems<T>(this T[] memory, long startingIndex, long count, ref T[] destArray, long offset = 1)
 		{
