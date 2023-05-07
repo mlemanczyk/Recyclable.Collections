@@ -1,39 +1,31 @@
-﻿using BenchmarkDotNet.Attributes;
-using Collections.Pooled;
-
-namespace Recyclable.Collections.Benchmarks
+﻿namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
-		//[Benchmark(Baseline = false)]
 		public void Array_Count()
 		{
 			var data = TestObjects;
 			DoNothing(data.Length);
 		}
 
-		//[Benchmark(Baseline = false)]
 		public void List_Count()
 		{
 			var data = TestObjectsAsList;
 			DoNothing(data.Count);
 		}
 
-		//[Benchmark(Baseline = true)]
 		public void PooledList_Count()
 		{
 			var data = TestObjectsAsPooledList;
 			DoNothing(data.Count);
 		}
 
-		//[Benchmark(Baseline = false)]
 		public void RecyclableArrayList_Count()
 		{
 			var data = TestObjectsAsRecyclableArrayList;
 			DoNothing(data.Count);
 		}
 
-		//[Benchmark(Baseline = false)]
 		public void RecyclableList_Count()
 		{
 			var data = TestObjectsAsRecyclableList;

@@ -4,9 +4,32 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	public class PocBenchmarkBase
+    public abstract class PocBenchmarkBase<TBenchmarkType>
 	{
-		// 0 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524288
+		public virtual TBenchmarkType? BenchmarkType { get; set; }
+		public virtual TBenchmarkType? BaselineBenchmarkType { get; set; }
+
+		private Action? _testMethod;
+        protected Action TestMethod
+        {
+            get => _testMethod ?? throw new OperationCanceledException("Skip - Custom benchmark run in progress");
+            set => _testMethod = value;
+        }
+
+		private Action? _baselineMethod;
+        protected Action BaselineMethod
+        {
+            get => _baselineMethod ?? throw new OperationCanceledException("Skip - No baseline defined");
+            set => _baselineMethod = value;
+        }
+
+        [Benchmark]
+        public void RunWhen() => TestMethod.Invoke();
+
+		[Benchmark(Baseline = true)]
+		public void Baseline() => BaselineMethod.Invoke();
+
+		// 0 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524_288
 		// 1048576 2097152 4194304 8388608 16777216 33554432 67108864 134217728 268435456 536870912
 		// 1073741824 2147483648
 
@@ -17,7 +40,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		//[Params(1_000_000, 10_000_000, 100_000_000, 1_000_000_000)]
 		//[Params(1, 8, 16, 128, 192, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 10_000_000)]
 		//[Params(RecyclableDefaults.MaxPooledBlockSize)]
-		public int TestObjectCount = 1_000_000;
+		public virtual int TestObjectCount { get; set; }= 524_288; //131_072;
 
 		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200)]
 		//[Params(10, 20, 50, 100)]
@@ -37,6 +60,52 @@ namespace Recyclable.Collections.Benchmarks.POC
 		protected static void DoNothing<T>(in T item)
 		{
 			_ = item;
+		}
+
+		protected static Exception CreateUnknownBenchmarkTypeException<T>(T benchmarkType)
+		{
+            return new InvalidOperationException($"******* UNKNOWN BENCHMARK TYPE {{{benchmarkType}}} *******");
+		}
+
+		protected static Exception CreateMethodNotFoundException(in string methodName, in string? className)
+		{
+            return new MethodAccessException($"******* METHOD {{{methodName}}} NOT FOUND IN CLASS {{{className}}} *******");
+		}
+
+		protected virtual void PrepareData<T>(T benchmarkType) { }
+		protected virtual Action? GetTestMethod(TBenchmarkType? benchmarkType) => null;
+
+		[GlobalCleanup]
+		public virtual void Cleanup()
+		{
+			_baselineMethod = null;
+			_testMethod = null;
+			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+		}
+
+		[GlobalSetup]
+		public virtual void Setup()
+		{
+			Console.WriteLine($"******* SETTING UP TEST CASE FOR BENCHMARK {{{BenchmarkType}}} *******");
+
+			if (BaselineBenchmarkType != null)
+			{
+				Console.WriteLine($"******* SETTING UP BASELINE DATA *******");
+				PrepareData(BaselineBenchmarkType);
+				_baselineMethod = GetTestMethod(BaselineBenchmarkType);
+			}
+
+			//~ We don't want to prepare data if baseline data is the same is benchmark data.
+			//~ One would override another - waste of time & resources.
+			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaselineBenchmarkType, BenchmarkType))
+			{
+				Console.WriteLine($"******* SETTING UP TEST CASE DATA *******");
+				//~ If BaselineBenchmarkType == null, then we'll come here only if BaselineBenchmarkType != null.
+				PrepareData(BenchmarkType!);
+				_testMethod = GetTestMethod(BenchmarkType);
+			}
+
+			Console.WriteLine("******* DATA PREPARED *******");
 		}
 	}
 }

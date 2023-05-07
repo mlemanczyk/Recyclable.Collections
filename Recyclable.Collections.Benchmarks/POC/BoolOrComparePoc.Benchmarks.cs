@@ -1,50 +1,63 @@
 ﻿using BenchmarkDotNet.Attributes;
-using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	[MemoryDiagnoser]
-	public class BoolOrComparePocBenchmarks
+    public enum BoolOrComparePocBenchmarkType
 	{
+		Bool,
+		Compare,
+	}
+
+	[MemoryDiagnoser]
+	public class BoolOrComparePocBenchmarks : PocBenchmarkBase<BoolOrComparePocBenchmarkType>
+	{
+		[Params(BoolOrComparePocBenchmarkType.Bool, BoolOrComparePocBenchmarkType.Compare)]
+		public override BoolOrComparePocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+
+		[Params(8)]
+		public override int TestObjectCount { get => base.TestObjectCount; set => base.TestObjectCount = value; }
+
+		[Params(true)]
+		public bool TestBool = true;
+
 		public static void Run()
 		{
 			var benchmark = new BoolOrComparePocBenchmarks();
+			benchmark.Setup();
 			benchmark.Bool();
 			benchmark.Compare();
+			benchmark.Cleanup();
 		}
 
-		private static void DoNothing<T>(T result, [CallerMemberName] string? callerName = null)
-		{
-			//Console.WriteLine($"{callerName}: result = {result}");
-		}
-
-		private readonly bool _testBool = true;
-		private readonly int _blockSize = 8;
-
-		[Benchmark(Baseline = false)]
 		public void Bool()
 		{
-			if (_testBool)
+			if (TestBool)
 			{
-				DoNothing(_testBool);
+				DoNothing(TestBool);
 			}
 			else
 			{
-				DoNothing(_testBool);
+				DoNothing(TestBool);
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void Compare()
 		{
-			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
+			if (TestObjectCount >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				DoNothing(_testBool);
+				DoNothing(TestBool);
 			}
 			else
 			{
-				DoNothing(_testBool);
+				DoNothing(TestBool);
 			}
 		}
-	}
+
+        protected override Action? GetTestMethod(BoolOrComparePocBenchmarkType benchmarkType) => benchmarkType switch
+		{
+			BoolOrComparePocBenchmarkType.Bool => Bool,
+			BoolOrComparePocBenchmarkType.Compare => Compare,
+			_ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+		};
+    }
 }

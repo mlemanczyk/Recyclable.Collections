@@ -1,10 +1,21 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Collections.Pooled;
 using Recyclable.Collections.Benchmarks.Core;
 using Recyclable.Collections.Benchmarks.POC;
 
 namespace Recyclable.Collections.Benchmarks
 {
-	public class BenchmarkBase : PocBenchmarkBase
+	public enum RecyclableCollectionsBenchmarkSource
+	{
+		Array,
+		List,
+		PooledList,
+		RecyclableArrayList,
+		RecyclableList,
+	}
+
+	[MemoryDiagnoser]
+	public class RecyclableBenchmarkBase<TBenchmarkType> : PocBenchmarkBase<TBenchmarkType>
 	{
 		protected long[]? _testObjects;
 		protected long[] TestObjects => _testObjects ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
@@ -12,6 +23,8 @@ namespace Recyclable.Collections.Benchmarks
 		protected List<long>? _testObjectsAsList;
 		protected List<long> TestObjectsAsList => _testObjectsAsList ?? throw new NullReferenceException("Something went wront and the field is not initialized");
 
+		protected PooledList<long>? _testObjectsAsPooledList;
+		public PooledList<long> TestObjectsAsPooledList => _testObjectsAsPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 		protected RecyclableArrayList<long>? _testObjectsAsRecyclableArrayList;
 		protected RecyclableArrayList<long> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 		protected RecyclableList<long>? _testObjectsAsRecyclableList;
@@ -27,16 +40,45 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[GlobalSetup]
-		public virtual void Setup()
+		public override void Setup()
 		{
-			Console.WriteLine("******* GLOBAL SETUP *******");
-			_testObjects = DataGenerator.EnumerateTestObjects(TestObjectCount);
-			Console.WriteLine("******* TEST DATA CREATED *******");
+			PrepareData(RecyclableCollectionsBenchmarkSource.Array);
+			base.Setup();
 		}
 
-		[GlobalCleanup]
-		public virtual void Cleanup()
+		protected override void PrepareData<T>(T benchmarkType)
+		{
+			Console.WriteLine($"******* PREPARING DATA FOR {benchmarkType} *******");
+			switch (benchmarkType)
+			{
+				case RecyclableCollectionsBenchmarkSource.Array:
+					_testObjects ??= DataGenerator.EnumerateTestObjects(TestObjectCount);
+					break;
+
+				case RecyclableCollectionsBenchmarkSource.List:
+					_testObjectsAsList ??= TestObjects.ToList();
+					break;
+
+				case RecyclableCollectionsBenchmarkSource.PooledList:
+					_testObjectsAsPooledList ??= new PooledList<long>(TestObjects, ClearMode.Auto);
+					break;
+
+				case RecyclableCollectionsBenchmarkSource.RecyclableArrayList:
+					_testObjectsAsRecyclableArrayList ??= new(TestObjects, initialCapacity: TestObjectCount);
+					break;
+
+				case RecyclableCollectionsBenchmarkSource.RecyclableList:
+					_testObjectsAsRecyclableList ??= new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+					break;
+
+				default:
+					throw CreateUnknownBenchmarkTypeException(benchmarkType);
+			}
+
+			base.PrepareData(benchmarkType);
+		}
+
+		public override void Cleanup()
 		{
 			Console.WriteLine("******* GLOBAL CLEANUP *******");
 			// Enable this if item type is changed to reference type
@@ -46,7 +88,14 @@ namespace Recyclable.Collections.Benchmarks
 			//}
 
 			_testObjects = default;
-			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+			_testObjectsAsList = default;
+			_testObjectsAsPooledList?.Dispose();
+			_testObjectsAsPooledList = default;
+			_testObjectsAsRecyclableArrayList?.Dispose();
+			_testObjectsAsRecyclableArrayList = default;
+			_testObjectsAsRecyclableList?.Dispose();
+			_testObjectsAsRecyclableList = default;
+			base.Cleanup();
 		}
 	}
 

@@ -2,10 +2,43 @@
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	public class SpanVsArrayBenchmarks : BenchmarkBase
+	public enum SpanVsArrayBenchmarkType
 	{
-		//[Benchmark]
-		public void ArrayGetWithVar()
+		ArrayGetWithVar,
+		ArrayGetWithField,
+		SpanGet,
+		ArraySetWithVar,
+		ArraySetWithField,
+		SpanSet
+	}
+
+	public class SpanVsArrayBenchmarks : RecyclableBenchmarkBase<SpanVsArrayBenchmarkType>
+	{
+		// [Params(SpanVsArrayBenchmarkType.ArrayGetWithVar, SpanVsArrayBenchmarkType.SpanGet)]
+		// [Params(SpanVsArrayBenchmarkType.ArraySetWithVar, SpanVsArrayBenchmarkType.SpanSet)]
+		[Params
+		(
+			SpanVsArrayBenchmarkType.ArrayGetWithVar, SpanVsArrayBenchmarkType.SpanGet,
+			SpanVsArrayBenchmarkType.ArraySetWithField, SpanVsArrayBenchmarkType.ArraySetWithVar, SpanVsArrayBenchmarkType.SpanSet
+		)]
+		public override SpanVsArrayBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+
+		[Params(SpanVsArrayBenchmarkType.ArrayGetWithField)]
+		// [Params(SpanVsArrayBenchmarkType.ArraySetWithField)]
+		public override SpanVsArrayBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+
+		protected override Action GetTestMethod(SpanVsArrayBenchmarkType benchmarkType) => benchmarkType switch
+        {
+            SpanVsArrayBenchmarkType.ArrayGetWithVar => ArrayGetWithVar,
+            SpanVsArrayBenchmarkType.ArrayGetWithField => ArrayGetWithField,
+            SpanVsArrayBenchmarkType.SpanGet => SpanGet,
+            SpanVsArrayBenchmarkType.ArraySetWithVar => ArraySetWithVar,
+            SpanVsArrayBenchmarkType.ArraySetWithField => ArraySetWithField,
+            SpanVsArrayBenchmarkType.SpanSet => SpanSet,
+            _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+        };
+
+        public void ArrayGetWithVar()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
@@ -15,7 +48,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		//[Benchmark(Baseline = true)]
 		public void ArrayGetWithField()
 		{
 			var dataCount = TestObjectCount;
@@ -25,7 +57,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		//[Benchmark]
 		public void SpanGet()
 		{
 			var dataCount = TestObjectCount;
@@ -36,7 +67,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		[Benchmark]
 		public void ArraySetWithVar()
 		{
 			var data = TestObjects;
@@ -47,7 +77,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		[Benchmark(Baseline = true)]
 		public void ArraySetWithField()
 		{
 			var dataCount = TestObjectCount;
@@ -57,7 +86,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		[Benchmark]
 		public void SpanSet()
 		{
 			var dataCount = TestObjectCount;

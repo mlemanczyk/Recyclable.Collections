@@ -1,11 +1,7 @@
-﻿using BenchmarkDotNet.Attributes;
-using Collections.Pooled;
-
-namespace Recyclable.Collections.Benchmarks
+﻿namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
-		//[Benchmark(Baseline = false)]
 		public void Array_SetItem()
 		{
 			var data = TestObjects;
@@ -17,7 +13,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = false)]
 		public void List_SetItem()
 		{
 			var data = TestObjectsAsList;
@@ -28,7 +23,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = true)]
 		public void PooledList_SetItem()
 		{
 			var data = TestObjectsAsPooledList;
@@ -39,7 +33,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = false)]
 		public void RecyclableArrayList_SetItem()
 		{
 			var data = TestObjectsAsRecyclableArrayList;
@@ -50,7 +43,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		//[Benchmark(Baseline = false)]
 		public void RecyclableList_SetItem()
 		{
 			var data = TestObjectsAsRecyclableList;

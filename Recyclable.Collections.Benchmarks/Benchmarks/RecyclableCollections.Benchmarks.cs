@@ -1,40 +1,66 @@
-﻿using BenchmarkDotNet.Attributes;
-using Collections.Pooled;
+﻿using System.Reflection;
+using BenchmarkDotNet.Attributes;
 
 namespace Recyclable.Collections.Benchmarks
 {
-	[MemoryDiagnoser]
-	public partial class RecyclableCollectionsBenchmarks : BenchmarkBase
+	public enum RecyclableCollectionsBenchmarkType
 	{
-		private long[]? _testArray;
-		private RecyclableArrayList<long>? _testRecyclableArrayList;
-		private RecyclableList<long>? _testRecyclableList;
-		private PooledList<long>? _testPooledList;
+		Add_WithCapacity, Add, AddRange_WithCapacity, AddRangeWhenSourceIsArray, AddRangeWhenSourceIsIEnumerable,
+		AddRangeWhenSourceIsIList, AddRangeWhenSourceIsList, AddRangeWhenSourceIsSameType, Contains_FirstItems,
+		Contains_LastItems, Count, Create_WithCapacity, Create, GetItem, IndexOf_AllItems, IndexOf_FirstItems,
+		IndexOf_LastItems, LongCount, Remove_FirstItems, Remove_LastItems, RemoveAt_FirstItems, RemoveAt_LastItems,
+		SetItem,
+	}
 
-		public PooledList<long> TestObjectsAsPooledList => _testPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+	public partial class RecyclableCollectionsBenchmarks : RecyclableBenchmarkBase<RecyclableCollectionsBenchmarkSource>
+	{
+		[Params
+		(
+			RecyclableCollectionsBenchmarkType.Add_WithCapacity,
+			RecyclableCollectionsBenchmarkType.Add,
+			RecyclableCollectionsBenchmarkType.AddRange_WithCapacity,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsArray,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIEnumerable,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsList,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType,
+			RecyclableCollectionsBenchmarkType.Contains_FirstItems,
+			RecyclableCollectionsBenchmarkType.Contains_LastItems,
+			RecyclableCollectionsBenchmarkType.Count,
+			RecyclableCollectionsBenchmarkType.Create_WithCapacity,
+			RecyclableCollectionsBenchmarkType.Create,
+			RecyclableCollectionsBenchmarkType.GetItem,
+			RecyclableCollectionsBenchmarkType.IndexOf_AllItems,
+			RecyclableCollectionsBenchmarkType.IndexOf_FirstItems,
+			RecyclableCollectionsBenchmarkType.IndexOf_LastItems,
+			RecyclableCollectionsBenchmarkType.LongCount,
+			RecyclableCollectionsBenchmarkType.Remove_FirstItems,
+			RecyclableCollectionsBenchmarkType.Remove_LastItems,
+			RecyclableCollectionsBenchmarkType.RemoveAt_FirstItems,
+			RecyclableCollectionsBenchmarkType.RemoveAt_LastItems,
+			RecyclableCollectionsBenchmarkType.SetItem
+		)]
 
-		public override void Setup()
-		{
-			base.Setup();
-			_testRecyclableArrayList = new(TestObjects, initialCapacity: TestObjectCount);
-			_testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
-			_testArray = TestObjects.ToArray();
-			_testObjectsAsList = TestObjects.ToList();
-			_testObjectsAsRecyclableArrayList = TestObjects.ToRecyclableArrayList();
-			_testObjectsAsRecyclableList = TestObjects.ToRecyclableList();
-			_testPooledList = new PooledList<long>(TestObjects, ClearMode.Always);
-		}
+		public RecyclableCollectionsBenchmarkType TestCase { get; set; } = RecyclableCollectionsBenchmarkType.IndexOf_AllItems;
 
-		public override void Cleanup()
-		{
-			_testRecyclableArrayList?.Dispose();
-			_testRecyclableList?.Dispose();
-			_testPooledList?.Dispose();
-			TestObjectsAsRecyclableArrayList?.Dispose();
-			_testObjectsAsRecyclableArrayList = default;
-			_testObjectsAsRecyclableList = default;
-			_testObjectsAsList = default;
-			base.Cleanup();
-		}
+		[Params
+		(
+			RecyclableCollectionsBenchmarkSource.Array,
+			RecyclableCollectionsBenchmarkSource.List,
+			RecyclableCollectionsBenchmarkSource.PooledList,
+			RecyclableCollectionsBenchmarkSource.RecyclableArrayList,
+			RecyclableCollectionsBenchmarkSource.RecyclableList
+		)]
+		public override RecyclableCollectionsBenchmarkSource BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+
+		[Params
+		(
+			RecyclableCollectionsBenchmarkSource.PooledList
+		)]
+		public override RecyclableCollectionsBenchmarkSource BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+
+		protected override Action GetTestMethod(RecyclableCollectionsBenchmarkSource benchmarkType)
+			=> (Action?) GetType().GetMethod($"{benchmarkType}_{TestCase}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this)
+			?? throw CreateMethodNotFoundException($"{benchmarkType}_{TestCase}", GetType().FullName);
 	}
 }

@@ -3,20 +3,29 @@ using System.Buffers;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	public class ArraySizeLimitPocBenchmarks : PocBenchmarkBase
+	public enum ArraySizeLimitPocBenchmarkType
+	{
+		ArraySizeLimit
+	}
+
+	public class ArraySizeLimitPocBenchmarks : PocBenchmarkBase<ArraySizeLimitPocBenchmarkType>
 	{
 		public static void Run()
 		{
 			var benchmark = new ArraySizeLimitPocBenchmarks();
+			benchmark.Setup();
 			benchmark.FindArraySizeLimit();
+			benchmark.Cleanup();
 		}
 
-		private const int _maxArraySize = 2_147_483_605;
+		[Params(2_147_483_605)]
+		public override int TestObjectCount { get => base.TestObjectCount; set => base.TestObjectCount = value; }
 
 		[Benchmark(OperationsPerInvoke = 1)]
 		public void Max_Allowed_Size_2_147_483_605()
 		{
-			var arr = ArrayPool<long>.Shared.Rent(_maxArraySize);
+            long[] arr = ArrayPool<long>.Shared.Rent(TestObjectCount);
+            DoNothing(arr);
 		}
 
 		[Benchmark(OperationsPerInvoke = 1)]
@@ -43,7 +52,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				}
 				catch (Exception)
 				{
-					Console.WriteLine($"error");
+					Console.WriteLine("error");
 					var nextValue = (bufferSize - oldValue) >> 1;
 					if (nextValue == 0)
 					{
@@ -57,5 +66,5 @@ namespace Recyclable.Collections.Benchmarks.POC
 			Console.WriteLine("All done");
 			throw new Exception($"Everything was successful. You can create {oldValue} byte big arrays. Exception is logged to prevent more benchmarks.");
 		}
-	}
+    }
 }

@@ -5,7 +5,7 @@ using Recyclable.Collections.Benchmarks.Core;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	public enum RecyclableListPocBenchmarkType
+    public enum RecyclableListPocBenchmarkType
 	{
 		IndexOfV1,
 		IndexOfV2,
@@ -19,23 +19,24 @@ namespace Recyclable.Collections.Benchmarks.POC
 		EnsureCapacityV3_ByPowOf2,
 	}
 
-	public partial class RecyclableListPocBenchmarks : PocBenchmarkBase
+	[MemoryDiagnoser]
+	public partial class RecyclableListPocBenchmarks : PocBenchmarkBase<RecyclableListPocBenchmarkType>
 	{
-		[Params(BenchmarkType.Array, BenchmarkType.List, BenchmarkType.PooledList, BenchmarkType.RecyclableArrayList, BenchmarkType.RecyclableList)]
-		// [Params(RecyclableListPocBenchmarkType.IndexOf)]
-		public RecyclableListPocBenchmarkType _benchmarkType;
-		private Action? _testMethod;
+		[Params(RecyclableListPocBenchmarkType.IndexOf)]
+		public override RecyclableListPocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
 
-        [Benchmark]
-        public void RunWhen() => _testMethod!.Invoke();
+		// [Params(BenchmarkType.Array, BenchmarkType.List, BenchmarkType.RecyclableArrayList, BenchmarkType.RecyclableList)]
+		[Params(RecyclableListPocBenchmarkType.IndexOf_PooledList)]
+		public override RecyclableListPocBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
 
         private long[]? _testArray;
 		public long[] TestObjects => _testArray ?? throw new NullReferenceException("Something is wrong and test objects are null");
-		private RecyclableList<long>? _testRecyclableList;
+
 		public RecyclableList<long> TestObjectsAsRecyclableList => _testRecyclableList ?? throw new NullReferenceException($"Something is wrong and {nameof(RecyclableList<long>)} is null");
 		private RecyclableListIndexOfV1<long>? _testRecyclableListIndexOfV1;
 		internal RecyclableListIndexOfV1<long> TestObjectsAsRecyclableListIndexOfV1 => _testRecyclableListIndexOfV1 ?? throw new NullReferenceException($"Something is wrong and {nameof(RecyclableListIndexOfV1<long>)} is null");
 		private RecyclableListIndexOfV2<long>? _testRecyclableListIndexOfV2;
+		private RecyclableList<long>? _testRecyclableList;
 		internal RecyclableListIndexOfV2<long> TestObjectsAsRecyclableListIndexOfV2 => _testRecyclableListIndexOfV2 ?? throw new NullReferenceException($"Something is wrong and {nameof(RecyclableListIndexOfV2<long>)} is null");
 		private RecyclableListIndexOfV3<long>? _testRecyclableListIndexOfV3;
 		internal RecyclableListIndexOfV3<long> TestObjectsAsRecyclableListIndexOfV3 => _testRecyclableListIndexOfV3 ?? throw new NullReferenceException($"Something is wrong and {nameof(RecyclableListIndexOfV3<long>)} is null");
@@ -67,74 +68,32 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public static void Run()
 		{
 			var benchmark = new RecyclableListPocBenchmarks();
-			benchmark.RecyclableList_EnsureCapacity_ByPowOf2();
-			benchmark.RecyclableList_EnsureCapacityV1_ByPowOf2();
-			benchmark.RecyclableList_EnsureCapacityV2_ByPowOf2();
-			benchmark.RecyclableList_EnsureCapacityV3_ByPowOf2();
-			benchmark.RecyclableList_EnsureCapacity_ByBlockSize();
-			benchmark.RecyclableList_EnsureCapacityV1_ByBlockSize();
-			benchmark.RecyclableList_EnsureCapacityV2_ByBlockSize();
-			benchmark.RecyclableList_EnsureCapacityV3_ByBlockSize();
+			benchmark.Setup();
+			// benchmark.RecyclableList_EnsureCapacity_ByPowOf2();
+			// benchmark.RecyclableList_EnsureCapacityV1_ByPowOf2();
+			// benchmark.RecyclableList_EnsureCapacityV2_ByPowOf2();
+			// benchmark.RecyclableList_EnsureCapacityV3_ByPowOf2();
+			// benchmark.RecyclableList_EnsureCapacity_ByBlockSize();
+			// benchmark.RecyclableList_EnsureCapacityV1_ByBlockSize();
+			// benchmark.RecyclableList_EnsureCapacityV2_ByBlockSize();
+			// benchmark.RecyclableList_EnsureCapacityV3_ByBlockSize();
 			benchmark.RecyclableList_IndexOf();
 			benchmark.RecyclableList_IndexOfV1();
 			benchmark.RecyclableList_IndexOfV2();
 			benchmark.RecyclableList_IndexOfV3();
 			benchmark.RecyclableList_IndexOfV4();
+			benchmark.Cleanup();
 		}
 
-		[GlobalSetup]
-		public void Setup()
+		public override void Setup()
 		{
-			Console.WriteLine($"Setting up exptected results data");
+			Console.WriteLine("******* SETTING UP EXPECTED RESULTS DATA *******");
 			_testArray = DataGenerator.EnumerateTestObjects(TestObjectCount);
-			Console.WriteLine($"Setting up test case for benchmark {{{_benchmarkType}}}");
-            switch (_benchmarkType)
-            {
-                case RecyclableListPocBenchmarkType.IndexOfV1:
-					_testRecyclableListIndexOfV1 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
-					_testMethod = () => RecyclableList_IndexOfV1();
-                    break;
-                case RecyclableListPocBenchmarkType.IndexOfV2:
-					_testRecyclableListIndexOfV2 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
-					_testMethod = () => RecyclableList_IndexOfV2();
-                    break;
-                case RecyclableListPocBenchmarkType.IndexOfV3:
-					_testRecyclableListIndexOfV3 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
-					_testMethod = () => RecyclableList_IndexOfV3();
-                    break;
-                case RecyclableListPocBenchmarkType.IndexOfV4:
-					_testRecyclableListIndexOfV4 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
-					_testMethod = () => RecyclableList_IndexOfV4();
-                    break;
-                case RecyclableListPocBenchmarkType.IndexOf_PooledList:
-					_testPooledList = new PooledList<long>(TestObjects, ClearMode.Auto);
-					_testMethod = () => PooledList_IndexOf();
-                    break;
-                case RecyclableListPocBenchmarkType.IndexOf:
-                    _testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
-					_testMethod = () => RecyclableList_IndexOf();
-                    break;
-				case RecyclableListPocBenchmarkType.EnsureCapacity_ByPowOf2:
-					_testMethod = () => RecyclableList_EnsureCapacity_ByPowOf2();
-					break;
-				case RecyclableListPocBenchmarkType.EnsureCapacityV1_ByPowOf2:
-					_testMethod = () => RecyclableList_EnsureCapacityV1_ByPowOf2();
-					break;
-				case RecyclableListPocBenchmarkType.EnsureCapacityV2_ByPowOf2:
-					_testMethod = () => RecyclableList_EnsureCapacityV2_ByPowOf2();
-					break;
-				case RecyclableListPocBenchmarkType.EnsureCapacityV3_ByPowOf2:
-					_testMethod = () => RecyclableList_EnsureCapacityV3_ByPowOf2();
-					break;
-                default:
-                    throw new InvalidOperationException($"Unknown benchmark type {{{_benchmarkType}}}");
-            }
 
-			Console.WriteLine("Data prepared");
-		}
+			base.Setup();
+        }
 
-		[GlobalCleanup]
-		public void Cleanup()
+		public override void Cleanup()
 		{
 			_testArray = null;
 			_testRecyclableList?.Dispose();
@@ -149,7 +108,50 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_testRecyclableListIndexOfV4 = null;
 			_testPooledList?.Dispose();
 			_testPooledList = null;
-			GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+
+			base.Cleanup();
 		}
-	}
+
+        protected override Action? GetTestMethod(RecyclableListPocBenchmarkType benchmarkType) => benchmarkType switch
+            {
+                RecyclableListPocBenchmarkType.IndexOfV1 => () => RecyclableList_IndexOfV1(),
+                RecyclableListPocBenchmarkType.IndexOfV2 => () => RecyclableList_IndexOfV2(),
+                RecyclableListPocBenchmarkType.IndexOfV3 => () => RecyclableList_IndexOfV3(),
+                RecyclableListPocBenchmarkType.IndexOfV4 => () => RecyclableList_IndexOfV4(),
+                RecyclableListPocBenchmarkType.IndexOf_PooledList => () => PooledList_IndexOf(),
+                RecyclableListPocBenchmarkType.IndexOf => () => RecyclableList_IndexOf(),
+                RecyclableListPocBenchmarkType.EnsureCapacity_ByPowOf2 => () => RecyclableList_EnsureCapacity_ByPowOf2(),
+                RecyclableListPocBenchmarkType.EnsureCapacityV1_ByPowOf2 => () => RecyclableList_EnsureCapacityV1_ByPowOf2(),
+                RecyclableListPocBenchmarkType.EnsureCapacityV2_ByPowOf2 => () => RecyclableList_EnsureCapacityV2_ByPowOf2(),
+                RecyclableListPocBenchmarkType.EnsureCapacityV3_ByPowOf2 => () => RecyclableList_EnsureCapacityV3_ByPowOf2(),
+                _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+            };
+
+        protected override void PrepareData<T>(T benchmarkType)
+        {
+			base.PrepareData(benchmarkType);
+
+            switch (BenchmarkType)
+            {
+                case RecyclableListPocBenchmarkType.IndexOfV1:
+					_testRecyclableListIndexOfV1 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+                    break;
+                case RecyclableListPocBenchmarkType.IndexOfV2:
+					_testRecyclableListIndexOfV2 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+                    break;
+                case RecyclableListPocBenchmarkType.IndexOfV3:
+					_testRecyclableListIndexOfV3 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+                    break;
+                case RecyclableListPocBenchmarkType.IndexOfV4:
+					_testRecyclableListIndexOfV4 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+                    break;
+                case RecyclableListPocBenchmarkType.IndexOf_PooledList:
+					_testPooledList = new PooledList<long>(TestObjects, ClearMode.Auto);
+                    break;
+                case RecyclableListPocBenchmarkType.IndexOf:
+                    _testRecyclableList = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+                    break;
+            }
+        }
+    }
 }

@@ -1,10 +1,7 @@
-﻿using BenchmarkDotNet.Attributes;
-
-namespace Recyclable.Collections.Benchmarks
+﻿namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
-		[Benchmark(Baseline = false)]
 		public void Array_GetItem()
 		{
 			var data = TestObjects;
@@ -15,7 +12,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void List_GetItem()
 		{
 			var data = TestObjectsAsList;
@@ -26,7 +22,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = true)]
 		public void PooledList_GetItem()
 		{
 			var data = TestObjectsAsPooledList;
@@ -37,7 +32,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableArrayList_GetItem()
 		{
 			var data = TestObjectsAsRecyclableArrayList;
@@ -48,7 +42,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem()
 		{
 			var data = TestObjectsAsRecyclableList;
@@ -59,7 +52,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsSpan()
 		{
 			var data = TestObjectsAsRecyclableList;
@@ -86,7 +78,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsArray()
 		{
 			var data = TestObjectsAsRecyclableList;
@@ -114,7 +105,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsForEach()
 		{
 			var data = TestObjectsAsRecyclableList;
@@ -124,7 +114,6 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		[Benchmark(Baseline = false)]
 		public void RecyclableList_GetItem_AsWhile()
 		{
 			var data = TestObjectsAsRecyclableList;

@@ -3,9 +3,46 @@ using MiscUtil;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
+	public enum DelegateVsComparerPocBenchmarkType
+	{
+            Comparer,
+            Delegate,
+            Func,
+            ListOfBoxedStructs,
+            ListOfClasses,
+            ListOfComparers,
+            ListOfDelegates,
+            ListOfFuncs,
+            ListOfLocalFuncs,
+            ListOfStructs,
+            ListOfUnboxedReadOnlyStructs,
+            ListOfUnboxedStructs,
+            StaticFunc,
+	}
+
 	[MemoryDiagnoser]
-    public class DelegateVsComparerPocBenchmarks : PocBenchmarkBase
+    public class DelegateVsComparerPocBenchmarks : PocBenchmarkBase<DelegateVsComparerPocBenchmarkType>
     {
+        [Params
+        (
+            DelegateVsComparerPocBenchmarkType.Delegate,
+            DelegateVsComparerPocBenchmarkType.Func,
+            DelegateVsComparerPocBenchmarkType.ListOfBoxedStructs,
+            DelegateVsComparerPocBenchmarkType.ListOfClasses,
+            DelegateVsComparerPocBenchmarkType.ListOfComparers,
+            DelegateVsComparerPocBenchmarkType.ListOfDelegates,
+            DelegateVsComparerPocBenchmarkType.ListOfFuncs,
+            DelegateVsComparerPocBenchmarkType.ListOfLocalFuncs,
+            DelegateVsComparerPocBenchmarkType.ListOfStructs,
+            DelegateVsComparerPocBenchmarkType.ListOfUnboxedReadOnlyStructs,
+            DelegateVsComparerPocBenchmarkType.ListOfUnboxedStructs,
+            DelegateVsComparerPocBenchmarkType.StaticFunc
+        )]
+        public override DelegateVsComparerPocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+
+        [Params(DelegateVsComparerPocBenchmarkType.Comparer)]
+        public override DelegateVsComparerPocBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+
 		#region Dummy classes
 
 		private delegate T Compare<T>(T x, T y);
@@ -45,6 +82,7 @@ namespace Recyclable.Collections.Benchmarks.POC
         public static void Run()
         {
 			var benchmark = new DelegateVsComparerPocBenchmarks();
+            benchmark.Setup();
             benchmark.Comparer();
             benchmark.Delegate();
             benchmark.Func();
@@ -58,22 +96,21 @@ namespace Recyclable.Collections.Benchmarks.POC
             benchmark.ListOfUnboxedReadOnlyStructs();
             benchmark.ListOfUnboxedStructs();
             benchmark.StaticFunc();
+            benchmark.Cleanup();
 		}
 
 		private static readonly Comparer<long> _comparer = Comparer<long>.Default;
-
-        private const int _objectCount = 1_000_000;
-        private static readonly IEnumerable<long> _testObjects = Enumerable.Range(1, _objectCount).Select(x => (long)x);
-        private static readonly IEnumerable<Func<long, long, int>> _testListOfFunctions = _testObjects.Select<long, Func<long, long, int>>(static _ => new MyComparer().Compare);
-        private static readonly IEnumerable<IComparer<long>> _testListOfComparers = _testObjects.Select(_ => (IComparer<long>)new MyComparer());
-        private static readonly IEnumerable<Compare<long>> _testListOfDelegates = _testObjects.Select(_ => new Compare<long>((x, y) => new MyComparer().Compare(x, y)));
-        private static readonly IEnumerable<Func<long, long, int>> _testListOfLocalFunctions = GetLocalFunctions(_testObjects);
-        private static readonly IEnumerable<MyComparer> _testListOfClasses = _testObjects.Select(_ => new MyComparer());
-        private static readonly IEnumerable<MyComparerStruct<long>> _testListOfStructs = _testObjects.Select(_ => new MyComparerStruct<long>());
-        private static readonly IEnumerable<IComparer<long>> _testListOfBoxedStructs = _testObjects.Select(_ => (IComparer<long>)new MyComparerStruct<long>());
-        private static IEnumerable<TComparer> _testListOfUnboxedStructs<TComparer, TValue>() where TComparer : IComparer<TValue>, new()
+        private IEnumerable<long>? _testObjects;
+        private IEnumerable<Func<long, long, int>>? _testListOfFunctions;
+        private IEnumerable<IComparer<long>>? _testListOfComparers;
+        private IEnumerable<Compare<long>>? _testListOfDelegates;
+        private IEnumerable<Func<long, long, int>>? _testListOfLocalFunctions;
+        private IEnumerable<MyComparer>? _testListOfClasses;
+        private IEnumerable<MyComparerStruct<long>>? _testListOfStructs;
+        private IEnumerable<IComparer<long>>? _testListOfBoxedStructs;
+        private  IEnumerable<TComparer> TestListOfUnboxedStructs<TComparer, TValue>() where TComparer : IComparer<TValue>, new()
         {
-            foreach (var item in _testObjects)
+            foreach (var _ in _testObjects!)
             {
                 yield return new TComparer();
             }
@@ -91,37 +128,44 @@ namespace Recyclable.Collections.Benchmarks.POC
                 };
             }
 
-            foreach (var item in testObjects)
+            foreach (var _ in testObjects)
             {
                 yield return compareFunc;
             }
         }
 
-        private static void TestWithComparer(IComparer<long> comparer)
+        private void TestWithComparer(IComparer<long> comparer)
         {
-            var testData = _testObjects.ToArray();
+            var testData = _testObjects!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length - 1; itemIdx++)
             {
                 _ = comparer.Compare(testData[itemIdx], testData[itemIdx + 1]);
             }
         }
 
-        [Benchmark(Baseline = true)]
-        public void Comparer()
+        private void TestWithDelegate<T>(Compare<long> compareFunc)
         {
-            TestWithComparer(_comparer);
-        }
-
-        private static void TestWithFunc(Func<long, long, int> compareFunc)
-        {
-            var testData = _testObjects.ToArray();
+            var testData = _testObjects!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length - 1; itemIdx++)
             {
                 _ = compareFunc(testData[itemIdx], testData[itemIdx + 1]);
             }
         }
 
-        [Benchmark]
+        private void TestWithFunc(Func<long, long, int> compareFunc)
+        {
+            var testData = _testObjects!.ToArray();
+            for (var itemIdx = 0; itemIdx < testData.Length - 1; itemIdx++)
+            {
+                _ = compareFunc(testData[itemIdx], testData[itemIdx + 1]);
+            }
+        }
+
+        public void Comparer()
+        {
+            TestWithComparer(_comparer);
+        }
+
         public void Func()
         {
             TestWithFunc((x, y) => (x - y) switch
@@ -132,7 +176,6 @@ namespace Recyclable.Collections.Benchmarks.POC
             });
         }
 
-        [Benchmark]
         public void StaticFunc()
         {
             TestWithFunc(static (x, y) => (x - y) switch
@@ -143,16 +186,6 @@ namespace Recyclable.Collections.Benchmarks.POC
                     });
         }
 
-        private static void TestWithDelegate<T>(Compare<long> compareFunc)
-        {
-            var testData = _testObjects.ToArray();
-            for (var itemIdx = 0; itemIdx < testData.Length - 1; itemIdx++)
-            {
-                _ = compareFunc(testData[itemIdx], testData[itemIdx + 1]);
-            }
-        }
-
-        [Benchmark]
         public void Delegate()
         {
             TestWithDelegate<long>((x, y) => (x - y) switch
@@ -163,11 +196,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             });
         }
 
-        [Benchmark]
         public void ListOfFuncs()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfFunctions.ToArray();
+            var testData = _testListOfFunctions!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var compareFunc = testData[itemIdx];
@@ -175,11 +207,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfLocalFuncs()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfLocalFunctions.ToArray();
+            var testData = _testListOfLocalFunctions!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var compareFunc = testData[itemIdx];
@@ -187,11 +218,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfComparers()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfComparers.ToArray();
+            var testData = _testListOfComparers!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var comparer = testData[itemIdx];
@@ -199,11 +229,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfClasses()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfClasses.ToArray();
+            var testData = _testListOfClasses!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var comparer = testData[itemIdx];
@@ -211,11 +240,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfStructs()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfStructs.ToArray();
+            var testData = _testListOfStructs!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var comparer = testData[itemIdx];
@@ -223,11 +251,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfBoxedStructs()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfBoxedStructs.ToArray();
+            var testData = _testListOfBoxedStructs!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var comparer = testData[itemIdx];
@@ -235,11 +262,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfUnboxedStructs()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfUnboxedStructs<MyComparerStruct<long>, long>().ToArray();
+            var testData = TestListOfUnboxedStructs<MyComparerStruct<long>, long>().ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var comparer = testData[itemIdx];
@@ -247,11 +273,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfUnboxedReadOnlyStructs()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfUnboxedStructs<MyComparerReadOnlyStruct<long>, long>().ToArray();
+            var testData = TestListOfUnboxedStructs<MyComparerReadOnlyStruct<long>, long>().ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var comparer = testData[itemIdx];
@@ -259,15 +284,73 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        [Benchmark]
         public void ListOfDelegates()
         {
             const long x = 2, y = 5;
-            var testData = _testListOfDelegates.ToArray();
+            var testData = _testListOfDelegates!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length; itemIdx++)
             {
                 var compareDelegate = testData[itemIdx];
                 _ = compareDelegate(x, y);
+            }
+        }
+
+        protected override Action? GetTestMethod(DelegateVsComparerPocBenchmarkType benchmarkType) => benchmarkType switch
+            {
+                DelegateVsComparerPocBenchmarkType.Comparer => Comparer,
+                DelegateVsComparerPocBenchmarkType.Delegate => Delegate,
+                DelegateVsComparerPocBenchmarkType.Func => Func,
+                DelegateVsComparerPocBenchmarkType.ListOfBoxedStructs => ListOfBoxedStructs,
+                DelegateVsComparerPocBenchmarkType.ListOfClasses => ListOfClasses,
+                DelegateVsComparerPocBenchmarkType.ListOfComparers => ListOfComparers,
+                DelegateVsComparerPocBenchmarkType.ListOfDelegates => ListOfDelegates,
+                DelegateVsComparerPocBenchmarkType.ListOfFuncs => ListOfFuncs,
+                DelegateVsComparerPocBenchmarkType.ListOfLocalFuncs => ListOfLocalFuncs,
+                DelegateVsComparerPocBenchmarkType.ListOfStructs => ListOfStructs,
+                DelegateVsComparerPocBenchmarkType.ListOfUnboxedReadOnlyStructs => ListOfUnboxedReadOnlyStructs,
+                DelegateVsComparerPocBenchmarkType.ListOfUnboxedStructs => ListOfUnboxedStructs,
+                DelegateVsComparerPocBenchmarkType.StaticFunc => StaticFunc,
+                _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+            };
+
+        public override void Setup()
+        {
+			Console.WriteLine("******* SETTING UP COMMON TEST DATA *******");
+            _testObjects = Enumerable.Range(1, TestObjectCount).Select(x => (long)x);
+            base.Setup();
+        }
+
+        public override void Cleanup()
+        {
+            _testObjects = null;
+            base.Cleanup();
+        }
+
+        protected override void PrepareData<T>(T benchmarkType)
+        {
+            switch (benchmarkType)
+            {
+                case DelegateVsComparerPocBenchmarkType.ListOfBoxedStructs:
+                    _testListOfBoxedStructs = _testObjects!.Select(_ => (IComparer<long>)new MyComparerStruct<long>());
+                    break;
+                case DelegateVsComparerPocBenchmarkType.ListOfClasses:
+                    _testListOfClasses = _testObjects!.Select(_ => new MyComparer());
+                    break;
+                case DelegateVsComparerPocBenchmarkType.ListOfComparers:
+                    _testListOfComparers = _testObjects!.Select(_ => (IComparer<long>)new MyComparer());
+                    break;
+                case DelegateVsComparerPocBenchmarkType.ListOfDelegates:
+                    _testListOfDelegates = _testObjects!.Select(_ => new Compare<long>((x, y) => new MyComparer().Compare(x, y)));
+                    break;
+                case DelegateVsComparerPocBenchmarkType.ListOfFuncs:
+                    _testListOfFunctions = _testObjects!.Select<long, Func<long, long, int>>(static _ => new MyComparer().Compare);
+                    break;
+                case DelegateVsComparerPocBenchmarkType.ListOfLocalFuncs:
+                    _testListOfLocalFunctions = GetLocalFunctions(_testObjects!);
+                    break;
+                case DelegateVsComparerPocBenchmarkType.ListOfStructs:
+                    _testListOfStructs = _testObjects!.Select(_ => new MyComparerStruct<long>());
+                    break;
             }
         }
     }

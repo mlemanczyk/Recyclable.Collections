@@ -1,19 +1,18 @@
 ﻿using BenchmarkDotNet.Attributes;
 using MoreLinq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	[MemoryDiagnoser]
-	public class WhenParallelSearchBenchmarks : PocBenchmarkBase
+    public enum WhenParallelSearchBenchmarkType
 	{
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private static void DoNothing<T>(T index)
-		{
-			//Console.WriteLine(index);
-		}
+		IndexOfSequentially,
+		IndexOfParallel,
+	}
 
+	[MemoryDiagnoser]
+	public class WhenParallelSearchBenchmarks : PocBenchmarkBase<WhenParallelSearchBenchmarkType>
+	{
 		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32)]
 		//public int NumberOfThreads { get; set; } = 3;
 
@@ -26,32 +25,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public object? ItemToFind { get; set; }
 
-		[GlobalSetup]
-		public void Setup()
-		{
-			_testData = Enumerable.Range(1, TestObjectCount).Cast<long>().ToRecyclableList(BlockSize);
-			ItemToFind = _testData.Last();
-		}
+		[Params(WhenParallelSearchBenchmarkType.IndexOfParallel)]
+		public override WhenParallelSearchBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
 
-		[GlobalCleanup]
-		public void Cleanup()
-		{
-			_testData = default;
-		}
-
-		[Benchmark(Baseline = true)]
-		public void IndexOfSequentially()
-		{
-			long index = DoLongIndexOfSequentially();
-			if (index >= 0)
-			{
-				DoNothing(index);
-			}
-			else
-			{
-				throw new Exception("Item not found");
-			}
-		}
+		[Params(WhenParallelSearchBenchmarkType.IndexOfSequentially)]
+		public override WhenParallelSearchBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
 
 		private long DoLongIndexOfSequentially()
 		{
@@ -95,7 +73,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			int blockIndex = searchInfo.BlockIndex;
 			long itemsToSearchCount = searchInfo.ItemsToSearchCount;
 			long[][] memoryBlocks = list.AsArray;
-			index = Array.IndexOf(memoryBlocks[searchInfo.BlockIndex], itemToFind, searchInfo.StartingItemIndex, blockSize - searchInfo.StartingItemIndex);
+			index = Array.IndexOf(memoryBlocks[searchInfo.BlockIndex], itemToFind, 0, blockSize);
 			if (itemFoundSignal.IsSet)
 			{
 				return -1;
@@ -105,7 +83,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				return (blockIndex << list.BlockSizePow2BitShift) + index;
 			}
 
-			itemsToSearchCount -= blockSize - searchInfo.StartingItemIndex;
+			itemsToSearchCount -= blockSize;
 			if (itemsToSearchCount < 0)
 			{
 				return -1;
@@ -143,20 +121,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 				: Array.IndexOf(memoryBlocks[lastBlockWithData], itemToFind, 0, checked((int)Math.Min(blockSize, itemsToSearchCount)));
 
 			return itemFoundSignal.IsSet || index < 0 ? -1 : ((long)lastBlockWithData << list.BlockSizePow2BitShift) + index;
-		}
-
-		[Benchmark]
-		public void IndexOfParallel()
-		{
-			var index = DoIndexOfParallel();
-			if (index >= 0)
-			{
-				DoNothing(index);
-			}
-			else
-			{
-				throw new Exception("Item not found");
-			}
 		}
 
 		private long DoIndexOfParallel()
@@ -271,7 +235,55 @@ namespace Recyclable.Collections.Benchmarks.POC
 			//}
 
 			allDoneSignal.SignalAndWait();
+			throw new NotImplementedException();
 			return foundItemIndex;
+		}
+
+		protected override void PrepareData<T>(T benchmarkType)
+		{
+			base.PrepareData(benchmarkType);
+
+			_testData ??= Enumerable.Range(1, TestObjectCount).Cast<long>().ToRecyclableList(BlockSize);
+			ItemToFind ??= _testData.Last();
+		}
+
+		protected override Action? GetTestMethod(WhenParallelSearchBenchmarkType benchmarkType) => BenchmarkType switch
+        {
+            WhenParallelSearchBenchmarkType.IndexOfSequentially => IndexOfSequentially,
+            WhenParallelSearchBenchmarkType.IndexOfParallel => IndexOfParallel,
+            _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+        };
+
+        public override void Cleanup()
+		{
+			_testData = default;
+			base.Cleanup();
+		}
+
+		public void IndexOfSequentially()
+		{
+			long index = DoLongIndexOfSequentially();
+			if (index >= 0)
+			{
+				DoNothing(index);
+			}
+			else
+			{
+				throw new Exception("Item not found");
+			}
+		}
+
+		public void IndexOfParallel()
+		{
+			var index = DoIndexOfParallel();
+			if (index >= 0)
+			{
+				DoNothing(index);
+			}
+			else
+			{
+				throw new Exception("Item not found");
+			}
 		}
 	}
 }
