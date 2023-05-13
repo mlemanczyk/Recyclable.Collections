@@ -2,14 +2,16 @@
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
+		private const long MaxItemsToSearchFor = RecyclableDefaults.MinItemsCountForParallelization * 3;
+
 		public void Array_IndexOf_AllItems()
 		{
 			var data = TestObjects;
 			var list = TestObjects;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			var dataCount = Math.Min(TestObjectCount, MaxItemsToSearchFor);
+			for (var i = 1; i <= dataCount; i++)
 			{
-				DoNothing(Array.IndexOf(list, data[i]));
+				DoNothing(Array.IndexOf(list, data[^i]));
 			}
 		}
 
@@ -17,10 +19,10 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			var dataCount = Math.Min(TestObjectCount, MaxItemsToSearchFor);
+			for (var i = 1; i <= dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing(list.IndexOf(data[^i]));
 			}
 		}
 
@@ -28,10 +30,10 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsPooledList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			var dataCount = Math.Min(TestObjectCount, MaxItemsToSearchFor);
+			for (var i = 1; i <= dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing(list.IndexOf(data[^i]));
 			}
 		}
 
@@ -39,10 +41,10 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableArrayList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			var dataCount = Math.Min(TestObjectCount, MaxItemsToSearchFor);
+			for (var i = 1; i <= dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing(list.IndexOf(data[^i]));
 			}
 		}
 
@@ -50,10 +52,10 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			var dataCount = Math.Min(TestObjectCount, MaxItemsToSearchFor);
+			for (var i = 1; i <= dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing(list.IndexOf(data[^i]));
 			}
 		}
 
@@ -61,10 +63,10 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = TestObjectCount;
-			for (var i = 0; i < dataCount; i++)
+			var dataCount = Math.Min(TestObjectCount, MaxItemsToSearchFor);
+			for (var i = 1; i <= dataCount; i++)
 			{
-				DoNothing(list.LongIndexOf(data[i]));
+				DoNothing(list.LongIndexOf(data[^i]));
 			}
 		}
 	}
