@@ -6,7 +6,7 @@
 		{
 			var data = TestObjects;
 			var list = TestObjects;
-			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(Array.IndexOf(list, data[i]));
@@ -17,7 +17,7 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsList;
-			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
@@ -28,7 +28,7 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsPooledList;
-			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
@@ -39,7 +39,7 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableArrayList;
-			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
@@ -50,7 +50,7 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.IndexOf(data[i]));
@@ -61,7 +61,7 @@
 		{
 			var data = TestObjects;
 			var list = TestObjectsAsRecyclableList;
-			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
+			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
 				DoNothing(list.LongIndexOf(data[i]));

@@ -41,6 +41,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		//[Params(1, 8, 16, 128, 192, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 10_000_000)]
 		//[Params(RecyclableDefaults.MaxPooledBlockSize)]
 		public virtual int TestObjectCount { get; set; }= 524_288; //131_072;
+		public virtual int TestObjectCountForSlowMethods => Math.Min(TestObjectCount, 100);
 
 		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200)]
 		//[Params(10, 20, 50, 100)]
