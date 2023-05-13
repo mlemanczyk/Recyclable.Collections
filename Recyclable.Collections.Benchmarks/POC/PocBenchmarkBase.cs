@@ -4,30 +4,30 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-    public abstract class PocBenchmarkBase<TBenchmarkType>
+	public abstract class PocBenchmarkBase<TBenchmarkType>
 	{
 		public virtual TBenchmarkType? BenchmarkType { get; set; }
 		public virtual TBenchmarkType? BaselineBenchmarkType { get; set; }
 
 		private Action? _testMethod;
-        protected Action TestMethod
-        {
-            get => _testMethod ?? throw new OperationCanceledException("Skip - Custom benchmark run in progress");
-            set => _testMethod = value;
-        }
+		protected Action TestMethod
+		{
+			get => _testMethod ?? throw new OperationCanceledException("Skip - Custom benchmark run in progress");
+			set => _testMethod = value;
+		}
 
 		private Action? _baselineMethod;
-        protected Action BaselineMethod
-        {
-            get => _baselineMethod ?? throw new OperationCanceledException("Skip - No baseline defined");
-            set => _baselineMethod = value;
-        }
-
-        [Benchmark]
-        public void RunWhen() => TestMethod.Invoke();
+		protected Action BaselineMethod
+		{
+			get => _baselineMethod ?? throw new OperationCanceledException("Skip - No baseline defined");
+			set => _baselineMethod = value;
+		}
 
 		[Benchmark(Baseline = true)]
 		public void Baseline() => BaselineMethod.Invoke();
+
+		[Benchmark]
+		public void Actual() => TestMethod.Invoke();
 
 		// 0 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536 131072 262144 524_288
 		// 1048576 2097152 4194304 8388608 16777216 33554432 67108864 134217728 268435456 536870912
@@ -64,12 +64,12 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		protected static Exception CreateUnknownBenchmarkTypeException<T>(T benchmarkType)
 		{
-            return new InvalidOperationException($"******* UNKNOWN BENCHMARK TYPE {{{benchmarkType}}} *******");
+			return new InvalidOperationException($"******* UNKNOWN BENCHMARK TYPE {{{benchmarkType}}} *******");
 		}
 
 		protected static Exception CreateMethodNotFoundException(in string methodName, in string? className)
 		{
-            return new MethodAccessException($"******* METHOD {{{methodName}}} NOT FOUND IN CLASS {{{className}}} *******");
+			return new MethodAccessException($"******* METHOD {{{methodName}}} NOT FOUND IN CLASS {{{className}}} *******");
 		}
 
 		protected virtual void PrepareData<T>(T benchmarkType) { }

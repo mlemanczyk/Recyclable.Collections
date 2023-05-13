@@ -51,8 +51,8 @@ internal class Program
 	private static void Main(string[] args)
 	{
 		RunRecyclableCollectionsBenchmarks();
-		//RunPocBenchmarks();
-		//RunSelectedBenchmarks();
+		// RunPocBenchmarks();
+		// RunSelectedBenchmarks();
 		//RunAssemblyBenchmarks();
 	}
 }

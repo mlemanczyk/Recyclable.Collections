@@ -4,25 +4,25 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
-		public void List_Create()
+		public static void List_Create()
 		{
 			var list = new List<long>();
 			DoNothing(list);
 		}
 
-		public void PooledList_Create()
+		public static void PooledList_Create()
 		{
 			using var list = new PooledList<long>(ClearMode.Auto);
 			DoNothing(list);
 		}
 
-		public void RecyclableArrayList_Create()
+		public static void RecyclableArrayList_Create()
 		{
 			using var list = new RecyclableArrayList<long>();
 			DoNothing(list);
 		}
 
-		public void RecyclableList_Create()
+		public static void RecyclableList_Create()
 		{
 			using var list = new RecyclableList<long>();
 			DoNothing(list);

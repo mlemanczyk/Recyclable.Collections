@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		{
 			var benchmark = new ArraySizeLimitPocBenchmarks();
 			benchmark.Setup();
-			benchmark.FindArraySizeLimit();
+			FindArraySizeLimit();
 			benchmark.Cleanup();
 		}
 
@@ -24,12 +24,12 @@ namespace Recyclable.Collections.Benchmarks.POC
 		[Benchmark(OperationsPerInvoke = 1)]
 		public void Max_Allowed_Size_2_147_483_605()
 		{
-            long[] arr = ArrayPool<long>.Shared.Rent(TestObjectCount);
-            DoNothing(arr);
+			long[] arr = ArrayPool<long>.Shared.Rent(TestObjectCount);
+			DoNothing(arr);
 		}
 
 		[Benchmark(OperationsPerInvoke = 1)]
-		public void FindArraySizeLimit()
+		public static void FindArraySizeLimit()
 		{
 			var pool = ArrayPool<long>.Shared;
 			var bufferSize = int.MaxValue / 2;
@@ -66,5 +66,5 @@ namespace Recyclable.Collections.Benchmarks.POC
 			Console.WriteLine("All done");
 			throw new Exception($"Everything was successful. You can create {oldValue} byte big arrays. Exception is logged to prevent more benchmarks.");
 		}
-    }
+	}
 }

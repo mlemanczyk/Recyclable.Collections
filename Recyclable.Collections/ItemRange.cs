@@ -2,7 +2,7 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-    public sealed class ItemRange
+	public sealed class ItemRange
 	{
 		public int BlockIndex;
 		public int StartingItemIndex;
