@@ -7,7 +7,7 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		Add_WithCapacity, Add, AddRange_WithCapacity, AddRangeWhenSourceIsArray, AddRangeWhenSourceIsIEnumerable,
 		AddRangeWhenSourceIsIList, AddRangeWhenSourceIsList, AddRangeWhenSourceIsSameType, Contains_FirstItems,
-		Contains_LastItems, Count, Create_WithCapacity, Create, GetItem, IndexOf_AllItems, IndexOf_FirstItems,
+		Contains_LastItems, Count, Create_WithCapacity, Create, GetItem, IndexOf_BestAndWorstCases, IndexOf_FirstItems,
 		IndexOf_LastItems, LongCount, Remove_FirstItems, Remove_LastItems, RemoveAt_FirstItems, RemoveAt_LastItems,
 		SetItem,
 	}
@@ -37,7 +37,7 @@ namespace Recyclable.Collections.Benchmarks
 			RecyclableCollectionsBenchmarkType.Create_WithCapacity,
 			RecyclableCollectionsBenchmarkType.Create,
 			RecyclableCollectionsBenchmarkType.GetItem,
-			RecyclableCollectionsBenchmarkType.IndexOf_AllItems,
+			RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases,
 			RecyclableCollectionsBenchmarkType.IndexOf_FirstItems,
 			RecyclableCollectionsBenchmarkType.IndexOf_LastItems,
 			RecyclableCollectionsBenchmarkType.LongCount,
