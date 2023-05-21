@@ -52,6 +52,12 @@ namespace Recyclable.Collections.Benchmarks
 
 		[Params
 		(
+			RecyclableCollectionsBenchmarkSource.PooledList
+		)]
+		public override RecyclableCollectionsBenchmarkSource BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+
+		[Params
+		(
 			RecyclableCollectionsBenchmarkSource.Array,
 			RecyclableCollectionsBenchmarkSource.List,
 			RecyclableCollectionsBenchmarkSource.PooledList,
@@ -59,12 +65,6 @@ namespace Recyclable.Collections.Benchmarks
 			RecyclableCollectionsBenchmarkSource.RecyclableList
 		)]
 		public override RecyclableCollectionsBenchmarkSource BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
-
-		[Params
-		(
-			RecyclableCollectionsBenchmarkSource.PooledList
-		)]
-		public override RecyclableCollectionsBenchmarkSource BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
 
 		protected override Action GetTestMethod(RecyclableCollectionsBenchmarkSource benchmarkType)
 			=> (Action?) GetType().GetMethod($"{benchmarkType}_{TestCase}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this)
