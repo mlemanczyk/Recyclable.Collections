@@ -2,34 +2,107 @@
 `Recyclable.Collections` project is an open source framework for operating dynamic lists at performance close to raw arrays, but fairly unlimited in size. It aims at providing minimal memory footprint. It implements `IList<T>`'s interface and is targeted as direct replacements of `List<T>`, `SortableList<T>`, `PriorityQueue<T>` & similar.
 
 ## Included
-* `RecyclableArrayList<T>`
 * `RecyclableList<T>`
-* `RecyclableSortableList<T>`
-    * Range: `long`
-    * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
-* `RecyclableQueue<T>`
-    * Range: `long`
-    * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
-* `RecyclableStack<T>`
-    * Range: `long`
-    * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
+* `RecyclableLongList<T>`
+
+# Milestones
+1. ✅ Create basic classes
+    1. ✅ `RecyclableList<T>`
+    1. ✅ `RecyclableLongList<T>`
+    1. 🅿️ `RecyclableQueue<T>`
+    1. 🅿️ `RecyclableSortedList<T>`
+    1. 🅿️ `RecyclableStack<T>`
+    1. 🅿️ `RecyclableUnorderedList<T>`
+1. ✅ Create basic unit tests
+    1. ✅ `RecyclableList<T>`
+    1. ✅ `RecyclableLongList<T>`
+    1. 🅿️ `RecyclableQueue<T>`
+    1. 🅿️ `RecyclableSortedList<T>`
+    1. 🅿️ `RecyclableStack<T>`
+    1. 🅿️ `RecyclableUnorderedList<T>`
+1. ✅ Optimize `RecyclableList<T>`
+    1. ✅ `Add`
+    1. ✅ `AddRange`
+        1. ✅ when source is `array<T>`
+        1. ✅ when source is `List<T>`
+        1. ✅ when source is `IList<T>`
+        1. ✅ when source is `RecyclableList<T>`
+        1. ✅ when source is `RecyclableLongList<T>`
+        1. ✅ when source is `IEnumerable<T>`
+        1. ✅ when sorce has non-enumerated count
+    1. ✅ `Clear`
+    1. ✅ `Contains`
+    1. ✅ `CopyTo`
+    1. ✅ `EnsureCapacity`
+    1. 🅿️ `GetEnumerator`
+    1. ✅ `IndexOf`
+    1. ✅ `Insert`
+    1. ✅ `Remove`
+    1. ✅ `RemoveAt`
+    1. ✅ `Resize`
+    1. ✅ `this[int index]`
+1. ✅ Port `RecyclableList<T>` implementation to `RecyclableLongList<T>`
+1. Optimize `RecyclableLongList<T>`
+    1. ✅ `Add`
+    1. ✅ `AddRange`
+        1. ✅ when source is `array<T>`
+        1. ✅ when source is `List<T>`
+        1. ✅ when source is `IList<T>`
+        1. ✅ when source is `RecyclableList<T>`
+        1. ✅ when source is `RecyclableLongList<T>`
+        1. ✅ when source is `IEnumerable<T>`
+        1. ✅ when sorce has non-enumerated count
+    1. ✅ `Clear`
+    1. ✅ `Contains`
+    1. ✅ `CopyTo`
+    1. ✅ `EnsureCapacity`
+    1. 🅿️ `GetEnumerator`
+    1. 👉 `IndexOf`
+    1. 👉 `LongIndexOf`
+    1. ✅ `Insert`
+    1. ✅ `Remove`
+    1. ✅ `RemoveAt(int index)`
+    1. ✅ `RemoveAt(long index)`
+    1. ✅ `RemoveAt`
+    1. ✅ `Resize`
+    1. ✅ `this[int index]`
+    1. ✅ `this[long index]`
+1. 🅿️ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
+1. 🅿️ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
+1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
+1. 🅿️ Implement `List<T>` interfaces
+    1. 🅿️ `RecyclableList<T>`
+    1. 🅿️ `RecyclableLongList<T>`
+    1. 🅿️ `RecyclableQueue<T>`
+    1. 🅿️ `RecyclableSortedList<T>`
+    1. 🅿️ `RecyclableStack<T>`
+    1. 🅿️ `RecyclableUnorderedList<T>`
+1. 🅿️ Add support for `ReadOnlySpan<T>`
+    1. 🅿️ `RecyclableList<T>`
+    1. 🅿️ `RecyclableLongList<T>`
+    1. 🅿️ `RecyclableQueue<T>`
+    1. 🅿️ `RecyclableSortedList<T>`
+    1. 🅿️ `RecyclableStack<T>`
+    1. 🅿️ `RecyclableUnorderedList<T>`
 
 # Characteristicts of the classes
 
 ## Common
 * All classes implement `IDisposable` interface & SHOULD be disposed after use. That's to return block arrays taken from the shared pool. It may be foreseen as an issue for replacement in existing code, which obviously is missing `using` clause. But considering that `Dispose` will be called by `GC` anyway, it should cause issues in specific scenarios, only. In either case the fix is one-word addition of `using`.
 * Memory blocks are created in 2 ways, depending on `blockSize` value
-    * when `blockSize < 100` ⇨ blocks are created as regular `arrays`
-    * when `blockSize >= 100` ⇨ blocks are taken from and returned to `ArrayPool<T>.Shared`, when blocks are removed
+    * when `blockSize < 128` ⇨ blocks are created as regular `arrays`.
+    * when `blockSize >= 128` ⇨ blocks are taken from and returned to `ArrayPool<T>.Shared`, when blocks are removed.
+    * maximum `blockSize` value is `2_147_483_591`, which corresponds more or less to the maximum array size.
+    * `blockSize` MUST be a power of 2. It will be rounded up to the closest power of 2, if needed. That is due to high performance gain on some operations, like the calculation of item index in a block.
 * Array pools are shared between the same `T` type. I.e. `List<int>` will use a different pool from `List<short>` and so on. For high concurrency environments you may want to provide your own pools, when this feature becomes available in the upcoming releases.
 * Trying to access `this[int index]`, `this[long index]`, `Count`, `LongCount` etc. when `Capacity == 0` will raise `NullReferenceException`. This is by design to remove all non-critical code from the constructor.
 
-## `RecyclableArrayList<T>`
+## `RecyclableList<T>`
 * Range: `int`
 * Interfaces: `IList<T>`, `IEnumerable<T>`, `IDisposable`
 This is the direct equivalent of `List<T>` class, except that the arrays are taken from the shared pool, instead of directly being allocated. It proves to out perform `List<T>` & the standard arrays in certains operations and is fairly close in others. But they may perform worse in certain scenarios. If you're interested in details, please refer to benchmarks.
 
-## `RecyclableList<T>`, `RecyclableSortableList<T>`, `RecyclableQueue<T>`, `RecyclableStack<T>`
+## `RecyclableLongList<T>`, `RecyclableSortableList<T>`, `RecyclableQueue<T>`, `RecyclableStack<T>`
 * Range: `long`
 * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
 * All classes provide large storage capabilities, in practice limited only by the memory available in your system.
@@ -62,12 +135,16 @@ This is by design, for the best performance. Initially there have been checks in
 
 If you foresee the overflowing as an issue, you're welcomed to propose an improvement & file a PR with proposed solution.
 
-# Auto-properties & new language features
+# Auto-properties, new language features & code style
 When you look at the code you may note, that it looks like in early c# days. Where the new language features yield the same or better performance, they are & will be used.
 
 However, many of the new language features have proved to provide worse performance at some point in my testing. It includes auto-properties, for which I could see getters & setters generated in IL, instead of fields. Because all the classes are expected to be on the hot-paths, I've eliminated most of them.
 
-If you know & can show it in your benchmarks that the code can be simplified without impacting the performance, feel free to file a PR with proposed changes. Please include benchmark results from your testing to speed up things.
+Similarily, you will find places in code with hints or warnings disabled. The decision was always driven by performance measures. The use case & business logic was carefully reviewed to ensure it's safe to take shortcuts, before making the change. If you run into failing scenario, please feel free to create a work item against it and/or file a PR to fix it.
+
+Finally, you'll find places with code commented out. That's to easily track what has been tried & what proved to performe worse.
+
+At any time, if you know & can show in your benchmarks that the code can be simplified without impacting the performance, feel free to file a PR with proposed changes. Please include benchmark results from your testing to speed up things.
 
 # Thread Safety
 The `public static` members of the classes are thread safe. Any instance members are not guaraneteed to be thread safe. You need to implement locking mechanism to safely use the classes in a multi-threading environment.
@@ -75,7 +152,7 @@ The `public static` members of the classes are thread safe. Any instance members
 # Use
 All the classes included in this package are meant to be direct replacements of their corresponding system classes.
 * `IList<T>` ⇨ `ILongList<T>`
-* `List<T>` ⇨ `RecyclableList<T>` 
+* `List<T>` ⇨ `RecyclableLongList<T>` 
 * `Queue<T>` ⇨ `RecyclableQueue<T>`
 * `PriorityQueue<T>` ⇨ `RecyclableSortedList<T>`
 * `SortedList<T>` ⇨ `RecyclableSortedList<T>`
@@ -83,12 +160,12 @@ All the classes included in this package are meant to be direct replacements of 
 
 Examples of each of the above classes are provided below. Please refer automated tests for more.
 
-## `RecyclableArrayList<T>`
-It's the closest equivalent to `List<T>` in regards to functionality. It supports items' removal & delivers the best performance. But it's limited to `int` range, tough. If you find that acceptable, my recommendation is to use this class as the direct replacement for `List<T>`.
-
-Do note, that it implements `ILongList<T>` interface, too. This is to allow having common code base regardless, if you use the basic `RecyclableArrayList<T>` or it's `long`-range version - `RecyclableList<T>`. By doing that you can switch between them with highly limited changes in code.
-
 ## `RecyclableList<T>`
+It's the closest equivalent to `List<T>` in regards to functionality. It supports items' removal & delivers the best performance in most scenarios. But it's limited to `int` range, tough. If you find that acceptable, my recommendation is to use this class as the direct replacement for `List<T>`.
+
+Do note, that it implements `ILongList<T>` interface, too. This is to allow having common code base regardless, if you use the basic `RecyclableList<T>` or it's `long`-range version - `RecyclableLongList<T>`. By doing that you can switch between them with highly limited changes in code.
+
+## `RecyclableLongList<T>`
 
 ```CSharp
 public void RecyclableListExample()
@@ -96,7 +173,7 @@ public void RecyclableListExample()
     int[] testNumbers = new[] { 1, 2, 2, 3 };
 
     // Create
-    using var list = new RecyclableList<int>();
+    using var list = new RecyclableLongList<int>();
 
     // Add items
     foreach (var index in testNumbers)
@@ -124,9 +201,9 @@ public void RecyclableListExample()
     list.Clear();
 }
 ```
-## `RecyclableArrayList<T>`
+## `RecyclableList<T>`
 
-## `RecyclableArrayList<T>`
+## `RecyclableList<T>`
 
-## `RecyclableArrayList<T>`
+## `RecyclableList<T>`
 
