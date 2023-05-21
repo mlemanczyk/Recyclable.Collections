@@ -48,7 +48,7 @@ namespace Recyclable.Collections.Benchmarks
 			RecyclableCollectionsBenchmarkType.SetItem
 		)]
 
-		public RecyclableCollectionsBenchmarkType TestCase { get; set; } = RecyclableCollectionsBenchmarkType.IndexOf_AllItems;
+		public RecyclableCollectionsBenchmarkType TestCase { get; set; } = RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases;
 
 		[Params
 		(
