@@ -7,7 +7,7 @@ namespace Recyclable.Collections.Pools
 		private static readonly SpinLock _updateLock = new(false);
 		public static readonly ObjectPool<ItemRange> Shared = new DefaultObjectPool<ItemRange>(new DefaultPooledObjectPolicy<ItemRange>());
 
-		public static ItemRange Create(int blockIndex, int startingItemIndex, long itemsToSearchCount)
+		public static ItemRange Create(int blockIndex, long itemsToSearchCount)
 		{
 			bool lockTaken = false;
 			_updateLock.Enter(ref lockTaken);
@@ -20,7 +20,6 @@ namespace Recyclable.Collections.Pools
 			itemRange._returned = false;
 			itemRange.BlockIndex = blockIndex;
 			itemRange.ItemsToSearchCount = itemsToSearchCount;
-			itemRange.StartingItemIndex = startingItemIndex;
 			return itemRange;
 		}
 	}
