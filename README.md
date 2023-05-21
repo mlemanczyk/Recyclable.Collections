@@ -29,7 +29,7 @@
         1. ✅ when source is `RecyclableList<T>`
         1. ✅ when source is `RecyclableLongList<T>`
         1. ✅ when source is `IEnumerable<T>`
-        1. ✅ when sorce has non-enumerated count
+        1. ✅ when source has non-enumerated count
     1. ✅ `Clear`
     1. ✅ `Contains`
     1. ✅ `CopyTo`
@@ -51,7 +51,7 @@
         1. ✅ when source is `RecyclableList<T>`
         1. ✅ when source is `RecyclableLongList<T>`
         1. ✅ when source is `IEnumerable<T>`
-        1. ✅ when sorce has non-enumerated count
+        1. ✅ when source has non-enumerated count
     1. ✅ `Clear`
     1. ✅ `Contains`
     1. ✅ `CopyTo`
@@ -85,7 +85,7 @@
     1. 🅿️ `RecyclableStack<T>`
     1. 🅿️ `RecyclableUnorderedList<T>`
 
-# Characteristicts of the classes
+# Characteristics of the classes
 
 ## Common
 * All classes implement `IDisposable` interface & SHOULD be disposed after use. That's to return block arrays taken from the shared pool. It may be foreseen as an issue for replacement in existing code, which obviously is missing `using` clause. But considering that `Dispose` will be called by `GC` anyway, it should cause issues in specific scenarios, only. In either case the fix is one-word addition of `using`.
@@ -100,15 +100,16 @@
 ## `RecyclableList<T>`
 * Range: `int`
 * Interfaces: `IList<T>`, `IEnumerable<T>`, `IDisposable`
-This is the direct equivalent of `List<T>` class, except that the arrays are taken from the shared pool, instead of directly being allocated. It proves to out perform `List<T>` & the standard arrays in certains operations and is fairly close in others. But they may perform worse in certain scenarios. If you're interested in details, please refer to benchmarks.
+This is the direct equivalent of `List<T>` class, except that the arrays are taken from the shared pool, instead of directly being allocated. It proves to out perform `List<T>` & the standard arrays in certain operations and is fairly close in others. But they may perform worse in certain scenarios. If you're interested in details, please refer to benchmarks.
 
 ## `RecyclableLongList<T>`, `RecyclableSortableList<T>`, `RecyclableQueue<T>`, `RecyclableStack<T>`
 * Range: `long`
 * Interfaces: `IList<T>`, `ILongList<T>`, `IEnumerable<T>`, `IDisposable`
 * All classes provide large storage capabilities, in practice limited only by the memory available in your system.
 * All data is stored in blocks, with the provided `int blockSize` or the default, currently being `10,240` items in each block. It's recommended to use smaller numbers, if you foresee storing low no. of items on the list.
-* There is no memory copying to increase the capacity of the recyclable classes, anymore. If more capacity is needed, a new memory block is allocate & added to the internal list of blocks. This is the only list that may re-allocate memory block & copy their content to grow. That shouldn't be an issue considering limited no. of blocks stored by each class in practical scenarios. Currently I'm not planning any works around that. Shall there be a need to eliminate it, you're welcomed to file a PR with the proposed changes.
-* `Insert`, `Remove` & `RemoveAt` methods raise `NotSupportedException`. This is by design in the current version, because it involves performance degradadion. I'm planning works around this in the upcoming weeks. If you need that sooner, you're welcomed to file a PR with the proposed changes.
+* There is no memory copying to increase the capacity of the recyclable classes, unless the no. of items exceeds the no. of allocated blocks. In that case, a new array of blocks is created to accommodate . If more capacity is needed, a new memory block is allocate & added to the internal list of blocks. This is the only list that may re-allocate memory block & copy their content to grow. That shouldn't be an issue considering limited no. of blocks stored by each class in practical scenarios. Currently I'm not planning any works around that. Shall there be a need to eliminate it, you're welcomed to file a PR with the proposed changes.
+* ⚠️ `IndexOf` is not guaranteed to return the index of the first item found. In most cases it will, but there may be scenarios when the index of subsequent items on the list is found. That may happen when the no. of items equals to or exceeds 786_432. In that case `IndexOf` will parallelize the search using tasks. 
+* `Insert`, `Remove` & `RemoveAt` methods raise `NotSupportedException`. This is by design in the current version, because it involves performance degradation. I'm planning works around this in the upcoming weeks. If you need that sooner, you're welcomed to file a PR with the proposed changes.
 
 # Architecture Decisions
 The architecture of the classes included in this project is driven primarily by performance & memory footprints. The following decisions were made to support it.
@@ -121,7 +122,7 @@ Having a common base class for all the classes looks very attractive. But it is 
 
 If you desire to have a common base for calls, each of the classes implements `IList<T>` & `ILongList<T>` interfaces. `ILongList<T>` is a new interface, made alike `IList<T>`, but unlocking full support for `long` indexing & use. Considering the characteristics of the classes I feel that the generic name is justified, instead of `IRecyclableList<T>` what you could expect.
 
-## Protection against inccorrect use & state
+## Protection against incorrect use & state
 Having protection against invalid state of the object is an important part of software engineering. The classes included in this project provide the same level of protection as the regular `array` & `List` class. They will raise exceptions when invalid index is given. But there is no additional protection that the content & state of the objects internally used by these classes are valid. You can break them, if you want to.
 
 This decision is driven by performance measures. Considering wide use of the lists on the hot-paths, each additional check & operation starts counting. I've decided to eliminate all the checks for the sake of performance. If you feel that you need additional protection, feel free to inherit or reuse any of the provided classes to provide that.
@@ -140,14 +141,14 @@ When you look at the code you may note, that it looks like in early c# days. Whe
 
 However, many of the new language features have proved to provide worse performance at some point in my testing. It includes auto-properties, for which I could see getters & setters generated in IL, instead of fields. Because all the classes are expected to be on the hot-paths, I've eliminated most of them.
 
-Similarily, you will find places in code with hints or warnings disabled. The decision was always driven by performance measures. The use case & business logic was carefully reviewed to ensure it's safe to take shortcuts, before making the change. If you run into failing scenario, please feel free to create a work item against it and/or file a PR to fix it.
+Similarly, you will find places in code with hints or warnings disabled. The decision was always driven by performance measures. The use case & business logic was carefully reviewed to ensure it's safe to take shortcuts, before making the change. If you run into failing scenario, please feel free to create a work item against it and/or file a PR to fix it.
 
-Finally, you'll find places with code commented out. That's to easily track what has been tried & what proved to performe worse.
+Finally, you'll find places with code commented out. That's to easily track what has been tried & what proved to perform worse.
 
 At any time, if you know & can show in your benchmarks that the code can be simplified without impacting the performance, feel free to file a PR with proposed changes. Please include benchmark results from your testing to speed up things.
 
 # Thread Safety
-The `public static` members of the classes are thread safe. Any instance members are not guaraneteed to be thread safe. You need to implement locking mechanism to safely use the classes in a multi-threading environment.
+The `public static` members of the classes are thread safe. Any instance members are not guaranteed to be thread safe. You need to implement locking mechanism to safely use the classes in a multi-threading environment.
 
 # Use
 All the classes included in this package are meant to be direct replacements of their corresponding system classes.
