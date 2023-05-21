@@ -4,9 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public class RecyclableArrayList<T> : IEnumerable<T>, IList<T>, IDisposable
+	public class RecyclableArrayList<T> : IList<T>, IDisposable
 	{
-		private const int ItemNotFound = -1;
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
@@ -405,7 +404,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T itemToFind) => _count > 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : ItemNotFound;
+		public int IndexOf(T itemToFind) => _count > 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : RecyclableDefaults.ItemNotFoundIndex;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void Insert(int index, T item)
