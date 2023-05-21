@@ -69,6 +69,9 @@
     1. ✅ `this[long index]`
     1. 🅿️ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
     1. 🅿️ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
+    1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
+    1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
+    1. 🅿️ Add support for `ReadOnlySpan<T>`
     1. 🅿️ Implement `List<T>` interfaces
         1. 🅿️ `ICollection<T>`
         1. 🅿️ `IEnumerable<T>`
@@ -99,7 +102,6 @@
 1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
 1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
 1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
-1. 🅿️ Add support for `ReadOnlySpan<T>`
     1. 🅿️ `RecyclableList<T>`
     1. 🅿️ `RecyclableLongList<T>`
     1. 🅿️ `RecyclableQueue<T>`
