@@ -103,6 +103,8 @@
     1. 🅿️ Make type castings `checked`
     1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
     1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
+    1. 🅿️ Cleanup `RecyclableLongListExtensions`
+    1. 🅿️ Convert generic methods to non-generic
 1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
 1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
 1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
