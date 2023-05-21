@@ -54,7 +54,7 @@
         1. ✅ when source has non-enumerated count
     1. ✅ `Clear`
     1. ✅ `Contains`
-    1. ✅ `CopyTo`
+    1. 🅿️ `CopyTo`
     1. ✅ `EnsureCapacity`
     1. 🅿️ `GetEnumerator`
     1. 👉 `IndexOf`
@@ -67,16 +67,38 @@
     1. ✅ `Resize`
     1. ✅ `this[int index]`
     1. ✅ `this[long index]`
-1. 🅿️ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
-1. 🅿️ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
-1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
-1. 🅿️ Implement `List<T>` interfaces
-    1. 🅿️ `RecyclableList<T>`
-    1. 🅿️ `RecyclableLongList<T>`
-    1. 🅿️ `RecyclableQueue<T>`
-    1. 🅿️ `RecyclableSortedList<T>`
-    1. 🅿️ `RecyclableStack<T>`
-    1. 🅿️ `RecyclableUnorderedList<T>`
+    1. 🅿️ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
+    1. 🅿️ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
+    1. 🅿️ Implement `List<T>` interfaces
+        1. 🅿️ `ICollection<T>`
+        1. 🅿️ `IEnumerable<T>`
+        1. 🅿️ `IEnumerable`
+        1. 🅿️ `IList<T>`
+        1. 🅿️ `IReadOnlyCollection<T>`
+        1. 🅿️ `IReadOnlyList<T>`
+        1. 🅿️ `ICollection`
+        1. 🅿️ `IList`
+    1. Make sure that `NeedsClearing` is used & items are cleared in
+        1. 🅿️ `Clear`
+        1. 🅿️ `Dispose`
+        1. 🅿️ `Remove`
+        1. 🅿️ `RemoveAt`
+        1. 🅿️ `RemoveBlock`
+    1. 🅿️ Replace `Math` class usages with `if` statements
+    1. 🅿️ Replace `a - b > 0` & `a - b < 0` comparisons with `a > b` & `a < b`
+    1. 🅿️ Replace `a + b > 0` & `a + b < 0` comparisons with `a > b` & `a < b`
+    1. 🅿️ Replace `a / b` & `a * b` calculations with equivalents, where possible
+    1. 🅿️ Replace virtual calls with static calls
+    1. 🅿️ Replace `blockSize` sums by powers of 2, minus 1
+    1. 🅿️ Remove type castings, if possible
+    1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
+    1. 🅿️ Make type castings `checked`
+    1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
+    1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
+1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
+1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
+1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
+1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
 1. 🅿️ Add support for `ReadOnlySpan<T>`
     1. 🅿️ `RecyclableList<T>`
     1. 🅿️ `RecyclableLongList<T>`
