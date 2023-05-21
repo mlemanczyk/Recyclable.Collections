@@ -42,7 +42,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 	}
 
-    internal static class ItemRangePoolV1
+	internal static class ItemRangePoolV1
 	{
 		[ThreadStatic]
 		private static readonly ObjectPool<ItemRangeV1> _shared;
@@ -565,19 +565,19 @@ namespace Recyclable.Collections.Benchmarks.POC
 				else
 				{
 					blockIndex = sourceBlockCount;
-                    while (true)
-                    {
-                        newMemoryBlocks[blockIndex] = new T[minBlockSize];
-                        if (blockIndex + 1 < requiredBlockCount)
-                        {
-                            blockIndex++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+					while (true)
+					{
+						newMemoryBlocks[blockIndex] = new T[minBlockSize];
+						if (blockIndex + 1 < requiredBlockCount)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
 			}
 
 			list._reservedBlockCount = requiredBlockCount;
@@ -1239,7 +1239,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				GC.SuppressFinalize(this);
 			}
 		}
-    }
+	}
 
 	#endregion
 
@@ -1694,35 +1694,35 @@ namespace Recyclable.Collections.Benchmarks.POC
 					}
 
 					blockIndex = sourceBlockCount;
-                    while (true)
-                    {
-                        newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
-                        if (blockIndex + 1 < requiredBlockCount)
-                        {
-                            blockIndex++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+					while (true)
+					{
+						newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
+						if (blockIndex + 1 < requiredBlockCount)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
 				else
 				{
 					blockIndex = sourceBlockCount;
-                    while (true)
-                    {
-                        newMemoryBlocks[blockIndex] = new T[minBlockSize];
-                        if (blockIndex + 1 < requiredBlockCount)
-                        {
-                            blockIndex++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+					while (true)
+					{
+						newMemoryBlocks[blockIndex] = new T[minBlockSize];
+						if (blockIndex + 1 < requiredBlockCount)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
 			}
 
 			list._reservedBlockCount = requiredBlockCount;
@@ -2811,35 +2811,35 @@ namespace Recyclable.Collections.Benchmarks.POC
 					}
 
 					blockIndex = sourceBlockCount;
-                    while (true)
-                    {
-                        newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
-                        if (blockIndex + 1 < requiredBlockCount)
-                        {
-                            blockIndex++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+					while (true)
+					{
+						newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
+						if (blockIndex + 1 < requiredBlockCount)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
 				else
 				{
 					blockIndex = sourceBlockCount;
-                    while (true)
-                    {
-                        newMemoryBlocks[blockIndex] = new T[minBlockSize];
-                        if (blockIndex + 1 < requiredBlockCount)
-                        {
-                            blockIndex++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+					while (true)
+					{
+						newMemoryBlocks[blockIndex] = new T[minBlockSize];
+						if (blockIndex + 1 < requiredBlockCount)
+						{
+							blockIndex++;
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
 			}
 
 			list._reservedBlockCount = requiredBlockCount;
@@ -3561,27 +3561,27 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 	}
 
-    internal sealed class ParallelSynchronizationContextV4 : IDisposable
-    {
-        public readonly ManualResetEventSlimmer ItemFoundSignal;
-        public readonly Barrier AllDoneSignal;
-        public long FoundItemIndex;
-        public Exception? Exception;
+	internal sealed class ParallelSynchronizationContextV4 : IDisposable
+	{
+		public readonly ManualResetEventSlimmer ItemFoundSignal;
+		public readonly Barrier AllDoneSignal;
+		public long FoundItemIndex;
+		public Exception? Exception;
 
-        public ParallelSynchronizationContextV4(int participantCount)
-        {
-            ItemFoundSignal = ManualResetEventSlimmerPool.Create(false);
-            AllDoneSignal = new(participantCount);
-        }
+		public ParallelSynchronizationContextV4(int participantCount)
+		{
+			ItemFoundSignal = ManualResetEventSlimmerPool.Create(false);
+			AllDoneSignal = new(participantCount);
+		}
 
-        public void Dispose()
-        {
-            ItemFoundSignal.Dispose();
-            AllDoneSignal.Dispose();
+		public void Dispose()
+		{
+			ItemFoundSignal.Dispose();
+			AllDoneSignal.Dispose();
 
-            GC.SuppressFinalize(this);
-        }
-    }
+			GC.SuppressFinalize(this);
+		}
+	}
 
 	internal class RecyclableListIndexOfV4<T> : IDisposable, IList<T>
 	{
