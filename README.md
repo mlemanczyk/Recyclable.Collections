@@ -67,6 +67,11 @@
     1. ✅ `Resize`
     1. ✅ `this[int index]`
     1. ✅ `this[long index]`
+    1. 🅿️ Hide not ready classes
+        1. 🅿️ `RecyclableQueue<T>`
+        1. 🅿️ `RecyclableSortedList<T>`
+        1. 🅿️ `RecyclableStack<T>`
+        1. 🅿️ `RecyclableUnorderedList<T>`
     1. 🅿️ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
     1. 🅿️ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
     1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
@@ -108,6 +113,12 @@
     1. 🅿️ `RecyclableSortedList<T>`
     1. 🅿️ `RecyclableStack<T>`
     1. 🅿️ `RecyclableUnorderedList<T>`
+1. 🅿️ Optimize `OneSizeArrayPool`
+    1. 🅿️ Review locks
+    1. 🅿️ Measure multi-threading performance
+1. 🅿️ Optimize `RecyclableArrayPool`
+    1. 🅿️ Review locks
+    1. 🅿️ Measure multi-threading performance
 
 # Characteristics of the classes
 
