@@ -2,12 +2,12 @@ using Microsoft.Extensions.ObjectPool;
 
 namespace Recyclable.Collections.Parallel
 {
-	public static class ParallelSynchronizationContextPool
+	public static class IndexOfSynchronizationContextPool
 	{
 		private static readonly SpinLock _updateLock = new(false);
-		public static readonly ObjectPool<ParallelSynchronizationContext> Shared = new DefaultObjectPool<ParallelSynchronizationContext>(new DefaultPooledObjectPolicy<ParallelSynchronizationContext>());
+		public static readonly ObjectPool<IndexOfSynchronizationContext> Shared = new DefaultObjectPool<IndexOfSynchronizationContext>(new DefaultPooledObjectPolicy<IndexOfSynchronizationContext>());
 
-		public static ParallelSynchronizationContext GetWithOneParticipant()
+		public static IndexOfSynchronizationContext GetWithOneParticipant()
 		{
 			bool lockTaken = false;
 			_updateLock.Enter(ref lockTaken);

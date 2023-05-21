@@ -5,12 +5,12 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableList<T>
 	{
-		public static class RecyclableListIndexOfHelpers
+		public static class IndexOfHelpers
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-			private static void ScheduleIndexOfTask(ParallelSynchronizationContext context, RecyclableList<T> list, int blockIndex, T itemToFind)
+			private static void ScheduleIndexOfTask(IndexOfSynchronizationContext context, RecyclableList<T> list, int blockIndex, T itemToFind)
 			{
 				_ = context.AllDoneSignal.AddParticipant();
 				// & WAS SLOWER
@@ -123,7 +123,7 @@ namespace Recyclable.Collections
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-			private static void ScheduleIndexOfTaskSingle(ParallelSynchronizationContext context, RecyclableList<T> list, int blockIndex, T itemToFind)
+			private static void ScheduleIndexOfTaskSingle(IndexOfSynchronizationContext context, RecyclableList<T> list, int blockIndex, T itemToFind)
 			{
 				_ = context.AllDoneSignal.AddParticipant();
 				// & WAS SLOWER
@@ -172,7 +172,7 @@ namespace Recyclable.Collections
 				//}
 
 				//using var context = new ParallelSynchronizationContext(1);
-				ParallelSynchronizationContext context = ParallelSynchronizationContextPool.GetWithOneParticipant();
+				IndexOfSynchronizationContext context = IndexOfSynchronizationContextPool.GetWithOneParticipant();
 				// (long)(_longCount * 0.329) => most efficient step, based on benchmarks
 				//Iterate(this, context, item);
 

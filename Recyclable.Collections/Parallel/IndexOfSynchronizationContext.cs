@@ -1,6 +1,6 @@
 namespace Recyclable.Collections.Parallel
 {
-	public sealed class ParallelSynchronizationContext : IDisposable
+	public sealed class IndexOfSynchronizationContext : IDisposable
 	{
 		internal bool _isItemFound;
 
@@ -9,12 +9,12 @@ namespace Recyclable.Collections.Parallel
 		public Exception? Exception;
 		internal bool _returned;
 
-		public ParallelSynchronizationContext()
+		public IndexOfSynchronizationContext()
 		{
 			AllDoneSignal = new(0);
 		}
 
-		public ParallelSynchronizationContext(int participantCount)
+		public IndexOfSynchronizationContext(int participantCount)
 		{
 			AllDoneSignal = new(participantCount);
 		}
@@ -31,7 +31,7 @@ namespace Recyclable.Collections.Parallel
 			if (!_returned)
 			{
 				_returned = true;
-				ParallelSynchronizationContextPool.Shared.Return(this);
+				IndexOfSynchronizationContextPool.Shared.Return(this);
 			}
 			else
 			{

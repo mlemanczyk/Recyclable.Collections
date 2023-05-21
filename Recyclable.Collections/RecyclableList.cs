@@ -857,7 +857,7 @@ namespace Recyclable.Collections
 			}
 			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
 			{
-				return (int)RecyclableListIndexOfHelpers.IndexOfSequential(this, item);
+				return (int)IndexOfHelpers.IndexOfSequential(this, item);
 			}
 			else
 			{
@@ -866,7 +866,7 @@ namespace Recyclable.Collections
 				if (_longCount > _blockSize)
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
-					return itemIndex >= 0 ? _blockSize + itemIndex : (int)RecyclableListIndexOfHelpers.IndexOfParallel(this, item);
+					return itemIndex >= 0 ? _blockSize + itemIndex : (int)IndexOfHelpers.IndexOfParallel(this, item);
 				}
 				else
 				{
@@ -896,7 +896,7 @@ namespace Recyclable.Collections
 			}
 			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
 			{
-				return RecyclableListIndexOfHelpers.IndexOfSequential(this, item);
+				return IndexOfHelpers.IndexOfSequential(this, item);
 			}
 			else
 			{
@@ -905,7 +905,7 @@ namespace Recyclable.Collections
 				if (_longCount > _blockSize)
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
-					return itemIndex >= 0 ? _blockSize + itemIndex : RecyclableListIndexOfHelpers.IndexOfParallel(this, item);
+					return itemIndex >= 0 ? _blockSize + itemIndex : IndexOfHelpers.IndexOfParallel(this, item);
 				}
 				else
 				{

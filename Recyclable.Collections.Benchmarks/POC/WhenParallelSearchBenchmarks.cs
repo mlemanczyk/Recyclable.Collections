@@ -1,10 +1,11 @@
 ﻿using BenchmarkDotNet.Attributes;
+using Microsoft.Extensions.ObjectPool;
 using MoreLinq;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-    public enum WhenParallelSearchBenchmarkType
+	public enum WhenParallelSearchBenchmarkType
 	{
 		IndexOfSequentially,
 		IndexOfParallel,
@@ -13,6 +14,62 @@ namespace Recyclable.Collections.Benchmarks.POC
 	[MemoryDiagnoser]
 	public class WhenParallelSearchBenchmarks : PocBenchmarkBase<WhenParallelSearchBenchmarkType>
 	{
+		#region ItemRange V2
+
+		private sealed class ItemRangeV2
+		{
+			public int BlockIndex;
+			public long ItemsToSearchCount;
+			internal bool _returned;
+
+			public ItemRangeV2()
+			{
+			}
+
+			public ItemRangeV2(int blockIndex, long itemsToSearchCount)
+			{
+				BlockIndex = blockIndex;
+				ItemsToSearchCount = itemsToSearchCount;
+			}
+
+			public void Dispose()
+			{
+				if (!_returned)
+				{
+					_returned = true;
+					ItemRangePoolV2.Shared.Return(this);
+				}
+			}
+		}
+
+		#endregion
+
+		#region ItemRangePoolV2
+
+		private static class ItemRangePoolV2
+		{
+			private static readonly SpinLock _updateLock = new(false);
+			public static readonly ObjectPool<ItemRangeV2> Shared = new DefaultObjectPool<ItemRangeV2>(new DefaultPooledObjectPolicy<ItemRangeV2>());
+
+			public static ItemRangeV2 Create(int blockIndex, long itemsToSearchCount)
+			{
+				bool lockTaken = false;
+				_updateLock.Enter(ref lockTaken);
+				var itemRange = Shared.Get();
+				if (lockTaken)
+				{
+					_updateLock.Exit(false);
+				}
+
+				itemRange._returned = false;
+				itemRange.BlockIndex = blockIndex;
+				itemRange.ItemsToSearchCount = itemsToSearchCount;
+				return itemRange;
+			}
+		}
+
+		#endregion
+
 		//[Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32)]
 		//public int NumberOfThreads { get; set; } = 3;
 
@@ -66,7 +123,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
-		private static long DoLongIndexOfParallel(RecyclableList<long> list, in long itemToFind, ItemRange searchInfo, ManualResetEventSlim itemFoundSignal)
+		private static long DoLongIndexOfParallel(RecyclableList<long> list, in long itemToFind, ItemRangeV2 searchInfo, ManualResetEventSlim itemFoundSignal)
 		{
 			int index;
 			int blockSize = list.BlockSize;
@@ -248,13 +305,13 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		protected override Action? GetTestMethod(WhenParallelSearchBenchmarkType benchmarkType) => BenchmarkType switch
-        {
-            WhenParallelSearchBenchmarkType.IndexOfSequentially => IndexOfSequentially,
-            WhenParallelSearchBenchmarkType.IndexOfParallel => IndexOfParallel,
-            _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
-        };
+		{
+			WhenParallelSearchBenchmarkType.IndexOfSequentially => IndexOfSequentially,
+			WhenParallelSearchBenchmarkType.IndexOfParallel => IndexOfParallel,
+			_ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+		};
 
-        public override void Cleanup()
+		public override void Cleanup()
 		{
 			_testData = default;
 			base.Cleanup();
