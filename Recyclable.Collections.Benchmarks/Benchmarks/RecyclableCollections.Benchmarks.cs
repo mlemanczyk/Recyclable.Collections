@@ -61,7 +61,7 @@ namespace Recyclable.Collections.Benchmarks
 			RecyclableCollectionsBenchmarkSource.Array,
 			RecyclableCollectionsBenchmarkSource.List,
 			RecyclableCollectionsBenchmarkSource.PooledList,
-			RecyclableCollectionsBenchmarkSource.RecyclableArrayList,
+			RecyclableCollectionsBenchmarkSource.RecyclableList,
 			RecyclableCollectionsBenchmarkSource.RecyclableLongList
 		)]
 		public override RecyclableCollectionsBenchmarkSource BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }

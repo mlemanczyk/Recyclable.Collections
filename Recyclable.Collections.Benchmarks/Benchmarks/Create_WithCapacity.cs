@@ -22,9 +22,9 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		public void RecyclableArrayList_Create_WithCapacity()
+		public void RecyclableList_Create_WithCapacity()
 		{
-			using var list = new RecyclableArrayList<long>(TestObjectCount);
+			using var list = new RecyclableList<long>(TestObjectCount);
 			DoNothing(list);
 		}
 

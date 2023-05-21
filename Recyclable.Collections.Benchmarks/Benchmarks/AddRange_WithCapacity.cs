@@ -20,11 +20,11 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		public void RecyclableArrayList_AddRange_WithCapacity()
+		public void RecyclableList_AddRange_WithCapacity()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableArrayList<long>(dataCount);
+			using var list = new RecyclableList<long>(dataCount);
 			list.AddRange(data);
 		}
 

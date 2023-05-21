@@ -11,16 +11,16 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		public void RecyclableArrayList_AddRangeWhenSourceIsRecyclableArrayList()
+		public void RecyclableList_AddRangeWhenSourceIsRecyclableList()
 		{
-			var data = TestObjectsAsRecyclableArrayList;
-			using var list = new RecyclableArrayList<long>();
+			var data = TestObjectsAsRecyclableList;
+			using var list = new RecyclableList<long>();
 			list.AddRange(data);
 		}
 
-		public void RecyclableLongList_AddRangeWhenSourceIsRecyclableArrayList()
+		public void RecyclableLongList_AddRangeWhenSourceIsRecyclableList()
 		{
-			var data = TestObjectsAsRecyclableArrayList;
+			var data = TestObjectsAsRecyclableList;
 			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			list.AddRange(data);
 		}

@@ -25,7 +25,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		[Params(RecyclableLongListPocBenchmarkType.IndexOf)]
 		public override RecyclableLongListPocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
 
-		// [Params(BenchmarkType.Array, BenchmarkType.List, BenchmarkType.RecyclableArrayList, BenchmarkType.RecyclableLongList)]
+		// [Params(BenchmarkType.Array, BenchmarkType.List, BenchmarkType.RecyclableList, BenchmarkType.RecyclableLongList)]
 		[Params(RecyclableLongListPocBenchmarkType.IndexOf_PooledList)]
 		public override RecyclableLongListPocBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
 

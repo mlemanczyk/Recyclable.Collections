@@ -5,4 +5,4 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Style", "IDE0032:Use auto property", Justification = "<Pending>", Scope = "member", Target = "~F:Recyclable.Collections.RecyclableArrayList`1._count")]
+[assembly: SuppressMessage("Style", "IDE0032:Use auto property", Justification = "<Pending>", Scope = "member", Target = "~F:Recyclable.Collections.RecyclableList`1._count")]

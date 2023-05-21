@@ -26,11 +26,11 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void RecyclableArrayList_Add()
+		public void RecyclableList_Add()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);

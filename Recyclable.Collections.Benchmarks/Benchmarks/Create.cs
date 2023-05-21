@@ -16,9 +16,9 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		public static void RecyclableArrayList_Create()
+		public static void RecyclableList_Create()
 		{
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 			DoNothing(list);
 		}
 

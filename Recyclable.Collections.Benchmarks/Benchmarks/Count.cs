@@ -20,9 +20,9 @@
 			DoNothing(data.Count);
 		}
 
-		public void RecyclableArrayList_Count()
+		public void RecyclableList_Count()
 		{
-			var data = TestObjectsAsRecyclableArrayList;
+			var data = TestObjectsAsRecyclableList;
 			DoNothing(data.Count);
 		}
 

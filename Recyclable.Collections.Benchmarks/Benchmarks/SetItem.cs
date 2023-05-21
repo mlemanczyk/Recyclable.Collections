@@ -33,9 +33,9 @@
 			}
 		}
 
-		public void RecyclableArrayList_SetItem()
+		public void RecyclableList_SetItem()
 		{
-			var data = TestObjectsAsRecyclableArrayList;
+			var data = TestObjectsAsRecyclableList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{

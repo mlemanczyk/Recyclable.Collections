@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public class RecyclableArrayList<T> : IList<T>, IDisposable
+	public class RecyclableList<T> : IList<T>, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 
@@ -43,7 +43,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static int EnsureCapacity(RecyclableArrayList<T> list, int requestedCapacity)
+		protected static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
 		{
 			int newCapacity;
 			switch (list._capacity > 0)
@@ -69,13 +69,13 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
-		public RecyclableArrayList()
+		public RecyclableList()
 #pragma warning restore CS8618
 		{
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
-		public RecyclableArrayList(int initialCapacity)
+		public RecyclableList(int initialCapacity)
 #pragma warning restore CS8618
 		{
 			if (initialCapacity > 0)
@@ -86,34 +86,34 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
-		public RecyclableArrayList(RecyclableArrayList<T> source)
+		public RecyclableList(RecyclableList<T> source)
 #pragma warning restore CS8618
 		{
 			AddRange(source);
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
-		public RecyclableArrayList(in T[] source)
+		public RecyclableList(in T[] source)
 #pragma warning restore CS8618
 		{
 			AddRange(source);
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
-		public RecyclableArrayList(List<T> source)
+		public RecyclableList(List<T> source)
 #pragma warning restore CS8618
 		{
 			AddRange(source);
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
-		public RecyclableArrayList(IList<T> source)
+		public RecyclableList(IList<T> source)
 #pragma warning restore CS8618
 		{
 			AddRange(source);
 		}
 
-		public RecyclableArrayList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
+		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
 			_memoryBlock = Resize(_memoryBlock, initialCapacity);
 			_capacity = _memoryBlock.Length;
@@ -227,7 +227,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public void AddRange(RecyclableArrayList<T> items)
+		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.Count == 0)
 			{
@@ -258,12 +258,12 @@ namespace Recyclable.Collections
 			var sourceItemsCount = items.LongCount;
 			if (sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException($"The number of items exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
+				ThrowArgumentOutOfRangeException($"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			if (_count + sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException($"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
+				ThrowArgumentOutOfRangeException($"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			int targetCapacity = _count + (int)sourceItemsCount;
@@ -315,9 +315,9 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceRecyclableArrayList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 
@@ -393,7 +393,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(_memoryBlock, 0, array, arrayIndex, _count);
 
-		protected static IEnumerable<T> Enumerate(RecyclableArrayList<T> list)
+		protected static IEnumerable<T> Enumerate(RecyclableList<T> list)
 		{
 			int count = list._count;
 			var memory = list._memoryBlock;

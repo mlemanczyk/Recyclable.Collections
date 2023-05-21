@@ -759,7 +759,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableArrayList<T> items)
+		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.Count == 0)
 			{
@@ -981,9 +981,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 				return;
 			}
 
-			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceRecyclableArrayList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 
@@ -1904,7 +1904,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableArrayList<T> items)
+		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.Count == 0)
 			{
@@ -2126,9 +2126,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 				return;
 			}
 
-			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceRecyclableArrayList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 
@@ -3021,7 +3021,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableArrayList<T> items)
+		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.Count == 0)
 			{
@@ -3243,9 +3243,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 				return;
 			}
 
-			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceRecyclableArrayList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 
@@ -4175,7 +4175,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableArrayList<T> items)
+		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.Count == 0)
 			{
@@ -4397,9 +4397,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 				return;
 			}
 
-			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceRecyclableArrayList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 

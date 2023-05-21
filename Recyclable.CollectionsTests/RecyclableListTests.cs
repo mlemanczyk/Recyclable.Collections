@@ -3,14 +3,14 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	public class RecyclableArrayListTests
+	public class RecyclableListTests
 	{
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void AddRangeShouldAddItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 
 			// Act
 			if (testData is long[] testDataArray)
@@ -21,9 +21,9 @@ namespace Recyclable.CollectionsTests
 			{
 				list.AddRange(testDataList);
 			}
-			else if (testData is RecyclableArrayList<long> testDataRecyclableArrayList)
+			else if (testData is RecyclableList<long> testDataRecyclableList)
 			{
-				list.AddRange(testDataRecyclableArrayList);
+				list.AddRange(testDataRecyclableList);
 			}
 			else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
 			{
@@ -53,7 +53,7 @@ namespace Recyclable.CollectionsTests
 		public void AddRangeShouldDoNothingWhenSourceIsEmpty(string testCase, IEnumerable<long> testData)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 
 			// Act
 			if (testData is long[] testDataArray)
@@ -64,9 +64,9 @@ namespace Recyclable.CollectionsTests
 			{
 				list.AddRange(testDataList);
 			}
-			else if (testData is RecyclableArrayList<long> testDataRecyclableArrayList)
+			else if (testData is RecyclableList<long> testDataRecyclableList)
 			{
-				list.AddRange(testDataRecyclableArrayList);
+				list.AddRange(testDataRecyclableList);
 			}
 			else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
 			{
@@ -96,7 +96,7 @@ namespace Recyclable.CollectionsTests
 		public void AddRangeShouldNotOverrideItems(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 
 			// Act
 			if (testData is long[] testDataArray)
@@ -109,10 +109,10 @@ namespace Recyclable.CollectionsTests
 				list.AddRange(testDataList);
 				list.AddRange(testDataList);
 			}
-			else if (testData is RecyclableArrayList<long> testDataRecyclableArrayList)
+			else if (testData is RecyclableList<long> testDataRecyclableList)
 			{
-				list.AddRange(testDataRecyclableArrayList);
-				list.AddRange(testDataRecyclableArrayList);
+				list.AddRange(testDataRecyclableList);
+				list.AddRange(testDataRecyclableList);
 			}
 			else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
 			{
@@ -154,7 +154,7 @@ namespace Recyclable.CollectionsTests
 			testData = testData.Concat(testData).ToArray();
 
 			// Act
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 			foreach (var index in testData)
 			{
 				list.Add(index);
@@ -170,7 +170,7 @@ namespace Recyclable.CollectionsTests
 		public void AddShouldAddItems(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 
 			// Act
 			foreach (var item in testData)
@@ -190,7 +190,7 @@ namespace Recyclable.CollectionsTests
 		public void AddShouldAddItemWhenAfterAddRange(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Act
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 			list.AddRange(testData);
 			foreach (var index in testData)
 			{
@@ -207,7 +207,7 @@ namespace Recyclable.CollectionsTests
 		public void ClearShouldRemoveAllItems(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			_ = list.Count.Should().Be((int)itemsCount);
 
 			// Act		
@@ -224,7 +224,7 @@ namespace Recyclable.CollectionsTests
 		public void ConsecutiveDisposeShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			list.Dispose();
 
 			// Act
@@ -236,7 +236,7 @@ namespace Recyclable.CollectionsTests
 		public void ConstructorShouldAcceptDuplicates(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Act
-			using var list = new RecyclableArrayList<long>(testData.Concat(testData), initialCapacity: (int)itemsCount * 2);
+			using var list = new RecyclableList<long>(testData.Concat(testData), initialCapacity: (int)itemsCount * 2);
 
 			// Validate
 			_ = list.Count.Should().Be((int)itemsCount * 2);
@@ -248,7 +248,7 @@ namespace Recyclable.CollectionsTests
 		public void ConstructorShouldAddItemsInCorrectOrderWhenSourceIsIEnumerable(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Act
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Validate
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount, "when we succeed in taking count without enumerating, then we allocate as much memory as needed, only");
@@ -261,7 +261,7 @@ namespace Recyclable.CollectionsTests
 		public void ConstructorSourceShouldInitializeList(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Act
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Validate
 			_ = list.Count.Should().Be((int)itemsCount);
@@ -278,7 +278,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -293,7 +293,7 @@ namespace Recyclable.CollectionsTests
 		public void ContainsShouldNotFindAnythingWhenListEmpty()
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<int>();
+			using var list = new RecyclableList<int>();
 
 			// Validate
 			_ = list.Contains(0).Should().BeFalse();
@@ -310,7 +310,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -329,7 +329,7 @@ namespace Recyclable.CollectionsTests
 		public void CopyToShouldCopyAllItemsInTheCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			long[] copiedItems = new long[itemsCount];
 
 			// Act
@@ -345,7 +345,7 @@ namespace Recyclable.CollectionsTests
 		public void EnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Act
 			var yieldedItems = new List<long>((int)itemsCount);
@@ -360,7 +360,7 @@ namespace Recyclable.CollectionsTests
 		public void IndexOfShouldNotFindAnythingWhenListEmpty()
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<int>();
+			using var list = new RecyclableList<int>();
 
 			// Validate
 			_ = list.IndexOf(0).Should().Be(-1);
@@ -379,7 +379,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -398,7 +398,7 @@ namespace Recyclable.CollectionsTests
 		public void IndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Act & Validate
 			foreach (var index in testData)
@@ -418,7 +418,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Act
-			using RecyclableArrayList<long> list = new(testData);
+			using RecyclableList<long> list = new(testData);
 			list.QuickSort();
 
 			// Validate
@@ -451,7 +451,7 @@ namespace Recyclable.CollectionsTests
 		public void InsertAtTheBeginningShouldMoveItems(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 
 			// Act
 			foreach (var item in testData)
@@ -471,7 +471,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveAtFromTheBeginningShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= itemsCount; deleted++)
@@ -493,7 +493,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveAtFromTheEndShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= itemsCount; deleted++)
@@ -515,7 +515,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveFromTheBeginningShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= itemsCount; deleted++)
@@ -534,7 +534,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveFromTheEndShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Act & Validate
-			using var list = new RecyclableArrayList<long>(testData);
+			using var list = new RecyclableList<long>(testData);
 			long deleted = 0;
 			foreach (var item in testData.Reverse())
 			{

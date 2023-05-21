@@ -18,10 +18,10 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		public void RecyclableArrayList_AddRangeWhenSourceIsIList()
+		public void RecyclableList_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<long>)TestObjectsAsRecyclableLongList;
-			using var list = new RecyclableArrayList<long>();
+			using var list = new RecyclableList<long>();
 			list.AddRange(data);
 		}
 

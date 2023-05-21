@@ -32,9 +32,9 @@
 			}
 		}
 
-		public void RecyclableArrayList_GetItem()
+		public void RecyclableList_GetItem()
 		{
-			var data = TestObjectsAsRecyclableArrayList;
+			var data = TestObjectsAsRecyclableList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{

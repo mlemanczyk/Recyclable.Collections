@@ -26,10 +26,10 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void RecyclableArrayList_Remove_LastItems()
+		public void RecyclableList_Remove_LastItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableArrayList<long>(data);
+			using var list = new RecyclableList<long>(data);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = data.Length - 1; i > data.Length - dataCount - 1; i--)
 			{

@@ -525,7 +525,7 @@ namespace Recyclable.Collections
 			_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 		}
 
-		public void AddRange(RecyclableArrayList<T> items)
+		public void AddRange(RecyclableList<T> items)
 		{
 			if (items.Count == 0)
 			{
@@ -747,9 +747,9 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			if (source is RecyclableArrayList<T> sourceRecyclableArrayList)
+			if (source is RecyclableList<T> sourceRecyclableList)
 			{
-				AddRange(sourceRecyclableArrayList);
+				AddRange(sourceRecyclableList);
 				return;
 			}
 

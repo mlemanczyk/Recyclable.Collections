@@ -35,10 +35,10 @@
 			}
 		}
 
-		public void RecyclableArrayList_IndexOf_LastItems()
+		public void RecyclableList_IndexOf_LastItems()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableArrayList;
+			var list = TestObjectsAsRecyclableList;
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{

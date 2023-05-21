@@ -132,16 +132,16 @@ namespace Recyclable.Collections
 		public static RecyclableLongList<T> ToRecyclableLongList<T>(this List<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this IEnumerable<T> values) => new(values);
+		public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this T[] values) => new(values);
+		public static RecyclableList<T> ToRecyclableList<T>(this T[] values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this List<T> values) => new(values);
+		public static RecyclableList<T> ToRecyclableList<T>(this List<T> values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this RecyclableArrayList<T> values) => new(values);
+		public static RecyclableList<T> ToRecyclableList<T>(this RecyclableList<T> values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableLongList<T> ToRecyclableLongList<T>(this IEnumerable<T> values, int minBlockSize = RecyclableDefaults.BlockSize) => new(values, minBlockSize: minBlockSize);

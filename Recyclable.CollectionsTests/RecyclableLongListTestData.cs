@@ -45,7 +45,7 @@ namespace Recyclable.CollectionsTests
 			{
 				yield return new object[] { $"int[{itemsCount}]", CreateTestData(itemsCount).ToArray(), itemsCount };
 				yield return new object[] { $"List<int>(itemsCount: {itemsCount}", CreateTestData(itemsCount).ToList(), itemsCount };
-				yield return new object[] { $"RecyclableArrayList<int>(itemsCount: {itemsCount})", CreateTestData(itemsCount).ToRecyclableArrayList(), itemsCount };
+				yield return new object[] { $"RecyclableList<int>(itemsCount: {itemsCount})", CreateTestData(itemsCount).ToRecyclableList(), itemsCount };
 				foreach (var sourceBlockSize in BlockSizeVariants)
 				{
 					yield return new object[]
@@ -68,7 +68,7 @@ namespace Recyclable.CollectionsTests
 		{
 			new object[] { "int[]", Array.Empty<long>() },
 			new object[] { "List<int>", Array.Empty<long>().ToList() },
-			new object[] { "RecyclableArrayList<int>", Array.Empty<long>().ToRecyclableArrayList() },
+			new object[] { "RecyclableList<int>", Array.Empty<long>().ToRecyclableList() },
 			new object[] { "RecyclableLongList<int>", Array.Empty<long>().ToRecyclableLongList() },
 			new object[] { "IList<int>", new CustomIList<long>(Array.Empty<long>()) },
 			new object[] { "IEnumerable<int> with non-enumerated count", Array.Empty<long>().AsEnumerable() },
