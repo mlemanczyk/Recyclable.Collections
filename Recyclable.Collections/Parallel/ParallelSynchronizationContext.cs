@@ -2,7 +2,7 @@ namespace Recyclable.Collections.Parallel
 {
 	public sealed class ParallelSynchronizationContext : IDisposable
 	{
-		public readonly ManualResetEventSlimmer ItemFoundSignal;
+		internal bool _isItemFound;
 
 		public readonly Barrier AllDoneSignal;
 		public long FoundItemIndex;
@@ -11,15 +11,20 @@ namespace Recyclable.Collections.Parallel
 
 		public ParallelSynchronizationContext()
 		{
-			ItemFoundSignal = ManualResetEventSlimmerPool.Create(false);
-            AllDoneSignal = new(0);
+			AllDoneSignal = new(0);
 		}
 
 		public ParallelSynchronizationContext(int participantCount)
 		{
-			ItemFoundSignal = ManualResetEventSlimmerPool.Create(false);
 			AllDoneSignal = new(participantCount);
 		}
+
+		public void SetItemFound()
+		{
+			_isItemFound = true;
+		}
+
+		public bool IsItemFound => _isItemFound;
 
 		public void Dispose()
 		{
@@ -30,7 +35,6 @@ namespace Recyclable.Collections.Parallel
 			}
 			else
 			{
-				ItemFoundSignal.Dispose();
 				AllDoneSignal.Dispose();
 				GC.SuppressFinalize(this);
 			}

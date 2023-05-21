@@ -8,7 +8,7 @@ namespace Recyclable.Collections
         public byte BlockSizePow2BitShift { get; init; }
         public long ItemsCount { get; init; }
         public int StartingBlockIndex { get; init; }
-        public long Step { get; init; }
+        public long BlockSize { get; init; }
 
         // public SearchConfiguration(TList list, in TItem itemToFind)
         // {
@@ -23,7 +23,7 @@ namespace Recyclable.Collections
             BlockSizeMinus1 = list._blockSizeMinus1,
             BlockSizePow2BitShift = list._blockSizePow2BitShift,
             ItemsCount = list._longCount,
-            Step = list._longCountIndexOfStep
+            BlockSize = list._blockSize
         };
     }
 }

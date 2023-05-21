@@ -5,7 +5,6 @@ namespace Recyclable.Collections
 	public sealed class ItemRange
 	{
 		public int BlockIndex;
-		public int StartingItemIndex;
 		public long ItemsToSearchCount;
 		internal bool _returned;
 
@@ -13,11 +12,10 @@ namespace Recyclable.Collections
 		{
 		}
 
-		public ItemRange(int blockIndex, int startingItemIndex, long itemsToSearchCount)
+		public ItemRange(int blockIndex, long itemsToSearchCount)
 		{
 			BlockIndex = blockIndex;
 			ItemsToSearchCount = itemsToSearchCount;
-			StartingItemIndex = startingItemIndex;
 		}
 
 		public void Dispose()

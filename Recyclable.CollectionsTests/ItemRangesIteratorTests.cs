@@ -9,7 +9,7 @@ namespace Recyclable.CollectionsTests
 	{
 		[Theory]
 		[MemberData(nameof(TestCases))]
-		public void IterateShouldYieldAllItems(int startingBlockIndex, int blockSize, long itemsCount, int step, IEnumerable<(int BlockIndex, int StartingItemIndex, long ItemsCount)> expected)
+		public void IterateShouldYieldAllItems(int startingBlockIndex, int blockSize, long itemsCount, int step, IEnumerable<(int BlockIndex, long ItemsCount)> expected)
 		{
 			// Prepare
 			var mockList = new RecyclableList<long>();
@@ -23,15 +23,15 @@ namespace Recyclable.CollectionsTests
 				BlockSizeMinus1 = blockSize - 1,
 				BlockSizePow2BitShift = blockSizePow2BitShift,
 				ItemsCount = itemsCount,
-				Step = step,
+				BlockSize = step,
 			};
 
-			var actualItemRanges = new List<(int BlockIndex, int StartingItemIndex, long ItemsCount)>();
+			var actualItemRanges = new List<(int BlockIndex, long ItemsCount)>();
 
 			// Act
 			ItemRangesIterator.Iterate(synchronizationContext, search, (context, search, itemRange) =>
 			{
-				actualItemRanges.Add((itemRange.BlockIndex, itemRange.StartingItemIndex, itemRange.ItemsToSearchCount));
+				actualItemRanges.Add((itemRange.BlockIndex, itemRange.ItemsToSearchCount));
 				return true;
 			});
 
@@ -43,102 +43,102 @@ namespace Recyclable.CollectionsTests
 		{
 			new object[]
 			{
-				0, 128, 333, (long)(333 * 0.329), new(int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 128, 333, (long)(333 * 0.329), new(int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 109),
-					(0, 109, 109),
-					(1, 90, 109),
-					(2, 71, 6)
+					(0, 109),
+					(0, 109),
+					(1, 109),
+					(2, 6)
 				}
 			},
 
 			new object[]
 			{
-				0, 2, 10, 2, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 2, 10, 2, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 2),
-					(1, 0, 2),
-					(2, 0, 2),
-					(3, 0, 2),
-					(4, 0, 2),
+					(0, 2),
+					(1, 2),
+					(2, 2),
+					(3, 2),
+					(4, 2),
 				}
 			},
 
 			new object[]
 			{
-				0, 2, 10, 3, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 2, 10, 3, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 3),
-					(1, 1, 3),
-					(3, 0, 3),
-					(4, 1, 1),
+					(0, 3),
+					(1, 3),
+					(3, 3),
+					(4, 1),
 				}
 			},
 
 			new object[]
 			{
-				0, 1, 10, 3, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 1, 10, 3, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 3),
-					(3, 0, 3),
-					(6, 0, 3),
-					(9, 0, 1),
+					(0, 3),
+					(3, 3),
+					(6, 3),
+					(9, 1),
 				}
 			},
 
 			new object[]
 			{
-				0, 2, 10, 4, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 2, 10, 4, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 4),
-					(2, 0, 4),
-					(4, 0, 2),
+					(0, 4),
+					(2, 4),
+					(4, 2),
 				}
 			},
 
 			new object[]
 			{
-				0, 1, 10, 2, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 1, 10, 2, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 2),
-					(2, 0, 2),
-					(4, 0, 2),
-					(6, 0, 2),
-					(8, 0, 2),
+					(0, 2),
+					(2, 2),
+					(4, 2),
+					(6, 2),
+					(8, 2),
 				}
 			},
 
 			new object[]
 			{
-				0, 2, 10, 1, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 2, 10, 1, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 1),
-					(0, 1, 1),
-					(1, 0, 1),
-					(1, 1, 1),
-					(2, 0, 1),
-					(2, 1, 1),
-					(3, 0, 1),
-					(3, 1, 1),
-					(4, 0, 1),
-					(4, 1, 1),
+					(0, 1),
+					(0, 1),
+					(1, 1),
+					(1, 1),
+					(2, 1),
+					(2, 1),
+					(3, 1),
+					(3, 1),
+					(4, 1),
+					(4, 1),
 				}
 			},
 
 			new object[]
 			{
-				0, 1, 10, 1, new (int BlockIndex, int StartingItemIndex, long ItemsCount)[]
+				0, 1, 10, 1, new (int BlockIndex, long ItemsCount)[]
 				{
-					(0, 0, 1),
-					(1, 0, 1),
-					(2, 0, 1),
-					(3, 0, 1),
-					(4, 0, 1),
-					(5, 0, 1),
-					(6, 0, 1),
-					(7, 0, 1),
-					(8, 0, 1),
-					(9, 0, 1),
+					(0, 1),
+					(1, 1),
+					(2, 1),
+					(3, 1),
+					(4, 1),
+					(5, 1),
+					(6, 1),
+					(7, 1),
+					(8, 1),
+					(9, 1),
 				}
 			},
 		};

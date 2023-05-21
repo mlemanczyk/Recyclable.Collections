@@ -17,9 +17,9 @@ namespace Recyclable.Collections.Parallel
 				_updateLock.Exit(false);
 			}
 
-			if (context.ItemFoundSignal._isSet)
+			if (context._isItemFound)
 			{
-				context.ItemFoundSignal.Reset();
+				context._isItemFound = false;
 			}
 
 			switch (context.AllDoneSignal.ParticipantsRemaining)
@@ -40,7 +40,7 @@ namespace Recyclable.Collections.Parallel
 
 			if (context.FoundItemIndex >= 0)
 			{
-				context.FoundItemIndex = -1L;
+				context.FoundItemIndex = RecyclableDefaults.ItemNotFoundIndexLong;
 			}
 
 			context._returned = false;

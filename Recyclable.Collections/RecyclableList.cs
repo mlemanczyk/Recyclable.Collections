@@ -9,12 +9,8 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public class RecyclableList<T> : IDisposable, IList<T>
+	public partial class RecyclableList<T> : IDisposable, IList<T>
 	{
-		private const long ItemNotFoundIndexLong = -1L;
-		private const int ItemNotFoundIndex = -1;
-		private const double OptimalParallelSearchStep = 0.1;// 0.329;
-
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
@@ -24,7 +20,7 @@ namespace Recyclable.Collections
 		internal byte _blockSizePow2BitShift;
 		internal int _blockSizeMinus1;
 		private int _nextItemBlockIndex;
-		private int _nextItemIndex;
+		internal int _nextItemIndex;
 		private int _reservedBlockCount;
 
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
@@ -42,19 +38,15 @@ namespace Recyclable.Collections
 
 		public int Count => checked((int)_longCount);
 		public bool IsReadOnly { get; }
-		public int LastBlockWithData => _nextItemBlockIndex - (_nextItemIndex > 0 ? 0 : 1);
+		private int _lastBlockWithData;
+		public int LastBlockWithData => _lastBlockWithData;
 
-		internal long _longCountIndexOfStep;
 		internal long _longCount;
 
 		public long LongCount
 		{
 			get => _longCount;
-			set
-			{
-				_longCount = value;
-				_longCountIndexOfStep = Math.Max((long)(_longCount * OptimalParallelSearchStep), 1L);
-			}
+			set => _longCount = value;
 		}
 
 		public int ReservedBlockCount => _reservedBlockCount;
@@ -75,7 +67,7 @@ namespace Recyclable.Collections
 			int targetBlockIndex = (int)(index >> list._blockSizePow2BitShift);
 			int targetItemIndex = (int)(index & list._blockSizeMinus1);
 
-			int lastTakenBlockIndex = list.LastBlockWithData;
+			int lastTakenBlockIndex = list._lastBlockWithData;
 			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
 			{
 				int toCopy = sourceBlockIndex < lastTakenBlockIndex || nextItemIndex == 0
@@ -150,6 +142,8 @@ namespace Recyclable.Collections
 
 					if (!enumerator.MoveNext())
 					{
+						_lastBlockWithData = targetBlockIdx;
+						_longCount += copied + i - _longCount;
 						if (targetItemIdx < blockSize)
 						{
 							_nextItemBlockIndex = targetBlockIdx;
@@ -161,8 +155,6 @@ namespace Recyclable.Collections
 							_nextItemIndex = 0;
 						}
 
-						_longCount += copied + i - _longCount;
-						_longCountIndexOfStep = Math.Max((long)(_longCount * OptimalParallelSearchStep), 1L);
 						return;
 					}
 
@@ -220,153 +212,9 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = requiredCapacity;
-			_longCountIndexOfStep = Math.Max((long)(requiredCapacity * OptimalParallelSearchStep), 1L);
 			_nextItemBlockIndex = targetBlockIdx;
 			_nextItemIndex = targetItemIdx;
-		}
-
-		// & WAS SLOWER
-		// [MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-		private static long DoLongIndexOfParallel(RecyclableList<T> list, in ItemRange itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
-		{
-			// & WAS SLOWER without
-			int blockSize = list._blockSize;
-			int blockIndex = itemRange.BlockIndex;
-			long itemsToSearchCount = itemRange.ItemsToSearchCount;
-			int index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, itemRange.StartingItemIndex, (int)Math.Min(blockSize - itemRange.StartingItemIndex, itemsToSearchCount));
-			if (itemFoundSignal.IsSet)
-			{
-				return ItemNotFoundIndexLong;
-			}
-			else if (index >= 0)
-			{
-				return (blockIndex << list._blockSizePow2BitShift) + index;
-			}
-
-			// We don't need Math.Min here, because if itemsToSearchCount < blockSize - itemRange.StartingItemIndex, then it would mean that
-			// there are no more items and we already scanned all. We want to break the loop. Subtracting a higher value from itemsToSearchCount
-			// will always result in a negative result.
-			itemsToSearchCount -= blockSize - itemRange.StartingItemIndex;
-			if (itemsToSearchCount <= 0)
-			{
-				return ItemNotFoundIndexLong;
-			}
-
-			//T itemToFind = itemRange.ItemToFind;
-			//int lastBlockWithData = itemRange.LastBlockWithData;
-			blockIndex++;
-			while (itemsToSearchCount > blockSize)
-			{
-				index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, blockSize);
-				if (itemFoundSignal.IsSet)
-				{
-					return ItemNotFoundIndexLong;
-				}
-				else if (index >= 0)
-				{
-					return ((long)blockIndex << list._blockSizePow2BitShift) + index;
-				}
-
-				itemsToSearchCount -= blockSize;
-				blockIndex++;
-			}
-
-			index = itemsToSearchCount <= 0 //|| blockIndex > list.LastBlockWithData
-				? ItemNotFoundIndex
-				// : blockIndex == list._nextItemBlockIndex
-				// ? Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount)
-				: Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, (int)itemsToSearchCount);
-				// ? Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(itemRange.List._nextItemIndex, itemsToSearchCount)))
-				//: Array.IndexOf(memoryBlocks[blockIndex], itemToFind, 0, checked((int)Math.Min(blockSize, itemsToSearchCount)));
-
-			return !itemFoundSignal.IsSet && index >= 0 ? ((long)blockIndex << list._blockSizePow2BitShift) + index : ItemNotFoundIndexLong;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private long DoIndexOfParallel(in T item)
-		{
-			if (_longCount == 0)
-			{
-				return ItemNotFoundIndex;
-			}
-
-			using var context = ParallelSynchronizationContextPool.GetWithOneParticipant();
-			// (long)(_longCount * 0.329) => most efficient step, based on benchmarks
-			Iterate(context, item);
-			context.AllDoneSignal.SignalAndWait();
-			if (context.Exception == null)
-			{
-				return context.FoundItemIndex;
-			}
-
-			context.Exception.CaptureAndRethrow();
-			return ItemNotFoundIndexLong;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		// [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-		private static bool ScheduleIndexOfTask(ParallelSynchronizationContext context, RecyclableList<T> list, T itemToFind, ItemRange itemRange)
-		{
-			_ = context.AllDoneSignal.AddParticipant();
-			// & WAS SLOWER
-			// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
-			_ = Task.Factory.StartNew(() =>
-			{
-				try
-				{
-					if (context.ItemFoundSignal.IsSet)
-					{
-						return;
-					}
-
-					var index = DoLongIndexOfParallel(list, itemRange, itemToFind, context.ItemFoundSignal);
-					if (index >= 0)
-					{
-						context.ItemFoundSignal.Set();
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, index);
-					}
-				}
-				catch (Exception e)
-				{
-					_ = Interlocked.Exchange(ref context.Exception, e);
-				}
-				finally
-				{
-					context.AllDoneSignal.RemoveParticipant();
-					itemRange.Dispose();
-				}
-			});
-
-			return !context.ItemFoundSignal.IsSet;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
-		protected static long DoIndexOf(T item, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
-		{
-			Span<T[]> memoryBlocksSpan = new(memoryBlocks, 0, lastBlockIndex + 1);
-			int itemIndex, blockIndex;
-			for (blockIndex = 0; blockIndex < lastBlockIndex; blockIndex++)
-			{
-				itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
-				if (itemIndex >= 0)
-				{
-					return itemIndex + ((long)blockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize)));
-				}
-			}
-
-			if (blockIndex == lastBlockIndex)
-			{
-				itemIndex = nextItemIndex != 0
-					? Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, nextItemIndex)
-					: Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, blockSize);
-			}
-			else
-			{
-				return ItemNotFoundIndexLong;
-			}
-
-			return itemIndex >= 0 ? itemIndex + ((long)lastBlockIndex << (31 - BitOperations.LeadingZeroCount((uint)blockSize))) : ItemNotFoundIndexLong;
+			_lastBlockWithData = targetBlockIdx - (targetItemIdx > 0 ? 0 : 1);
 		}
 
 		/// <summary>
@@ -482,54 +330,32 @@ namespace Recyclable.Collections
 		// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
 		// & WAS SLOWER
 		// [MethodImpl(MethodImplOptions.NoInlining)]
-		private void Iterate(in ParallelSynchronizationContext context, in T itemToFind)
-		{
-			// TODO: Switch to use _blockSize instead of list._longCountIndeexOfStep for simplifications & better performance.
+		//private static void Iterate(RecyclableList<T> list, in ParallelSynchronizationContext context, in T itemToFind)
+		//{
+		//	// TODO: Switch to use _blockSize instead of list._longCountIndeexOfStep for simplifications & better performance.
 
-			// & WAS SLOWER without
-			ItemRange itemRange;
-			int	blockIndex = 0;
-			// & WAS SLOWER
-			// int blockSize = _blockSize;
-			long itemIndex = 0;
-			long itemsCount = _longCount;
-			// & WAS SLOWER
-			// int blockSize = _blockSize;
-			// long step = list._longCountIndexOfStep;
-			// & WAS SLOWER
-			// while ((blockIndex << list._blockSizePow2BitShift) + itemIndex > step)
-			// & WAS SLOWER
-			// long longCountIndexOfStep = _longCountIndexOfStep;
-			while (itemsCount > _longCountIndexOfStep)
-			{
-				// At this point itemIndex is limited to blockSize range - int.
-				itemRange = ItemRangePool.Create(blockIndex, (int)itemIndex, _longCountIndexOfStep);
-				if (!ScheduleIndexOfTask(context, this, itemToFind, itemRange))
-				{
-					break;
-				}
+		//	// & WAS SLOWER without
+		//	int	blockIndex = 0;
 
-				itemsCount -= _longCountIndexOfStep;
+		//	long itemsCount = list._longCount;
+		//	// & WAS SLOWER
+		//	// int blockSize = _blockSize;
+		//	// & WAS SLOWER
+		//	// while ((blockIndex << list._blockSizePow2BitShift) + itemIndex > step)
+		//	while (itemsCount > list._blockSize)
+		//	{
+		//		// At this point itemIndex is limited to blockSize range - int.
+		//		if (!ScheduleIndexOfTask(context, list, blockIndex, list._blockSize, itemToFind))
+		//		{
+		//			break;
+		//		}
 
-				// & WAS SLOWER
-				// blockIndex = (int)Math.DivRem(itemIndex + step, step, out itemIndex);
-				// & WAS SLOWER
-				// blockIndex += (int)((itemIndex + list._longCountIndexOfStep) >> list._blockSizePow2BitShift);
-				// itemIndex = (int)((itemIndex + list._longCountIndexOfStep) & list._blockSizeMinus1);
+		//		itemsCount -= list._blockSize;
+		//		blockIndex++;
+		//	}
 
-				itemIndex += _longCountIndexOfStep;
-				while (itemIndex >= _blockSize)
-				{
-					blockIndex++;
-					itemIndex -= _blockSize;
-				}
-			}
-
-			// & WAS SLOWER
-			// itemRange = new(blockIndex, (int)itemIndex, list._longCount - (blockIndex << list._blockSizePow2BitShift) - itemIndex);
-			itemRange = ItemRangePool.Create(blockIndex, (int)itemIndex, itemsCount);
-			_ = ScheduleIndexOfTask(context, this, itemToFind, itemRange);
-		}
+		//	_ = ScheduleIndexOfTask(context, list, blockIndex, (int)itemsCount, itemToFind);
+		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static void SetupBlockArrayPooling(RecyclableList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
@@ -648,9 +474,12 @@ namespace Recyclable.Collections
 				_nextItemBlockIndex++;
 				_nextItemIndex = 0;
 			}
+			else if (_nextItemIndex == 1)
+			{
+				_lastBlockWithData++;
+			}
 
 			_longCount++;
-			_longCountIndexOfStep = Math.Max((long)(_longCount * OptimalParallelSearchStep), 1L);
 		}
 
 		public void AddRange(in T[] items)
@@ -693,8 +522,8 @@ namespace Recyclable.Collections
 
 			_nextItemIndex = itemsSpan.Length;
 			_longCount = targetCapacity;
-			_longCountIndexOfStep = Math.Max((long)(targetCapacity * OptimalParallelSearchStep), 1L);
 			_nextItemBlockIndex = targetBlockIndex;
+			_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 		}
 
 		public void AddRange(RecyclableArrayList<T> items)
@@ -733,8 +562,8 @@ namespace Recyclable.Collections
 			_nextItemIndex = itemsSpan.Length;
 			itemsSpan.CopyTo(targetBlockArraySpan);
 			_longCount = targetCapacity;
-			_longCountIndexOfStep = Math.Max((long)(targetCapacity * OptimalParallelSearchStep), 1L);
 			_nextItemBlockIndex = targetBlockIndex;
+			_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 		}
 
 		public void AddRange(RecyclableList<T> items)
@@ -794,6 +623,7 @@ namespace Recyclable.Collections
 				}
 			}
 
+			_lastBlockWithData = targetBlockIndex;
 			if ((targetCapacity & _blockSizeMinus1) == 0)
 			{
 				_nextItemIndex = 0;
@@ -806,7 +636,6 @@ namespace Recyclable.Collections
 			}
 
 			_longCount = targetCapacity;
-			_longCountIndexOfStep = Math.Max((long)(targetCapacity * OptimalParallelSearchStep), 1L);
 		}
 
 		public void AddRange(List<T> items)
@@ -853,7 +682,7 @@ namespace Recyclable.Collections
 
 			_nextItemBlockIndex = targetBlockIndex;
 			_longCount = targetCapacity;
-			_longCountIndexOfStep = Math.Max((long)(targetCapacity * OptimalParallelSearchStep), 1L);
+			_lastBlockWithData = targetBlockIndex - (_nextItemIndex > 0 ? 0 : 1);
 		}
 
 		public void AddRange(IList<T> items)
@@ -898,9 +727,9 @@ namespace Recyclable.Collections
 
 				itemsSpan.CopyTo(targetBlockArraySpan);
 				_longCount = targetCapacity;
-				_longCountIndexOfStep = Math.Max((long)(targetCapacity * OptimalParallelSearchStep), 1L);
 				_nextItemBlockIndex = targetBlockIndex;
 				_nextItemIndex = itemsSpan.Length;
+				_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 			}
 			finally
 			{
@@ -976,8 +805,8 @@ namespace Recyclable.Collections
 			_reservedBlockCount = 0;
 			_nextItemBlockIndex = 0;
 			_nextItemIndex = 0;
+			_lastBlockWithData = RecyclableDefaults.ItemNotFoundIndex;
 			_longCount = 0;
-			_longCountIndexOfStep = 1;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1010,17 +839,81 @@ namespace Recyclable.Collections
 
 		public IEnumerator<T> GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T item) => checked((int)DoIndexOfParallel(item));
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public int IndexOf(T item)
+		{
+			if (_lastBlockWithData == 0)
+			{
+				return Array.IndexOf(_memoryBlocks[0], item, 0, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+			}
+			else if (_longCount == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			int itemIndex = Array.IndexOf(_memoryBlocks[0], item, 0, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+			if (itemIndex >= 0)
+			{
+				return itemIndex;
+			}
+			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
+			{
+				return (int)RecyclableListIndexOfHelpers.IndexOfSequential(this, item);
+			}
+			else
+			{
+				// & WAS SLOWER
+				// long toSearch = _longCount - _blockSize;
+				if (_longCount > _blockSize)
+				{
+					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
+					return itemIndex >= 0 ? _blockSize + itemIndex : (int)RecyclableListIndexOfHelpers.IndexOfParallel(this, item);
+				}
+				else
+				{
+					return RecyclableDefaults.ItemNotFoundIndex;
+				}
+			}
+		}
 
 		public void Insert(int index, T item) => throw new NotSupportedException();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public long LongIndexOf(T item) => _longCount == 0
-				? ItemNotFoundIndexLong
-				: _longCount <= _blockSize
-					? Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount))
-					: DoIndexOfParallel(item);
+		public long LongIndexOf(T item)
+		{
+			if (_lastBlockWithData == 0)
+			{
+				return Array.IndexOf(_memoryBlocks[0], item, 0, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+			}
+			else if (_longCount == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			int itemIndex = Array.IndexOf(_memoryBlocks[0], item, 0, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+			if (itemIndex >= 0)
+			{
+				return itemIndex;
+			}
+			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
+			{
+				return RecyclableListIndexOfHelpers.IndexOfSequential(this, item);
+			}
+			else
+			{
+				// & WAS SLOWER
+				// long toSearch = _longCount - _blockSize;
+				if (_longCount > _blockSize)
+				{
+					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
+					return itemIndex >= 0 ? _blockSize + itemIndex : RecyclableListIndexOfHelpers.IndexOfParallel(this, item);
+				}
+				else
+				{
+					return RecyclableDefaults.ItemNotFoundIndex;
+				}
+			}
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public bool Remove(T item)
@@ -1029,7 +922,6 @@ namespace Recyclable.Collections
 			if (index >= 0)
 			{
 				_longCount--;
-				_longCountIndexOfStep = Math.Max((long)(_longCount * OptimalParallelSearchStep), 1L);
 
 				if (index < _longCount)
 				{
@@ -1039,6 +931,10 @@ namespace Recyclable.Collections
 				if (_nextItemIndex > 0)
 				{
 					_nextItemIndex--;
+					if (_nextItemIndex == 0)
+					{
+						_lastBlockWithData--;
+					}
 				}
 				else
 				{
@@ -1080,6 +976,8 @@ namespace Recyclable.Collections
 			{
 				_nextItemBlockIndex--;
 			}
+
+			_lastBlockWithData--;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1091,7 +989,6 @@ namespace Recyclable.Collections
 			}
 
 			_longCount--;
-			_longCountIndexOfStep = Math.Max((long)(_longCount * OptimalParallelSearchStep), 1L);
 
 			if (index < _longCount)
 			{
@@ -1101,6 +998,10 @@ namespace Recyclable.Collections
 			if (_nextItemIndex > 0)
 			{
 				_nextItemIndex--;
+				if (_nextItemIndex == 0)
+				{
+					_lastBlockWithData--;
+				}
 			}
 			else
 			{
@@ -1125,7 +1026,6 @@ namespace Recyclable.Collections
 			}
 
 			_longCount--;
-			_longCountIndexOfStep = Math.Max((long)Math.Floor(_longCount * OptimalParallelSearchStep), 1L);
 
 			if (index < _longCount)
 			{
@@ -1135,6 +1035,10 @@ namespace Recyclable.Collections
 			if (_nextItemIndex > 0)
 			{
 				_nextItemIndex--;
+				if (_nextItemIndex == 0)
+				{
+					_lastBlockWithData--;
+				}
 			}
 			else
 			{
