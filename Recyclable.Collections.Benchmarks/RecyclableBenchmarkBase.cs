@@ -7,6 +7,7 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public enum RecyclableCollectionsBenchmarkSource
 	{
+		Unknown,
 		Array,
 		List,
 		PooledList,
