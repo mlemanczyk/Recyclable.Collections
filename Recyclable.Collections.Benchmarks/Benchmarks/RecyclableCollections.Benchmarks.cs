@@ -14,14 +14,14 @@ namespace Recyclable.Collections.Benchmarks
 
 	public partial class RecyclableCollectionsBenchmarks : RecyclableBenchmarkBase<RecyclableCollectionsBenchmarkSource>
 	{
-        public RecyclableCollectionsBenchmarks() : base()
-        {
+		public RecyclableCollectionsBenchmarks() : base()
+		{
 			TestObjectCount = 1;
 			BaselineBenchmarkType = RecyclableCollectionsBenchmarkSource.PooledList;
 			BenchmarkType = RecyclableCollectionsBenchmarkSource.RecyclableList;
-        }
+		}
 
-        [Params
+		[Params
 		(
 			RecyclableCollectionsBenchmarkType.Add_WithCapacity,
 			RecyclableCollectionsBenchmarkType.Add,

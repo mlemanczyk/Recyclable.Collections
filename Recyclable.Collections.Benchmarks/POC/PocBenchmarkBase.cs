@@ -91,7 +91,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 			if (BaselineBenchmarkType != null)
 			{
-				Console.WriteLine($"******* SETTING UP BASELINE DATA *******");
+				Console.WriteLine("******* SETTING UP BASELINE DATA *******");
 				PrepareData(BaselineBenchmarkType);
 				_baselineMethod = GetTestMethod(BaselineBenchmarkType);
 			}
@@ -100,7 +100,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			//~ One would override another - waste of time & resources.
 			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaselineBenchmarkType, BenchmarkType))
 			{
-				Console.WriteLine($"******* SETTING UP TEST CASE DATA *******");
+				Console.WriteLine("******* SETTING UP TEST CASE DATA *******");
 				//~ If BaselineBenchmarkType == null, then we'll come here only if BaselineBenchmarkType != null.
 				PrepareData(BenchmarkType!);
 				_testMethod = GetTestMethod(BenchmarkType);

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using Recyclable.Collections.Parallel;
 using Recyclable.Collections.Pools;
 
-[assembly:InternalsVisibleTo("Recyclable.Collections.Benchmarks")]
+[assembly: InternalsVisibleTo("Recyclable.Collections.Benchmarks")]
 
 namespace Recyclable.Collections
 {

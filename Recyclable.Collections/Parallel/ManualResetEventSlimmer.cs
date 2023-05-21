@@ -1,6 +1,6 @@
 namespace Recyclable.Collections.Parallel
 {
-    public sealed class ManualResetEventSlimmer
+	public sealed class ManualResetEventSlimmer
 	{
 		internal bool _isSet;
 		public bool IsSet => _isSet;
