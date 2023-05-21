@@ -46,10 +46,10 @@
 			}
 		}
 
-		public void RecyclableList_Contains_FirstItems()
+		public void RecyclableLongList_Contains_FirstItems()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableList;
+			var list = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{

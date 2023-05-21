@@ -8,9 +8,9 @@
 			DoNothing(data.LongLength);
 		}
 
-		public void RecyclableList_LongCount()
+		public void RecyclableLongList_LongCount()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			DoNothing(data.LongCount);
 		}
 	}

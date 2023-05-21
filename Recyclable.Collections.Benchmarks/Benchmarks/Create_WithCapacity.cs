@@ -28,9 +28,9 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		public void RecyclableList_Create_WithCapacity()
+		public void RecyclableLongList_Create_WithCapacity()
 		{
-			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			DoNothing(list);
 		}
 	}

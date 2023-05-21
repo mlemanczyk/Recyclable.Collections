@@ -50,10 +50,10 @@
 			}
 		}
 
-		public void RecyclableList_IndexOf_BestAndWorstCases()
+		public void RecyclableLongList_IndexOf_BestAndWorstCases()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableList;
+			var list = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -62,10 +62,10 @@
 			}
 		}
 
-		public void RecyclableList_LongIndexOf_BestAndWorstCases()
+		public void RecyclableLongList_LongIndexOf_BestAndWorstCases()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableList;
+			var list = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{

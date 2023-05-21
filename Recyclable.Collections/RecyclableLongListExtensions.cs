@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public static class RecyclableListExtensions
+	public static class RecyclableLongListExtensions
 	{
 		private const int _minPooledArraySize = RecyclableDefaults.MinPooledArrayLength;
 		private const long ItemNotFoundIndexLong = -1L;
@@ -46,7 +46,7 @@ namespace Recyclable.Collections
 		}
 
 		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//public static bool Contains<T>(this RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
+		//public static bool Contains<T>(this RecyclableLongList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
 
 		public static IEnumerable<T> Enumerate<T>(this T[][] arrays, int chunkSize, long totalCount)
 		{
@@ -83,7 +83,7 @@ namespace Recyclable.Collections
 		//	=> comparer.Compare(value, maxValue) > 0 ? maxValue : value;
 
 		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long LongIndexOf<T>(this RecyclableList<T> arrays, long itemsCount, T itemToFind, IEqualityComparer<T> comparer)
+		public static long LongIndexOf<T>(this RecyclableLongList<T> arrays, long itemsCount, T itemToFind, IEqualityComparer<T> comparer)
 		{
 			for (var itemIdx = 0L; itemIdx < itemsCount; itemIdx++)
 			{
@@ -126,10 +126,10 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableList<T> ToRecyclableList<T>(this IList<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+		public static RecyclableLongList<T> ToRecyclableLongList<T>(this IList<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableList<T> ToRecyclableList<T>(this List<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+		public static RecyclableLongList<T> ToRecyclableLongList<T>(this List<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this IEnumerable<T> values) => new(values);
@@ -144,7 +144,7 @@ namespace Recyclable.Collections
 		public static RecyclableArrayList<T> ToRecyclableArrayList<T>(this RecyclableArrayList<T> values) => new(values);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static RecyclableList<T> ToRecyclableList<T>(this IEnumerable<T> values, int minBlockSize = RecyclableDefaults.BlockSize) => new(values, minBlockSize: minBlockSize);
+		public static RecyclableLongList<T> ToRecyclableLongList<T>(this IEnumerable<T> values, int minBlockSize = RecyclableDefaults.BlockSize) => new(values, minBlockSize: minBlockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static T[] RentArrayFromPool<T>(this int minSize, ArrayPool<T> arrayPool) => (minSize >= _minPooledArraySize)

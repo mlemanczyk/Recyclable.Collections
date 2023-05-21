@@ -2,7 +2,7 @@
 
 namespace Recyclable.CollectionsTests
 {
-	public static class RecyclableListTestData
+	public static class RecyclableLongListTestData
 	{
 		private static IEnumerable<long> DoCreateTestData(long itemsCount)
 		{
@@ -50,8 +50,8 @@ namespace Recyclable.CollectionsTests
 				{
 					yield return new object[]
 					{
-							$"RecyclableList<int>(itemsCount: {itemsCount}, minBlockSize: {sourceBlockSize})",
-							CreateTestData(itemsCount).ToRecyclableList(sourceBlockSize),
+							$"RecyclableLongList<int>(itemsCount: {itemsCount}, minBlockSize: {sourceBlockSize})",
+							CreateTestData(itemsCount).ToRecyclableLongList(sourceBlockSize),
 							itemsCount
 					};
 				}
@@ -69,7 +69,7 @@ namespace Recyclable.CollectionsTests
 			new object[] { "int[]", Array.Empty<long>() },
 			new object[] { "List<int>", Array.Empty<long>().ToList() },
 			new object[] { "RecyclableArrayList<int>", Array.Empty<long>().ToRecyclableArrayList() },
-			new object[] { "RecyclableList<int>", Array.Empty<long>().ToRecyclableList() },
+			new object[] { "RecyclableLongList<int>", Array.Empty<long>().ToRecyclableLongList() },
 			new object[] { "IList<int>", new CustomIList<long>(Array.Empty<long>()) },
 			new object[] { "IEnumerable<int> with non-enumerated count", Array.Empty<long>().AsEnumerable() },
 			new object[] { "IEnumerable<int> without non-enumerated count", new EnumerableWithoutCount<long>(Array.Empty<long>()) }

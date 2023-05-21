@@ -37,10 +37,10 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void RecyclableList_RemoveAt_FirstItems()
+		public void RecyclableLongList_RemoveAt_FirstItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<long>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{

@@ -22,9 +22,9 @@ namespace Recyclable.Collections.Benchmarks
 			DoNothing(list);
 		}
 
-		public static void RecyclableList_Create()
+		public static void RecyclableLongList_Create()
 		{
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableLongList<long>();
 			DoNothing(list);
 		}
 	}

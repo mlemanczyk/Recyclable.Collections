@@ -37,11 +37,11 @@ namespace Recyclable.Collections.Benchmarks
 			}
 		}
 
-		public void RecyclableList_Add_WithCapacity()
+		public void RecyclableLongList_Add_WithCapacity()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);

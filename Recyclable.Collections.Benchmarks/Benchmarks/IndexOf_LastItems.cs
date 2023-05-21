@@ -46,10 +46,10 @@
 			}
 		}
 
-		public void RecyclableList_IndexOf_LastItems()
+		public void RecyclableLongList_IndexOf_LastItems()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableList;
+			var list = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -57,10 +57,10 @@
 			}
 		}
 
-		public void RecyclableList_LongIndexOf_LastItems()
+		public void RecyclableLongList_LongIndexOf_LastItems()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableList;
+			var list = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{

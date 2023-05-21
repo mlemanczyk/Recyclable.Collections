@@ -26,9 +26,9 @@
 			DoNothing(data.Count);
 		}
 
-		public void RecyclableList_Count()
+		public void RecyclableLongList_Count()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			DoNothing(data.Count);
 		}
 	}

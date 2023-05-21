@@ -1,6 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
-	public class RecyclableSortedList<TKey, TValue> : RecyclableList<(TKey Key, TValue Value)>
+	public class RecyclableSortedList<TKey, TValue> : RecyclableLongList<(TKey Key, TValue Value)>
 		where TKey : notnull
 	{
 		private static readonly IComparer<(TKey, TValue)> _comparer = new FrequencyTupleComparer<TKey, TValue>();

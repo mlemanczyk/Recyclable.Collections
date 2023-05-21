@@ -96,9 +96,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 	#endregion
 
-	#region RecyclableList IndexOf v1
+	#region RecyclableLongList IndexOf v1
 
-	internal class RecyclableListIndexOfV1<T> : IDisposable, IList<T>
+	internal class RecyclableLongListIndexOfV1<T> : IDisposable, IList<T>
 	{
 		private const int ItemNotFoundIndex = -1;
 		private const double OptimalParallelSearchStep = 0.329;
@@ -153,7 +153,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void CopyItems(RecyclableListIndexOfV1<T> list, long index)
+		private static void CopyItems(RecyclableLongListIndexOfV1<T> list, long index)
 		{
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
@@ -316,7 +316,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-		private static long DoLongIndexOfParallel(in RecyclableListIndexOfV1<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
+		private static long DoLongIndexOfParallel(in RecyclableLongListIndexOfV1<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
 		{
 			int blockSize = list._blockSize;
 			int blockIndex = itemRange.BlockIndex;
@@ -491,10 +491,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// <summary>
 		/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
 		/// </summary>
-		/// <param name="list"><see cref="RecyclableList{T}"/> that needs to be resized.</param>
+		/// <param name="list"><see cref="RecyclableLongList{T}"/> that needs to be resized.</param>
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
-		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
+		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableLongList{T}.Resize(RecyclableLongList{T}, int, byte, long)"/>.</param>
 		/// <remarks><para>
 		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
@@ -507,7 +507,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long Resize(RecyclableListIndexOfV1<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+		protected static long Resize(RecyclableLongListIndexOfV1<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
 			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
@@ -594,7 +594,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableListIndexOfV1<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		protected static void SetupBlockArrayPooling(RecyclableLongListIndexOfV1<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
@@ -604,7 +604,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long EnsureCapacity(RecyclableListIndexOfV1<T> list, long requestedCapacity)
+		protected static long EnsureCapacity(RecyclableLongListIndexOfV1<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
@@ -624,7 +624,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV1(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV1(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -653,7 +653,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV1(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV1(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -799,7 +799,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableListIndexOfV1<T> items)
+		public void AddRange(RecyclableLongListIndexOfV1<T> items)
 		{
 			if (items.LongCount == 0)
 			{
@@ -975,9 +975,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
 		{
-			if (source is RecyclableList<T> sourceRecyclableList)
+			if (source is RecyclableLongList<T> sourceRecyclableLongList)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceRecyclableLongList);
 				return;
 			}
 
@@ -1219,7 +1219,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		~RecyclableListIndexOfV1()
+		~RecyclableLongListIndexOfV1()
 		{
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			Dispose();
@@ -1243,9 +1243,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 	#endregion
 
-	#region RecyclableList IndexOf v2
+	#region RecyclableLongList IndexOf v2
 
-	internal class RecyclableListIndexOfV2<T> : IDisposable, IList<T>
+	internal class RecyclableLongListIndexOfV2<T> : IDisposable, IList<T>
 	{
 		private const int ItemNotFoundIndex = -1;
 		private const double OptimalParallelSearchStep = 0.329;
@@ -1300,7 +1300,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void CopyItems(RecyclableListIndexOfV2<T> list, long index)
+		private static void CopyItems(RecyclableLongListIndexOfV2<T> list, long index)
 		{
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
@@ -1463,7 +1463,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-		private static long DoLongIndexOfParallel(in RecyclableListIndexOfV2<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
+		private static long DoLongIndexOfParallel(in RecyclableLongListIndexOfV2<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
 		{
 			int blockSize = list._blockSize;
 			int blockIndex = itemRange.BlockIndex;
@@ -1636,10 +1636,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// <summary>
 		/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
 		/// </summary>
-		/// <param name="list"><see cref="RecyclableList{T}"/> that needs to be resized.</param>
+		/// <param name="list"><see cref="RecyclableLongList{T}"/> that needs to be resized.</param>
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
-		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
+		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableLongList{T}.Resize(RecyclableLongList{T}, int, byte, long)"/>.</param>
 		/// <remarks><para>
 		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
@@ -1652,7 +1652,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long Resize(RecyclableListIndexOfV2<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+		protected static long Resize(RecyclableLongListIndexOfV2<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
 			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
@@ -1739,7 +1739,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableListIndexOfV2<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		protected static void SetupBlockArrayPooling(RecyclableLongListIndexOfV2<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
@@ -1749,7 +1749,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long EnsureCapacity(RecyclableListIndexOfV2<T> list, long requestedCapacity)
+		protected static long EnsureCapacity(RecyclableLongListIndexOfV2<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
@@ -1769,7 +1769,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV2(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV2(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -1798,7 +1798,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV2(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV2(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -1944,7 +1944,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableListIndexOfV2<T> items)
+		public void AddRange(RecyclableLongListIndexOfV2<T> items)
 		{
 			if (items.LongCount == 0)
 			{
@@ -2120,9 +2120,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
 		{
-			if (source is RecyclableListIndexOfV2<T> sourceRecyclableList)
+			if (source is RecyclableLongListIndexOfV2<T> sourceRecyclableLongList)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceRecyclableLongList);
 				return;
 			}
 
@@ -2364,7 +2364,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		~RecyclableListIndexOfV2()
+		~RecyclableLongListIndexOfV2()
 		{
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			Dispose();
@@ -2388,9 +2388,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 	#endregion
 
-	#region RecyclableList IndexOf v3
+	#region RecyclableLongList IndexOf v3
 
-	internal class RecyclableListIndexOfV3<T> : IDisposable, IList<T>
+	internal class RecyclableLongListIndexOfV3<T> : IDisposable, IList<T>
 	{
 		private const long ItemNotFoundIndexLong = -1L;
 		private const int ItemNotFoundIndex = -1;
@@ -2446,7 +2446,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void CopyItems(RecyclableListIndexOfV3<T> list, long index)
+		private static void CopyItems(RecyclableLongListIndexOfV3<T> list, long index)
 		{
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
@@ -2608,7 +2608,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-		private static long DoLongIndexOfParallel(in RecyclableListIndexOfV3<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
+		private static long DoLongIndexOfParallel(in RecyclableLongListIndexOfV3<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
 		{
 			int blockSize = list._blockSize;
 			int blockIndex = itemRange.BlockIndex;
@@ -2753,10 +2753,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// <summary>
 		/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
 		/// </summary>
-		/// <param name="list"><see cref="RecyclableList{T}"/> that needs to be resized.</param>
+		/// <param name="list"><see cref="RecyclableLongList{T}"/> that needs to be resized.</param>
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
-		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
+		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableLongList{T}.Resize(RecyclableLongList{T}, int, byte, long)"/>.</param>
 		/// <remarks><para>
 		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
@@ -2769,7 +2769,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long Resize(RecyclableListIndexOfV3<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+		protected static long Resize(RecyclableLongListIndexOfV3<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
 			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
@@ -2856,7 +2856,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableListIndexOfV3<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		protected static void SetupBlockArrayPooling(RecyclableLongListIndexOfV3<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
@@ -2866,7 +2866,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long EnsureCapacity(RecyclableListIndexOfV3<T> list, long requestedCapacity)
+		protected static long EnsureCapacity(RecyclableLongListIndexOfV3<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
@@ -2886,7 +2886,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV3(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV3(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -2915,7 +2915,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV3(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV3(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -3061,7 +3061,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableListIndexOfV3<T> items)
+		public void AddRange(RecyclableLongListIndexOfV3<T> items)
 		{
 			if (items.LongCount == 0)
 			{
@@ -3237,9 +3237,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
 		{
-			if (source is RecyclableList<T> sourceRecyclableList)
+			if (source is RecyclableLongList<T> sourceRecyclableLongList)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceRecyclableLongList);
 				return;
 			}
 
@@ -3478,7 +3478,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		~RecyclableListIndexOfV3()
+		~RecyclableLongListIndexOfV3()
 		{
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			Dispose();
@@ -3502,15 +3502,15 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 	#endregion
 
-	#region RecyclableList IndexOf v4
+	#region RecyclableLongList IndexOf v4
 
-	internal static class RecyclableListIndexOfV4Extensions
+	internal static class RecyclableLongListIndexOfV4Extensions
 	{
 		private const long ItemNotFoundIndexLong = -1L;
 		private const int ItemNotFoundIndex = -1;
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
-		public static long 	DoLongIndexOfParallel<T>(this RecyclableListIndexOfV4<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
+		public static long 	DoLongIndexOfParallel<T>(this RecyclableLongListIndexOfV4<T> list, in ItemRangeV1 itemRange, in T itemToFind, in ManualResetEventSlimmer itemFoundSignal)
 		{
 			int blockSize = list._blockSize;
 			int blockIndex = itemRange.BlockIndex;
@@ -3583,7 +3583,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 	}
 
-	internal class RecyclableListIndexOfV4<T> : IDisposable, IList<T>
+	internal class RecyclableLongListIndexOfV4<T> : IDisposable, IList<T>
 	{
 		private const long ItemNotFoundIndexLong = -1L;
 		private const int ItemNotFoundIndex = -1;
@@ -3639,7 +3639,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void CopyItems(RecyclableListIndexOfV4<T> list, long index)
+		private static void CopyItems(RecyclableLongListIndexOfV4<T> list, long index)
 		{
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
@@ -3817,7 +3817,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			return ItemNotFoundIndexLong;
 		}
 
-		private static bool ScheduleIndexOfTasks(ParallelSynchronizationContextV4 context, RecyclableListIndexOfV4<T> list, T itemToFind, ItemRangeV1 itemRange)
+		private static bool ScheduleIndexOfTasks(ParallelSynchronizationContextV4 context, RecyclableLongListIndexOfV4<T> list, T itemToFind, ItemRangeV1 itemRange)
 		{
 			_ = context.AllDoneSignal.AddParticipant();
 			_ = Task.Factory.StartNew(() =>
@@ -3845,7 +3845,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.NoInlining)]
-		public static void Iterate(in ParallelSynchronizationContextV4 context, RecyclableListIndexOfV4<T> list, in T itemToFind, Func<ParallelSynchronizationContextV4, RecyclableListIndexOfV4<T>, T, ItemRangeV1, bool> action)
+		public static void Iterate(in ParallelSynchronizationContextV4 context, RecyclableLongListIndexOfV4<T> list, in T itemToFind, Func<ParallelSynchronizationContextV4, RecyclableLongListIndexOfV4<T>, T, ItemRangeV1, bool> action)
 		{
 			int itemIndex = 0;
 			ItemRangeV1 itemRange;
@@ -3907,10 +3907,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// <summary>
 		/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
 		/// </summary>
-		/// <param name="list"><see cref="RecyclableList{T}"/> that needs to be resized.</param>
+		/// <param name="list"><see cref="RecyclableLongList{T}"/> that needs to be resized.</param>
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
-		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
+		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableLongList{T}.Resize(RecyclableLongList{T}, int, byte, long)"/>.</param>
 		/// <remarks><para>
 		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
@@ -3923,7 +3923,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long Resize(RecyclableListIndexOfV4<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+		protected static long Resize(RecyclableLongListIndexOfV4<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
 			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
@@ -4010,7 +4010,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableListIndexOfV4<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		protected static void SetupBlockArrayPooling(RecyclableLongListIndexOfV4<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
@@ -4020,7 +4020,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long EnsureCapacity(RecyclableListIndexOfV4<T> list, long requestedCapacity)
+		protected static long EnsureCapacity(RecyclableLongListIndexOfV4<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
@@ -4040,7 +4040,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV4(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV4(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -4069,7 +4069,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableListIndexOfV4(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListIndexOfV4(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -4215,7 +4215,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_nextItemBlockIndex = targetBlockIndex;
 		}
 
-		public void AddRange(RecyclableListIndexOfV4<T> items)
+		public void AddRange(RecyclableLongListIndexOfV4<T> items)
 		{
 			if (items.LongCount == 0)
 			{
@@ -4391,9 +4391,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
 		{
-			if (source is RecyclableList<T> sourceRecyclableList)
+			if (source is RecyclableLongList<T> sourceRecyclableLongList)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceRecyclableLongList);
 				return;
 			}
 
@@ -4632,7 +4632,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		~RecyclableListIndexOfV4()
+		~RecyclableLongListIndexOfV4()
 		{
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			Dispose();
@@ -4656,12 +4656,12 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 	#endregion
 
-	public partial class RecyclableListPocBenchmarks
+	public partial class RecyclableLongListPocBenchmarks
 	{
-		public void RecyclableList_IndexOfV1()
+		public void RecyclableLongList_IndexOfV1()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableListIndexOfV1;
+			var list = TestObjectsAsRecyclableLongListIndexOfV1;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -4680,10 +4680,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		public void RecyclableList_IndexOfV2()
+		public void RecyclableLongList_IndexOfV2()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableListIndexOfV2;
+			var list = TestObjectsAsRecyclableLongListIndexOfV2;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -4691,10 +4691,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		public void RecyclableList_IndexOfV3()
+		public void RecyclableLongList_IndexOfV3()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableListIndexOfV3;
+			var list = TestObjectsAsRecyclableLongListIndexOfV3;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -4702,10 +4702,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		public void RecyclableList_IndexOfV4()
+		public void RecyclableLongList_IndexOfV4()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableListIndexOfV4;
+			var list = TestObjectsAsRecyclableLongListIndexOfV4;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -4713,10 +4713,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		public void RecyclableList_IndexOf()
+		public void RecyclableLongList_IndexOf()
 		{
 			var data = TestObjects;
-			var list = TestObjectsAsRecyclableList;
+			var list = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{

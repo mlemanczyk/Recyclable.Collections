@@ -249,7 +249,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public void AddRange(RecyclableList<T> items)
+		public void AddRange(RecyclableLongList<T> items)
 		{
 			if (items.LongCount == 0)
 			{
@@ -259,12 +259,12 @@ namespace Recyclable.Collections
 			var sourceItemsCount = items.LongCount;
 			if (sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException($"The number of items exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableList<T>)}, instead");
+				ThrowArgumentOutOfRangeException($"The number of items exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			if (_count + sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException($"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableList<T>)}, instead");
+				ThrowArgumentOutOfRangeException($"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableArrayList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			int targetCapacity = _count + (int)sourceItemsCount;

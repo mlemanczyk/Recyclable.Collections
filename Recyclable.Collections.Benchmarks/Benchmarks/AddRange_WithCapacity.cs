@@ -28,11 +28,11 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		public void RecyclableList_AddRange_WithCapacity()
+		public void RecyclableLongList_AddRange_WithCapacity()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
 			list.AddRange(data);
 		}
 	}

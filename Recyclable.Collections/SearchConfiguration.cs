@@ -16,7 +16,7 @@ namespace Recyclable.Collections
         //     List = list;
         // }
 
-        public static SearchConfiguration<RecyclableList<TItem>, TItem> CreateFrom(RecyclableList<TItem> list, in TItem itemToFind) => new()
+        public static SearchConfiguration<RecyclableLongList<TItem>, TItem> CreateFrom(RecyclableLongList<TItem> list, in TItem itemToFind) => new()
         {
             List = list,
             ItemToFind = itemToFind,

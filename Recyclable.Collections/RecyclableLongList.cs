@@ -8,7 +8,7 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableList<T> : IDisposable, IList<T>
+	public partial class RecyclableLongList<T> : IDisposable, IList<T>
 	{
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
@@ -55,7 +55,7 @@ namespace Recyclable.Collections
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void CopyItems(RecyclableList<T> list, long index)
+		private static void CopyItems(RecyclableLongList<T> list, long index)
 		{
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
@@ -219,10 +219,10 @@ namespace Recyclable.Collections
 		/// <summary>
 		/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
 		/// </summary>
-		/// <param name="list"><see cref="RecyclableList{T}"/> that needs to be resized.</param>
+		/// <param name="list"><see cref="RecyclableLongList{T}"/> that needs to be resized.</param>
 		/// <param name="minBlockSize">Minimal requested block size. It MUST be rounded to the power of 2, see remarks.</param>
 		/// <param name="minBlockSizePow2Shift">Pre-calculated bit shifting value for left & right shift operations against<paramref name="minBlockSize"/>.</param>
-		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableList{T}.Resize(RecyclableList{T}, int, byte, long)"/>.</param>
+		/// <param name="newCapacity">The minimum no. of items <paramref name="list"/> MUST be able to store after <see cref="RecyclableLongList{T}.Resize(RecyclableLongList{T}, int, byte, long)"/>.</param>
 		/// <remarks><para>
 		/// For performance reasons, <paramref name="minBlockSize"/> MUST a power of 2. This simplifies a lot block & item
 		/// index calculations, i.e. makes them logical operations on bits.
@@ -235,7 +235,7 @@ namespace Recyclable.Collections
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long Resize(RecyclableList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+		protected static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
 			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
@@ -329,7 +329,7 @@ namespace Recyclable.Collections
 		// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
 		// & WAS SLOWER
 		// [MethodImpl(MethodImplOptions.NoInlining)]
-		//private static void Iterate(RecyclableList<T> list, in ParallelSynchronizationContext context, in T itemToFind)
+		//private static void Iterate(RecyclableLongList<T> list, in ParallelSynchronizationContext context, in T itemToFind)
 		//{
 		//	// TODO: Switch to use _blockSize instead of list._longCountIndeexOfStep for simplifications & better performance.
 
@@ -357,7 +357,7 @@ namespace Recyclable.Collections
 		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		protected static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
@@ -367,7 +367,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long EnsureCapacity(RecyclableList<T> list, long requestedCapacity)
+		protected static long EnsureCapacity(RecyclableLongList<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
@@ -387,7 +387,7 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -416,7 +416,7 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -565,7 +565,7 @@ namespace Recyclable.Collections
 			_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 		}
 
-		public void AddRange(RecyclableList<T> items)
+		public void AddRange(RecyclableLongList<T> items)
 		{
 			if (items.LongCount == 0)
 			{
@@ -741,9 +741,9 @@ namespace Recyclable.Collections
 
 		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
 		{
-			if (source is RecyclableList<T> sourceRecyclableList)
+			if (source is RecyclableLongList<T> sourceRecyclableLongList)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceRecyclableLongList);
 				return;
 			}
 
@@ -1055,7 +1055,7 @@ namespace Recyclable.Collections
 
 		IEnumerator IEnumerable.GetEnumerator() => _memoryBlocks.Enumerate(_blockSize, LongCount).GetEnumerator();
 
-		~RecyclableList()
+		~RecyclableLongList()
 		{
 			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
 			Dispose();

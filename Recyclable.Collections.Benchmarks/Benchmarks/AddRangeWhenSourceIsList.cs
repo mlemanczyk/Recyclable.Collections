@@ -25,10 +25,10 @@ namespace Recyclable.Collections.Benchmarks
 			list.AddRange(data);
 		}
 
-		public void RecyclableList_AddRangeWhenSourceIsList()
+		public void RecyclableLongList_AddRangeWhenSourceIsList()
 		{
 			var data = TestObjectsAsList;
-			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			list.AddRange(data);
 		}
 	}

@@ -14,7 +14,7 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableStack<string>(_testData);
 
 			// Act
-			var actual = new RecyclableList<string>();
+			var actual = new RecyclableLongList<string>();
 			using var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
@@ -90,7 +90,7 @@ namespace Recyclable.CollectionsTests
 				list.Push(_testData[itemIdx]);
 			}
 
-			var dequeuedItems = new RecyclableList<string>();
+			var dequeuedItems = new RecyclableLongList<string>();
 			while (list.LongCount > 0)
 			{
 				dequeuedItems.Add(list.Pop());

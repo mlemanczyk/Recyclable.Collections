@@ -43,9 +43,9 @@
 			}
 		}
 
-		public void RecyclableList_SetItem()
+		public void RecyclableLongList_SetItem()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{

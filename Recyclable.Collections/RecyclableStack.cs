@@ -7,7 +7,7 @@ namespace Recyclable.Collections
 		private bool _disposedValue;
 		private readonly int _blockSize;
 
-		protected RecyclableList<T> List { get; }
+		protected RecyclableLongList<T> List { get; }
 		public int Count => List.Count;
 		public long LongCount
 		{
@@ -32,7 +32,7 @@ namespace Recyclable.Collections
 			List = new(list, blockSize);
 		}
 
-		public RecyclableStack(RecyclableList<T> list, int blockSize = RecyclableDefaults.BlockSize)
+		public RecyclableStack(RecyclableLongList<T> list, int blockSize = RecyclableDefaults.BlockSize)
 		{
 			_blockSize = blockSize;
 			List = new(list, blockSize);

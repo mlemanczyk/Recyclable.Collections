@@ -3,14 +3,14 @@ using Recyclable.Collections.Parallel;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableList<T>
+	public partial class RecyclableLongList<T>
 	{
 		public static class IndexOfHelpers
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-			private static void ScheduleIndexOfTask(IndexOfSynchronizationContext context, RecyclableList<T> list, int blockIndex, T itemToFind)
+			private static void ScheduleIndexOfTask(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
 			{
 				_ = context.AllDoneSignal.AddParticipant();
 				// & WAS SLOWER
@@ -123,7 +123,7 @@ namespace Recyclable.Collections
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
 			// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-			private static void ScheduleIndexOfTaskSingle(IndexOfSynchronizationContext context, RecyclableList<T> list, int blockIndex, T itemToFind)
+			private static void ScheduleIndexOfTaskSingle(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
 			{
 				_ = context.AllDoneSignal.AddParticipant();
 				// & WAS SLOWER
@@ -162,7 +162,7 @@ namespace Recyclable.Collections
 			private const int BlocksForEachTask = 4;
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static long IndexOfParallel(RecyclableList<T> list, in T item)
+			public static long IndexOfParallel(RecyclableLongList<T> list, in T item)
 			{
 				// & WAS SLOWER
 				//long itemsCount = Array.IndexOf(list._memoryBlocks[0], item, 0, (int)Math.Min(list._blockSize, list._longCount));
@@ -214,25 +214,43 @@ namespace Recyclable.Collections
 					}
 				}
 
-				int itemIndex = Array.IndexOf(list._memoryBlocks[list._lastBlockWithData], item, 0, list._nextItemIndex > 0 ? list._nextItemIndex : list._blockSize);
-				if (itemIndex >= 0)
+				if (!context._isItemFound)
 				{
-					context._isItemFound = true;
-					_ = Interlocked.Exchange(ref context.FoundItemIndex, ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex);
+					int itemIndex = Array.IndexOf(list._memoryBlocks[list._lastBlockWithData], item, 0, list._nextItemIndex > 0 ? list._nextItemIndex : list._blockSize);
+					if (!context._isItemFound && itemIndex >= 0)
+					{
+						context._isItemFound = true;
+						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex);
+					}
 				}
 
 				context.AllDoneSignal.SignalAndWait();
 				if (context.Exception == null)
 				{
-					return context.FoundItemIndex;
+					try
+					{
+						return context.FoundItemIndex;
+					}
+					finally
+					{
+						context.Dispose();
+					}
 				}
 
-				context.Exception.CaptureAndRethrow();
+				try
+				{
+					context.Exception.CaptureAndRethrow();
+				}
+				finally
+				{
+					context.Dispose();
+				}
+				
 				return RecyclableDefaults.ItemNotFoundIndexLong;
 			}
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static long IndexOfSequential(RecyclableList<T> list, in T item) //, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
+			public static long IndexOfSequential(RecyclableLongList<T> list, in T item) //, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
 			{
 				int itemIndex;
 				// & WAS SLOWER

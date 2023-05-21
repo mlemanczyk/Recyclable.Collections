@@ -72,7 +72,7 @@ namespace Recyclable.CollectionsTests
 				list.Enqueue(_testData[itemIdx]);
 			}
 
-			var dequeuedItems = new RecyclableList<string>();
+			var dequeuedItems = new RecyclableLongList<string>();
 			while (list.LongCount > 0)
 			{
 				dequeuedItems.Add(list.Dequeue());
@@ -106,7 +106,7 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableQueue<string>(_testData);
 
 			// Act
-			var actual = new RecyclableList<string>();
+			var actual = new RecyclableLongList<string>();
 			using var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{

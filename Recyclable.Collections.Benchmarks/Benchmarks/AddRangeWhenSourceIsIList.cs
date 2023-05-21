@@ -6,7 +6,7 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		public void List_AddRangeWhenSourceIsIList()
 		{
-			var data = (IList<long>)TestObjectsAsRecyclableList;
+			var data = (IList<long>)TestObjectsAsRecyclableLongList;
 			var list = new List<long>();
 			list.AddRange(data);
 		}
@@ -20,15 +20,15 @@ namespace Recyclable.Collections.Benchmarks
 
 		public void RecyclableArrayList_AddRangeWhenSourceIsIList()
 		{
-			var data = (IList<long>)TestObjectsAsRecyclableList;
+			var data = (IList<long>)TestObjectsAsRecyclableLongList;
 			using var list = new RecyclableArrayList<long>();
 			list.AddRange(data);
 		}
 
-		public void RecyclableList_AddRangeWhenSourceIsIList()
+		public void RecyclableLongList_AddRangeWhenSourceIsIList()
 		{
-			var data = (IList<long>)TestObjectsAsRecyclableList;
-			using var list = new RecyclableList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			var data = (IList<long>)TestObjectsAsRecyclableLongList;
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			list.AddRange(data);
 		}
 	}

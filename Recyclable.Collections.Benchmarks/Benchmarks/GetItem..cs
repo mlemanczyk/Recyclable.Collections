@@ -42,9 +42,9 @@
 			}
 		}
 
-		public void RecyclableList_GetItem()
+		public void RecyclableLongList_GetItem()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
@@ -52,9 +52,9 @@
 			}
 		}
 
-		public void RecyclableList_GetItem_AsSpan()
+		public void RecyclableLongList_GetItem_AsSpan()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
@@ -78,9 +78,9 @@
 			}
 		}
 
-		public void RecyclableList_GetItem_AsArray()
+		public void RecyclableLongList_GetItem_AsArray()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
@@ -105,18 +105,18 @@
 			}
 		}
 
-		public void RecyclableList_GetItem_AsForEach()
+		public void RecyclableLongList_GetItem_AsForEach()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			foreach (var item in data)
 			{
 				DoNothing(item);
 			}
 		}
 
-		public void RecyclableList_GetItem_AsWhile()
+		public void RecyclableLongList_GetItem_AsWhile()
 		{
-			var data = TestObjectsAsRecyclableList;
+			var data = TestObjectsAsRecyclableLongList;
 			long dataCount = TestObjectCount;
 			if (dataCount == 0)
 			{

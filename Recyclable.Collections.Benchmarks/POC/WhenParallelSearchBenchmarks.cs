@@ -78,7 +78,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		//[Params(329_000, 512_000, 750_000, 1_000_000, 3_290_000)]
 		//public int Step { get; set; } = 329_000; // This was the fastest so far
 
-		private RecyclableList<long>? _testData;
+		private RecyclableLongList<long>? _testData;
 
 		public object? ItemToFind { get; set; }
 
@@ -123,7 +123,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
-		private static long DoLongIndexOfParallel(RecyclableList<long> list, in long itemToFind, ItemRangeV2 searchInfo, ManualResetEventSlim itemFoundSignal)
+		private static long DoLongIndexOfParallel(RecyclableLongList<long> list, in long itemToFind, ItemRangeV2 searchInfo, ManualResetEventSlim itemFoundSignal)
 		{
 			int index;
 			int blockSize = list.BlockSize;
@@ -300,7 +300,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		{
 			base.PrepareData(benchmarkType);
 
-			_testData ??= Enumerable.Range(1, TestObjectCount).Cast<long>().ToRecyclableList(BlockSize);
+			_testData ??= Enumerable.Range(1, TestObjectCount).Cast<long>().ToRecyclableLongList(BlockSize);
 			ItemToFind ??= _testData.Last();
 		}
 

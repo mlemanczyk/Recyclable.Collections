@@ -27,8 +27,8 @@ internal class Program
 
 		//foreach (var _ in Enumerable.Range(1, 1000))
 		//{
-		//benchmark.RecyclableList_Remove_FirstItems();
-		//benchmark.RecyclableList_RemoveAt_LastItems();
+		//benchmark.RecyclableLongList_Remove_FirstItems();
+		//benchmark.RecyclableLongList_RemoveAt_LastItems();
 		//benchmark.List_RemoveAt_LastItems();
 		//}
 
@@ -40,7 +40,7 @@ internal class Program
 		_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<DelegateVsComparerPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<ModuloPocBenchmarks>(BenchmarkConfig);
-		_ = BenchmarkRunner.Run<RecyclableListPocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<RecyclableLongListPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<WhenParallelSearchBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);

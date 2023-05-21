@@ -12,7 +12,7 @@ namespace Recyclable.Collections.Benchmarks
 		List,
 		PooledList,
 		RecyclableArrayList,
-		RecyclableList,
+		RecyclableLongList,
 	}
 
 	[MemoryDiagnoser]
@@ -28,8 +28,8 @@ namespace Recyclable.Collections.Benchmarks
 		public PooledList<long> TestObjectsAsPooledList => _testObjectsAsPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 		protected RecyclableArrayList<long>? _testObjectsAsRecyclableArrayList;
 		protected RecyclableArrayList<long> TestObjectsAsRecyclableArrayList => _testObjectsAsRecyclableArrayList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
-		protected RecyclableList<long>? _testObjectsAsRecyclableList;
-		protected RecyclableList<long> TestObjectsAsRecyclableList => _testObjectsAsRecyclableList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
+		protected RecyclableLongList<long>? _testObjectsAsRecyclableLongList;
+		protected RecyclableLongList<long> TestObjectsAsRecyclableLongList => _testObjectsAsRecyclableLongList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 		protected IEnumerable<long> TestObjectsAsIEnumerable
 		{
 			get
@@ -68,8 +68,8 @@ namespace Recyclable.Collections.Benchmarks
 					_testObjectsAsRecyclableArrayList ??= new(TestObjects, initialCapacity: TestObjectCount);
 					break;
 
-				case RecyclableCollectionsBenchmarkSource.RecyclableList:
-					_testObjectsAsRecyclableList ??= new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+				case RecyclableCollectionsBenchmarkSource.RecyclableLongList:
+					_testObjectsAsRecyclableLongList ??= new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
 					break;
 
 				default:
@@ -94,8 +94,8 @@ namespace Recyclable.Collections.Benchmarks
 			_testObjectsAsPooledList = default;
 			_testObjectsAsRecyclableArrayList?.Dispose();
 			_testObjectsAsRecyclableArrayList = default;
-			_testObjectsAsRecyclableList?.Dispose();
-			_testObjectsAsRecyclableList = default;
+			_testObjectsAsRecyclableLongList?.Dispose();
+			_testObjectsAsRecyclableLongList = default;
 			base.Cleanup();
 		}
 	}
@@ -123,11 +123,11 @@ namespace Recyclable.Collections.Benchmarks
 	//	}
 
 	//	[Benchmark(Baseline = true)]
-	//	public void RecyclableList()
+	//	public void RecyclableLongList()
 	//	{
 	//		var data = TestObjects;
 	//		long dataCount = TestObjectCount;
-	//		using var list = new RecyclableList<object>(BlockSize, totalItemsCount: dataCount);
+	//		using var list = new RecyclableLongList<object>(BlockSize, totalItemsCount: dataCount);
 	//		for (long i = 0; i < dataCount; i++)
 	//		{
 	//			list.Add(data[i]);
