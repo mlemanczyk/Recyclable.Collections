@@ -51,7 +51,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public int BlockSize => TestObjectCount switch
 		{
 			0 => 1,
-			> 0 and <= 10 => TestObjectCount,
+			> 0 and <= 10_240 => TestObjectCount,
 			_ => TestObjectCount / Divider > 0 ? TestObjectCount / Divider : TestObjectCount
 		};
 
