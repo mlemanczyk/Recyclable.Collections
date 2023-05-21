@@ -2,6 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "isBuildCommand": true,
             "label": "build debug",
             "command": "dotnet",
             "type": "process",
@@ -9,7 +10,8 @@
                 "build",
                 "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary",
+                "-f", "net7.0"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -22,8 +24,8 @@
                 "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
-                "-c",
-                "Release"
+                "-c", "Release",
+                "-f", "net7.0"
             ],
             "problemMatcher": "$msCompile",
             "group": {
@@ -54,15 +56,6 @@
                 "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj"
             ],
             "problemMatcher": "$msCompile"
-        },
-        {
-            "type": "msbuild",
-            "problemMatcher": [
-                "$msCompile"
-            ],
-            "group": "build",
-            "label": "Build: solution",
-            "detail": "Build the Recyclable.Collections.sln solution using dotnet build"
         }
     ]
 }
