@@ -57,8 +57,8 @@
     1. 🅿️ `CopyTo`
     1. ✅ `EnsureCapacity`
     1. 🅿️ `GetEnumerator`
-    1. 👉 `IndexOf`
-    1. 👉 `LongIndexOf`
+    1. ✅ `IndexOf`
+    1. ✅ `LongIndexOf`
     1. ✅ `Insert`
     1. ✅ `Remove`
     1. ✅ `RemoveAt(int index)`
@@ -72,11 +72,11 @@
         1. 🅿️ `RecyclableSortedList<T>`
         1. 🅿️ `RecyclableStack<T>`
         1. 🅿️ `RecyclableUnorderedList<T>`
-    1. 🅿️ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
-    1. 🅿️ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
+    1. ✅ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
+    1. ✅ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
+    1. 👉 Add support for `ReadOnlySpan<T>`
     1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
     1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
-    1. 🅿️ Add support for `ReadOnlySpan<T>`
     1. 🅿️ Implement `List<T>` interfaces
         1. 🅿️ `ICollection<T>`
         1. 🅿️ `IEnumerable<T>`
