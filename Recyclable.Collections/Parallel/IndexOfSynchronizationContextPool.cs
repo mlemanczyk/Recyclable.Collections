@@ -22,14 +22,14 @@ namespace Recyclable.Collections.Parallel
 				context._isItemFound = false;
 			}
 
-			switch (context.AllDoneSignal.ParticipantsRemaining)
+			switch (context._participants)
 			{
 				case > 1:
-					context.AllDoneSignal.RemoveParticipants(context.AllDoneSignal.ParticipantsRemaining - 1);
+					context.RemoveParticipants(context._participants - 1);
 					break;
 
 				case 0:
-					_ = context.AllDoneSignal.AddParticipant();
+					context.AddParticipant();
 					break;
 			}
 

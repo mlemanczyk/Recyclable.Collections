@@ -8,161 +8,102 @@ namespace Recyclable.Collections
 		public static class IndexOfHelpers
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-			private static void ScheduleIndexOfTask(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
+			private static void IndexOfIn4ConsecutiveBlocks(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
 			{
-				_ = context.AllDoneSignal.AddParticipant();
-				// & WAS SLOWER
-				// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
-				_ = Task.Factory.StartNew(() =>
+				try
 				{
-					try
+					if (context._isItemFound)
 					{
-						if (context._isItemFound)
-						{
-							return;
-						}
-
-						long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
-						if (context._isItemFound)
-						{
-							return;
-						}
-						else if (index >= 0)
-						{
-							context._isItemFound = true;
-							_ = Interlocked.Exchange(ref context.FoundItemIndex, (blockIndex << list._blockSizePow2BitShift) + index);
-							return;
-						}
-
-						index = Array.IndexOf(list._memoryBlocks[blockIndex + 1], itemToFind, 0, list._blockSize);
-						if (context._isItemFound)
-						{
-							return;
-						}
-						else if (index >= 0)
-						{
-							context._isItemFound = true;
-							_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 1) << list._blockSizePow2BitShift) + index);
-							return;
-						}
-
-						index = Array.IndexOf(list._memoryBlocks[blockIndex + 2], itemToFind, 0, list._blockSize);
-						if (context._isItemFound)
-						{
-							return;
-						}
-						else if (index >= 0)
-						{
-							context._isItemFound = true;
-							_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 2) << list._blockSizePow2BitShift) + index);
-							return;
-						}
-
-						index = Array.IndexOf(list._memoryBlocks[blockIndex + 3], itemToFind, 0, list._blockSize);
-						if (!context._isItemFound && index >= 0)
-						{
-							context._isItemFound = true;
-							_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 3) << list._blockSizePow2BitShift) + index);
-						}
-
-						//itemsToSearch -= blockSize;
-						//if (itemsToSearch > 0)
-						//{
-						//	if (itemsToSearch < blockSize)
-						//	{
-						//		blockSize = (int)itemsToSearch;
-						//	}
-
-						//	index = Array.IndexOf(list._memoryBlocks[blockIndex + 2], itemToFind, 0, blockSize);
-						//	if (index >= 0)
-						//	{
-						//		if (!context.ItemFoundSignal.IsSet)
-						//		{
-						//			context.ItemFoundSignal.Set();
-						//			_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 2) << list._blockSizePow2BitShift) + index);
-						//		}
-
-						//		return;
-						//	}
-						//}
-
-						//itemsToSearch -= blockSize;
-						//if (itemsToSearch > 0)
-						//{
-						//	if (itemsToSearch < blockSize)
-						//	{
-						//		blockSize = (int)itemsToSearch;
-						//	}
-
-						//	index = Array.IndexOf(list._memoryBlocks[blockIndex + 3], itemToFind, 0, blockSize);
-						//	if (!context.ItemFoundSignal.IsSet && index >= 0)
-						//	{
-						//		context.ItemFoundSignal.Set();
-						//		_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 3) << list._blockSizePow2BitShift) + index);
-
-						//		return;
-						//	}
-						//}
+						return;
 					}
-					catch (Exception e)
+
+					long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
+					if (context._isItemFound)
 					{
-						e.Data.Add("list", list);
-						e.Data.Add("itemToFind", itemToFind);
-						e.Data.Add("blockIndex", blockIndex);
-						_ = Interlocked.Exchange(ref context.Exception, e);
+						return;
 					}
-					finally
+					else if (index >= 0)
 					{
-						context.AllDoneSignal.RemoveParticipant();
+						context._isItemFound = true;
+						_ = Interlocked.Exchange(ref context.FoundItemIndex, (blockIndex << list._blockSizePow2BitShift) + index);
+						return;
 					}
-				});
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 1], itemToFind, 0, list._blockSize);
+					if (context._isItemFound)
+					{
+						return;
+					}
+					else if (index >= 0)
+					{
+						context._isItemFound = true;
+						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 1) << list._blockSizePow2BitShift) + index);
+						return;
+					}
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 2], itemToFind, 0, list._blockSize);
+					if (context._isItemFound)
+					{
+						return;
+					}
+					else if (index >= 0)
+					{
+						context._isItemFound = true;
+						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 2) << list._blockSizePow2BitShift) + index);
+						return;
+					}
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 3], itemToFind, 0, list._blockSize);
+					if (!context._isItemFound && index >= 0)
+					{
+						context._isItemFound = true;
+						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 3) << list._blockSizePow2BitShift) + index);
+					}
+				}
+				catch (Exception e)
+				{
+					e.Data.Add("list", list);
+					e.Data.Add("itemToFind", itemToFind);
+					e.Data.Add("blockIndex", blockIndex);
+					_ = Interlocked.Exchange(ref context.Exception, e);
+				}
+				finally
+				{
+					context.RemoveParticipant();
+				}
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
-			// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-			private static void ScheduleIndexOfTaskSingle(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
+			private static void IndexOfIn1Block(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
 			{
-				_ = context.AllDoneSignal.AddParticipant();
-				// & WAS SLOWER
-				// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
-				_ = Task.Factory.StartNew(() =>
+				try
 				{
-					try
+					if (context._isItemFound)
 					{
-						if (context._isItemFound)
-						{
-							return;
-						}
+						return;
+					}
 
-						long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
-						if (context._isItemFound)
-						{
-							return;
-						}
-						else if (index >= 0)
-						{
-							context._isItemFound = true;
-							_ = Interlocked.Exchange(ref context.FoundItemIndex, (blockIndex << list._blockSizePow2BitShift) + index);
-						}
-					}
-					catch (Exception e)
+					long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
+					if (!context._isItemFound && index >= 0)
 					{
-						_ = Interlocked.Exchange(ref context.Exception, e);
+						context._isItemFound = true;
+						_ = Interlocked.Exchange(ref context.FoundItemIndex, (blockIndex << list._blockSizePow2BitShift) + index);
 					}
-					finally
-					{
-						context.AllDoneSignal.RemoveParticipant();
-					}
-				});
+				}
+				catch (Exception e)
+				{
+					_ = Interlocked.Exchange(ref context.Exception, e);
+				}
+				finally
+				{
+					context.RemoveParticipant();
+				}
 			}
 
 			private const int BlocksForEachTask = 4;
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static long IndexOfParallel(RecyclableLongList<T> list, in T item)
+			public static long IndexOfParallel(RecyclableLongList<T> list,  T item)
 			{
 				// & WAS SLOWER
 				//long itemsCount = Array.IndexOf(list._memoryBlocks[0], item, 0, (int)Math.Min(list._blockSize, list._longCount));
@@ -175,8 +116,6 @@ namespace Recyclable.Collections
 				IndexOfSynchronizationContext context = IndexOfSynchronizationContextPool.GetWithOneParticipant();
 				// (long)(_longCount * 0.329) => most efficient step, based on benchmarks
 				//Iterate(this, context, item);
-
-				// TODO: Switch to use _blockSize instead of list._longCountIndeexOfStep for simplifications & better performance.
 
 				// & WAS SLOWER without
 				int blockIndex = 2;
@@ -191,7 +130,16 @@ namespace Recyclable.Collections
 				while (blockIndex < lastBlockWithData)
 				{
 					// At this point itemIndex is limited to blockSize range - int.
-					ScheduleIndexOfTask(context, list, blockIndex, item);
+
+					// & WAS SLOWER
+					// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
+					// Task.Factory.StartNew(() =>
+					context.AddParticipant();
+					var startingBlock = blockIndex;
+					Task.Run(() => IndexOfIn4ConsecutiveBlocks(context, list, startingBlock, item));
+
+					// & WAS SLOWER
+					// ScheduleIndexOfTask(context, list, blockIndex, item);
 					if (context._isItemFound)
 					{
 						break;
@@ -204,7 +152,15 @@ namespace Recyclable.Collections
 				{
 					while (blockIndex < list._lastBlockWithData)
 					{
-						ScheduleIndexOfTaskSingle(context, list, blockIndex, item);
+						// & WAS SLOWER
+						// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
+						// Task.Factory.StartNew(() =>
+						var startingBlock = blockIndex;
+						context.AddParticipant();
+						Task.Run(() => IndexOfIn1Block(context, list, startingBlock, item));
+
+						// & WAS SLOWER
+						// ScheduleIndexOfTaskSingle(context, list, blockIndex, item);
 						if (context._isItemFound)
 						{
 							break;
@@ -224,7 +180,7 @@ namespace Recyclable.Collections
 					}
 				}
 
-				context.AllDoneSignal.SignalAndWait();
+				context.SignalAndWait();
 				if (context.Exception == null)
 				{
 					try
@@ -245,7 +201,7 @@ namespace Recyclable.Collections
 				{
 					context.Dispose();
 				}
-				
+
 				return RecyclableDefaults.ItemNotFoundIndexLong;
 			}
 
