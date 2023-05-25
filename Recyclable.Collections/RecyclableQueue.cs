@@ -81,7 +81,7 @@ namespace Recyclable.Collections
 		}
 
 		public long LongCount { get; set; }
-		public bool IsReadOnly { get; } = false;
+		public bool IsReadOnly { get; }
 
 		public T this[int index]
 		{
