@@ -350,26 +350,26 @@ namespace Recyclable.Collections
 			if (enumerator.MoveNext())
 			{
 				int available = capacity - targetItemIdx;
-                do
-                {
-                    if (targetItemIdx + growByCount > capacity)
-                    {
-                        capacity = EnsureCapacity(this, capacity + growByCount);
-                        memorySpan = new(_memoryBlock);
-                        available = capacity - targetItemIdx;
-                    }
+				do
+				{
+					if (targetItemIdx + growByCount > capacity)
+					{
+						capacity = EnsureCapacity(this, capacity + growByCount);
+						memorySpan = new(_memoryBlock);
+						available = capacity - targetItemIdx;
+					}
 
-                    for (i = 0; i < available; i++)
-                    {
-                        memorySpan[targetItemIdx++] = enumerator.Current;
-                        if (!enumerator.MoveNext())
-                        {
-                            break;
-                        }
-                    }
-                }
-                while (i >= available);
-            }
+					for (i = 0; i < available; i++)
+					{
+						memorySpan[targetItemIdx++] = enumerator.Current;
+						if (!enumerator.MoveNext())
+						{
+							break;
+						}
+					}
+				}
+				while (i >= available);
+			}
 
 			_count = targetItemIdx;
 		}
