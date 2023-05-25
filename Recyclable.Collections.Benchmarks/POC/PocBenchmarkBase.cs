@@ -94,7 +94,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		{
 			Console.WriteLine($"******* SETTING UP TEST CASE FOR BENCHMARK {{{BenchmarkType}}} *******");
 
-			if (BaselineBenchmarkType != null)
+			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaselineBenchmarkType, default))
 			{
 				Console.WriteLine("******* SETTING UP BASELINE DATA *******");
 				PrepareData(BaselineBenchmarkType);

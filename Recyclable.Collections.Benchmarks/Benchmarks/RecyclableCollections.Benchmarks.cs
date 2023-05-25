@@ -66,7 +66,7 @@ namespace Recyclable.Collections.Benchmarks
 		)]
 		public override RecyclableCollectionsBenchmarkSource BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
 
-		protected override Action GetTestMethod(RecyclableCollectionsBenchmarkSource benchmarkType)
+		protected override Action? GetTestMethod(RecyclableCollectionsBenchmarkSource benchmarkType)
 			=> (Action?) GetType().GetMethod($"{benchmarkType}_{TestCase}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this)
 			?? throw CreateMethodNotFoundException($"{benchmarkType}_{TestCase}", GetType().FullName);
 	}

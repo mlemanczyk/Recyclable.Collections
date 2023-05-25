@@ -52,6 +52,9 @@ namespace Recyclable.Collections.Benchmarks
 			Console.WriteLine($"******* PREPARING DATA FOR {benchmarkType} *******");
 			switch (benchmarkType)
 			{
+				case RecyclableCollectionsBenchmarkSource.Unknown:
+					break;
+
 				case RecyclableCollectionsBenchmarkSource.Array:
 					_testObjects ??= DataGenerator.EnumerateTestObjects(TestObjectCount);
 					break;
