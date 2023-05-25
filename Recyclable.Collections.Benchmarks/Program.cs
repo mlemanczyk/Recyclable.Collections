@@ -41,6 +41,7 @@ internal class Program
 		_ = BenchmarkRunner.Run<DelegateVsComparerPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<ModuloPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RecyclableLongListPocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<TaskRunVsTaskFactoryStartNewBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<WhenParallelSearchBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
