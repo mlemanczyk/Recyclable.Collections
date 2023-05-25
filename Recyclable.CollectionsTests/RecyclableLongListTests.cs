@@ -25,9 +25,9 @@ namespace Recyclable.CollectionsTests
 			{
 				list.AddRange(testDataRecyclableList);
 			}
-			else if (testData is RecyclableLongList<long> testDataRecyclableList)
+			else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
 			{
-				list.AddRange(testDataRecyclableList);
+				list.AddRange(testDataRecyclableLongList);
 			}
 			else if (testData is IList<long> testDataIList)
 			{
@@ -69,9 +69,9 @@ namespace Recyclable.CollectionsTests
 			{
 				list.AddRange(testDataRecyclableList);
 			}
-			else if (testData is RecyclableLongList<long> testDataRecyclableList)
+			else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
 			{
-				list.AddRange(testDataRecyclableList);
+				list.AddRange(testDataRecyclableLongList);
 			}
 			else if (testData is IList<long> testDataIList)
 			{
