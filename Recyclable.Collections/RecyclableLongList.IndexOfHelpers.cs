@@ -25,7 +25,9 @@ namespace Recyclable.Collections
 					else if (index >= 0)
 					{
 						context._isItemFound = true;
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, (blockIndex << list._blockSizePow2BitShift) + index);
+						context.Lock();
+						context.FoundItemIndex = ((long)blockIndex << list._blockSizePow2BitShift) + index;
+						context.Unlock();
 						return;
 					}
 
@@ -37,7 +39,9 @@ namespace Recyclable.Collections
 					else if (index >= 0)
 					{
 						context._isItemFound = true;
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 1) << list._blockSizePow2BitShift) + index);
+						context.Lock();
+						context.FoundItemIndex = ((long)(blockIndex + 1) << list._blockSizePow2BitShift) + index;
+						context.Unlock();
 						return;
 					}
 
@@ -49,7 +53,9 @@ namespace Recyclable.Collections
 					else if (index >= 0)
 					{
 						context._isItemFound = true;
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 2) << list._blockSizePow2BitShift) + index);
+						context.Lock();
+						context.FoundItemIndex = ((long)(blockIndex + 2) << list._blockSizePow2BitShift) + index;
+						context.Unlock();
 						return;
 					}
 
@@ -57,7 +63,9 @@ namespace Recyclable.Collections
 					if (!context._isItemFound && index >= 0)
 					{
 						context._isItemFound = true;
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((blockIndex + 3) << list._blockSizePow2BitShift) + index);
+						context.Lock();
+						context.FoundItemIndex = ((long)(blockIndex + 3) << list._blockSizePow2BitShift) + index;
+						context.Unlock();
 					}
 				}
 				catch (Exception e)
@@ -87,7 +95,9 @@ namespace Recyclable.Collections
 					if (!context._isItemFound && index >= 0)
 					{
 						context._isItemFound = true;
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, (blockIndex << list._blockSizePow2BitShift) + index);
+						context.Lock();
+						context.FoundItemIndex = ((long)blockIndex << list._blockSizePow2BitShift) + index;
+						context.Unlock();
 					}
 				}
 				catch (Exception e)
@@ -176,7 +186,9 @@ namespace Recyclable.Collections
 					if (!context._isItemFound && itemIndex >= 0)
 					{
 						context._isItemFound = true;
-						_ = Interlocked.Exchange(ref context.FoundItemIndex, ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex);
+						context.Lock();
+						context.FoundItemIndex = ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex;
+						context.Unlock();
 					}
 				}
 
@@ -249,16 +261,9 @@ namespace Recyclable.Collections
 					}
 				}
 
-				//if (blockIndex == list._lastBlockWithData)
-				//{
-					itemIndex = list._nextItemIndex != 0
-						? Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._nextItemIndex)
-						: Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._blockSize);
-				//}
-				//else
-				//{
-				//	return RecyclableDefaults.ItemNotFoundIndexLong;
-				//}
+				itemIndex = list._nextItemIndex != 0
+					? Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._nextItemIndex)
+					: Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._blockSize);
 
 				return itemIndex >= 0 ? itemIndex + ((long)list._lastBlockWithData << list._blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
 			}

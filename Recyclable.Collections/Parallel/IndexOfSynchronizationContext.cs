@@ -3,6 +3,10 @@ namespace Recyclable.Collections.Parallel
 	public sealed class IndexOfSynchronizationContext
 	{
 		private readonly SpinWait _participantsSpinWait = new();
+		private readonly SpinLock _participantsSpinLock = new(false);
+		private readonly SpinLock _indexOfSpinLock = new(false);
+		private bool _indexOfLockTaken;
+
 
 		internal bool _isItemFound;
 		internal int _participants;
@@ -10,12 +14,29 @@ namespace Recyclable.Collections.Parallel
 
 		public void AddParticipant()
 		{
-			_ = Interlocked.Increment(ref _participants);
+			bool lockTaken = false;
+			_participantsSpinLock.Enter(ref lockTaken);
+			_participants++;
+			if (lockTaken)
+			{
+				_participantsSpinLock.Exit(false);
+			}
 		}
 
 		public void AddParticipants(int newParticipants)
 		{
-			_ = Interlocked.Add(ref _participants, newParticipants);
+			bool lockTaken = false;
+			_participantsSpinLock.Enter(ref lockTaken);
+			_participants += newParticipants;
+			if (lockTaken)
+			{
+				_participantsSpinLock.Exit(false);
+			}
+		}
+
+		public void Lock()
+		{
+			_indexOfSpinLock.Enter(ref _indexOfLockTaken);
 		}
 
 		public void RemoveParticipants(int participantsToRemove)
@@ -25,7 +46,13 @@ namespace Recyclable.Collections.Parallel
 				ThrowNotEnoughParticipants();
 			}
 
-			_ = Interlocked.Add(ref _participants, -participantsToRemove);
+			bool lockTaken = false;
+			_participantsSpinLock.Enter(ref lockTaken);
+			_participants -= participantsToRemove;
+			if (lockTaken)
+			{
+				_participantsSpinLock.Exit(false);
+			}
 		}
 
 		public void RemoveParticipant()
@@ -35,7 +62,13 @@ namespace Recyclable.Collections.Parallel
 				ThrowNoMoreParticipants();
 			}
 
-			_ = Interlocked.Decrement(ref _participants);
+			bool lockTaken = false;
+			_participantsSpinLock.Enter(ref lockTaken);
+			_participants--;
+			if (lockTaken)
+			{
+				_participantsSpinLock.Exit(false);
+			}
 		}
 
 		public void SignalAndWait()
@@ -45,10 +78,25 @@ namespace Recyclable.Collections.Parallel
 				ThrowNoMoreParticipants();
 			}
 
-			_ = Interlocked.Decrement(ref _participants);
+			bool lockTaken = false;
+			_participantsSpinLock.Enter(ref lockTaken);
+			_participants--;
+			if (lockTaken)
+			{
+				_participantsSpinLock.Exit(false);
+			}
+
 			while (_participants > 0)
 			{
 				_participantsSpinWait.SpinOnce();
+			}
+		}
+
+		public void Unlock()
+		{
+			if (_indexOfLockTaken)
+			{
+				_indexOfSpinLock.Exit(false);
 			}
 		}
 
