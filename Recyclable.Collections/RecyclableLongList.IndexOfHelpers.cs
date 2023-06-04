@@ -146,7 +146,7 @@ namespace Recyclable.Collections
 					// Task.Factory.StartNew(() =>
 					context.AddParticipant();
 					var startingBlock = blockIndex;
-					Task.Run(() => IndexOfIn4ConsecutiveBlocks(context, list, startingBlock, item));
+					_ = Task.Run(() => IndexOfIn4ConsecutiveBlocks(context, list, startingBlock, item));
 
 					// & WAS SLOWER
 					// ScheduleIndexOfTask(context, list, blockIndex, item);
@@ -167,7 +167,7 @@ namespace Recyclable.Collections
 						// Task.Factory.StartNew(() =>
 						var startingBlock = blockIndex;
 						context.AddParticipant();
-						Task.Run(() => IndexOfIn1Block(context, list, startingBlock, item));
+						_ = Task.Run(() => IndexOfIn1Block(context, list, startingBlock, item));
 
 						// & WAS SLOWER
 						// ScheduleIndexOfTaskSingle(context, list, blockIndex, item);
