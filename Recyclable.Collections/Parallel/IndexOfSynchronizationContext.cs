@@ -2,11 +2,9 @@ namespace Recyclable.Collections.Parallel
 {
 	public sealed class IndexOfSynchronizationContext
 	{
-		private readonly SpinWait _participantsSpinWait = new();
-		private readonly SpinLock _participantsSpinLock = new(false);
-		private readonly SpinLock _indexOfSpinLock = new(false);
-		private bool _indexOfLockTaken;
-
+		private SpinWait _participantsSpinWait = new();
+		private SpinLockSlimmer _participantsSpinLock = new();
+		private SpinLockSlimmer _indexOfSpinLock = new();
 
 		internal bool _isItemFound;
 		internal int _participants;
@@ -14,29 +12,21 @@ namespace Recyclable.Collections.Parallel
 
 		public void AddParticipant()
 		{
-			bool lockTaken = false;
-			_participantsSpinLock.Enter(ref lockTaken);
+			_participantsSpinLock.Enter();
 			_participants++;
-			if (lockTaken)
-			{
-				_participantsSpinLock.Exit(false);
-			}
+			_participantsSpinLock.Exit();
 		}
 
 		public void AddParticipants(int newParticipants)
 		{
-			bool lockTaken = false;
-			_participantsSpinLock.Enter(ref lockTaken);
+			_participantsSpinLock.Enter();
 			_participants += newParticipants;
-			if (lockTaken)
-			{
-				_participantsSpinLock.Exit(false);
-			}
+			_participantsSpinLock.Exit();
 		}
 
 		public void Lock()
 		{
-			_indexOfSpinLock.Enter(ref _indexOfLockTaken);
+			_indexOfSpinLock.Enter();
 		}
 
 		public void RemoveParticipants(int participantsToRemove)
@@ -46,13 +36,9 @@ namespace Recyclable.Collections.Parallel
 				ThrowNotEnoughParticipants();
 			}
 
-			bool lockTaken = false;
-			_participantsSpinLock.Enter(ref lockTaken);
+			_participantsSpinLock.Enter();
 			_participants -= participantsToRemove;
-			if (lockTaken)
-			{
-				_participantsSpinLock.Exit(false);
-			}
+			_participantsSpinLock.Exit();
 		}
 
 		public void RemoveParticipant()
@@ -62,13 +48,9 @@ namespace Recyclable.Collections.Parallel
 				ThrowNoMoreParticipants();
 			}
 
-			bool lockTaken = false;
-			_participantsSpinLock.Enter(ref lockTaken);
+			_participantsSpinLock.Enter();
 			_participants--;
-			if (lockTaken)
-			{
-				_participantsSpinLock.Exit(false);
-			}
+			_participantsSpinLock.Exit();
 		}
 
 		public void SignalAndWait()
@@ -78,13 +60,9 @@ namespace Recyclable.Collections.Parallel
 				ThrowNoMoreParticipants();
 			}
 
-			bool lockTaken = false;
-			_participantsSpinLock.Enter(ref lockTaken);
+			_participantsSpinLock.Enter();
 			_participants--;
-			if (lockTaken)
-			{
-				_participantsSpinLock.Exit(false);
-			}
+			_participantsSpinLock.Exit();
 
 			while (_participants > 0)
 			{
@@ -94,15 +72,13 @@ namespace Recyclable.Collections.Parallel
 
 		public void Unlock()
 		{
-			if (_indexOfLockTaken)
-			{
-				_indexOfSpinLock.Exit(false);
-			}
+			_indexOfSpinLock.Exit();
 		}
 
 		private static void ThrowNotEnoughParticipants() => throw new InvalidOperationException("Participant cannot be removed, because there are not enough participants.");
 		private static void ThrowNoMoreParticipants() => throw new InvalidOperationException("Participant cannot be removed, because there are no more participants.");
 
+		public long FoundBlockIndex;
 		public long FoundItemIndex;
 		public Exception? Exception;
 		public int Participants => _participants;

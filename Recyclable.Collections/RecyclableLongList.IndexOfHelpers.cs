@@ -1,4 +1,12 @@
-﻿using System.Runtime.CompilerServices;
+﻿// #define MAX_BLOCKS_FOR_TASK_2
+// #define MAX_BLOCKS_FOR_TASK_3
+#define MAX_BLOCKS_FOR_TASK_4
+// #define MAX_BLOCKS_FOR_TASK_5
+// #define MAX_BLOCKS_FOR_TASK_6
+// #define MAX_BLOCKS_FOR_TASK_7
+// #define MAX_BLOCKS_FOR_TASK_8
+
+using System.Runtime.CompilerServices;
 using Recyclable.Collections.Parallel;
 
 namespace Recyclable.Collections
@@ -8,65 +16,105 @@ namespace Recyclable.Collections
 		public static class IndexOfHelpers
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-			private static void IndexOfIn4ConsecutiveBlocks(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
+			private static void IndexOfInConsecutiveBlocks(IndexOfSynchronizationContext context, RecyclableLongList<T> list, int blockIndex, T itemToFind)
 			{
 				try
 				{
-					if (context._isItemFound)
+					if (context._isItemFound && blockIndex >= context.FoundBlockIndex)
 					{
 						return;
 					}
 
 					long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
-					if (context._isItemFound)
+					if (index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
+					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex, ((long)blockIndex << list._blockSizePow2BitShift) + index);
+						return;
+					}
+					else if (context._isItemFound)
 					{
 						return;
 					}
-					else if (index >= 0)
-					{
-						context._isItemFound = true;
-						context.Lock();
-						context.FoundItemIndex = ((long)blockIndex << list._blockSizePow2BitShift) + index;
-						context.Unlock();
-						return;
-					}
+
+#if MAX_BLOCKS_FOR_TASK_2 || MAX_BLOCKS_FOR_TASK_3 || MAX_BLOCKS_FOR_TASK_4 || MAX_BLOCKS_FOR_TASK_5 || MAX_BLOCKS_FOR_TASK_6 || MAX_BLOCKS_FOR_TASK_7 || MAX_BLOCKS_FOR_TASK_8
 
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 1], itemToFind, 0, list._blockSize);
-					if (context._isItemFound)
+					if (index >= 0)
 					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 1, ((long)(blockIndex + 1) << list._blockSizePow2BitShift) + index);
 						return;
 					}
-					else if (index >= 0)
+					else if (context._isItemFound)
 					{
-						context._isItemFound = true;
-						context.Lock();
-						context.FoundItemIndex = ((long)(blockIndex + 1) << list._blockSizePow2BitShift) + index;
-						context.Unlock();
 						return;
 					}
 
+#endif
+
+#if MAX_BLOCKS_FOR_TASK_3 || MAX_BLOCKS_FOR_TASK_4 || MAX_BLOCKS_FOR_TASK_5 || MAX_BLOCKS_FOR_TASK_6 || MAX_BLOCKS_FOR_TASK_7 || MAX_BLOCKS_FOR_TASK_8
+
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 2], itemToFind, 0, list._blockSize);
-					if (context._isItemFound)
+					if (index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
+					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 2, ((long)(blockIndex + 2) << list._blockSizePow2BitShift) + index);
+						return;
+					}
+					else if (context._isItemFound)
 					{
 						return;
 					}
-					else if (index >= 0)
-					{
-						context._isItemFound = true;
-						context.Lock();
-						context.FoundItemIndex = ((long)(blockIndex + 2) << list._blockSizePow2BitShift) + index;
-						context.Unlock();
-						return;
-					}
+
+#endif
+
+#if MAX_BLOCKS_FOR_TASK_4 || MAX_BLOCKS_FOR_TASK_5 || MAX_BLOCKS_FOR_TASK_6 || MAX_BLOCKS_FOR_TASK_7 || MAX_BLOCKS_FOR_TASK_8
 
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 3], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0)
 					{
-						context._isItemFound = true;
-						context.Lock();
-						context.FoundItemIndex = ((long)(blockIndex + 3) << list._blockSizePow2BitShift) + index;
-						context.Unlock();
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 3, ((long)(blockIndex + 3) << list._blockSizePow2BitShift) + index);
 					}
+
+#endif
+
+#if MAX_BLOCKS_FOR_TASK_5 || MAX_BLOCKS_FOR_TASK_6 || MAX_BLOCKS_FOR_TASK_7 || MAX_BLOCKS_FOR_TASK_8
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 4], itemToFind, 0, list._blockSize);
+					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
+					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 4, ((long)(blockIndex + 4) << list._blockSizePow2BitShift) + index);
+					}
+					
+#endif
+
+#if MAX_BLOCKS_FOR_TASK_6 || MAX_BLOCKS_FOR_TASK_7 || MAX_BLOCKS_FOR_TASK_8
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 5], itemToFind, 0, list._blockSize);
+					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
+					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 5, ((long)(blockIndex + 5) << list._blockSizePow2BitShift) + index);
+					}
+
+#endif
+
+#if MAX_BLOCKS_FOR_TASK_7 || MAX_BLOCKS_FOR_TASK_8
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 6], itemToFind, 0, list._blockSize);
+					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
+					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 6, ((long)(blockIndex + 6) << list._blockSizePow2BitShift) + index);
+					}
+
+#endif
+
+#if MAX_BLOCKS_FOR_TASK_8
+
+					index = Array.IndexOf(list._memoryBlocks[blockIndex + 7], itemToFind, 0, list._blockSize);
+					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
+					{
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 7, ((long)(blockIndex + 7) << list._blockSizePow2BitShift) + index);
+					}
+
+#endif
 				}
 				catch (Exception e)
 				{
@@ -79,6 +127,21 @@ namespace Recyclable.Collections
 				{
 					context.RemoveParticipant();
 				}
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			private static void ExchangeFoundItemIndexIfLower(IndexOfSynchronizationContext context, int blockIndex, long newItemIndex)
+			{
+				context.Lock();
+
+				if (newItemIndex < context.FoundItemIndex || context.FoundItemIndex == RecyclableDefaults.ItemNotFoundIndexLong)
+				{
+					context.FoundBlockIndex = blockIndex;
+					context.FoundItemIndex = newItemIndex;
+				}
+
+				context._isItemFound = true;
+				context.Unlock();
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -94,10 +157,7 @@ namespace Recyclable.Collections
 					long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0)
 					{
-						context._isItemFound = true;
-						context.Lock();
-						context.FoundItemIndex = ((long)blockIndex << list._blockSizePow2BitShift) + index;
-						context.Unlock();
+						ExchangeFoundItemIndexIfLower(context, blockIndex, ((long)blockIndex << list._blockSizePow2BitShift) + index);
 					}
 				}
 				catch (Exception e)
@@ -110,7 +170,27 @@ namespace Recyclable.Collections
 				}
 			}
 
+#if MAX_BLOCKS_FOR_TASK_2
+			private const int BlocksForEachTask = 2;
+#endif
+#if MAX_BLOCKS_FOR_TASK_3
+			private const int BlocksForEachTask = 3;
+#endif
+#if MAX_BLOCKS_FOR_TASK_4
 			private const int BlocksForEachTask = 4;
+#endif
+#if MAX_BLOCKS_FOR_TASK_5
+			private const int BlocksForEachTask = 5;
+#endif
+#if MAX_BLOCKS_FOR_TASK_6
+			private const int BlocksForEachTask = 6;
+#endif
+#if MAX_BLOCKS_FOR_TASK_7
+			private const int BlocksForEachTask = 7;
+#endif
+#if MAX_BLOCKS_FOR_TASK_8
+			private const int BlocksForEachTask = 8;
+#endif
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static long IndexOfParallel(RecyclableLongList<T> list,  T item)
@@ -146,7 +226,7 @@ namespace Recyclable.Collections
 					// Task.Factory.StartNew(() =>
 					context.AddParticipant();
 					var startingBlock = blockIndex;
-					_ = Task.Run(() => IndexOfIn4ConsecutiveBlocks(context, list, startingBlock, item));
+					_ = Task.Run(() => IndexOfInConsecutiveBlocks(context, list, startingBlock, item));
 
 					// & WAS SLOWER
 					// ScheduleIndexOfTask(context, list, blockIndex, item);
@@ -185,10 +265,7 @@ namespace Recyclable.Collections
 					int itemIndex = Array.IndexOf(list._memoryBlocks[list._lastBlockWithData], item, 0, list._nextItemIndex > 0 ? list._nextItemIndex : list._blockSize);
 					if (!context._isItemFound && itemIndex >= 0)
 					{
-						context._isItemFound = true;
-						context.Lock();
-						context.FoundItemIndex = ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex;
-						context.Unlock();
+						ExchangeFoundItemIndexIfLower(context, blockIndex, ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex);
 					}
 				}
 
