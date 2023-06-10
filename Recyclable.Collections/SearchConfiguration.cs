@@ -1,6 +1,6 @@
 namespace Recyclable.Collections
 {
-    public readonly struct SearchConfiguration<TList, TItem>
+    internal readonly struct SearchConfiguration<TList, TItem>
     {
         public TItem ItemToFind { get; init; }
         public TList List { get; init; }

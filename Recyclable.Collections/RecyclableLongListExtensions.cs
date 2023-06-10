@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public static class RecyclableLongListExtensions
+	internal static class RecyclableLongListExtensions
 	{
 		private const int _minPooledArraySize = RecyclableDefaults.MinPooledArrayLength;
 		private const long ItemNotFoundIndexLong = -1L;

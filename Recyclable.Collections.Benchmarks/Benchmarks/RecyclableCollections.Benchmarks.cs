@@ -17,7 +17,7 @@ namespace Recyclable.Collections.Benchmarks
 		public RecyclableCollectionsBenchmarks() : base()
 		{
 			TestObjectCount = 1;
-			BaselineBenchmarkType = RecyclableCollectionsBenchmarkSource.PooledList;
+			BaselineBenchmarkType = RecyclableCollectionsBenchmarkSource.List;
 			BenchmarkType = RecyclableCollectionsBenchmarkSource.RecyclableLongList;
 		}
 
@@ -52,7 +52,7 @@ namespace Recyclable.Collections.Benchmarks
 
 		[Params
 		(
-			RecyclableCollectionsBenchmarkSource.PooledList
+			RecyclableCollectionsBenchmarkSource.List
 		)]
 		public override RecyclableCollectionsBenchmarkSource BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
 

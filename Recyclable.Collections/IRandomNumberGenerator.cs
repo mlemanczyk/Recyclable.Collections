@@ -1,6 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
-	public interface IRandomNumberGenerator
+	internal interface IRandomNumberGenerator
 	{
 		int NextInt32(int startIndex, int endIndex);
 	}
