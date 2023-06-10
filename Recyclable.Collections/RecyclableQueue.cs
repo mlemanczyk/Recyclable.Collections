@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public class RecyclableQueue<T> : IRecyclableOwner<T>, IList<T>, IDisposable
+	internal class RecyclableQueue<T> : IRecyclableOwner<T>, IList<T>, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;

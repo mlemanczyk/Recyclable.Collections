@@ -2,7 +2,7 @@
 
 namespace Recyclable.Collections
 {
-	public class RecyclableStack<T> : IList<T>, IDisposable
+	internal class RecyclableStack<T> : IList<T>, IDisposable
 	{
 		private bool _disposedValue;
 		private readonly int _blockSize;
