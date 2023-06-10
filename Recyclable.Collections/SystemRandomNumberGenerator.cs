@@ -1,6 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
-	public class SystemRandomNumberGenerator : IRandomNumberGenerator
+	internal class SystemRandomNumberGenerator : IRandomNumberGenerator
 	{
 		private readonly Random _random = new();
 

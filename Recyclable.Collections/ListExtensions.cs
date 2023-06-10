@@ -4,7 +4,7 @@ namespace Recyclable.Collections
 {
 	// The source code was taken from https://codereview.stackexchange.com/questions/205407/quicksort-without-recursion.
 	// It was only beautified for .Net 6.0+.
-	public static class ListExtensions
+	internal static class ListExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Contains<T>(this RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));

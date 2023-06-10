@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public static class MathUtils
+	internal static class MathUtils
 	{
 		// private static readonly long[] Pow2 = new long[]
 		// {
