@@ -76,6 +76,7 @@
         1. 🅿️ `RecyclableStack<T>`
         1. 🅿️ `RecyclableUnorderedList<T>`
     1. 🅿️ Add support for `ReadOnlySpan<T>`
+    1. 🅿️ Implement list versioning to allow data change identification
     1. 🅿️ Release 0.0.3-alpha
     1. 🅿️ Implement `List<T>` interfaces
         1. 🅿️ `ICollection<T>`
