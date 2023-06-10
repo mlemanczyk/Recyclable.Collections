@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections.Parallel
 {
-    public sealed class BarrierSlimmer : IDisposable
+	public sealed class BarrierSlimmer : IDisposable
 	{
 		private static readonly ObjectPool<BarrierSlimmer> _defaultPool = new DefaultObjectPool<BarrierSlimmer>(new DefaultPooledObjectPolicy<BarrierSlimmer>());
 		private ObjectPool<BarrierSlimmer>? _assignedPool;
