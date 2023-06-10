@@ -3,20 +3,19 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	[TestClass]
 	public class RecyclableStackTests
 	{
 		private static readonly string[] _testData = new[] { "a", "d", "c", "b", "a" };
 
-		[TestMethod]
+		[Fact]
 		public void GetEnumeratorShouldYieldAllItemsInReversedOrder()
 		{
 			// Prepare
 			using var list = new RecyclableStack<string>(_testData);
 
 			// Act
-			var actual = new RecyclableList<string>();
-			var enumerator = list.GetEnumerator();
+			var actual = new RecyclableLongList<string>();
+			using var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
 				actual.Add(enumerator.Current);
@@ -26,7 +25,7 @@ namespace Recyclable.CollectionsTests
 			_ = actual.Should().ContainInConsecutiveOrder(_testData.Reverse());
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenCreated()
 		{
 			// Act
@@ -37,7 +36,7 @@ namespace Recyclable.CollectionsTests
 				.And.ContainInConsecutiveOrder(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyWhenNotInitialized()
 		{
 			// Act
@@ -47,7 +46,7 @@ namespace Recyclable.CollectionsTests
 			_ = sortedList.Should().BeEmpty();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenInitialized()
 		{
 			// Act
@@ -66,7 +65,7 @@ namespace Recyclable.CollectionsTests
 				.And.BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyAfterClear()
 		{
 			// Prepare
@@ -79,7 +78,7 @@ namespace Recyclable.CollectionsTests
 			_ = sortedList.Should().BeEmpty();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void PopShouldReturnItemsInReversedOrder()
 		{
 			// Prepare
@@ -91,7 +90,7 @@ namespace Recyclable.CollectionsTests
 				list.Push(_testData[itemIdx]);
 			}
 
-			var dequeuedItems = new RecyclableList<string>();
+			var dequeuedItems = new RecyclableLongList<string>();
 			while (list.LongCount > 0)
 			{
 				dequeuedItems.Add(list.Pop());
@@ -101,8 +100,7 @@ namespace Recyclable.CollectionsTests
 			_ = dequeuedItems.Should().ContainInConsecutiveOrder(_testData.Reverse());
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Fact]
 		public void PopShoudRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
 		{
 			// Prepare
@@ -114,7 +112,7 @@ namespace Recyclable.CollectionsTests
 				_ = list.Dequeue();
 			}
 
-			_ = list.Dequeue();
+			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Dequeue());
 		}
 	}
 }

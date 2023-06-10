@@ -17,35 +17,35 @@ namespace Recyclable.Collections.Benchmarks
 		public RecyclableCollectionsBenchmarks() : base()
 		{
 			TestObjectCount = 1;
-			// BaselineBenchmarkType = RecyclableCollectionsBenchmarkSource.PooledList;
+			BaselineBenchmarkType = RecyclableCollectionsBenchmarkSource.List;
 			BenchmarkType = RecyclableCollectionsBenchmarkSource.RecyclableLongList;
 		}
 
 		[Params
 		(
-			//RecyclableCollectionsBenchmarkType.Add_WithCapacity,
-			//RecyclableCollectionsBenchmarkType.Add,
-			//RecyclableCollectionsBenchmarkType.AddRange_WithCapacity,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsArray,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIEnumerable,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsList,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType,
-			//RecyclableCollectionsBenchmarkType.Contains_FirstItems,
-			//RecyclableCollectionsBenchmarkType.Contains_LastItems,
-			//RecyclableCollectionsBenchmarkType.Count,
-			//RecyclableCollectionsBenchmarkType.Create_WithCapacity,
-			//RecyclableCollectionsBenchmarkType.Create,
-			//RecyclableCollectionsBenchmarkType.GetItem,
-			RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases
-			//RecyclableCollectionsBenchmarkType.IndexOf_FirstItems,
-			//RecyclableCollectionsBenchmarkType.IndexOf_LastItems
-			//RecyclableCollectionsBenchmarkType.LongCount,
-			//RecyclableCollectionsBenchmarkType.Remove_FirstItems,
-			//RecyclableCollectionsBenchmarkType.Remove_LastItems,
-			//RecyclableCollectionsBenchmarkType.RemoveAt_FirstItems,
-			//RecyclableCollectionsBenchmarkType.RemoveAt_LastItems,
-			//RecyclableCollectionsBenchmarkType.SetItem
+			RecyclableCollectionsBenchmarkType.Add_WithCapacity,
+			RecyclableCollectionsBenchmarkType.Add,
+			RecyclableCollectionsBenchmarkType.AddRange_WithCapacity,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsArray,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIEnumerable,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsList,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType,
+			RecyclableCollectionsBenchmarkType.Contains_FirstItems,
+			RecyclableCollectionsBenchmarkType.Contains_LastItems,
+			RecyclableCollectionsBenchmarkType.Count,
+			RecyclableCollectionsBenchmarkType.Create_WithCapacity,
+			RecyclableCollectionsBenchmarkType.Create,
+			RecyclableCollectionsBenchmarkType.GetItem,
+			RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases,
+			RecyclableCollectionsBenchmarkType.IndexOf_FirstItems,
+			RecyclableCollectionsBenchmarkType.IndexOf_LastItems,
+			RecyclableCollectionsBenchmarkType.LongCount,
+			RecyclableCollectionsBenchmarkType.Remove_FirstItems,
+			RecyclableCollectionsBenchmarkType.Remove_LastItems,
+			RecyclableCollectionsBenchmarkType.RemoveAt_FirstItems,
+			RecyclableCollectionsBenchmarkType.RemoveAt_LastItems,
+			RecyclableCollectionsBenchmarkType.SetItem
 		)]
 
 		public RecyclableCollectionsBenchmarkType TestCase { get; set; } = RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases;
@@ -58,10 +58,10 @@ namespace Recyclable.Collections.Benchmarks
 
 		[Params
 		(
-			//RecyclableCollectionsBenchmarkSource.Array,
-			//RecyclableCollectionsBenchmarkSource.List,
-			//RecyclableCollectionsBenchmarkSource.PooledList
-			//RecyclableCollectionsBenchmarkSource.RecyclableList,
+			RecyclableCollectionsBenchmarkSource.Array,
+			RecyclableCollectionsBenchmarkSource.List,
+			RecyclableCollectionsBenchmarkSource.PooledList,
+			RecyclableCollectionsBenchmarkSource.RecyclableList,
 			RecyclableCollectionsBenchmarkSource.RecyclableLongList
 		)]
 		public override RecyclableCollectionsBenchmarkSource BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }

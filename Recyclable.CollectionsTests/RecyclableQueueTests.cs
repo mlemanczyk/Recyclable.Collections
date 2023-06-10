@@ -3,12 +3,11 @@ using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests
 {
-	[TestClass]
 	public class RecyclableQueueTests
 	{
 		private static readonly string[] _testData = new[] { "a", "d", "c", "b", "a" };
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenCreated()
 		{
 			// Act
@@ -17,9 +16,10 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.Should().HaveCount(_testData.Length)
 				.And.ContainInConsecutiveOrder(_testData);
+			_ = list.LongCount.Should().Be(_testData.Length);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyWhenNotInitialized()
 		{
 			// Act
@@ -27,9 +27,10 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.Should().BeEmpty();
+			_ = list.LongCount.Should().Be(0);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldNotBeSortedWhenInitialized()
 		{
 			// Act
@@ -48,7 +49,7 @@ namespace Recyclable.CollectionsTests
 				.And.BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ShouldBeEmptyAfterClear()
 		{
 			// Prepare
@@ -61,7 +62,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Should().BeEmpty();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void DequeueShouldReturnItemsInTheSameOrder()
 		{
 			// Prepare
@@ -73,18 +74,18 @@ namespace Recyclable.CollectionsTests
 				list.Enqueue(_testData[itemIdx]);
 			}
 
-			var dequeuedItems = new RecyclableList<string>();
+			var dequeuedItems = new RecyclableLongList<string>();
 			while (list.LongCount > 0)
 			{
 				dequeuedItems.Add(list.Dequeue());
 			}
 
 			// Validate
-			_ = dequeuedItems.Should().ContainInConsecutiveOrder(_testData);
+			_ = dequeuedItems.Should().ContainInConsecutiveOrder(_testData)
+				.And.BeEquivalentTo(_testData);
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException))]
+		[Fact]
 		public void DequeueShoudRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
 		{
 			// Prepare
@@ -96,25 +97,27 @@ namespace Recyclable.CollectionsTests
 				_ = list.Dequeue();
 			}
 
-			_ = list.Dequeue();
+			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Dequeue());
+			_ = list.LongCount.Should().Be(0);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void GetEnumeratorShouldYieldAllItemsInTheSameOrder()
 		{
 			// Prepare
 			using var list = new RecyclableQueue<string>(_testData);
 
 			// Act
-			var actual = new RecyclableList<string>();
-			var enumerator = list.GetEnumerator();
+			var actual = new RecyclableLongList<string>();
+			using var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
 				actual.Add(enumerator.Current);
 			}
 
 			// Validate
-			_ = actual.Should().ContainInConsecutiveOrder(_testData);
+			_ = actual.Should().ContainInConsecutiveOrder(_testData)
+				.And.BeEquivalentTo(_testData);
 		}
 	}
 }

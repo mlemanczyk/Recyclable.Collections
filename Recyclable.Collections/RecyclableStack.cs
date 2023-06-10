@@ -2,12 +2,12 @@
 
 namespace Recyclable.Collections
 {
-	public class RecyclableStack<T> : IList<T>, IDisposable
+	internal class RecyclableStack<T> : IList<T>, IDisposable
 	{
 		private bool _disposedValue;
 		private readonly int _blockSize;
 
-		protected RecyclableList<T> List { get; }
+		protected RecyclableLongList<T> List { get; }
 		public int Count => List.Count;
 		public long LongCount
 		{
@@ -32,7 +32,7 @@ namespace Recyclable.Collections
 			List = new(list, blockSize);
 		}
 
-		public RecyclableStack(RecyclableList<T> list, int blockSize = RecyclableDefaults.BlockSize)
+		public RecyclableStack(RecyclableLongList<T> list, int blockSize = RecyclableDefaults.BlockSize)
 		{
 			_blockSize = blockSize;
 			List = new(list, blockSize);
@@ -47,9 +47,9 @@ namespace Recyclable.Collections
 		{
 			var toRemove = List[LongCount - 1];
 			LongCount--;
-			if (List.Capacity - LongCount == _blockSize)
+			if ((List.Capacity * _blockSize) - LongCount == _blockSize)
 			{
-				List.RemoveBlock(List.BlockCount - 1);
+				List.RemoveBlock(List.ReservedBlockCount - 1);
 			}
 
 			return toRemove;

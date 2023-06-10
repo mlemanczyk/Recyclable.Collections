@@ -1,6 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
-	public class RecyclableSortedList<TKey, TValue> : RecyclableList<(TKey Key, TValue Value)>
+	internal class RecyclableSortedList<TKey, TValue> : RecyclableLongList<(TKey Key, TValue Value)>
 		where TKey : notnull
 	{
 		private static readonly IComparer<(TKey, TValue)> _comparer = new FrequencyTupleComparer<TKey, TValue>();
@@ -27,7 +27,7 @@
 			QuickSort();
 		}
 
-		public RecyclableSortedList(int blockSize = RecyclableDefaults.BlockSize) 
+		public RecyclableSortedList(int blockSize = RecyclableDefaults.BlockSize)
 			: base(blockSize)
 		{
 		}
@@ -38,7 +38,7 @@
 
 		public void BeginUpdate() => _isUpdating++;
 
-		public void Clear()
+		public new void Clear()
 		{
 			BeginUpdate();
 			try
@@ -73,7 +73,7 @@
 			finally
 			{
 				EndUpdate(false);
-			}		
+			}
 		}
 	}
 }
