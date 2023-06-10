@@ -45,6 +45,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			int expectedItemsCount = testData.Count();
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo(expectedItemsCount, "when capacity == 0, then we should allocate as much memory as needed, only");
+			_ = list.LastBlockWithData.Should().Be((int)(itemsCount / list.BlockSize) - (itemsCount % list.BlockSize != 0 ? 0 : 1));
 			_ = list.LongCount.Should().Be(expectedItemsCount);
 			_ = list.Should().ContainInConsecutiveOrder(testData);
 		}
@@ -88,6 +89,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.Capacity.Should().Be(0);
+			_ = list.LastBlockWithData.Should().Be(-1);
 			_ = list.LongCount.Should().Be(0);
 			_ = list.Should().BeEmpty();
 		}
@@ -144,6 +146,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			_ = list.LongCount.Should().Be(expectedData.Length);
+			_ = list.LastBlockWithData.Should().Be((int)(itemsCount * 2 / list.BlockSize) - (itemsCount * 2 % list.BlockSize != 0 ? 0 : 1));
 			_ = list.Should().ContainInConsecutiveOrder(expectedData);
 		}
 
@@ -163,6 +166,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount * 2);
+			_ = list.LastBlockWithData.Should().Be((int)(itemsCount * 2 / list.BlockSize) - (itemsCount * 2 % list.BlockSize != 0 ? 0 : 1));
 			_ = list.Should().ContainInConsecutiveOrder(testData);
 		}
 
@@ -181,6 +185,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount, "we added so many items");
+			_ = list.LastBlockWithData.Should().Be((int)(itemsCount / list.BlockSize) - (itemsCount % list.BlockSize == 0 ? 1 : 0));
 			_ = list.Should().ContainInConsecutiveOrder(testData);
 		}
 
@@ -213,6 +218,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount * 2);
+			_ = list.LastBlockWithData.Should().Be((int)(itemsCount * 2 / list.BlockSize) - (itemsCount * 2 % list.BlockSize != 0 ? 0 : 1));
 			_ = list.Should().ContainInConsecutiveOrder(testData.Concat(testData));
 		}
 
@@ -572,11 +578,13 @@ namespace Recyclable.CollectionsTests
 
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
 				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
 			}
 
 			_ = list.Should().BeEmpty();
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
 		}
 
 		[Theory]
@@ -594,11 +602,13 @@ namespace Recyclable.CollectionsTests
 
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
 				_ = list.Should().ContainInConsecutiveOrder(testData.Take((int)(itemsCount - deleted)));
 			}
 
 			_ = list.Should().BeEmpty();
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
 		}
 
 		[Theory]
@@ -616,8 +626,13 @@ namespace Recyclable.CollectionsTests
 
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
+				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
 				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
 			}
+
+			_ = list.Should().BeEmpty();
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
 		}
 
 		[Theory]
@@ -634,11 +649,14 @@ namespace Recyclable.CollectionsTests
 				_ = list.Remove(item).Should().BeTrue($"we search for {item} which should exist");
 				removedCount++;
 				var expectedList = expectedData[0..((int)itemsCount - removedCount)];
+				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
 				_ = list.LongCount.Should().Be(expectedList.Length);
 				_ = list.Should().ContainInConsecutiveOrder(expectedList);
 			}
 
 			_ = list.Should().BeEmpty();
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
 		}
 	}
 }
