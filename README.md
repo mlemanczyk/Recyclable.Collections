@@ -70,14 +70,14 @@
     1. ✅ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
     1. ✅ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
     1. ✅ Fix failing tests
-    1. 👉 Hide not ready classes
-        1. 🅿️ `RecyclableQueue<T>`
-        1. 🅿️ `RecyclableSortedList<T>`
-        1. 🅿️ `RecyclableStack<T>`
-        1. 🅿️ `RecyclableUnorderedList<T>`
-    1. 🅿️ Add support for `ReadOnlySpan<T>`
+    1. ✅ Hide not ready classes
+        1. ✅ `RecyclableQueue<T>`
+        1. ✅ `RecyclableSortedList<T>`
+        1. ✅ `RecyclableStack<T>`
+        1. ✅ `RecyclableUnorderedList<T>`
+    1. 👉 Add support for `ReadOnlySpan<T>`
     1. 🅿️ Implement list versioning to allow data change identification
-    1. 🅿️ Release 0.0.3-alpha
+    1. ✅ Release 0.0.3-alpha
     1. 🅿️ Implement `List<T>` interfaces
         1. 🅿️ `ICollection<T>`
         1. 🅿️ `IEnumerable<T>`
