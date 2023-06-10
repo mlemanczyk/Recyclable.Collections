@@ -42,7 +42,7 @@
     1. ✅ `Resize`
     1. ✅ `this[int index]`
 1. ✅ Port `RecyclableList<T>` implementation to `RecyclableLongList<T>`
-1. Optimize `RecyclableLongList<T>`
+1. 👉 Optimize `RecyclableLongList<T>`
     1. ✅ `Add`
     1. ✅ `AddRange`
         1. ✅ when source is `array<T>`
@@ -67,16 +67,16 @@
     1. ✅ `Resize`
     1. ✅ `this[int index]`
     1. ✅ `this[long index]`
-    1. 🅿️ Hide not ready classes
+    1. ✅ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
+    1. ✅ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
+    1. ✅ Fix failing tests
+    1. 👉 Hide not ready classes
         1. 🅿️ `RecyclableQueue<T>`
         1. 🅿️ `RecyclableSortedList<T>`
         1. 🅿️ `RecyclableStack<T>`
         1. 🅿️ `RecyclableUnorderedList<T>`
-    1. ✅ Rename `RecyclableList<T>` to `RecyclableLongList<T>`
-    1. ✅ Rename `RecyclableArrayList<T>` to `RecyclableList<T>`
-    1. 👉 Add support for `ReadOnlySpan<T>`
-    1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
-    1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
+    1. 🅿️ Add support for `ReadOnlySpan<T>`
+    1. 🅿️ Release 0.0.3-alpha
     1. 🅿️ Implement `List<T>` interfaces
         1. 🅿️ `ICollection<T>`
         1. 🅿️ `IEnumerable<T>`
@@ -86,41 +86,69 @@
         1. 🅿️ `IReadOnlyList<T>`
         1. 🅿️ `ICollection`
         1. 🅿️ `IList`
-    1. Make sure that `NeedsClearing` is used & items are cleared in
+    1. 🅿️ Make sure that `NeedsClearing` is used & items are cleared in
         1. 🅿️ `Clear`
         1. 🅿️ `Dispose`
         1. 🅿️ `Remove`
         1. 🅿️ `RemoveAt`
         1. 🅿️ `RemoveBlock`
-    1. 🅿️ Replace `Math` class usages with `if` statements
-    1. 🅿️ Replace `a - b > 0` & `a - b < 0` comparisons with `a > b` & `a < b`
-    1. 🅿️ Replace `a + b > 0` & `a + b < 0` comparisons with `a > b` & `a < b`
-    1. 🅿️ Replace `a / b` & `a * b` calculations with equivalents, where possible
-    1. 🅿️ Replace virtual calls with static calls
-    1. 🅿️ Replace `blockSize` sums by powers of 2, minus 1
-    1. 🅿️ Remove type castings, if possible
-    1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
-    1. 🅿️ Make type castings `checked`
+    1. 🅿️ Release 0.0.3-beta
+    1. 🅿️ Add support for `ulong` indexing
+        1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
+        1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
+    1. 🅿️ Final optimizations
+        1. 🅿️ Replace `Math` class usages with `if` statements
+        1. 🅿️ Replace `a - b > 0` & `a - b < 0` comparisons with `a > b` & `a < b`
+        1. 🅿️ Replace `a + b > 0` & `a + b < 0` comparisons with `a > b` & `a < b`
+        1. 🅿️ Replace `a / b` & `a * b` calculations with equivalents, where possible
+        1. 🅿️ Replace virtual calls with static calls
+        1. 🅿️ Replace `blockSize` sums by powers of 2, minus 1
+        1. 🅿️ Remove type castings, if possible
+        1. 🅿️ Convert generic methods to non-generic
+    1. 🅿️ Overflow review
+        1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
+        1. 🅿️ Make type castings `checked`
     1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
-    1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
-    1. 🅿️ Cleanup `RecyclableLongListExtensions`
-    1. 🅿️ Convert generic methods to non-generic
-1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
-1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
-1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
-1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
-    1. 🅿️ `RecyclableList<T>`
-    1. 🅿️ `RecyclableLongList<T>`
-    1. 🅿️ `RecyclableQueue<T>`
-    1. 🅿️ `RecyclableSortedList<T>`
-    1. 🅿️ `RecyclableStack<T>`
-    1. 🅿️ `RecyclableUnorderedList<T>`
+    1. 🅿️ Release 0.0.3
+1. 🅿️ Implement `RecyclableQeueue<T>`
+    1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
+    1. 🅿️ Release 0.0.4
+1. 🅿️ Implement `RecyclableStack<T>`
+    1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
+    1. 🅿️ Release 0.0.5
+1. 🅿️ Implement `RecyclableSortedList<T>`
+    1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
+    1. 🅿️ Release 0.0.6
+1. 🅿️ Implement `RecyclableUnorderedList<T>`
+    1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
+    1. 🅿️ Release 0.0.7
 1. 🅿️ Optimize `OneSizeArrayPool`
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
-1. 🅿️ Optimize `RecyclableArrayPool`
+1. 🅿️ Review `RecyclableArrayPool`
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
+1. 🅿️ Optimize `MemoryBucket<T>`
+    1. 🅿️ Convert to `struct`, if possible
+    1. 🅿️ Find out if there are better replacements
+    1. 🅿️ Release 0.0.8
+1. 🅿️ Optimize
+    1. 🅿️ `IndexOfSynchronizationContext`
+    1. 🅿️ `IndexOfSynchronizationContextPool`
+    1. 🅿️ `ManualResetEventSlimmer`
+    1. 🅿️ `ManualResetEventSlimmerPool`
+    1. 🅿️ `SpinLockSlimmer`
+1. 🅿️ Release 0.0.9-beta
+1. 🅿️ Cleanup
+    1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
+    1. 🅿️ Cleanup `RecyclableLongListExtensions`
+    1. 🅿️ `ListExtensions`
+    1. 🅿️ `MathUtils`
+1. 🅿️ Optimize
+    1. 🅿️ `ListExtensions`
+    1. 🅿️ `MathUtils`
+    1. 🅿️ `SystemRandomNumberGenerator`
+1. 🅿️ Release 1.0.0
 
 # Characteristics of the classes
 
@@ -303,7 +331,7 @@ Having protection against invalid state of the object is an important part of so
 This decision is driven by performance measures. Considering wide use of the lists on the hot-paths, each additional check & operation starts counting. I've decided to eliminate all the checks for the sake of performance. If you feel that you need additional protection, feel free to inherit or reuse any of the provided classes to provide that.
 
 ## `this[int index]`, `Count`, `IndexOf(T item)` etc. may overflow, but...
-All the classes included in this package support `long` indexing and addressing. The `LongCount` property will always provide the total no. of items stored on the list. Since `Count` is just `LongCount` typecasted to `int`, its value may overflow.
+All the classes included in this package support `long` indexing and addressing. The `LongCount` property will always provide the total no. of items stored on the list. Since `Count` is just `LongCount` type-casted to `int`, its value may overflow.
 
 But `List<T>` addressing is kind of currently limited to `int` ranges anyway in practical scenarios. As such `Count` overflowing shouldn't be an issue when using the classes with existing code. If you use `Count` in your loops, it's recommended to replace it with `LongCount`, tough. You don't need to make any changes in `foreach` or other iterator loops. They are expected to transparently use the new classes & yield all items, beyond `int.MaxValue` range.
 
