@@ -45,8 +45,8 @@ public static class Program
 		_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<WhenParallelSearchBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
-		 _ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
-		//ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
+		// ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 	}
 
 	static void Main(string[] args)
@@ -54,6 +54,6 @@ public static class Program
 		RunRecyclableCollectionsBenchmarks();
 		// RunPocBenchmarks();
 		// RunSelectedBenchmarks();
-		//RunAssemblyBenchmarks();
+		// RunAssemblyBenchmarks();
 	}
 }
