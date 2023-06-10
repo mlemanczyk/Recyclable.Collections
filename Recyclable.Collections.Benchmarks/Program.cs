@@ -34,7 +34,7 @@ public static class Program
 
 		//benchmark.Cleanup();
 	}
-	
+
 	static void RunPocBenchmarks()
 	{
 		_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
