@@ -23,11 +23,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 	public partial class RecyclableLongListPocBenchmarks : PocBenchmarkBase<RecyclableLongListPocBenchmarkType>
 	{
 		[Params(RecyclableLongListPocBenchmarkType.IndexOf)]
-		public override RecyclableLongListPocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+		public override RecyclableLongListPocBenchmarkType DataType { get => base.DataType; set => base.DataType = value; }
 
 		// [Params(BenchmarkType.Array, BenchmarkType.List, BenchmarkType.RecyclableList, BenchmarkType.RecyclableLongList)]
 		[Params(RecyclableLongListPocBenchmarkType.IndexOf_PooledList)]
-		public override RecyclableLongListPocBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+		public override RecyclableLongListPocBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
         private long[]? _testArray;
 		public long[] TestObjects => _testArray ?? throw new NullReferenceException("Something is wrong and test objects are null");
@@ -131,7 +131,7 @@ namespace Recyclable.Collections.Benchmarks.POC
         {
 			base.PrepareData(benchmarkType);
 
-            switch (BenchmarkType)
+            switch (benchmarkType)
             {
                 case RecyclableLongListPocBenchmarkType.IndexOfV1:
 					_testRecyclableLongListIndexOfV1 = new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);

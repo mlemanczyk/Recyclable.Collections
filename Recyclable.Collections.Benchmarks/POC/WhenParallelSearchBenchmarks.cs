@@ -83,10 +83,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public object? ItemToFind { get; set; }
 
 		[Params(WhenParallelSearchBenchmarkType.IndexOfParallel)]
-		public override WhenParallelSearchBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+		public override WhenParallelSearchBenchmarkType DataType { get => base.DataType; set => base.DataType = value; }
 
 		[Params(WhenParallelSearchBenchmarkType.IndexOfSequentially)]
-		public override WhenParallelSearchBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+		public override WhenParallelSearchBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		private long DoLongIndexOfSequentially()
 		{
@@ -304,7 +304,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			ItemToFind ??= _testData.Last();
 		}
 
-		protected override Action? GetTestMethod(WhenParallelSearchBenchmarkType benchmarkType) => BenchmarkType switch
+		protected override Action? GetTestMethod(WhenParallelSearchBenchmarkType benchmarkType) => benchmarkType switch
 		{
 			WhenParallelSearchBenchmarkType.IndexOfSequentially => IndexOfSequentially,
 			WhenParallelSearchBenchmarkType.IndexOfParallel => IndexOfParallel,

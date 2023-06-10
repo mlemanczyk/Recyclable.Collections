@@ -12,10 +12,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 	public class RoundBenchmarks : PocBenchmarkBase<RoundBenchmarkType>
 	{
 		[Params(RoundBenchmarkType.MathFloor)]
-		public override RoundBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+		public override RoundBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		[Params(RoundBenchmarkType.MathRound, RoundBenchmarkType.WithTypecasting)]
-		public override RoundBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+		public override RoundBenchmarkType DataType { get => base.DataType; set => base.DataType = value; }
 
 		private const double OptimalParallelSearchStep = 0.329;
 

@@ -21,11 +21,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 			SpanVsArrayBenchmarkType.ArrayGetWithVar, SpanVsArrayBenchmarkType.SpanGet,
 			SpanVsArrayBenchmarkType.ArraySetWithField, SpanVsArrayBenchmarkType.ArraySetWithVar, SpanVsArrayBenchmarkType.SpanSet
 		)]
-		public override SpanVsArrayBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+		public override SpanVsArrayBenchmarkType DataType { get => base.DataType; set => base.DataType = value; }
 
 		[Params(SpanVsArrayBenchmarkType.ArrayGetWithField)]
 		// [Params(SpanVsArrayBenchmarkType.ArraySetWithField)]
-		public override SpanVsArrayBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+		public override SpanVsArrayBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		protected override Action GetTestMethod(SpanVsArrayBenchmarkType benchmarkType) => benchmarkType switch
         {

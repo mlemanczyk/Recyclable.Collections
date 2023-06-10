@@ -12,7 +12,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 	public class BoolOrComparePocBenchmarks : PocBenchmarkBase<BoolOrComparePocBenchmarkType>
 	{
 		[Params(BoolOrComparePocBenchmarkType.Bool, BoolOrComparePocBenchmarkType.Compare)]
-		public override BoolOrComparePocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+		public override BoolOrComparePocBenchmarkType DataType { get => base.DataType; set => base.DataType = value; }
 
 		[Params(8)]
 		public override int TestObjectCount { get => base.TestObjectCount; set => base.TestObjectCount = value; }
