@@ -16,6 +16,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.Should().HaveCount(_testData.Length)
 				.And.ContainInConsecutiveOrder(_testData);
+			_ = list.LongCount.Should().Be(_testData.Length);
 		}
 
 		[Fact]
@@ -26,6 +27,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.Should().BeEmpty();
+			_ = list.LongCount.Should().Be(0);
 		}
 
 		[Fact]
