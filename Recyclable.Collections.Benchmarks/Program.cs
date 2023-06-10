@@ -5,7 +5,8 @@ using Recyclable.Collections.Benchmarks.POC;
 
 public static class Program
 {
-	static IConfig BenchmarkConfig { get; } = ManualConfig.Create(DefaultConfig.Instance).WithOptions(ConfigOptions.DisableOptimizationsValidator | ConfigOptions.JoinSummary);
+	static IConfig BenchmarkConfig { get; } = ManualConfig.Create(DefaultConfig.Instance)
+		.WithOptions(ConfigOptions.DisableOptimizationsValidator | ConfigOptions.JoinSummary | ConfigOptions.KeepBenchmarkFiles);
 
 	static void RunAssemblyBenchmarks()
 	{
