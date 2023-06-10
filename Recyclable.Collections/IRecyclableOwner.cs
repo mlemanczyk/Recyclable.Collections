@@ -1,6 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
-	public interface IRecyclableOwner<T> : IList<T>
+	internal interface IRecyclableOwner<T> : IList<T>
 	{
 		T this[long index] { get; set; }
 		int BlockSize { get; }

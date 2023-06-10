@@ -27,6 +27,8 @@ Global
 		{CDC0CF78-FC11-43E3-9059-3261DA3639D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDC0CF78-FC11-43E3-9059-3261DA3639D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDC0CF78-FC11-43E3-9059-3261DA3639D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDC0CF78-FC11-43E3-9059-3261DA3639D1}.Release|x64.ActiveCfg = Release|x64
+		{CDC0CF78-FC11-43E3-9059-3261DA3639D1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

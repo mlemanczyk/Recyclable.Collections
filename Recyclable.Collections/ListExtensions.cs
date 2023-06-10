@@ -4,7 +4,7 @@ namespace Recyclable.Collections
 {
 	// The source code was taken from https://codereview.stackexchange.com/questions/205407/quicksort-without-recursion.
 	// It was only beautified for .Net 6.0+.
-	public static class ListExtensions
+	internal static class ListExtensions
 	{
 		public static void InsertionSort<T>(this IList<T> values, int startIndex, int endIndex, IComparer<T> comparer)
 		{
