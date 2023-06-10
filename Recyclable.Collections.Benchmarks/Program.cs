@@ -3,7 +3,7 @@ using BenchmarkDotNet.Running;
 using Recyclable.Collections.Benchmarks;
 using Recyclable.Collections.Benchmarks.POC;
 
-internal class Program
+public static class Program
 {
 	static IConfig BenchmarkConfig { get; } = ManualConfig.Create(DefaultConfig.Instance).WithOptions(ConfigOptions.DisableOptimizationsValidator | ConfigOptions.JoinSummary);
 
@@ -49,7 +49,7 @@ internal class Program
 		//ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 	}
 
-	private static void Main(string[] args)
+	static void Main(string[] args)
 	{
 		RunRecyclableCollectionsBenchmarks();
 		// RunPocBenchmarks();
