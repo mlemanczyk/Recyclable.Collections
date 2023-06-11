@@ -154,7 +154,17 @@
     1. 🅿️ `ListExtensions`
     1. 🅿️ `MathUtils`
     1. 🅿️ `SystemRandomNumberGenerator`
+1. 🅿️ Review and remove warnings & hints
+    1. 🅿️ Warnings
+    1. 🅿️ Hints
+1. Documentation
+    1. 🅿️ Document differences in behavior
+    1. 🅿️ Document other specifics
 1. 🅿️ Release 1.0.0
+1. 🅿️ Optimize
+    1. 🅿️ `RecyclableLongList<T>.Resize`
+    1. 🅿️ Check if we can benefit from Sse2 in `.IndexOf`/`.Contains` methods as given in [MS blog](https://devblogs.microsoft.com/dotnet/hardware-intrinsics-in-net-core/).
+1. 🅿️ Release 2.0.0
 
 # Characteristics of the classes
 
