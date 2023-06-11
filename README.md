@@ -126,9 +126,11 @@
 1. 🅿️ Optimize `OneSizeArrayPool`
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
+    1. 🅿️ Implement memory bucket disposal in high RAM pressure scenario
 1. 🅿️ Review `RecyclableArrayPool`
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
+    1. 🅿️ Implement array disposal in high RAM pressure scenario
 1. 🅿️ Optimize `MemoryBucket<T>`
     1. 🅿️ Convert to `struct`, if possible
     1. 🅿️ Find out if there are better replacements
@@ -137,8 +139,11 @@
     1. 🅿️ `IndexOfSynchronizationContext`
     1. 🅿️ `IndexOfSynchronizationContextPool`
     1. 🅿️ `ManualResetEventSlimmer`
+        1. 🅿️ Multi-threading benchmarks
     1. 🅿️ `ManualResetEventSlimmerPool`
+        1. 🅿️ Multi-threading benchmarks
     1. 🅿️ `SpinLockSlimmer`
+        1. 🅿️ Multi-threading benchmarks
 1. 🅿️ Release 0.0.9-beta
 1. 🅿️ Cleanup
     1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
@@ -174,7 +179,7 @@ This is the direct equivalent of `List<T>` class, except that the arrays are tak
 * All classes provide large storage capabilities, in practice limited only by the memory available in your system.
 * All data is stored in blocks, with the provided `int blockSize` or the default, currently being `10,240` items in each block. It's recommended to use smaller numbers, if you foresee storing low no. of items on the list.
 * There is no memory copying to increase the capacity of the recyclable classes, unless the no. of items exceeds the no. of allocated blocks. In that case, a new array of blocks is created to accommodate . If more capacity is needed, a new memory block is allocate & added to the internal list of blocks. This is the only list that may re-allocate memory block & copy their content to grow. That shouldn't be an issue considering limited no. of blocks stored by each class in practical scenarios. Currently I'm not planning any works around that. Shall there be a need to eliminate it, you're welcomed to file a PR with the proposed changes.
-* ⚠️ `IndexOf` will automatically switch to parallel search mode. Collections smaller than (currently) 850_000 items are guaranteed to find the 1st occurrence of the `item` parameter. Collections bigger than (currently) 850_000 items will be scanned using parallelization. If either case it'll return the index of the first matching item. This note also applies to `Contains`, because it internally uses `IndexOf`. The value of 850_000 may become configurable in the future, unless it proves to result in much worse performance.
+* ⚠️ `IndexOf` will automatically switch to parallel search mode. Collections bigger than (currently) 850_000 items will be scanned using parallelization. In either case it'll return the index of the first matching item. This note also applies to `Contains`, because it internally uses `IndexOf`. The value of 850_000 may become configurable in the future, unless it proves to result in much worse performance.
 
 The parallelization utilizes default `Task` scheduling, resulting in non-deterministic order in which search tasks are executed. In most cases it resulted in significant performance improvements. Below you can find the benchmarks for various item counts.
 
