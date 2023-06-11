@@ -75,10 +75,9 @@
         1. ✅ `RecyclableSortedList<T>`
         1. ✅ `RecyclableStack<T>`
         1. ✅ `RecyclableUnorderedList<T>`
-    1. 👉 Add support for `ReadOnlySpan<T>`
-    1. 🅿️ Implement list versioning to allow data change identification
+    1. ✅ Add support for `ReadOnlySpan<T>`
     1. ✅ Release 0.0.3-alpha
-    1. 🅿️ Implement `List<T>` interfaces
+    1. 👉 Implement `List<T>` interfaces
         1. 🅿️ `ICollection<T>`
         1. 🅿️ `IEnumerable<T>`
         1. 🅿️ `IEnumerable`
@@ -87,6 +86,7 @@
         1. 🅿️ `IReadOnlyList<T>`
         1. 🅿️ `ICollection`
         1. 🅿️ `IList`
+    1. 🅿️ Implement list versioning to allow data change identification
     1. 🅿️ Make sure that `NeedsClearing` is used & items are cleared in
         1. 🅿️ `Clear`
         1. 🅿️ `Dispose`
@@ -167,6 +167,7 @@
 1. 🅿️ Optimize
     1. 🅿️ `RecyclableLongList<T>.Resize`
     1. 🅿️ Check if we can benefit from Sse2 in `.IndexOf`/`.Contains` methods as given in [MS blog](https://devblogs.microsoft.com/dotnet/hardware-intrinsics-in-net-core/).
+1. 🅿️ Add support for `ICollection<T>` interface in `.AddRange` & `constructor`
 1. 🅿️ Release 2.0.0
 
 # Characteristics of the classes
