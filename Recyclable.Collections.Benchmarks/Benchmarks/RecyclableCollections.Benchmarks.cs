@@ -68,6 +68,6 @@ namespace Recyclable.Collections.Benchmarks
 
 		protected override Action? GetTestMethod(RecyclableCollectionsBenchmarkSource benchmarkType)
 			=> (Action?) GetType().GetMethod($"{benchmarkType}_{TestCase}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this)
-			?? throw CreateMethodNotFoundException($"{benchmarkType}_{TestCase}", GetType().FullName);
+			?? (Action?)GetType().GetMethod($"{benchmarkType}_AddRangeWhenSourceIs{benchmarkType}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this);
 	}
 }
