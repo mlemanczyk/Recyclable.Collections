@@ -12,7 +12,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		private Action? _testMethod;
 		protected Action TestMethod
 		{
-			get => _testMethod ?? throw new OperationCanceledException("Skip - Custom benchmark run in progress");
+			get => _testMethod ?? throw new OperationCanceledException("Skip - No actual defined");
 			set => _testMethod = value;
 		}
 
