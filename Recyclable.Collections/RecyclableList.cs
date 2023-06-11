@@ -12,6 +12,8 @@ namespace Recyclable.Collections
 
 		protected T[] _memoryBlock;
 
+		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
+
 		private static void ThrowArgumentOutOfRangeException(in string message)
 		{
 			throw new ArgumentOutOfRangeException(message, (Exception?)null);
@@ -87,6 +89,20 @@ namespace Recyclable.Collections
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(RecyclableList<T> source)
+#pragma warning restore CS8618
+		{
+			AddRange(source);
+		}
+
+#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
+		public RecyclableList(RecyclableLongList<T> source)
+#pragma warning restore CS8618
+		{
+			AddRange(source);
+		}
+
+#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
+		public RecyclableList(ReadOnlySpan<T> source)
 #pragma warning restore CS8618
 		{
 			AddRange(source);
@@ -184,6 +200,26 @@ namespace Recyclable.Collections
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
 			Span<T> itemsSpan = new(items);
+			itemsSpan.CopyTo(targetSpan);
+			_count = targetCapacity;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public void AddRange(ReadOnlySpan<T> itemsSpan)
+		{
+			if (itemsSpan.Length == 0)
+			{
+				return;
+			}
+
+			int sourceItemsCount = itemsSpan.Length;
+			int targetCapacity = _count + sourceItemsCount;
+			if (_capacity < targetCapacity)
+			{
+				_ = EnsureCapacity(this, targetCapacity);
+			}
+
+			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
 		}
