@@ -6,8 +6,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 {
 	public abstract class PocBenchmarkBase<TBenchmarkType>
 	{
-		public virtual TBenchmarkType? BenchmarkType { get; set; }
-		public virtual TBenchmarkType? BaselineBenchmarkType { get; set; }
+		public virtual TBenchmarkType? DataType { get; set; }
+		public virtual TBenchmarkType? BaseDataType { get; set; }
 
 		private Action? _testMethod;
 		protected Action TestMethod
@@ -96,23 +96,23 @@ namespace Recyclable.Collections.Benchmarks.POC
 		[GlobalSetup]
 		public virtual void Setup()
 		{
-			Console.WriteLine($"******* SETTING UP TEST CASE FOR BENCHMARK {{{BenchmarkType}}} *******");
+			Console.WriteLine($"******* SETTING UP TEST CASE FOR BENCHMARK {{{DataType}}} *******");
 
-			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaselineBenchmarkType, default))
+			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaseDataType, default))
 			{
 				Console.WriteLine("******* SETTING UP BASELINE DATA *******");
-				PrepareData(BaselineBenchmarkType);
-				_baselineMethod = GetTestMethod(BaselineBenchmarkType);
+				PrepareData(BaseDataType);
+				_baselineMethod = GetTestMethod(BaseDataType);
 			}
 
 			//~ We don't want to prepare data if baseline data is the same is benchmark data.
 			//~ One would override another - waste of time & resources.
-			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaselineBenchmarkType, BenchmarkType))
+			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaseDataType, DataType))
 			{
 				Console.WriteLine("******* SETTING UP TEST CASE DATA *******");
-				//~ If BaselineBenchmarkType == null, then we'll come here only if BaselineBenchmarkType != null.
-				PrepareData(BenchmarkType!);
-				_testMethod = GetTestMethod(BenchmarkType);
+				//~ If BaseDataType == null, then we'll come here only if DataType != null.
+				PrepareData(DataType!);
+				_testMethod = GetTestMethod(DataType);
 			}
 
 			Console.WriteLine("******* DATA PREPARED *******");

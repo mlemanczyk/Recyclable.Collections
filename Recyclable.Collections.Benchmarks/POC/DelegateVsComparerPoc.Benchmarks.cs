@@ -38,10 +38,10 @@ namespace Recyclable.Collections.Benchmarks.POC
             DelegateVsComparerPocBenchmarkType.ListOfUnboxedStructs,
             DelegateVsComparerPocBenchmarkType.StaticFunc
         )]
-        public override DelegateVsComparerPocBenchmarkType BenchmarkType { get => base.BenchmarkType; set => base.BenchmarkType = value; }
+        public override DelegateVsComparerPocBenchmarkType DataType { get => base.DataType; set => base.DataType = value; }
 
         [Params(DelegateVsComparerPocBenchmarkType.Comparer)]
-        public override DelegateVsComparerPocBenchmarkType BaselineBenchmarkType { get => base.BaselineBenchmarkType; set => base.BaselineBenchmarkType = value; }
+        public override DelegateVsComparerPocBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		#region Dummy classes
 
