@@ -4,20 +4,15 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public class RecyclableList<T> : IList<T>, IDisposable
+	public class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IList, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
-
+		private static readonly bool _defaultIsNull = default(T) == null;
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
-
+		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
 		protected T[] _memoryBlock;
 
-		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
-
-		private static void ThrowArgumentOutOfRangeException(in string message)
-		{
-			throw new ArgumentOutOfRangeException(message, (Exception?)null);
-		}
+		private static void ThrowArgumentOutOfRangeException(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static T[] Resize(in T[]? source, int newSize)
@@ -294,12 +289,12 @@ namespace Recyclable.Collections
 			var sourceItemsCount = items.LongCount;
 			if (sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException($"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
+				ThrowArgumentOutOfRangeException(nameof(items), $"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			if (_count + sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException($"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
+				ThrowArgumentOutOfRangeException(nameof(items), $"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			int targetCapacity = _count + (int)sourceItemsCount;
@@ -427,7 +422,7 @@ namespace Recyclable.Collections
 		public bool Contains(T item) => _count > 0 && Array.IndexOf(_memoryBlock, item, 0, _count) >= 0;
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
-		public void CopyTo(T[] array, int arrayIndex) => Array.Copy(_memoryBlock, 0, array, arrayIndex, _count);
+		public void CopyTo(T[] array, int index) => Array.Copy(_memoryBlock, 0, array, index, _count);
 
 		protected static IEnumerable<T> Enumerate(RecyclableList<T> list)
 		{
@@ -493,7 +488,7 @@ namespace Recyclable.Collections
 		{
 			if (index >= _count)
 			{
-				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range");
+				ThrowArgumentOutOfRangeException(nameof(index), $"Provided value {index} exceeds the no. of items on the list {_count}");
 			}
 
 			_count--;
@@ -526,5 +521,120 @@ namespace Recyclable.Collections
 				GC.SuppressFinalize(this);
 			}
 		}
+
+		#region IList implementation
+
+		public bool IsFixedSize => false;
+		public bool IsSynchronized => false;
+
+		private object? _syncRoot;
+		public object SyncRoot
+		{
+			get
+			{
+				if (_syncRoot == null)
+				{
+					_ = Interlocked.CompareExchange(ref _syncRoot, new object(), null);
+				}
+
+				return _syncRoot;
+			}
+		}
+
+		object? IList.this[int index]
+		{
+			get => _memoryBlock[index];
+
+			set
+			{
+				if (value is T typedValue)
+				{
+					new Span<T>(_memoryBlock)[index] = typedValue;
+				}
+				else if (value == null && _defaultIsNull)
+				{
+#nullable disable
+					new Span<T>(_memoryBlock)[index] = default;
+#nullable restore
+				}
+				else
+				{
+					ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				}
+			}
+		}
+
+		public int Add(object? value)
+		{
+			if (value is T typeValue)
+			{
+				Add(typeValue);
+				return _count - 1;
+			}
+			else if (value == null && _defaultIsNull)
+			{
+				Add(null);
+				return _count - 1;
+			}
+			else
+			{
+				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+		}
+
+		public bool Contains(object? value) => value is T typeValue
+			? Contains(typeValue)
+#nullable disable
+			: value == null && _defaultIsNull && Contains(default);
+#nullable restore
+
+		public int IndexOf(object? value) => value is T typeValue
+			? IndexOf(typeValue)
+			: value == null && _defaultIsNull
+#nullable disable
+			? IndexOf(default)
+#nullable restore
+			: RecyclableDefaults.ItemNotFoundIndex;
+
+		public void Insert(int index, object? value)
+		{
+			if (value is T typeValue)
+			{
+				Insert(index, typeValue);
+			}
+			else if (value == null && _defaultIsNull)
+			{
+#nullable disable
+				Insert(index, default);
+#nullable restore
+			}
+			else
+			{
+				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+			}
+		}
+
+		public void Remove(object? value)
+		{
+			if (value is T typeValue)
+			{
+				_ = Remove(	typeValue);
+			}
+			else if (value == null && _defaultIsNull)
+			{
+#nullable disable
+				_ = Remove(default);
+#nullable restore
+			}
+			else
+			{
+				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+			}
+		}
+
+		public void CopyTo(Array array, int index) => Array.Copy(_memoryBlock, 0, array, index, _count);
+
+		#endregion
 	}
 }

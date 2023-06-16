@@ -9,7 +9,7 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableLongList<T> : IDisposable, IList<T>, IReadOnlyList<T>, IList
+	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IList, IDisposable
 	{
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
@@ -17,7 +17,7 @@ namespace Recyclable.Collections
 		private static readonly T[] _emptyBlockArray = new T[0];
 		private static readonly bool _defaultIsNull = default(T) == null;
 		private static void ThrowIndexOutOfRangeException(in string message) => throw new ArgumentOutOfRangeException("index", message);
-		private static void ThrowArgumentOutOfRange(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
+		private static void ThrowArgumentOutOfRangeException(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
 
 		internal int _blockSize;
 		internal byte _blockSizePow2BitShift;
@@ -1356,7 +1356,7 @@ namespace Recyclable.Collections
 				}
 				else
 				{
-					ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+					ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 				}
 			}
 		}
@@ -1375,7 +1375,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. { (value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.") }");
+				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. { (value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.") }");
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 		}
@@ -1408,7 +1408,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 			}
 		}
 
@@ -1426,7 +1426,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 			}
 		}
 

@@ -77,16 +77,16 @@
         1. ✅ `RecyclableUnorderedList<T>`
     1. ✅ Add support for `ReadOnlySpan<T>`
     1. ✅ Release 0.0.3-alpha
-    1. 👉 Implement `List<T>` interfaces
+    1. ✅ Implement `List<T>` interfaces
         1. ✅ `IList<T>`
         1. ✅ `ICollection<T>`
         1. ✅ `IEnumerable<T>`
         1. ✅ `IEnumerable`
-        1. 👉 `IReadOnlyList<T>`
-        1. 🅿️ `IReadOnlyCollection<T>`
-        1. 🅿️ `IList`
-        1. 🅿️ `ICollection`
-    1. 🅿️ Implement list versioning to allow data change identification
+        1. ✅ `IReadOnlyList<T>`
+        1. ✅ `IReadOnlyCollection<T>`
+        1. ✅ `IList`
+        1. ✅ `ICollection`
+    1. 👉 Implement list versioning to allow data change identification
     1. 🅿️ Make sure that `NeedsClearing` is used & items are cleared in
         1. 🅿️ `Clear`
         1. 🅿️ `Dispose`
