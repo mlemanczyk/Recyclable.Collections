@@ -1,5 +1,5 @@
 # Recyclable.Collections
-`Recyclable.Collections` project is an open source framework for operating dynamic lists at performance close to raw arrays, but fairly unlimited in size. It aims at providing minimal memory footprint. It implements `IList<T>`'s interface and is targeted as direct replacements of `List<T>`, `SortableList<T>`, `PriorityQueue<T>` & similar.
+`Recyclable.Collections` project is an open source framework for operating dynamic lists at performance close to raw arrays, but fairly unlimited in size. It aims at providing minimal memory footprint. It implements `IList<T>` interface and is targeted as direct replacements of `List<T>`, `SortableList<T>`, `PriorityQueue<T>` & similar.
 
 ## Included
 * `RecyclableList<T>`
@@ -78,14 +78,14 @@
     1. ✅ Add support for `ReadOnlySpan<T>`
     1. ✅ Release 0.0.3-alpha
     1. 👉 Implement `List<T>` interfaces
-        1. 🅿️ `ICollection<T>`
-        1. 🅿️ `IEnumerable<T>`
-        1. 🅿️ `IEnumerable`
-        1. 🅿️ `IList<T>`
+        1. ✅ `IList<T>`
+        1. ✅ `ICollection<T>`
+        1. ✅ `IEnumerable<T>`
+        1. ✅ `IEnumerable`
+        1. 👉 `IReadOnlyList<T>`
         1. 🅿️ `IReadOnlyCollection<T>`
-        1. 🅿️ `IReadOnlyList<T>`
-        1. 🅿️ `ICollection`
         1. 🅿️ `IList`
+        1. 🅿️ `ICollection`
     1. 🅿️ Implement list versioning to allow data change identification
     1. 🅿️ Make sure that `NeedsClearing` is used & items are cleared in
         1. 🅿️ `Clear`
@@ -106,6 +106,7 @@
         1. 🅿️ Replace `blockSize` sums by powers of 2, minus 1
         1. 🅿️ Remove type castings, if possible
         1. 🅿️ Convert generic methods to non-generic
+        1. 🅿️ Replace integer comparisons with comparisons to 0 / 1, if possible
     1. 🅿️ Overflow review
         1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
         1. 🅿️ Make type castings `checked`
@@ -148,6 +149,10 @@
     1. 🅿️ `SpinLockSlimmer`
         1. 🅿️ Multi-threading benchmarks
 1. 🅿️ Release 0.0.9-beta
+1. 🅿️ Extend unit tests
+    1. 🅿️ `.Add` / `.AddRange` must allow `null` values
+    1. 🅿️ `.Remove` / `.RemoveAt` / `.Clear` must clear reference when reference type
+    1. 🅿️ `RecyclableLongListExtensions.CopyTo`
 1. 🅿️ Cleanup
     1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
     1. 🅿️ Cleanup `RecyclableLongListExtensions`
@@ -157,6 +162,7 @@
     1. 🅿️ `ListExtensions`
     1. 🅿️ `MathUtils`
     1. 🅿️ `SystemRandomNumberGenerator`
+    1. 🅿️ `RecyclableLongListExtensions`
 1. 🅿️ Review and remove warnings & hints
     1. 🅿️ Warnings
     1. 🅿️ Hints
@@ -166,6 +172,7 @@
 1. 🅿️ Release 1.0.0
 1. 🅿️ Optimize
     1. 🅿️ `RecyclableLongList<T>.Resize`
+    1. 🅿️ `RecyclableLongList<T>.CopyTo`
     1. 🅿️ Check if we can benefit from Sse2 in `.IndexOf`/`.Contains` methods as given in [MS blog](https://devblogs.microsoft.com/dotnet/hardware-intrinsics-in-net-core/).
 1. 🅿️ Add support for `ICollection<T>` interface in `.AddRange` & `constructor`
 1. 🅿️ Release 2.0.0
@@ -425,9 +432,3 @@ public void RecyclableListExample()
     list.Clear();
 }
 ```
-## `RecyclableList<T>`
-
-## `RecyclableList<T>`
-
-## `RecyclableList<T>`
-

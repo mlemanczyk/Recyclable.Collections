@@ -9,12 +9,15 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableLongList<T> : IDisposable, IList<T>
+	public partial class RecyclableLongList<T> : IDisposable, IList<T>, IReadOnlyList<T>, IList
 	{
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
+		private static readonly bool _defaultIsNull = default(T) == null;
+		private static void ThrowIndexOutOfRangeException(in string message) => throw new ArgumentOutOfRangeException("index", message);
+		private static void ThrowArgumentOutOfRange(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
 
 		internal int _blockSize;
 		internal byte _blockSizePow2BitShift;
@@ -101,8 +104,6 @@ namespace Recyclable.Collections
 				}
 			}
 		}
-
-		private static void ThrowArgumentOutOfRangeException(in string message) => throw new ArgumentOutOfRangeException("index", message);
 
 		protected void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
 		{
@@ -1223,7 +1224,7 @@ namespace Recyclable.Collections
 		{
 			if (index >= _longCount || index < 0)
 			{
-				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
+				ThrowIndexOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
 
 			_longCount--;
@@ -1262,7 +1263,7 @@ namespace Recyclable.Collections
 		{
 			if (index >= _longCount || index < 0)
 			{
-				ThrowArgumentOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
+				ThrowIndexOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
 
 			_longCount--;
@@ -1317,5 +1318,120 @@ namespace Recyclable.Collections
 				GC.SuppressFinalize(this);
 			}
 		}
+
+		#region IList implementation
+
+		public bool IsFixedSize => false;
+		public bool IsSynchronized => false;
+
+		private object? _syncRoot;
+		public object SyncRoot
+		{
+			get
+			{
+				if (_syncRoot == null)
+				{
+					_ = Interlocked.CompareExchange(ref _syncRoot, new object(), null);
+				}
+
+				return _syncRoot;
+			}
+		}
+
+		object? IList.this[int index]
+		{
+			get => _memoryBlocks[index >> _blockSizePow2BitShift][index & _blockSizeMinus1];
+
+			set
+			{
+				if (value is T typedValue)
+				{
+					new Span<T>(_memoryBlocks[index >> _blockSizePow2BitShift])[index & _blockSizeMinus1] = typedValue;
+				}
+				else if (value == null && _defaultIsNull)
+				{
+#nullable disable
+					new Span<T>(_memoryBlocks[index >> _blockSizePow2BitShift])[index & _blockSizeMinus1] = default;
+#nullable restore
+				}
+				else
+				{
+					ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				}
+			}
+		}
+
+		public int Add(object? value)
+		{
+			if (value is T typeValue)
+			{
+				Add(typeValue);
+				return (int)(_longCount - 1);
+			}
+			else if (value == null && _defaultIsNull)
+			{
+				Add(null);
+				return (int)(_longCount - 1);
+			}
+			else
+			{
+				ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. { (value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.") }");
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+		}
+
+		public bool Contains(object? value) => value is T typeValue
+			? Contains(typeValue)
+#nullable disable
+			: value == null && _defaultIsNull && Contains(default);
+#nullable restore
+
+		public int IndexOf(object? value) => value is T typeValue
+			? IndexOf(typeValue)
+			: value == null && _defaultIsNull
+#nullable disable
+			? IndexOf(default)
+#nullable restore
+			: RecyclableDefaults.ItemNotFoundIndex;
+
+		public void Insert(int index, object? value)
+		{
+			if (value is T typeValue)
+			{
+				Insert(index, typeValue);
+			}
+			else if (value == null && _defaultIsNull)
+			{
+#nullable disable
+				Insert(index, default);
+#nullable restore
+			}
+			else
+			{
+				ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+			}
+		}
+
+		public void Remove(object? value)
+		{
+			if (value is T typeValue)
+			{
+				_ = Remove(typeValue);
+			}
+			else if (value == null && _defaultIsNull)
+			{
+#nullable disable
+				_ = Remove(default);
+#nullable restore
+			}
+			else
+			{
+				ThrowArgumentOutOfRange(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+			}
+		}
+
+		public void CopyTo(Array array, int index) => _memoryBlocks.CopyTo(0, _blockSize, _longCount, array, index);
+
+		#endregion
 	}
 }

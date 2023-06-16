@@ -6,16 +6,6 @@ namespace Recyclable.Collections
 	internal static class RecyclableLongListExtensions
 	{
 		private const int _minPooledArraySize = RecyclableDefaults.MinPooledArrayLength;
-		private const long ItemNotFoundIndexLong = -1L;
-		private const int ItemNotFoundIndex = -1;
-
-		public static void CopyItems<T>(this T[] memory, long startingIndex, long count, ref T[] destArray, long offset = 1)
-		{
-			for (long destItemIndex = startingIndex, sourceItemIndex = offset; destItemIndex < startingIndex + count; destItemIndex++, sourceItemIndex++)
-			{
-				destArray[destItemIndex] = memory[sourceItemIndex];
-			}
-		}
 
 		public static void CopyTo<T>(this T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
 		{
@@ -42,6 +32,30 @@ namespace Recyclable.Collections
 			{
 				sourceBlockMemory = new(sourceMemoryBlocksSpan[lastBlockIndex], 0, (int)(itemsCount - (lastBlockIndex * blockSize)));
 				sourceBlockMemory.CopyTo(destinationArrayMemory);
+			}
+		}
+
+		public static void CopyTo<T>(this T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, Array destinationArray, int destinationArrayIndex)
+		{
+			if (itemsCount <= 0)
+			{
+				return;
+			}
+
+			int startingBlockIndex = (int)(startingIndex / blockSize);
+			int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize > 0 ? 1 : 0)) - 1;
+
+			var destinationIndex = destinationArrayIndex;
+			Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
+			for (int memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
+			{
+				Array.ConstrainedCopy(sourceMemoryBlocksSpan[memoryBlockIndex], 0, destinationArray, destinationIndex, blockSize);
+				destinationIndex += blockSize;
+			}
+
+			if (itemsCount - destinationIndex > 0)
+			{
+				Array.ConstrainedCopy(sourceMemoryBlocksSpan[lastBlockIndex], 0, destinationArray, destinationIndex, (int)(itemsCount - destinationIndex));
 			}
 		}
 
