@@ -133,7 +133,10 @@ namespace Recyclable.Collections
 
 		public void AddBlock()
 		{
-			T[] newArray = BlockSize.RentArrayFromPool<T>(_arrayPool);
+			T[] newArray = (BlockSize >= RecyclableDefaults.MinPooledArrayLength)
+				? _arrayPool.Rent(BlockSize)
+				: new T[BlockSize];
+
 			Memory.Add(newArray);
 			Capacity += BlockSize;
 		}
@@ -168,13 +171,13 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public bool Contains(T item) => Memory.Contains(item);
-		public void CopyTo(T[] array, int arrayIndex) => Memory.CopyTo(RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
-		public IEnumerable<T> Enumerate() => Memory.Enumerate(BlockSize, LongCount);
-		public IEnumerator<T> GetEnumerator() => Memory.Enumerate(BlockSize, LongCount).GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => Memory.Enumerate(BlockSize, LongCount).GetEnumerator();
-		public int IndexOf(T item) => (int)LongIndexOf(item);
-		public long LongIndexOf(T item) => GetRelativeIndex(Memory.LongIndexOf(BlockSize, item, _equalityComparer));
+		public bool Contains(T item) => RecyclableList<T>.RecyclableListHelpers.Contains(Memory, item);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableList<T>.RecyclableListHelpers.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
+		public IEnumerable<T> Enumerate() => RecyclableList<T>.RecyclableListHelpers.Enumerate(Memory, BlockSize, LongCount);
+		public IEnumerator<T> GetEnumerator() => RecyclableList<T>.RecyclableListHelpers.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => RecyclableList<T>.RecyclableListHelpers.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
+		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableList<T>.RecyclableListHelpers.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableList<T>.RecyclableListHelpers.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
 		public void Insert(int index, T item) => throw new NotSupportedException();
 		public void RemoveAt(int index) => throw new NotSupportedException();
 		public bool TryDequeue(out T? item) => TryDequeue(this, out item);
@@ -183,7 +186,11 @@ namespace Recyclable.Collections
 		{
 			try
 			{
-				Memory[index].ReturnToPool(_arrayPool, NeedsClearing);
+				if (Memory[index].LongLength is > RecyclableDefaults.MinPooledArrayLength and <= int.MaxValue)
+				{
+					_arrayPool.Return(Memory[index], NeedsClearing);
+				}
+
 				Memory.RemoveAt(index);
 			}
 			finally

@@ -93,6 +93,17 @@
         1. 🅿️ `Remove`
         1. 🅿️ `RemoveAt`
         1. 🅿️ `RemoveBlock`
+    1. 🅿️ Add `.ToRecyclableList` / `.ToRecyclableLongList` variants for all supported collection types
+        1. 🅿️ `RecyclableList`
+        1. 🅿️ `RecyclableLongList`
+        1. 🅿️ `IList<T>`
+        1. 🅿️ `ICollection<T>`
+        1. 🅿️ `IEnumerable<T>`
+        1. 🅿️ `IEnumerable`
+        1. 🅿️ `IReadOnlyList<T>`
+        1. 🅿️ `IReadOnlyCollection<T>`
+        1. 🅿️ `IList`
+        1. 🅿️ `ICollection`
     1. 🅿️ Release 0.0.3-beta
     1. 🅿️ Add support for `ulong` indexing
         1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
@@ -155,8 +166,8 @@
     1. 🅿️ `RecyclableLongListExtensions.CopyTo`
 1. 🅿️ Cleanup
     1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
-    1. 🅿️ Cleanup `RecyclableLongListExtensions`
-    1. 🅿️ `ListExtensions`
+    1. ✅ Cleanup `RecyclableLongListExtensions`
+    1. ✅ `ListExtensions`
     1. 🅿️ `MathUtils`
 1. 🅿️ Optimize
     1. 🅿️ `ListExtensions`
