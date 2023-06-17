@@ -60,16 +60,16 @@ namespace Recyclable.Collections
 		public int NextItemIndex => _nextItemIndex;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private static void CopyItems(RecyclableLongList<T> list, long index)
+		private static void CopyFollowingItems(RecyclableLongList<T> list, long destinationItemIndex)
 		{
 			T[][] memoryBlocks = list._memoryBlocks;
 			int nextItemIndex = list._nextItemIndex;
 			int blockSize = list._blockSize;
-			int sourceBlockIndex = (int)((index + 1) >> list._blockSizePow2BitShift);
-			int sourceItemIndex = (int)((index + 1) & list._blockSizeMinus1);
+			int sourceBlockIndex = (int)((destinationItemIndex + 1) >> list._blockSizePow2BitShift);
+			int sourceItemIndex = (int)((destinationItemIndex + 1) & list._blockSizeMinus1);
 
-			int targetBlockIndex = (int)(index >> list._blockSizePow2BitShift);
-			int targetItemIndex = (int)(index & list._blockSizeMinus1);
+			int targetBlockIndex = (int)(destinationItemIndex >> list._blockSizePow2BitShift);
+			int targetItemIndex = (int)(destinationItemIndex & list._blockSizeMinus1);
 
 			int lastTakenBlockIndex = list._lastBlockWithData;
 			while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
@@ -1163,7 +1163,7 @@ namespace Recyclable.Collections
 
 				if (index < _longCount)
 				{
-					CopyItems(this, index);
+					CopyFollowingItems(this, index);
 				}
 
 				if (_nextItemIndex > 0)
@@ -1231,7 +1231,7 @@ namespace Recyclable.Collections
 
 			if (index < _longCount)
 			{
-				CopyItems(this, index);
+				CopyFollowingItems(this, index);
 			}
 
 
@@ -1270,7 +1270,7 @@ namespace Recyclable.Collections
 
 			if (index < _longCount)
 			{
-				CopyItems(this, index);
+				CopyFollowingItems(this, index);
 			}
 
 			if (_nextItemIndex > 0)
