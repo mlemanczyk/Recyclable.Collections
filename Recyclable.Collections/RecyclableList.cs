@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using Recyclable.Collections.Pools;
+using System.Buffers;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
@@ -9,10 +10,65 @@ namespace Recyclable.Collections
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly bool _defaultIsNull = default(T) == null;
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
-		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
-		protected T[] _memoryBlock;
-
+	
 		private static void ThrowArgumentOutOfRangeException(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
+		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
+
+		protected T[] _memoryBlock;
+		internal RecyclableCollectionVersion? _version;
+
+		public RecyclableCollectionVersion? Version => _version;
+
+		protected IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
+		{
+			int targetItemIdx = _count;
+			Span<T> memorySpan;
+
+			int i;
+			var enumerator = source.GetEnumerator();
+
+			int capacity = _capacity;
+			memorySpan = new(_memoryBlock);
+			if (enumerator.MoveNext())
+			{
+				int available = capacity - targetItemIdx;
+				do
+				{
+					if (targetItemIdx + growByCount > capacity)
+					{
+						capacity = EnsureCapacity(this, capacity + growByCount);
+						memorySpan = new(_memoryBlock);
+						available = capacity - targetItemIdx;
+					}
+
+					for (i = 0; i < available; i++)
+					{
+						memorySpan[targetItemIdx++] = enumerator.Current;
+						if (!enumerator.MoveNext())
+						{
+							break;
+						}
+					}
+				}
+				while (i >= available);
+			}
+
+			_count = targetItemIdx;
+			return enumerator;
+		}
+
+		protected void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
+		{
+			_ = EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
+
+			Span<T> memorySpan = new(_memoryBlock);
+			foreach (var item in source)
+			{
+				memorySpan[targetItemIdx++] = item;
+			}
+
+			_count = targetItemIdx;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static T[] Resize(in T[]? source, int newSize)
@@ -137,7 +193,15 @@ namespace Recyclable.Collections
 			get => _memoryBlock[index];
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => _memoryBlock[index] = value;
+			set
+			{
+				_memoryBlock[index] = value;
+
+				if (_version?.IsVersioned ?? false)
+				{
+					_version.Inc();
+				}
+			}
 		}
 
 		protected int _capacity;
@@ -151,6 +215,11 @@ namespace Recyclable.Collections
 					_memoryBlock = Resize(_memoryBlock, value);
 					_capacity = _memoryBlock.Length;
 				}
+
+				if (_version?.IsVersioned ?? false)
+				{
+					_version.Inc();
+				}
 			}
 		}
 
@@ -161,10 +230,19 @@ namespace Recyclable.Collections
 			get => _count;
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			set => _count = value;
+			// TODO: Clear items if we're decreasing the size of the list, if T is reference type
+			set
+			{
+				_count = value;
+
+				if (_version?.IsVersioned ?? false)
+				{
+					_version.Inc();
+				}
+			}
 		}
 
-		public bool IsReadOnly { get; } = false;
+		public bool IsReadOnly => false;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
@@ -176,6 +254,11 @@ namespace Recyclable.Collections
 			}
 
 			_memoryBlock[_count++] = item;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -197,6 +280,11 @@ namespace Recyclable.Collections
 			Span<T> itemsSpan = new(items);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -217,6 +305,11 @@ namespace Recyclable.Collections
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -236,6 +329,11 @@ namespace Recyclable.Collections
 
 			items.CopyTo(_memoryBlock, _count);
 			_count = targetCapacity;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -255,6 +353,11 @@ namespace Recyclable.Collections
 
 			items.CopyTo(_memoryBlock, _count);
 			_count = targetCapacity;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -276,6 +379,11 @@ namespace Recyclable.Collections
 			Span<T> itemsSpan = new(items._memoryBlock, 0, sourceItemsCount);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -329,6 +437,11 @@ namespace Recyclable.Collections
 			}
 
 			_count = targetCapacity;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -337,72 +450,37 @@ namespace Recyclable.Collections
 			if (source is T[] sourceArray)
 			{
 				AddRange(sourceArray);
-				return;
 			}
-
-			if (source is List<T> sourceList)
+			else if (source is List<T> sourceList)
 			{
 				AddRange(sourceList);
-				return;
 			}
-
-			if (source is RecyclableList<T> sourceRecyclableList)
+			else if (source is RecyclableList<T> sourceRecyclableList)
 			{
 				AddRange(sourceRecyclableList);
-				return;
 			}
-
-			if (source is IList<T> sourceIList)
+			else if (source is IList<T> sourceIList)
 			{
 				AddRange(sourceIList);
-				return;
 			}
-
-			int targetItemIdx = _count;
-			Span<T> memorySpan;
-			if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+			else if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				_ = EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
-				memorySpan = new(_memoryBlock);
-				foreach (var item in source)
+				AddRangeWithKnownCount(source, _count, requiredAdditionalCapacity);
+
+				if (_version?.IsVersioned ?? false)
 				{
-					memorySpan[targetItemIdx++] = item;
+					_version.Inc();
 				}
-
-				_count = targetItemIdx;
-				return;
 			}
-
-			int i;
-			using var enumerator = source.GetEnumerator();
-
-			int capacity = _capacity;
-			memorySpan = new(_memoryBlock);
-			if (enumerator.MoveNext())
+			else
 			{
-				int available = capacity - targetItemIdx;
-				do
+				AddRangeEnumerated(source, growByCount);
+
+				if (_version?.IsVersioned ?? false)
 				{
-					if (targetItemIdx + growByCount > capacity)
-					{
-						capacity = EnsureCapacity(this, capacity + growByCount);
-						memorySpan = new(_memoryBlock);
-						available = capacity - targetItemIdx;
-					}
-
-					for (i = 0; i < available; i++)
-					{
-						memorySpan[targetItemIdx++] = enumerator.Current;
-						if (!enumerator.MoveNext())
-						{
-							break;
-						}
-					}
+					_version.Inc();
 				}
-				while (i >= available);
 			}
-
-			_count = targetItemIdx;
 		}
 
 		public T[] AsArray => _memoryBlock;
@@ -416,6 +494,11 @@ namespace Recyclable.Collections
 			}
 
 			_count = 0;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -423,16 +506,6 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void CopyTo(T[] array, int index) => Array.Copy(_memoryBlock, 0, array, index, _count);
-
-		protected static IEnumerable<T> Enumerate(RecyclableList<T> list)
-		{
-			int count = list._count;
-			var memory = list._memoryBlock;
-			for (var i = 0; i < count; i++)
-			{
-				yield return memory[i];
-			}
-		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T itemToFind) => _count > 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : RecyclableDefaults.ItemNotFoundIndex;
@@ -456,6 +529,11 @@ namespace Recyclable.Collections
 
 			_memoryBlock[index] = item;
 			_count++;
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -475,6 +553,11 @@ namespace Recyclable.Collections
 #pragma warning disable CS8601 // In real use cases we'll never access it
 					_memoryBlock[_count] = default;
 #pragma warning restore CS8601
+				}
+
+				if (_version?.IsVersioned ?? false)
+				{
+					_version.Inc();
 				}
 
 				return true;
@@ -503,13 +586,26 @@ namespace Recyclable.Collections
 				_memoryBlock[_count] = default;
 #pragma warning restore CS8601
 			}
+
+			if (_version?.IsVersioned ?? false)
+			{
+				_version.Inc();
+			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IEnumerator<T> GetEnumerator() => Enumerate(this).GetEnumerator();
+		public IEnumerator<T> GetEnumerator()
+		{
+			_version ??= RecyclableCollectionVersionPool.Shared.Get();
+			return new RecyclableListEnumerator<T>(this);
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		IEnumerator IEnumerable.GetEnumerator() => Enumerate(this).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			_version ??= RecyclableCollectionVersionPool.Shared.Get();
+			return new RecyclableListEnumerator<T>(this);
+		}
 
 		public void Dispose()
 		{
@@ -520,6 +616,13 @@ namespace Recyclable.Collections
 				if (_count is >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					_arrayPool.Return(_memoryBlock, NeedsClearing);
+				}
+
+				if (_version != null)
+				{
+					var toReturn = _version;
+					_version = null;
+					RecyclableCollectionVersionPool.Shared.Return(toReturn);
 				}
 
 				GC.SuppressFinalize(this);

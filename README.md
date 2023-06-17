@@ -142,6 +142,10 @@
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
     1. 🅿️ Implement memory bucket disposal in high RAM pressure scenario
+1. 🅿️ Optimize `RecyclableCollectionVersionObjectPool`
+    1. 🅿️ Implement custom `ObjectPool<T>`
+    1. 🅿️ Measure multi-threading performance
+    1. 🅿️ Implement memory bucket disposal in high RAM pressure scenario
 1. 🅿️ Review `RecyclableArrayPool`
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
@@ -166,9 +170,10 @@
     1. 🅿️ `RecyclableLongListExtensions.CopyTo`
 1. 🅿️ Cleanup
     1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
-    1. ✅ Cleanup `RecyclableLongListExtensions`
+    1. ✅ `RecyclableLongListExtensions`
     1. ✅ `ListExtensions`
     1. 🅿️ `MathUtils`
+    1. 🅿️ Resolve TODOs
 1. 🅿️ Optimize
     1. 🅿️ `ListExtensions`
     1. 🅿️ `MathUtils`
