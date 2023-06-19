@@ -5,13 +5,13 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+	[Serializable]
+	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IList, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly bool _defaultIsNull = default(T) == null;
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
 	
-		private static void ThrowArgumentOutOfRangeException(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
 
 		protected T[] _memoryBlock;
@@ -224,23 +224,23 @@ namespace Recyclable.Collections
 		}
 
 		protected int _count;
-		public int Count
-		{
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			get => _count;
+		public int Count => _count;
+		//{
+		//	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//	get => _count;
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			// TODO: Clear items if we're decreasing the size of the list, if T is reference type
-			set
-			{
-				_count = value;
+		//	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//	// TODO: Clear items if we're decreasing the size of the list, if T is reference type
+		//	set
+		//	{
+		//		_count = value;
 
-				if (_version?.IsVersioned ?? false)
-				{
-					_version.Inc();
-				}
-			}
-		}
+		//		if (_version?.IsVersioned ?? false)
+		//		{
+		//			_version.Inc();
+		//		}
+		//	}
+		//}
 
 		public bool IsReadOnly => false;
 
@@ -397,12 +397,12 @@ namespace Recyclable.Collections
 			var sourceItemsCount = items.LongCount;
 			if (sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException(nameof(items), $"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), $"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			if (_count + sourceItemsCount > int.MaxValue)
 			{
-				ThrowArgumentOutOfRangeException(nameof(items), $"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), $"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
 			}
 
 			int targetCapacity = _count + (int)sourceItemsCount;
@@ -571,7 +571,7 @@ namespace Recyclable.Collections
 		{
 			if (index >= _count)
 			{
-				ThrowArgumentOutOfRangeException(nameof(index), $"Provided value {index} exceeds the no. of items on the list {_count}");
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(index), $"Provided value {index} exceeds the no. of items on the list {_count}");
 			}
 
 			_count--;
@@ -593,19 +593,16 @@ namespace Recyclable.Collections
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IEnumerator<T> GetEnumerator()
-		{
-			_version ??= RecyclableCollectionVersionPool.Shared.Get();
-			return new RecyclableListEnumerator<T>(this);
-		}
+		public Enumerator GetEnumerator() => new Enumerator(this);
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		IEnumerator IEnumerable.GetEnumerator() =>
+			//_version ??= new(); // RecyclableCollectionVersionPool.Shared.Get();
+			new Enumerator(this);//return RecyclableListEnumeratorPool.Shared.Get(this);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			_version ??= RecyclableCollectionVersionPool.Shared.Get();
-			return new RecyclableListEnumerator<T>(this);
-		}
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		IEnumerator<T> IEnumerable<T>.GetEnumerator() =>
+			//_version ??= new(); // RecyclableCollectionVersionPool.Shared.Get();
+			new Enumerator(this);//return RecyclableListEnumeratorPool.Shared.Get(this);
 
 		public void Dispose()
 		{
@@ -620,9 +617,9 @@ namespace Recyclable.Collections
 
 				if (_version != null)
 				{
-					var toReturn = _version;
+					//var toReturn = _version;
 					_version = null;
-					RecyclableCollectionVersionPool.Shared.Return(toReturn);
+					//RecyclableCollectionVersionPool.Shared.Return(toReturn);
 				}
 
 				GC.SuppressFinalize(this);

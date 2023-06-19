@@ -23,17 +23,16 @@ public static class Program
 		// ****************
 		// *** Template ***
 		// ****************
-		//var benchmark = new RecyclableCollectionsBenchmarks();
-		//benchmark.Setup();
+		var benchmark = new RecyclableCollectionsBenchmarks();
+		benchmark.Setup();
 
 		//foreach (var _ in Enumerable.Range(1, 1000))
 		//{
-			// benchmark.RecyclableLongList_Remove_FirstItems();
-			// benchmark.RecyclableLongList_RemoveAt_LastItems();
-			// benchmark.List_RemoveAt_LastItems();
+		benchmark.List_ForEach();
+		benchmark.RecyclableList_ForEach();
 		//}
 
-		//benchmark.Cleanup();
+		benchmark.Cleanup();
 	}
 
 	static void RunPocBenchmarks()
@@ -53,8 +52,8 @@ public static class Program
 	static void Main(string[] args)
 	{
 		RunRecyclableCollectionsBenchmarks();
-		// RunPocBenchmarks();
-		// RunSelectedBenchmarks();
-		// RunAssemblyBenchmarks();
+		//RunPocBenchmarks();
+		//RunSelectedBenchmarks();
+		//RunAssemblyBenchmarks();
 	}
 }

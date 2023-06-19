@@ -7,7 +7,9 @@ namespace Recyclable.Collections
 		public bool IsFixedSize => false;
 		public bool IsSynchronized => false;
 
+		[NonSerialized]
 		private object? _syncRoot;
+
 		public object SyncRoot
 		{
 			get
@@ -39,7 +41,7 @@ namespace Recyclable.Collections
 				}
 				else
 				{
-					ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+					ThrowHelper.ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 				}
 			}
 		}
@@ -58,7 +60,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 		}
@@ -91,7 +93,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 			}
 		}
 
@@ -109,7 +111,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
+				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(value), $"Argument is invalid. {(value != null ? "List element type is incompatible with the given value" : "Element is null and the list doesn't allow null values.")}");
 			}
 		}
 

@@ -2,39 +2,88 @@
 
 namespace Recyclable.Collections
 {
+	public delegate void VersionChangedEventHandler();
+
 	public sealed class RecyclableCollectionVersion
 	{
-		private ulong _enumeratorCount;
-		public ulong Version;
+		//private ulong _enumeratorCount;
+
+		//private ulong _version;
+		//public ulong Version
+		//{
+		//	get => _version;
+			
+		//	set
+		//	{
+		//		_version = value;
+		//		_versionChanged?.Invoke(this, EventArgs.Empty);
+		//	}
+		//}
+
+		//public uint Version { get; set; }
+
 		public bool IsVersioned;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Inc() => _ = unchecked(Version++);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void AddEnumerator()
+		private VersionChangedEventHandler? _versionChanged;
+		public event VersionChangedEventHandler VersionChanged
 		{
-			if (unchecked(_enumeratorCount++) == 0)
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			add 
+			{ 
+				_versionChanged += value;
+				if (!IsVersioned)
+				{
+					IsVersioned = true;
+				}
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]
+			remove
 			{
-				IsVersioned = true;
+				_versionChanged -= value;
+				if (_versionChanged == null)
+				{
+					IsVersioned = false;
+				}
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void RemoveEnumerator()
+		public void Inc()
 		{
-			if (unchecked(--_enumeratorCount) == 0)
+			if (IsVersioned)
 			{
-				IsVersioned = false;
+				_versionChanged!();
 			}
+			//_ = unchecked(Version++);
 		}
+
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//public RecyclableCollectionVersion AddEnumerator()
+		//{
+		//	if (unchecked(_enumeratorCount++) == 0)
+		//	{
+		//		IsVersioned = true;
+		//	}
+
+		//	return this;
+		//}
+
+		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		//public void RemoveEnumerator()
+		//{
+		//	if (unchecked(--_enumeratorCount) == 0)
+		//	{
+		//		IsVersioned = false;
+		//	}
+		//}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public RecyclableCollectionVersion Reset()
 		{
 			IsVersioned = false;
-			Version = 0;
-			_enumeratorCount = 0;
+			//Version = 0;
+			//_enumeratorCount = 0;
 			return this;
 		}
 	}
