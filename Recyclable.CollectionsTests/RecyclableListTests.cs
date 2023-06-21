@@ -349,7 +349,11 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			var yieldedItems = new List<long>((int)itemsCount);
-			yieldedItems.AddRange(list);
+			using var enumerator = list.GetEnumerator();
+			while (enumerator.MoveNext())
+			{
+				yieldedItems.Add(enumerator.Current);
+			}
 
 			// Validate
 			_ = yieldedItems.Count.Should().Be((int)itemsCount);

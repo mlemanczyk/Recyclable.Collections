@@ -1,87 +1,185 @@
 ﻿using System.Collections;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
 
 namespace Recyclable.Collections
 {
 	public partial class RecyclableList<T>
 	{
-
-		public struct Enumerator : IEnumerator<T>, IEnumerator
+		[StructLayout(LayoutKind.Auto)]
+		public struct Enumerator : IEnumerator<T>
 		{
-#nullable disable
-			private readonly RecyclableList<T> _list;
 			private int _currentIndex;
-			private T _current;
+			private readonly ulong _enumeratorVersion;
+			private readonly RecyclableList<T> _list;
 
-			//[Pure]
-			//private readonly int _listCount;
-			//private readonly int _listCountMinus1;
-			//private readonly T[] _memoryBlock;
-			//private bool _endOfCollectionReached;
+			// & WAS SLOWER
+			// private bool _isInValidState = false;
+			// private bool _endOfCollectionReached;
+			// private T _current;
 
-			//private RecyclableCollectionVersion _listVersion;
-			//private ulong _enumeratorVersion;
-			//private bool _isVersionChanged;
-
-			//private void VersionChanged() => _isVersionChanged = true;
-
-			//internal RecyclableListEnumeratorPool? _pool;
-			//internal bool _returned;
-
-			//public RecyclableListEnumerator()
-			//{
-			//}
-
-			//[Pure]
-			internal Enumerator(RecyclableList<T> list)
+#nullable disable
+			// [Pure]
+			public readonly T Current
 			{
-				_current = default;
-				_currentIndex = 0;
-				_list = list;
-				//_memoryBlock = list._memoryBlock;
-				//_listCount = list._count;
-				//_listVersion = list._version!;
-				//_listVersion.VersionChanged += VersionChanged;
-				//_enumeratorVersion = _listVersion.Version;
+				get
+				{
+					if (_enumeratorVersion != _list._version)
+					{
+						throw new InvalidOperationException();
+						// & WAS SLOWER
+						// ThrowHelper.ThrowListModifiedException();
+					}
+
+					if (_currentIndex == 0 || _currentIndex > _list._count)
+					{
+						throw new IndexOutOfRangeException();
+						// & WAS SLOWER
+						// ThrowHelper.ThrowCollectionNotInitialized();// new IndexOutOfRangeException();// _current;
+					}
+
+					Contract.EndContractBlock();
+
+					return _list._memoryBlock[_currentIndex - 1];// _current;
+				}
 			}
 
-			//{
-			//	//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			//	get =>
-			//			//if (_currentIndex < 0)
-			//			//{
-			//			//	ThrowHelper.ThrowInvalidOperationException("The enumerator wasn't initialized. You need to call MoveNext() before getting the current iterator value");
-			//			//}
-			//			//else
-			//			//if (_endOfCollectionReached)
-			//			//{
-			//			//	throw new InvalidOperationException("The enumerator reached the end of the collection. You need to call Reset(), if you want to enumerate the collection again");
-			//			//}
-			//			//else
-			//			//{
-			//			//if (_currentIndex < 0)
-			//			//{
-			//			//	ThrowHelper.ThrowInvalidOperationException("The enumerator wasn't initialized. You need to call MoveNext() before getting the current iterator value");
-			//			//}
-			//			//else
-			//			_memoryBlock[_currentIndex];//}
-			//}
+			// [Pure]
+			object IEnumerator.Current
+			{
+				get
+				{
+					if (_enumeratorVersion != _list._version)
+					{
+						throw new InvalidOperationException();
+						// & WAS SLOWER
+						// ThrowHelper.ThrowListModifiedException();
+					}
 
-			//[Pure]
+					if (_currentIndex == 0 || _currentIndex > _list._count)
+					{
+						throw new IndexOutOfRangeException();
+						// & WAS SLOWER
+						// ThrowHelper.ThrowCollectionNotInitialized();
+					}
+
+					Contract.EndContractBlock();
+
+					return _list._memoryBlock[_currentIndex - 1];
+
+					// & WAS SLOWER
+					// return _current;
+				}
+			}
+
+			// & WAS SLOWER
+			// private readonly int _listCount;
+			// private RecyclableCollectionVersion _listVersion;
+			// private readonly T[] _memoryBlock;
+			// private bool _isVersionChanged;
+			// private void VersionChanged() => _isVersionChanged = true;
+			// internal RecyclableListEnumeratorPool? _pool;
+			// internal bool _returned;
+			// private readonly int _listCountMinus1;
+
+			// & WAS SLOWER
+			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			// [MethodImpl(MethodImplOptions.NoInlining)]
+			public bool MoveNext()
+			{
+				// & WAS SLOWER
+				// var list = _list;
+				if (_enumeratorVersion != _list._version)
+				{
+					throw new InvalidOperationException();
+					// & WAS SLOWER
+					// ThrowHelper.ThrowListModifiedException();
+				}
+
+				Contract.EndContractBlock();
+
+				// & WAS SLOWER
+				// if (_currentIndex == 0)
+				// {
+				// 	_isInValidState = true;
+				// 	_currentIndex++;
+				// 	return true;
+				// }
+				// else
+				if (_currentIndex < _list._count)
+				{
+					// & WAS SLOWER
+					// _current = _list._memoryBlock[_currentIndex];
+					_currentIndex++;
+					return true;
+				}
+
+				// & WAS SLOWER
+				// else if (_currentIndex == _list._count)
+				// {
+					// & WAS SLOWER
+					// This isn't needed in most use-cases, because the enumerator will get disposed, releasing the reference, if any.
+					// _current = _defaultValue;
+				// _currentIndex++;
+				// 	return false;
+				// }
+				// else if (!_endOfCollectionReached)
+				// {
+				// 	// & WAS SLOWER
+				// 	// This isn't needed in most use-cases, because the enumerator will get disposed, releasing the reference, if any.
+				// 	// _current = _defaultValue;
+				// 	// _currentIndex = int.MinValue;
+				// 	_endOfCollectionReached = true;
+				// 	return false;
+				// }
+
+				// & WAS SLOWER
+				// else if (!_endOfCollectionReached)
+				// {
+				// 	_current = default;
+				// 	_endOfCollectionReached = true;
+				// 	return false;
+				// }
+
+				// & WAS SLOWER
+				// _current = default;
+				// _currentIndex = _list._count + 1;
+				return false;
+			}
+
+			public Enumerator(RecyclableList<T> list)
+			{
+				_currentIndex = 0;
+				_list = list;
+				_enumeratorVersion = list._version;
+
+				// & WAS SLOWER
+				// _current = default;
+				// _endOfCollectionReached = false;
+				// _listCount = list._count;
+				// _memoryBlock = list._memoryBlock;
+				// _isVersionChanged = false;
+				// _listVersion = list.Version;
+				// _listVersion.AddEnumerator();
+				// _enumeratorVersion = list._version.Version;
+				// list._version.RegisterHandler(VersionChanged);
+				// _enumeratorVersion = _listVersion.Version;
+				// _endOfCollectionReached = false;
+				// _listCountMinus1 = list._count - 1;
+			}
+
 			public readonly void Dispose()
 			{
-				//				if (_listVersion != null)
-				//				{
-				//					_listVersion.VersionChanged -= VersionChanged;
-				//					//_listVersion.RemoveEnumerator(this);
-				//#nullable disable
-				//					_listVersion = null;
-				//#nullable restore
-				//				}
+				// & WAS SLOWER
+				//if (_listVersion != null)
+				//{
+					//_list._version.RemoveEnumerator();
+					//_listVersion.RemoveEnumerator(this);
+				//}
 
-				//if (_pool != null)
+				// & WAS SLOWER
+				// if (_pool != null)
 				//{
 				//	if (!_returned)
 				//	{
@@ -92,74 +190,19 @@ namespace Recyclable.Collections
 				//else
 				//{
 				//_memoryBlock = null;
-					//GC.SuppressFinalize(this);
+				//GC.SuppressFinalize(this);
 				//}
 			}
 
-			//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public bool MoveNext()
-			{
-				var list = _list;
-				//if (_isVersionChanged)
-				//{
-				//	ThrowHelper.ThrowListModifiedException();
-				//	return false;
-				//}
-				//else
-				if (_currentIndex < list._count)
-				{
-					_current = list._memoryBlock[_currentIndex];
-					_currentIndex++;
-					return true;
-				}
-
-				//else if (!_endOfCollectionReached)
-				//{
-				//	_endOfCollectionReached = true;
-				//	return false;
-				//}
-
-				_current = default;
-				return false;
-			}
-
-#nullable restore
-			public T Current => _current;
-			object IEnumerator.Current => _current;
-#nullable disable
-
-			//[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			void IEnumerator.Reset()
 			{
 				_currentIndex = 0;
-				_current = default;
+
+				// & WAS SLOWER
+				// _endOfCollectionReached = false;
+				// _isInValidState = false;
+				// _current = default;
 			}
-
-			//_endOfCollectionReached = false;
-			//if (_isVersionChanged)
-			//{
-			//	
-			//_enumeratorVersion = _listVersion!.Version;
-			//	_isVersionChanged = false;
-			//}
-
-			//internal RecyclableListEnumerator Reset(RecyclableListEnumeratorPool pool, RecyclableList<T> list)
-			//{
-			//	_returned = false;
-			//	if (_pool != pool)
-			//	{
-			//		_pool = pool;
-			//	}
-
-			//	_currentIndex = RecyclableDefaults.ItemNotFoundIndex;
-			//	_listVersion = list._version!;
-			//	_enumeratorVersion = _listVersion!.Version;
-			//	list._version!.AddEnumerator();
-			//	return this;
-			//}
-
-			//[Pure]
-			//public object Clone() => MemberwiseClone();
 		}
 	}
 #nullable restore

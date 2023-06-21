@@ -15,9 +15,12 @@ namespace Recyclable.Collections
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
 
 		protected T[] _memoryBlock;
-		internal RecyclableCollectionVersion? _version;
+		// & WAS SLOWER
+		// internal RecyclableCollectionVersion _version;
+		// public RecyclableCollectionVersion Version => _version;
 
-		public RecyclableCollectionVersion? Version => _version;
+		protected ulong _version;
+		public ulong Version => _version;
 
 		protected IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
 		{
@@ -196,11 +199,7 @@ namespace Recyclable.Collections
 			set
 			{
 				_memoryBlock[index] = value;
-
-				if (_version?.IsVersioned ?? false)
-				{
-					_version.Inc();
-				}
+				_version++;
 			}
 		}
 
@@ -214,11 +213,7 @@ namespace Recyclable.Collections
 				{
 					_memoryBlock = Resize(_memoryBlock, value);
 					_capacity = _memoryBlock.Length;
-				}
-
-				if (_version?.IsVersioned ?? false)
-				{
-					_version.Inc();
+					_version++;
 				}
 			}
 		}
@@ -254,11 +249,7 @@ namespace Recyclable.Collections
 			}
 
 			_memoryBlock[_count++] = item;
-
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -281,10 +272,7 @@ namespace Recyclable.Collections
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -306,10 +294,7 @@ namespace Recyclable.Collections
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -330,10 +315,7 @@ namespace Recyclable.Collections
 			items.CopyTo(_memoryBlock, _count);
 			_count = targetCapacity;
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -354,10 +336,7 @@ namespace Recyclable.Collections
 			items.CopyTo(_memoryBlock, _count);
 			_count = targetCapacity;
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -380,10 +359,7 @@ namespace Recyclable.Collections
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -438,10 +414,7 @@ namespace Recyclable.Collections
 
 			_count = targetCapacity;
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -467,19 +440,13 @@ namespace Recyclable.Collections
 			{
 				AddRangeWithKnownCount(source, _count, requiredAdditionalCapacity);
 
-				if (_version?.IsVersioned ?? false)
-				{
-					_version.Inc();
-				}
+				_version++;
 			}
 			else
 			{
 				AddRangeEnumerated(source, growByCount);
 
-				if (_version?.IsVersioned ?? false)
-				{
-					_version.Inc();
-				}
+				_version++;
 			}
 		}
 
@@ -494,11 +461,7 @@ namespace Recyclable.Collections
 			}
 
 			_count = 0;
-
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -529,11 +492,7 @@ namespace Recyclable.Collections
 
 			_memoryBlock[index] = item;
 			_count++;
-
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -555,10 +514,7 @@ namespace Recyclable.Collections
 #pragma warning restore CS8601
 				}
 
-				if (_version?.IsVersioned ?? false)
-				{
-					_version.Inc();
-				}
+				_version++;
 
 				return true;
 			}
@@ -587,22 +543,17 @@ namespace Recyclable.Collections
 #pragma warning restore CS8601
 			}
 
-			if (_version?.IsVersioned ?? false)
-			{
-				_version.Inc();
-			}
+			_version++;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Enumerator GetEnumerator() => new Enumerator(this);
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		IEnumerator IEnumerable.GetEnumerator() =>
-			//_version ??= new(); // RecyclableCollectionVersionPool.Shared.Get();
-			new Enumerator(this);//return RecyclableListEnumeratorPool.Shared.Get(this);
 
-		//[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		IEnumerator<T> IEnumerable<T>.GetEnumerator() =>
-			//_version ??= new(); // RecyclableCollectionVersionPool.Shared.Get();
-			new Enumerator(this);//return RecyclableListEnumeratorPool.Shared.Get(this);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
 
 		public void Dispose()
 		{
@@ -613,13 +564,6 @@ namespace Recyclable.Collections
 				if (_count is >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					_arrayPool.Return(_memoryBlock, NeedsClearing);
-				}
-
-				if (_version != null)
-				{
-					//var toReturn = _version;
-					_version = null;
-					//RecyclableCollectionVersionPool.Shared.Return(toReturn);
 				}
 
 				GC.SuppressFinalize(this);
