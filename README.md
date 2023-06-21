@@ -56,7 +56,7 @@
     1. ✅ `Contains`
     1. 🅿️ `CopyTo`
     1. ✅ `EnsureCapacity`
-    1. 🅿️ `GetEnumerator`
+    1. ✅ `GetEnumerator`
     1. ✅ `IndexOf`
     1. ✅ `LongIndexOf`
     1. ✅ `Insert`
@@ -108,16 +108,6 @@
     1. 🅿️ Add support for `ulong` indexing
         1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
         1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
-    1. 🅿️ Final optimizations
-        1. 🅿️ Replace `Math` class usages with `if` statements
-        1. 🅿️ Replace `a - b > 0` & `a - b < 0` comparisons with `a > b` & `a < b`
-        1. 🅿️ Replace `a + b > 0` & `a + b < 0` comparisons with `a > b` & `a < b`
-        1. 🅿️ Replace `a / b` & `a * b` calculations with equivalents, where possible
-        1. 🅿️ Replace virtual calls with static calls
-        1. 🅿️ Replace `blockSize` sums by powers of 2, minus 1
-        1. 🅿️ Remove type castings, if possible
-        1. 🅿️ Convert generic methods to non-generic
-        1. 🅿️ Replace integer comparisons with comparisons to 0 / 1, if possible
     1. 🅿️ Overflow review
         1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
         1. 🅿️ Make type castings `checked`
@@ -138,6 +128,10 @@
 1. 🅿️ Implement `RecyclableUnorderedList<T>`
     1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
     1. 🅿️ Release 0.0.7
+1. 🅿️ Implement `RecyclableVersionedList<T>`
+    1. 🅿️ Port `RecyclableList<T>` to `RecyclableVersionedList<T>`
+    1. 🅿️ Port `RecyclableLongList<T>` to `RecyclableVersionedLongList<T>`
+    1. 🅿️ Release 0.0.7a
 1. 🅿️ Optimize `OneSizeArrayPool`
     1. 🅿️ Review locks
     1. 🅿️ Measure multi-threading performance
@@ -183,14 +177,38 @@
     1. 🅿️ Warnings
     1. 🅿️ Hints
 1. Documentation
+    1. 🅿️ Document the most efficient iteration over array collections
+    1. 🅿️ Document the most efficient iteration over blocked collections
     1. 🅿️ Document differences in behavior
     1. 🅿️ Document other specifics
 1. 🅿️ Release 1.0.0
+1. 🅿️ Implement source code generators
+    1. 🅿️ Add attributes
+        1. 🅿️ `GeneratorBaseClassAttribute` for marking base class used for generation
+        1. 🅿️ `VersionedAttribute` for marking classes as versioned
+        1. 🅿️ `IncVersionAttribute` for marking methods & setters as resulting in version increase
+    1. 🅿️ Implement source code generator
+        1. 🅿️ Generate partial class for classes marked with `GeneratorBaseClassAttribute`
+        1. 🅿️ Add support for fields
+        1. 🅿️ Add support for properties
+        1. 🅿️ Add support for methods
+        1. 🅿️ Add support for constructor
+        1. 🅿️ Skip base fields, methods, properties etc. when they're overridden in the child class
 1. 🅿️ Optimize
     1. 🅿️ `RecyclableLongList<T>.Resize`
     1. 🅿️ `RecyclableLongList<T>.CopyTo`
     1. 🅿️ Check if we can benefit from Sse2 in `.IndexOf`/`.Contains` methods as given in [MS blog](https://devblogs.microsoft.com/dotnet/hardware-intrinsics-in-net-core/).
 1. 🅿️ Add support for `ICollection<T>` interface in `.AddRange` & `constructor`
+1. 🅿️ Final optimizations
+    1. 🅿️ Replace `Math` class usages with `if` statements
+    1. 🅿️ Replace `a - b > 0` & `a - b < 0` comparisons with `a > b` & `a < b`
+    1. 🅿️ Replace `a + b > 0` & `a + b < 0` comparisons with `a > b` & `a < b`
+    1. 🅿️ Replace `a / b` & `a * b` calculations with equivalents, where possible
+    1. 🅿️ Replace virtual calls with static calls
+    1. 🅿️ Replace `blockSize` sums by powers of 2, minus 1
+    1. 🅿️ Remove type castings, if possible
+    1. 🅿️ Convert generic methods to non-generic
+    1. 🅿️ Replace integer comparisons with comparisons to 0 / 1, if possible
 1. 🅿️ Release 2.0.0
 
 # Characteristics of the classes
