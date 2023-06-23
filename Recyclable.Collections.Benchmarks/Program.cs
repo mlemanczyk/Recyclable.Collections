@@ -46,6 +46,7 @@ public static class Program
 		_ = BenchmarkRunner.Run<WhenParallelSearchBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
 		_ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
+		_ = BenchmarkRunner.Run<LessOperatorVsAndOperatorBenchmarks>(BenchmarkConfig);
 		// ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 	}
 
