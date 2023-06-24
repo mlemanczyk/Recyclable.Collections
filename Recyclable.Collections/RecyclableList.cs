@@ -565,9 +565,9 @@ namespace Recyclable.Collections
 				{
 					_arrayPool.Return(_memoryBlock, NeedsClearing);
 				}
-
-				GC.SuppressFinalize(this);
 			}
+
+			GC.SuppressFinalize(this);
 		}
 	}
 }
