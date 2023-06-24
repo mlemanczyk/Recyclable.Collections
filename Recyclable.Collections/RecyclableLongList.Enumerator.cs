@@ -1,149 +1,198 @@
 ﻿using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public sealed class RecyclableLongListEnumerator<T> : IEnumerator<T>
+	public partial class RecyclableLongList<T>
 	{
-		public static void ThrowListModifiedException() => throw new InvalidOperationException("Can't move to the next item, because the collection was modified. You must restart the enumeration by calling Reset(), if you want to enumerate the collection again");
-
-		private int _blockSize;
-		private int _blockSizeMinus1;
-		private int _currentBlockIndex = 0;
-		private int _currentIndex = RecyclableDefaults.ItemNotFoundIndex;
-		private int _lastBlockWithData;
-		private RecyclableLongList<T>? _list;
-		private RecyclableCollectionVersion? _listVersion;
-		private T[][] _memoryBlocks;
-		private int _nextItemBlockIndex;
-		private int _nextItemIndex;
-		//private ulong _version;
-		private bool _isVersionChanged;
-		private void VersionChanged() => _isVersionChanged = true;
-
-		private T? _current;
-
-		public RecyclableLongListEnumerator(RecyclableLongList<T> list)
+		// & WAS SLOWER
+		// [StructLayout(LayoutKind.Sequential, Pack = 1)]
+		// [StructLayout(LayoutKind.Sequential)]
+		public struct Enumerator : IEnumerator<T>
 		{
-			_listVersion = list._version;
-			list._version!.VersionChanged += VersionChanged;
-			//_listVersion!.AddEnumerator();
-			_blockSize = list._blockSize;
-			_blockSizeMinus1 = list._blockSizeMinus1;
-			_lastBlockWithData = list._lastBlockWithData;
-			_list = list;
-			//_version = _listVersion!.Version;
-			_memoryBlocks = list._memoryBlocks;
-			_nextItemBlockIndex = list._nextItemBlockIndex;
-			_nextItemIndex = _lastBlockWithData == _nextItemBlockIndex ? _list._nextItemIndex : _blockSize;
-		}
+			// & WAS SLOWER WITHOUT
+			#nullable disable
+						private static readonly T _default = default;
+			#nullable restore
 
-		public T Current => _current ?? throw new InvalidOperationException("The enumerator wasn't initialized. You need to call MoveNext() before getting the current iterator value");
-		object? IEnumerator.Current => _current;
+			private static readonly bool _isReferenceType = !typeof(T).IsValueType;
 
-		public void Dispose()
-		{
-			if (_listVersion != null)
+			private int _currentBlockIndex;
+			private int _currentItemIndex;
+			private readonly RecyclableLongList<T> _list;
+			// & WAS SLOWER WITHOUT
+			#nullable disable
+						private T _current;
+			#nullable restore
+			// & WAS SLOWER
+			// private readonly ulong _enumeratorVersion;
+			// public T Current => _enumeratorVersion != _list._version ? throw new InvalidOperationException() : _current;
+
+			public readonly T Current => _current;
+				// & WAS SLOWER
+				// get => _currentItemIndex > 0
+				// 		? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
+				// 		: _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1];
+				// & WAS SLOWER
+				// get => _currentItemIndex != RecyclableDefaults.BlockIndexLimit
+				// 		? _currentItemIndex > 0
+				// 		? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
+				// & WAS SLOWER
+				// 		: _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1]
+				// 		? _current
+				// 		: throw new IndexOutOfRangeException();
+			// & WAS SLOWER
+			// {
+			// get
+			// {
+			// if (_enumeratorVersion != _list._version)
+			// {
+			// 	throw new InvalidOperationException();
+			// }
+
+			// if (_list._longCount == 0 || _currentItemIndex == RecyclableDefaults.BlockIndexLimit)
+			// {
+			// 	throw new IndexOutOfRangeException();
+			// }
+
+			// Contract.EndContractBlock();
+
+			// return _currentItemIndex > 0
+			// 	? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
+			// 	: _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1];
+			// }
+			// }
+
+			// & WAS SLOWER
+			// [MethodImpl(MethodImplOptions.AggressiveInlining)]
+			// [MethodImpl(MethodImplOptions.NoInlining)]
+			// [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+			// [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+			public bool MoveNext()
 			{
-				_listVersion.VersionChanged -= VersionChanged;
-				//_listVersion.RemoveEnumerator();
-				_listVersion = null;
-			}
+				// & WAS SLOWER
+				// if (_enumeratorVersion != _list._version)
+				// {
+				// 	throw new InvalidOperationException();
+				// }
+				//
+				// Contract.EndContractBlock();
 
-			if (_list != null)
-			{
-				_list = null;
-			}
+				// & WAS SLOWER WITHOUT
+				var list = _list;
+				// & WAS SLOWER
+				// ref var currentBlockIndex = ref _currentBlockIndex;
+				// & WAS SLOWER
+				// ref var currentItemIndex = ref _currentItemIndex;
 
-			GC.SuppressFinalize(this);
-		}
-
-		public bool MoveNext()
-		{
-			if (_list != null)
-			{
-				if (_isVersionChanged)
+				if (_currentBlockIndex < list._lastBlockWithData)
 				{
-					_current = default;
-					ThrowListModifiedException();
-					return false;
-				}
-				else if (_currentBlockIndex < _lastBlockWithData)
-				{
-					if (_currentIndex < _blockSizeMinus1)
+					// & WAS SLOWER WITHOUT
+					_current = list._memoryBlocks[_currentBlockIndex][_currentItemIndex];
+					if (_currentItemIndex + 1 < list._blockSize)
 					{
-						_currentIndex++;
+						_currentItemIndex++;
 					}
 					else
 					{
-						_currentIndex = 0;
 						_currentBlockIndex++;
-						if (_currentBlockIndex == _lastBlockWithData && _currentIndex >= _nextItemIndex)
-						{
-							_current = default;
-							return false;
-						}
+						_currentItemIndex = 0;
 					}
 
-					_current = _memoryBlocks[_currentBlockIndex][_currentIndex];
 					return true;
 				}
-				else if (_currentBlockIndex == _lastBlockWithData && !(_currentIndex >= _nextItemIndex - 1))
+				// & WAS SLOWER
+				// else if (list._longCount == 0)
+				// {
+				// 	return false;
+				// }
+				// Move to the next item if we're within block boundaries, otherwise report end of collection.
+				else if (list._longCount > 0 && _currentItemIndex < (list._nextItemIndex > 0 ? list._nextItemIndex : list._blockSize))
 				{
-					_currentIndex++;
-					_current = _memoryBlocks[_currentBlockIndex][_currentIndex];
+					// & WAS SLOWER WITHOUT
+					_current = list._memoryBlocks[_currentBlockIndex][_currentItemIndex];
+					// & WAS SLOWER WITHOUT
+					_currentItemIndex++;
 					return true;
 				}
-				else
-				{
-					_current = default;
-					return false;
-				}
-			}
-			else
-			{
-				_current = default;
+				// & WAS SLOWER
+				// else if (_currentItemIndex != RecyclableDefaults.BlockIndexLimit)
+				// {
+				// 	_currentItemIndex = RecyclableDefaults.BlockIndexLimit;
+				// _current = _default;
+				// }
+
 				return false;
 			}
-		}
 
-		public void Reset()
-		{
-			_currentBlockIndex = 0;
-			_currentIndex = RecyclableDefaults.ItemNotFoundIndex;
-			_current = default;
-			if (_isVersionChanged)
+#nullable disable
+			readonly object IEnumerator.Current => _current;
+				// & WAS SLOWER
+				// get => _currentItemIndex > 0
+				// 		? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
+				// 		: (object)_list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1];
+				// & WAS SLOWER
+				// get => _currentItemIndex != RecyclableDefaults.BlockIndexLimit
+				// 		// ? _currentItemIndex > 0
+				// 		// ? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
+				// 		// : _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1]
+				// 		// & WAS SLOWER
+				// 		? _current
+				// 		: throw new IndexOutOfRangeException();
+#nullable restore
+			// & WAS SLOWER
+			// readonly object? IEnumerator.Current => _enumeratorVersion != _list._version ? throw new InvalidOperationException() : _current;
+			// {
+			// 	get
+			// 	{
+			// 		// if (_enumeratorVersion != _list._version)
+			// 		// {
+			// 		// 	throw new InvalidOperationException();
+			// 		// }
+
+			// 		// if (_list._longCount == 0 || _currentItemIndex == RecyclableDefaults.BlockIndexLimit)
+			// 		// {
+			// 		// 	throw new IndexOutOfRangeException();
+			// 		// }
+
+			// 		// Contract.EndContractBlock();
+
+			// 		return _currentItemIndex > 0
+			// 			? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
+			// 			: _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1];
+			// 	}
+			// }
+
+			public Enumerator(RecyclableLongList<T> list)
 			{
-				//_blockSize = _list!._blockSize;
-				//_blockSizeMinus1 = _list._blockSizeMinus1;
-				_isVersionChanged = false;
-				//_lastBlockWithData = _list!._lastBlockWithData;
-				//_listVersion = _list._version;
-				//_memoryBlocks = _list._memoryBlocks;
-				//_nextItemBlockIndex = _list._nextItemBlockIndex;
-				//_nextItemIndex = _lastBlockWithData == _nextItemBlockIndex ? _list._nextItemIndex : _blockSize;
-				//_version = _listVersion!.Version;
+				// & WAS SLOWER WITHOUT
+				_current = _default;
+				_currentBlockIndex = 0;
+				// & WAS SLOWER
+				//_currentBlockIndex = -1;
+				_currentItemIndex = 0;
+				_list = list;
+				// & WAS SLOWER
+				// _enumeratorVersion = list._version;
 			}
-		}
 
-		internal RecyclableLongListEnumerator<T> Init()
-		{
-			_currentBlockIndex = 0;
-			_currentIndex = RecyclableDefaults.ItemNotFoundIndex;
-			_current = default;
-			if (_list != null)
+			public void Reset()
 			{
-				_blockSize = _list._blockSize;
-				_blockSizeMinus1 = _list._blockSizeMinus1;
-				_isVersionChanged = false;
-				_lastBlockWithData = _list._lastBlockWithData;
-				_listVersion = _list._version;
-				_memoryBlocks = _list._memoryBlocks;
-				_nextItemBlockIndex = _list._nextItemBlockIndex;
-				_nextItemIndex = _lastBlockWithData == _nextItemBlockIndex ? _list._nextItemIndex : _blockSize;
-				//_version = _listVersion!.Version;
+				// & WAS SLOWER WITHOUT
+				_current = _default;
+				_currentBlockIndex = 0;
+				// & WAS SLOWER
+				//_currentBlockIndex = -1;
+				_currentItemIndex = 0;
 			}
 
-			return this;
+			public void Dispose()
+			{
+				if (_isReferenceType)
+				{
+					_current = _default;
+				}
+			}
 		}
 	}
 }
