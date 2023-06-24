@@ -1109,7 +1109,6 @@ namespace Recyclable.Collections
 		public Enumerator GetEnumerator() => new(this);
 		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 		IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
-		public VersionedEnumerator GetVersionedEnumerator() => new(this);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public int IndexOf(T item)

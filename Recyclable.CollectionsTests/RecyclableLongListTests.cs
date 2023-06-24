@@ -398,6 +398,24 @@ namespace Recyclable.CollectionsTests
 			_ = actual.Should().ContainInConsecutiveOrder(testData);
 		}
 
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void VersionedEnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		{
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+
+			// Act
+			var actual = new List<long>();
+			foreach(var item in (IVersionedLongList<long>)list)
+			{
+				actual.Add(item);
+			}
+
+			// Validate
+			_ = actual.Should().ContainInConsecutiveOrder(testData);
+		}
+
 		[Fact]
 		public void IndexOfShouldNotFindAnythingWhenListEmpty()
 		{
