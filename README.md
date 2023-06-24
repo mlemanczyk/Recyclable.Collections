@@ -34,7 +34,7 @@
     1. ✅ `Contains`
     1. ✅ `CopyTo`
     1. ✅ `EnsureCapacity`
-    1. 🅿️ `GetEnumerator`
+    1. ✅ `GetEnumerator`
     1. ✅ `IndexOf`
     1. ✅ `Insert`
     1. ✅ `Remove`
@@ -86,8 +86,8 @@
         1. ✅ `IReadOnlyCollection<T>`
         1. ✅ `IList`
         1. ✅ `ICollection`
-    1. 👉 Implement list versioning to allow data change identification
-    1. 🅿️ Make sure that `NeedsClearing` is used & items are cleared in
+    1. ✅ Implement list versioning to allow data change identification
+    1. 👉 Make sure that `NeedsClearing` is used & items are cleared in
         1. 🅿️ `Clear`
         1. 🅿️ `Dispose`
         1. 🅿️ `Remove`
