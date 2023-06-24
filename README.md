@@ -222,7 +222,31 @@
     * `blockSize` MUST be a power of 2. It will be rounded up to the closest power of 2, if needed. That is due to high performance gain on some operations, like the calculation of item index in a block.
 * Array pools are shared between the same `T` type. I.e. `List<int>` will use a different pool from `List<short>` and so on. For high concurrency environments you may want to provide your own pools, when this feature becomes available in the upcoming releases.
 * Trying to access `this[int index]`, `this[long index]`, `Count`, `LongCount` etc. when `Capacity == 0` will raise `NullReferenceException`. This is by design to remove all non-critical code from the constructor.
+* ⚠️ The default enumerators don't check if the collection was modified. That's by design due to high performance hit of the check. That should be fine in most use-cases. If you need to check for modifications, you're welcomed to use `.GetVersionedEnumerator()` / `IRecyclableVersionedXxxList<T>` type-casting, e.g. in `foreach` loops.
+```csharp
+foreach (var item in (IRecyclableVersionedList<long>)recyclableList)
+{
+	...
+	...
+	...
+}
 
+foreach (var item in (IRecyclableVersionedLongList<long>)recyclableLongList)
+{
+	...
+	...
+	...
+}
+```
+* ⚠️ The state of the default enumerators before the first & after the last call to `.MoveNext()` is undefined, but no exception is raised. That's by design due to high performance hit of the checks. This behavior is compatible with all `foreach` loop, which will never access `.Current` property
+	* when the collection is empty, or
+	* when `.MoveNext()` returned `false`, after reaching the end of the collection.
+
+* ⚠️ If you decide to use `.GetEnumerator()` / `.GetVersionedEnumerator()`, instead of relying on `foreach` loops
+* you MUST ensure that you always respect the the result of `.MoveNext()` call, and
+* you MUST NEVER access `.Current` property before calling `.MoveNext()` or after reaching the end of the collection.
+
+**Failing to do so WILL result in unpredictable behavior.**
 ## `RecyclableList<T>`
 * Range: `int`
 * Interfaces: `IList<T>`, `IEnumerable<T>`, `IDisposable`

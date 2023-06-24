@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableList<T> : IVersionedList<T>
+	public partial class RecyclableList<T> : IRecyclableVersionedList<T>
 	{
-		VersionedEnumerator IVersionedList<T>.GetEnumerator() => new(this);
+		VersionedEnumerator IRecyclableVersionedList<T>.GetEnumerator() => new(this);
 
 		[StructLayout(LayoutKind.Sequential, Pack = 1)]
 		public struct VersionedEnumerator : IEnumerator<T>

@@ -1,6 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
-	public interface IVersionedLongList<T> : IEnumerable<T>
+	public interface IRecyclableVersionedLongList<T> : IEnumerable<T>
 	{
 		new RecyclableLongList<T>.VersionedEnumerator GetEnumerator();
 	}

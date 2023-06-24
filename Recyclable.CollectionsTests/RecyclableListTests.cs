@@ -560,7 +560,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			var yieldedItems = new List<long>((int)itemsCount);
-			foreach (var item in (IVersionedList<long>)list)
+			foreach (var item in (IRecyclableVersionedList<long>)list)
 			{
 				yieldedItems.Add(item);
 			}

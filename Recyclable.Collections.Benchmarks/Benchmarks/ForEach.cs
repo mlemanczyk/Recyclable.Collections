@@ -60,7 +60,7 @@
 
 		public void RecyclableList_VersionedForEach()
 		{
-			foreach (var item in (IVersionedList<long>)TestObjectsAsRecyclableList)
+			foreach (var item in (IRecyclableVersionedList<long>)TestObjectsAsRecyclableList)
 			{
 				DoNothing(item);
 			}
@@ -76,7 +76,7 @@
 
 		public void RecyclableLongList_VersionedForEach()
 		{
-			foreach (var item in (IVersionedLongList<long>)TestObjectsAsRecyclableLongList)
+			foreach (var item in (IRecyclableVersionedLongList<long>)TestObjectsAsRecyclableLongList)
 			{
 				DoNothing(item);
 			}

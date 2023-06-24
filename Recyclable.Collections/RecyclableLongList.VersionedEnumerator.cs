@@ -4,10 +4,10 @@ using System.Diagnostics.Contracts;
 namespace Recyclable.Collections
 {
 
-public partial class RecyclableLongList<T> : IVersionedLongList<T>
+public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
 	{
 		public VersionedEnumerator GetVersionedEnumerator() => new(this);
-		VersionedEnumerator IVersionedLongList<T>.GetEnumerator() => new(this);
+		VersionedEnumerator IRecyclableVersionedLongList<T>.GetEnumerator() => new(this);
 
 		public struct VersionedEnumerator : IEnumerator<T>
 		{

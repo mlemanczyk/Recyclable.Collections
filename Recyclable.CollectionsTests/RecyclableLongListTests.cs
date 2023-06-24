@@ -407,7 +407,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			var actual = new List<long>();
-			foreach(var item in (IVersionedLongList<long>)list)
+			foreach(var item in (IRecyclableVersionedLongList<long>)list)
 			{
 				actual.Add(item);
 			}
