@@ -9,7 +9,7 @@ namespace Recyclable.Collections.Benchmarks
 		AddRangeWhenSourceIsIList, AddRangeWhenSourceIsList, AddRangeWhenSourceIsSameType, Contains_FirstItems,
 		Contains_LastItems, Count, Create_WithCapacity, Create, ForEach, GetItem, IndexOf_BestAndWorstCases, IndexOf_FirstItems,
 		IndexOf_LastItems, LongCount, Remove_FirstItems, Remove_LastItems, RemoveAt_FirstItems, RemoveAt_LastItems,
-		SetItem,
+		SetItem, VersionedForEach
 	}
 
 	public partial class RecyclableCollectionsBenchmarks : RecyclableBenchmarkBase<RecyclableCollectionsBenchmarkSource>
@@ -23,47 +23,48 @@ namespace Recyclable.Collections.Benchmarks
 
 		[Params
 		(
-			//RecyclableCollectionsBenchmarkType.Add_WithCapacity,
-			//RecyclableCollectionsBenchmarkType.Add,
-			//RecyclableCollectionsBenchmarkType.AddRange_WithCapacity,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsArray,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIEnumerable,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsList,
-			//RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType,
-			//RecyclableCollectionsBenchmarkType.Contains_FirstItems,
-			//RecyclableCollectionsBenchmarkType.Contains_LastItems,
-			//RecyclableCollectionsBenchmarkType.Count,
-			//RecyclableCollectionsBenchmarkType.Create_WithCapacity,
-			//RecyclableCollectionsBenchmarkType.Create,
-			RecyclableCollectionsBenchmarkType.ForEach
-			//RecyclableCollectionsBenchmarkType.GetItem,
-			//RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases,
-			//RecyclableCollectionsBenchmarkType.IndexOf_FirstItems,
-			//RecyclableCollectionsBenchmarkType.IndexOf_LastItems,
-			//RecyclableCollectionsBenchmarkType.LongCount,
-			//RecyclableCollectionsBenchmarkType.Remove_FirstItems,
-			//RecyclableCollectionsBenchmarkType.Remove_LastItems,
-			//RecyclableCollectionsBenchmarkType.RemoveAt_FirstItems,
-			//RecyclableCollectionsBenchmarkType.RemoveAt_LastItems,
-			//RecyclableCollectionsBenchmarkType.SetItem
+			RecyclableCollectionsBenchmarkType.Add_WithCapacity,
+			RecyclableCollectionsBenchmarkType.Add,
+			RecyclableCollectionsBenchmarkType.AddRange_WithCapacity,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsArray,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIEnumerable,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsList,
+			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType,
+			RecyclableCollectionsBenchmarkType.Contains_FirstItems,
+			RecyclableCollectionsBenchmarkType.Contains_LastItems,
+			RecyclableCollectionsBenchmarkType.Count,
+			RecyclableCollectionsBenchmarkType.Create_WithCapacity,
+			RecyclableCollectionsBenchmarkType.Create,
+			RecyclableCollectionsBenchmarkType.ForEach,
+			RecyclableCollectionsBenchmarkType.GetItem,
+			RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases,
+			RecyclableCollectionsBenchmarkType.IndexOf_FirstItems,
+			RecyclableCollectionsBenchmarkType.IndexOf_LastItems,
+			RecyclableCollectionsBenchmarkType.LongCount,
+			RecyclableCollectionsBenchmarkType.Remove_FirstItems,
+			RecyclableCollectionsBenchmarkType.Remove_LastItems,
+			RecyclableCollectionsBenchmarkType.RemoveAt_FirstItems,
+			RecyclableCollectionsBenchmarkType.RemoveAt_LastItems,
+			RecyclableCollectionsBenchmarkType.SetItem,
+			RecyclableCollectionsBenchmarkType.VersionedForEach
 		)]
 
 		public RecyclableCollectionsBenchmarkType TestCase { get; set; } = RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases;
 
-		//[Params
-		//(
-		//	RecyclableCollectionsBenchmarkSource.List
-		//)]
+		[Params
+		(
+			RecyclableCollectionsBenchmarkSource.List
+		)]
 		public override RecyclableCollectionsBenchmarkSource BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		[Params
 		(
-			//RecyclableCollectionsBenchmarkSource.Array,
-			//RecyclableCollectionsBenchmarkSource.List,
-			//RecyclableCollectionsBenchmarkSource.PooledList,
-			RecyclableCollectionsBenchmarkSource.RecyclableList
-			//RecyclableCollectionsBenchmarkSource.RecyclableLongList
+			RecyclableCollectionsBenchmarkSource.Array,
+			RecyclableCollectionsBenchmarkSource.List,
+			RecyclableCollectionsBenchmarkSource.PooledList,
+			RecyclableCollectionsBenchmarkSource.RecyclableList,
+			RecyclableCollectionsBenchmarkSource.RecyclableLongList
 		)]
 		public override RecyclableCollectionsBenchmarkSource DataType { get => base.DataType; set => base.DataType = value; }
 

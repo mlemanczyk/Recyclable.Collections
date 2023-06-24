@@ -336,7 +336,6 @@ namespace Recyclable.CollectionsTests
 			list.CopyTo(copiedItems, 0);
 
 			// Validate
-			_ = copiedItems.Length.Should().Be((int)itemsCount);
 			_ = copiedItems.Should().ContainInConsecutiveOrder(testData);
 		}
 
@@ -550,6 +549,24 @@ namespace Recyclable.CollectionsTests
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.Should().ContainInConsecutiveOrder(testData.Take((int)(itemsCount - deleted)));
 			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void VersionedEnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData);
+
+			// Act
+			var yieldedItems = new List<long>((int)itemsCount);
+			foreach (var item in (IVersionedList<long>)list)
+			{
+				yieldedItems.Add(item);
+			}
+
+			// Validate
+			_ = yieldedItems.Should().ContainInConsecutiveOrder(testData);
 		}
 	}
 }

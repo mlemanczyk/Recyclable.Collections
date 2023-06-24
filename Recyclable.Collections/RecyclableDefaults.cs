@@ -2,6 +2,7 @@
 {
 	public static class RecyclableDefaults
 	{
+		public const int BlockIndexLimit = int.MaxValue;
 		public const int BlockSize = 16_384;
 		public const int Capacity = 1;
 		public const long MinItemsCountForParallelization = 850_000;
