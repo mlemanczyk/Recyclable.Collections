@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -13,7 +13,6 @@
 	<ItemGroup>
 	  <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
 	  <PackageReference Include="Collections.Pooled" Version="1.0.82" />
-	  <PackageReference Include="JonSkeet.MiscUtil" Version="0.2.0" />
 	</ItemGroup>
 
 	<ItemGroup>

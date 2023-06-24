@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using MiscUtil;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
@@ -49,23 +48,13 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public readonly struct MyComparerReadOnlyStruct<T> : IComparer<T>
 		{
-			public int Compare(T? x, T? y) => Operator.Subtract(x, y) switch
-			{
-				> 0 => 1,
-				< 0 => -1,
-				_ => 0,
-			};
+			public int Compare(T? x, T? y) => Comparer<T>.Default.Compare(x, y);
 		}
 
 		private struct MyComparerStruct<T> : IComparer<T>
 		{
-			public int Compare(T? x, T? y) => Operator.Subtract(x, y) switch
-			{
-				> 0 => 1,
-				< 0 => -1,
-				_ => 0,
-			};
-		}
+            public int Compare(T? x, T? y) => Comparer<T>.Default.Compare(x, y);
+        }
 
 		private class MyComparer : IComparer<long>
 		{
