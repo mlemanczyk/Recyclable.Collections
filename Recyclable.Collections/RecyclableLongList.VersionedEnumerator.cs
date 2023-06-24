@@ -3,8 +3,12 @@ using System.Diagnostics.Contracts;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableLongList<T>
+
+public partial class RecyclableLongList<T> : IVersionedLongList<T>
 	{
+		public VersionedEnumerator GetVersionedEnumerator() => new(this);
+		VersionedEnumerator IVersionedLongList<T>.GetEnumerator() => new(this);
+
 		public struct VersionedEnumerator : IEnumerator<T>
 		{
 #nullable disable
@@ -26,13 +30,13 @@ namespace Recyclable.Collections
 
 			public bool MoveNext()
 			{
-				if (_enumeratorVersion != _list._version)
+				var list = _list;
+				if (_enumeratorVersion != list._version)
 				{
 					throw new InvalidOperationException();
 				}
 
 				Contract.EndContractBlock();
-				var list = _list;
 
 				if (_currentBlockIndex < list._lastBlockWithData)
 				{
