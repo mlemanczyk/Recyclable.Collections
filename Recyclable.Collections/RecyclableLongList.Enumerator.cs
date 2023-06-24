@@ -20,36 +20,9 @@ namespace Recyclable.Collections
 			private T _current;
 #nullable restore
 			public readonly T Current => _current;
-			// & WAS SLOWER
-			// {
-			// get
-			// {
-			// if (_enumeratorVersion != _list._version)
-			// {
-			// 	throw new InvalidOperationException();
-			// }
 
-			// if (_list._longCount == 0 || _currentItemIndex == RecyclableDefaults.BlockIndexLimit)
-			// {
-			// 	throw new IndexOutOfRangeException();
-			// }
-
-			// Contract.EndContractBlock();
-
-			// return _currentItemIndex > 0
-			// 	? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
-			// 	: _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1];
-			// }
-			// }
 			public bool MoveNext()
 			{
-				// & WAS SLOWER
-				// if (_enumeratorVersion != _list._version)
-				// {
-				// 	throw new InvalidOperationException();
-				// }
-				//
-				// Contract.EndContractBlock();
 				var list = _list;
 
 				if (_currentBlockIndex < list._lastBlockWithData)
@@ -81,23 +54,7 @@ namespace Recyclable.Collections
 #nullable disable
 			readonly object IEnumerator.Current => _current;
 #nullable restore
-			// & WAS SLOWER
-			// readonly object? IEnumerator.Current => _enumeratorVersion != _list._version ? throw new InvalidOperationException() : _current;
-			// {
-			// 	get
-			// 	{
-			// 		// if (_enumeratorVersion != _list._version)
-			// 		// {
-			// 		// 	throw new InvalidOperationException();
-			// 		// }
 
-			// 		// Contract.EndContractBlock();
-
-			// 		return _currentItemIndex > 0
-			// 			? _list._memoryBlocks[_currentBlockIndex][_currentItemIndex - 1]
-			// 			: _list._memoryBlocks[_currentBlockIndex - 1][_list._blockSize - 1];
-			// 	}
-			// }
 			public Enumerator(RecyclableLongList<T> list)
 			{
 				_current = _default;
@@ -108,11 +65,6 @@ namespace Recyclable.Collections
 
 			public void Reset()
 			{
-				// if (_enumeratorVersion != _list._version)
-			 	// {
-			 	// 	throw new InvalidOperationException();
-			 	// }
-				
 				_current = _default;
 				_currentBlockIndex = 0;
 				_currentItemIndex = 0;
