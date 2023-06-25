@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using Recyclable.Collections.Pools;
 
 [assembly: InternalsVisibleTo("Recyclable.Collections.Benchmarks")]
 [assembly: InternalsVisibleTo("Recyclable.CollectionsTests")]
@@ -1104,7 +1103,7 @@ namespace Recyclable.Collections
 			return Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, _nextItemIndex > 0 ? _nextItemIndex : _blockSize) >= 0;
 		}
 
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.RecyclableLongListHelpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
 
 		public Enumerator GetEnumerator() => new(this);
 		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);

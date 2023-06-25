@@ -775,9 +775,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 			return lastBlockIndex < memoryBlocksSpan.Length && Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, _nextItemIndex) >= 0;
 		}
 
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.RecyclableLongListHelpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
 
-		public IEnumerator<T> GetEnumerator() => RecyclableLongList<T>.RecyclableLongListHelpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
+		public IEnumerator<T> GetEnumerator() => RecyclableLongList<T>.Helpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => _longCount == 0
@@ -847,7 +847,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			DoRemoveAt(index);
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() => RecyclableLongList<T>.RecyclableLongListHelpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => RecyclableLongList<T>.Helpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
 
 		~RecyclableLongListV1()
 		{
@@ -1675,9 +1675,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 			return lastBlockIndex < memoryBlocksSpan.Length && Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, _nextItemIndex) >= 0;
 		}
 
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.RecyclableLongListHelpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
 
-		public IEnumerator<T> GetEnumerator() => RecyclableLongList<T>.RecyclableLongListHelpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
+		public IEnumerator<T> GetEnumerator() => RecyclableLongList<T>.Helpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => _longCount == 0
@@ -1816,7 +1816,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() => RecyclableLongList<T>.RecyclableLongListHelpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => RecyclableLongList<T>.Helpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
 
 		~RecyclableLongListV2()
 		{
@@ -2638,9 +2638,9 @@ namespace Recyclable.Collections.Benchmarks.POC
 			return lastBlockIndex < memoryBlocksSpan.Length && Array.IndexOf(memoryBlocksSpan[lastBlockIndex], item, 0, _nextItemIndex) >= 0;
 		}
 
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.RecyclableLongListHelpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableLongList<T>.Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
 
-		public IEnumerator<T> GetEnumerator() => RecyclableLongList<T>.RecyclableLongListHelpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
+		public IEnumerator<T> GetEnumerator() => RecyclableLongList<T>.Helpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public int IndexOf(T item) => _longCount == 0
@@ -2779,7 +2779,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() => RecyclableLongList<T>.RecyclableLongListHelpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => RecyclableLongList<T>.Helpers.Enumerate(_memoryBlocks, _blockSize, LongCount).GetEnumerator();
 
 		~RecyclableLongListV3()
 		{

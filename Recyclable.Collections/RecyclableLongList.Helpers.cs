@@ -2,7 +2,7 @@
 {
 	public partial class RecyclableLongList<T>
 	{
-		internal class RecyclableLongListHelpers
+		internal static class Helpers
 		{
 			public static void CopyTo(T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
 			{
