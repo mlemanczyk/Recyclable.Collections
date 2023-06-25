@@ -520,7 +520,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator() => new Enumerator(this);
+		public Enumerator GetEnumerator() => new(this);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
@@ -533,7 +533,6 @@ namespace Recyclable.Collections
 			if (_capacity > 0)
 			{
 				Clear();
-				_capacity = 0;
 				if (_count is >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					_arrayPool.Return(_memoryBlock, NeedsClearing);
