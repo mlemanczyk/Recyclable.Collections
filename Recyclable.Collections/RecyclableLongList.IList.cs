@@ -113,6 +113,6 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void CopyTo(Array array, int index) => RecyclableLongList<T>.RecyclableLongListHelpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, index);
+		public void CopyTo(Array array, int index) => RecyclableLongList<T>.Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, index);
 	}
 }
