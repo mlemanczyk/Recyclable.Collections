@@ -63,6 +63,8 @@ public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
 					return true;
 				}
 
+				// We never clear .Current here, because it will be always cleared in .Dispose(), if needed.
+
 				return false;
 			}
 
