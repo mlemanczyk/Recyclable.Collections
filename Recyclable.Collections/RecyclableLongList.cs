@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public partial sealed class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
