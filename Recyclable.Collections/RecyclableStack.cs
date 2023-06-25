@@ -8,13 +8,12 @@ namespace Recyclable.Collections
 		private readonly int _blockSize;
 
 		protected RecyclableLongList<T> List { get; }
-		public int Count => List.Count;
+		public int Count => checked((int)List._longCount);
 		public long LongCount
 		{
-			get => List.LongCount;
-			set => List.LongCount = value;
+			get => List._longCount;
+			set => List._longCount = value;
 		}
-
 		public bool IsReadOnly => List.IsReadOnly;
 
 		public T this[int index] { get => this[(long)index]; set => this[(long)index] = value; }
