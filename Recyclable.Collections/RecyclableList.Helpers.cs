@@ -6,9 +6,11 @@ namespace Recyclable.Collections
 	{
 		internal static class Helpers
 		{
+			[Obsolete("This method MAY be removed in the near future.")]
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public static bool Contains(RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
 
+			[Obsolete("This method MAY be removed in the near future.")]
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public static void CopyTo(RecyclableList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
 			{
@@ -48,6 +50,7 @@ namespace Recyclable.Collections
 				}
 			}
 
+			[Obsolete("This method WILL be removed in the near future. Please use the existing enumerators instead of it.")]
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public static IEnumerable<T> Enumerate(RecyclableList<T[]> arrays, int chunkSize, long totalCount)
 			{
