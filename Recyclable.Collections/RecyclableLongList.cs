@@ -37,7 +37,7 @@ namespace Recyclable.Collections
 		public long Capacity
 		{
 			get => _capacity;
-			protected set
+			private set
 			{
 				_capacity = value;
 				_version++;
@@ -127,7 +127,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		protected void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
+		private void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
 		{
 			long i, copied = _longCount;
 			int blockSize = _blockSize, targetItemIdx = _nextItemIndex, targetBlockIdx = _nextItemBlockIndex;
@@ -200,7 +200,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		protected void AddRangeWithKnownCount(IEnumerable<T> source, int requiredAdditionalCapacity)
+		private void AddRangeWithKnownCount(IEnumerable<T> source, int requiredAdditionalCapacity)
 		{
 			long copied = _longCount;
 			int blockSize = _blockSize;
@@ -260,7 +260,7 @@ namespace Recyclable.Collections
 		/// </remarks>
 		/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+		private static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
 			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
@@ -347,7 +347,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		private static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
@@ -357,7 +357,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static long EnsureCapacity(RecyclableLongList<T> list, long requestedCapacity)
+		private static long EnsureCapacity(RecyclableLongList<T> list, long requestedCapacity)
 		{
 			long newCapacity = list._capacity > 0
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
