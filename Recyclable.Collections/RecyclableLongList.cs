@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+	public partial sealed class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
@@ -25,10 +25,10 @@ namespace Recyclable.Collections
 		internal int _nextItemIndex;
 		private int _reservedBlockCount;
 
-		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
+		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
-		protected ArrayPool<T[]> _memoryBlocksPool;
-		protected ArrayPool<T> _blockArrayPool;
+		private ArrayPool<T[]> _memoryBlocksPool;
+		private ArrayPool<T> _blockArrayPool;
 #nullable disable
 		internal T[][] _memoryBlocks;
 #nullable restore

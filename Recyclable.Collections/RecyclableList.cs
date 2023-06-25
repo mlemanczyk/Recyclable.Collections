@@ -9,21 +9,21 @@ namespace Recyclable.Collections
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly bool _defaultIsNull = default(T) == null;
-		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
+		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
 
 #nullable disable
-		protected T[] _memoryBlock;
+		private T[] _memoryBlock;
 #nullable restore
 		// & WAS SLOWER
 		// internal RecyclableCollectionVersion _version;
 		// public RecyclableCollectionVersion Version => _version;
 
-		protected ulong _version;
+		private ulong _version;
 		public ulong Version => _version;
 
-		protected IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
+		private IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
 		{
 			int targetItemIdx = _count;
 			Span<T> memorySpan;
@@ -61,7 +61,7 @@ namespace Recyclable.Collections
 			return enumerator;
 		}
 
-		protected void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
+		private void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
 		{
 			_ = EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
 
@@ -75,7 +75,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static T[] Resize(in T[]? source, int newSize)
+		private static T[] Resize(in T[]? source, int newSize)
 		{
 			ArrayPool<T> arrayPool = _arrayPool;
 			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
@@ -100,7 +100,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
+		private static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
 		{
 			int newCapacity;
 			switch (list._capacity > 0)
@@ -204,7 +204,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		protected int _capacity;
+		private int _capacity;
 		public int Capacity
 		{
 			get => _capacity;
@@ -219,7 +219,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		protected int _count;
+		private int _count;
 		public int Count => _count;
 		//{
 		//	[MethodImpl(MethodImplOptions.AggressiveInlining)]
