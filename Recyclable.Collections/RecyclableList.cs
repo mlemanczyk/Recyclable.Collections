@@ -16,9 +16,6 @@ namespace Recyclable.Collections
 #nullable disable
 		private T[] _memoryBlock;
 #nullable restore
-		// & WAS SLOWER
-		// internal RecyclableCollectionVersion _version;
-		// public RecyclableCollectionVersion Version => _version;
 
 		private ulong _version;
 		public ulong Version => _version;
@@ -85,11 +82,6 @@ namespace Recyclable.Collections
 			if (source?.Length > 0)
 			{
 				Array.Copy(source!, 0, newMemoryBlock, 0, source!.Length);
-				//var sourceSpan = new Memory<T>(source);
-				//var newArraySpan = new Memory<T>(newMemoryBlock);
-
-				//sourceSpan.CopyTo(newArraySpan);
-
 				if (source!.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					arrayPool.Return(source!, NeedsClearing);
@@ -221,22 +213,6 @@ namespace Recyclable.Collections
 
 		private int _count;
 		public int Count => _count;
-		//{
-		//	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//	get => _count;
-
-		//	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		//	// TODO: Clear items if we're decreasing the size of the list, if T is reference type
-		//	set
-		//	{
-		//		_count = value;
-
-		//		if (_version?.IsVersioned ?? false)
-		//		{
-		//			_version.Inc();
-		//		}
-		//	}
-		//}
 
 		public bool IsReadOnly => false;
 

@@ -346,41 +346,6 @@ namespace Recyclable.Collections
 			return minBlockSize;
 		}
 
-		// & WAS SLOWER
-		// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		// & WAS SLOWER
-		// [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-		// & WAS SLOWER
-		// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.NoOptimization)]
-		// & WAS SLOWER
-		// [MethodImpl(MethodImplOptions.NoInlining)]
-		//private static void Iterate(RecyclableLongList<T> list, in ParallelSynchronizationContext context, in T itemToFind)
-		//{
-		//	// TODO: Switch to use _blockSize instead of list._longCountIndeexOfStep for simplifications & better performance.
-
-		//	// & WAS SLOWER without
-		//	int	blockIndex = 0;
-
-		//	long itemsCount = list._longCount;
-		//	// & WAS SLOWER
-		//	// int blockSize = _blockSize;
-		//	// & WAS SLOWER
-		//	// while ((blockIndex << list._blockSizePow2BitShift) + itemIndex > step)
-		//	while (itemsCount > list._blockSize)
-		//	{
-		//		// At this point itemIndex is limited to blockSize range - int.
-		//		if (!ScheduleIndexOfTask(context, list, blockIndex, list._blockSize, itemToFind))
-		//		{
-		//			break;
-		//		}
-
-		//		itemsCount -= list._blockSize;
-		//		blockIndex++;
-		//	}
-
-		//	_ = ScheduleIndexOfTask(context, list, blockIndex, (int)itemsCount, itemToFind);
-		//}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
 		{
@@ -1134,8 +1099,6 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				// & WAS SLOWER
-				// long toSearch = _longCount - _blockSize;
 				if (_longCount > _blockSize)
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
@@ -1173,8 +1136,6 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				// & WAS SLOWER
-				// long toSearch = _longCount - _blockSize;
 				if (_longCount > _blockSize)
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
