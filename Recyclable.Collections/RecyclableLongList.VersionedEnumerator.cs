@@ -3,8 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace Recyclable.Collections
 {
-
-public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
+	public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
 	{
 		public VersionedEnumerator GetVersionedEnumerator() => new(this);
 		VersionedEnumerator IRecyclableVersionedLongList<T>.GetEnumerator() => new(this);
