@@ -1302,7 +1302,8 @@ namespace Recyclable.Collections
 				Clear();
 				if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					_memoryBlocksPool.Return(_memoryBlocks, NeedsClearing);
+					// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
+					_memoryBlocksPool.Return(_memoryBlocks, false);
 				}
 			}
 
