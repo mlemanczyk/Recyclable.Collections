@@ -24,6 +24,8 @@ public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
 #nullable disable
 			private T _current;
 #nullable restore
+
+			[Pure]
 			public readonly T Current => _enumeratorVersion == _list._version ? _current : throw new InvalidOperationException();
 
 			private readonly ulong _enumeratorVersion;
@@ -65,6 +67,7 @@ public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
 			}
 
 #nullable disable
+			[Pure]
 			readonly object IEnumerator.Current => _enumeratorVersion == _list._version ? _current : throw new InvalidOperationException();
 #nullable restore
 

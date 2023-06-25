@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
 namespace Recyclable.Collections
@@ -14,9 +15,9 @@ namespace Recyclable.Collections
 			private readonly RecyclableList<T> _list;
 
 #nullable disable
-			// [Pure]
+			[Pure]
 			public readonly T Current => _list._memoryBlock[_currentItemIndex - 1];
-			// [Pure]
+			[Pure]
 			readonly object IEnumerator.Current => _list._memoryBlock[_currentItemIndex - 1];
 #nullable restore
 
@@ -37,6 +38,7 @@ namespace Recyclable.Collections
 				_list = list;
 			}
 
+			[Pure]
 			public readonly void Dispose()
 			{
 			}

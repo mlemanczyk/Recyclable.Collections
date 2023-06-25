@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.Contracts;
 
 namespace Recyclable.Collections
 {
@@ -19,6 +20,8 @@ namespace Recyclable.Collections
 #nullable disable
 			private T _current;
 #nullable restore
+
+			[Pure]
 			public readonly T Current => _current;
 
 			public bool MoveNext()
@@ -52,6 +55,7 @@ namespace Recyclable.Collections
 			}
 
 #nullable disable
+			[Pure]
 			readonly object IEnumerator.Current => _current;
 #nullable restore
 

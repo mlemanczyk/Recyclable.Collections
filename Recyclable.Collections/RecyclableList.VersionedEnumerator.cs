@@ -16,9 +16,10 @@ namespace Recyclable.Collections
 			private readonly RecyclableList<T> _list;
 
 #nullable disable
-			// [Pure]
+			[Pure]
 			public readonly T Current => _enumeratorVersion == _list._version ? _list._memoryBlock[_currentItemIndex - 1] : throw new InvalidOperationException();
-			// [Pure]
+
+			[Pure]
 			readonly object IEnumerator.Current => _enumeratorVersion == _list._version ? _list._memoryBlock[_currentItemIndex - 1] : throw new InvalidOperationException();
 #nullable restore
 
@@ -47,6 +48,7 @@ namespace Recyclable.Collections
 				_enumeratorVersion = list._version;
 			}
 
+			[Pure]
 			public readonly void Dispose()
 			{
 			}
