@@ -479,7 +479,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			using RecyclableLongList<long> list = new(testData, minBlockSize: targetBlockSize);
-			RecyclableList<long>.RecyclableListHelpers.QuickSort(list);
+			RecyclableList<long>.Helpers.QuickSort(list);
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount);

@@ -171,13 +171,13 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public bool Contains(T item) => RecyclableList<T>.RecyclableListHelpers.Contains(Memory, item);
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableList<T>.RecyclableListHelpers.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
-		public IEnumerable<T> Enumerate() => RecyclableList<T>.RecyclableListHelpers.Enumerate(Memory, BlockSize, LongCount);
-		public IEnumerator<T> GetEnumerator() => RecyclableList<T>.RecyclableListHelpers.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => RecyclableList<T>.RecyclableListHelpers.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableList<T>.RecyclableListHelpers.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
-		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableList<T>.RecyclableListHelpers.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+		public bool Contains(T item) => RecyclableList<T>.Helpers.Contains(Memory, item);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableList<T>.Helpers.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
+		public IEnumerable<T> Enumerate() => RecyclableList<T>.Helpers.Enumerate(Memory, BlockSize, LongCount);
+		public IEnumerator<T> GetEnumerator() => RecyclableList<T>.Helpers.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => RecyclableList<T>.Helpers.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
+		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableList<T>.Helpers.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableList<T>.Helpers.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
 		public void Insert(int index, T item) => throw new NotSupportedException();
 		public void RemoveAt(int index) => throw new NotSupportedException();
 		public bool TryDequeue(out T? item) => TryDequeue(this, out item);

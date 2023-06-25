@@ -4,7 +4,7 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableList<T>
 	{
-		internal static class RecyclableListHelpers
+		internal static class Helpers
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public static bool Contains(RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));

@@ -422,7 +422,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			using RecyclableList<long> list = new(testData);
-			RecyclableList<long>.RecyclableListHelpers.QuickSort(list);
+			RecyclableList<long>.Helpers.QuickSort(list);
 
 			// Validate
 			_ = list.Count.Should().Be((int)itemsCount);

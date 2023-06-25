@@ -68,7 +68,7 @@
 			BeginUpdate();
 			try
 			{
-				RecyclableList<(TKey Key, TValue Value)>.RecyclableListHelpers.QuickSort(this, _comparer, _randomNumberGenerator);
+				RecyclableList<(TKey Key, TValue Value)>.Helpers.QuickSort(this, _comparer, _randomNumberGenerator);
 			}
 			finally
 			{
