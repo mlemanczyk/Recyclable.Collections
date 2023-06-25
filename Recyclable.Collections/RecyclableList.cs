@@ -13,7 +13,9 @@ namespace Recyclable.Collections
 
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
 
+#nullable disable
 		protected T[] _memoryBlock;
+#nullable restore
 		// & WAS SLOWER
 		// internal RecyclableCollectionVersion _version;
 		// public RecyclableCollectionVersion Version => _version;
@@ -508,9 +510,7 @@ namespace Recyclable.Collections
 
 				if (NeedsClearing)
 				{
-#pragma warning disable CS8601 // In real use cases we'll never access it
 					_memoryBlock[_count] = default;
-#pragma warning restore CS8601
 				}
 
 				_version++;
@@ -537,9 +537,7 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
-#pragma warning disable CS8601 // In real use cases we'll never access it
 				_memoryBlock[_count] = default;
-#pragma warning restore CS8601
 			}
 
 			_version++;

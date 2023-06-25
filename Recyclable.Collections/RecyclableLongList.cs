@@ -29,7 +29,9 @@ namespace Recyclable.Collections
 
 		protected ArrayPool<T[]> _memoryBlocksPool;
 		protected ArrayPool<T> _blockArrayPool;
+#nullable disable
 		internal T[][] _memoryBlocks;
+#nullable restore
 
 		private long _capacity;
 		public long Capacity
@@ -1215,9 +1217,7 @@ namespace Recyclable.Collections
 
 				if (NeedsClearing)
 				{
-#pragma warning disable CS8601 // In real use cases we'll never access it
 					_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
-#pragma warning restore CS8601
 				}
 
 				_version++;
@@ -1285,9 +1285,7 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
-#pragma warning disable CS8601 // In real use cases we'll never access it
 				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
-#pragma warning restore CS8601
 			}
 
 			_version++;
@@ -1325,9 +1323,7 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
-#pragma warning disable CS8601 // In real use cases we'll never access it
 				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
-#pragma warning restore CS8601
 			}
 
 			_version++;
