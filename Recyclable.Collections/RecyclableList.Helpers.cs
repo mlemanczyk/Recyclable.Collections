@@ -7,7 +7,7 @@ namespace Recyclable.Collections
 		internal static class RecyclableListHelpers
 		{
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
-			public static bool Contains<T>(RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
+			public static bool Contains(RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			public static void CopyTo(RecyclableList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
@@ -22,7 +22,7 @@ namespace Recyclable.Collections
 					var maxToCopy = (int)Math.Min(blockSize - startingIndex, arrayMemory.Length);
 					if (arrays.Count == 1)
 					{
-						maxToCopy = (int)Math.Min(maxToCopy, lastBlockSize);
+						maxToCopy = Math.Min(maxToCopy, lastBlockSize);
 					}
 
 					sourceMemory = sourceMemory[(int)startingIndex..maxToCopy];
