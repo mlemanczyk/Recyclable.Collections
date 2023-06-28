@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Recyclable.Collections
 {
 	[Serializable]
-	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IList, IDisposable
+	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
