@@ -26,11 +26,11 @@ public static class Program
 		var benchmark = new RecyclableCollectionsBenchmarks();
 		benchmark.Setup();
 
-		//foreach (var _ in Enumerable.Range(1, 1000))
-		//{
+		// foreach (var _ in Enumerable.Range(1, 1000))
+		// {
 		benchmark.List_ForEach();
 		benchmark.RecyclableList_ForEach();
-		//}
+		// }
 
 		benchmark.Cleanup();
 	}
@@ -53,8 +53,8 @@ public static class Program
 	static void Main(string[] args)
 	{
 		RunRecyclableCollectionsBenchmarks();
-		//RunPocBenchmarks();
-		//RunSelectedBenchmarks();
-		//RunAssemblyBenchmarks();
+		// RunPocBenchmarks();
+		// RunSelectedBenchmarks();
+		// RunAssemblyBenchmarks();
 	}
 }
