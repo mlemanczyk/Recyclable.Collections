@@ -4,6 +4,8 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableList<T> : IList
 	{
+		private static readonly bool _defaultIsNull = default(T) == null;
+
 		public bool IsFixedSize => false;
 		public bool IsSynchronized => false;
 

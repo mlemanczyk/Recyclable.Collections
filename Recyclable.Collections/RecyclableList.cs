@@ -8,7 +8,6 @@ namespace Recyclable.Collections
 	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IList, IDisposable
 	{
 		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
-		private static readonly bool _defaultIsNull = default(T) == null;
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
