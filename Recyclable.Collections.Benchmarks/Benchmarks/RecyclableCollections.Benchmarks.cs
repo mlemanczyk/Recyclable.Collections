@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Benchmarks
 
 	public partial class RecyclableCollectionsBenchmarks : RecyclableBenchmarkBase<RecyclableCollectionsBenchmarkSource>
 	{
-		public RecyclableCollectionsBenchmarks() : base()
+		public RecyclableCollectionsBenchmarks()
 		{
 			TestObjectCount = 1;
 			//BaseDataType = RecyclableCollectionsBenchmarkSource.List;
