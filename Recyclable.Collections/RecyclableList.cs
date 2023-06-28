@@ -534,14 +534,22 @@ namespace Recyclable.Collections
 
 		public void Dispose()
 		{
-			if (_capacity > 0)
+			_version++;
+			if (_count != 0)
 			{
-				Clear();
-				if (_count is >= RecyclableDefaults.MinPooledArrayLength)
+				if (NeedsClearing)
 				{
-					// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
-					_arrayPool.Return(_memoryBlock, false);
+					Array.Clear(_memoryBlock, 0, _count);
 				}
+
+				_count = 0;
+			}
+
+			if (_capacity >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				_capacity = 0;
+				// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
+				_arrayPool.Return(_memoryBlock, false);
 			}
 
 			GC.SuppressFinalize(this);
