@@ -431,6 +431,11 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void Clear()
 		{
+			if (_count == 0)
+			{
+				return;
+			}
+
 			if (NeedsClearing)
 			{
 				Array.Clear(_memoryBlock, 0, _count);
