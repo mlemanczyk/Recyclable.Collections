@@ -13,10 +13,10 @@ namespace Recyclable.Collections
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
 
 #nullable disable
-		private T[] _memoryBlock;
+		internal T[] _memoryBlock;
 #nullable restore
 
-		private ulong _version;
+		internal ulong _version;
 		public ulong Version => _version;
 
 		private IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
@@ -36,7 +36,7 @@ namespace Recyclable.Collections
 				{
 					if (targetItemIdx + growByCount > capacity)
 					{
-						capacity = EnsureCapacity(this, capacity + growByCount);
+						capacity = Helpers.EnsureCapacity(this, capacity + growByCount);
 						memorySpan = new(_memoryBlock);
 						available = capacity - targetItemIdx;
 					}
@@ -59,7 +59,7 @@ namespace Recyclable.Collections
 
 		private void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
 		{
-			_ = EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
+			_ = Helpers.EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
 
 			Span<T> memorySpan = new(_memoryBlock);
 			foreach (var item in source)
@@ -68,52 +68,6 @@ namespace Recyclable.Collections
 			}
 
 			_count = targetItemIdx;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static T[] Resize(in T[]? source, int newSize)
-		{
-			ArrayPool<T> arrayPool = _arrayPool;
-			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
-				? arrayPool.Rent(newSize)
-				: new T[newSize];
-
-			if (source?.Length > 0)
-			{
-				Array.Copy(source!, 0, newMemoryBlock, 0, source!.Length);
-				if (source!.Length >= RecyclableDefaults.MinPooledArrayLength)
-				{
-					arrayPool.Return(source!, NeedsClearing);
-				}
-			}
-
-			return newMemoryBlock;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		private static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
-		{
-			int newCapacity;
-			switch (list._capacity > 0)
-			{
-				case true:
-					newCapacity = list._capacity;
-					while (newCapacity < requestedCapacity)
-					{
-						newCapacity <<= 1;
-					}
-
-					break;
-
-				case false:
-					newCapacity = requestedCapacity;
-					break;
-			}
-
-			list._memoryBlock = Resize(list._memoryBlock, newCapacity);
-			newCapacity = list._memoryBlock.Length;
-			list._capacity = newCapacity;
-			return newCapacity;
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
@@ -128,7 +82,7 @@ namespace Recyclable.Collections
 		{
 			if (initialCapacity > 0)
 			{
-				_memoryBlock = Resize(_memoryBlock, initialCapacity);
+				_memoryBlock = Helpers.Resize(_memoryBlock, initialCapacity);
 				_capacity = _memoryBlock.Length;
 			}
 		}
@@ -177,7 +131,7 @@ namespace Recyclable.Collections
 
 		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
-			_memoryBlock = Resize(_memoryBlock, initialCapacity);
+			_memoryBlock = Helpers.Resize(_memoryBlock, initialCapacity);
 			_capacity = _memoryBlock.Length;
 			AddRange(source);
 		}
@@ -203,14 +157,14 @@ namespace Recyclable.Collections
 			{
 				if (_capacity != value)
 				{
-					_memoryBlock = Resize(_memoryBlock, value);
+					_memoryBlock = Helpers.Resize(_memoryBlock, value);
 					_capacity = _memoryBlock.Length;
 					_version++;
 				}
 			}
 		}
 
-		private int _count;
+		internal int _count;
 		public int Count => _count;
 
 		public bool IsReadOnly => false;
@@ -221,7 +175,7 @@ namespace Recyclable.Collections
 			int requiredCapacity = _count + 1;
 			if (_capacity < requiredCapacity)
 			{
-				_ = EnsureCapacity(this, requiredCapacity);
+				_ = Helpers.EnsureCapacity(this, requiredCapacity);
 			}
 
 			_memoryBlock[_count++] = item;
@@ -240,7 +194,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(this, targetCapacity);
+				_ = Helpers.EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -263,7 +217,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(this, targetCapacity);
+				_ = Helpers.EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -285,7 +239,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(this, targetCapacity);
+				_ = Helpers.EnsureCapacity(this, targetCapacity);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
@@ -306,7 +260,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(this, targetCapacity);
+				_ = Helpers.EnsureCapacity(this, targetCapacity);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
@@ -327,7 +281,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(this, targetCapacity);
+				_ = Helpers.EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -360,7 +314,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + (int)sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = EnsureCapacity(this, targetCapacity);
+				_ = Helpers.EnsureCapacity(this, targetCapacity);
 			}
 
 			Span<T> targetSpan = new Span<T>(_memoryBlock)[_count..],
@@ -461,7 +415,7 @@ namespace Recyclable.Collections
 			int requestedCapacity = oldCount + 1;
 			if (_capacity < requestedCapacity)
 			{
-				_ = EnsureCapacity(this, requestedCapacity);
+				_ = Helpers.EnsureCapacity(this, requestedCapacity);
 			}
 
 			if (oldCount > 0)

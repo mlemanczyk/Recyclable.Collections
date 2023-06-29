@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
@@ -48,6 +49,32 @@ namespace Recyclable.Collections
 					sourceMemory = sourceMemory[..maxToCopy];
 					sourceMemory.CopyTo(arrayMemory);
 				}
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+			public static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
+			{
+				int newCapacity;
+				switch (list._capacity > 0)
+				{
+					case true:
+						newCapacity = list._capacity;
+						while (newCapacity < requestedCapacity)
+						{
+							newCapacity <<= 1;
+						}
+
+						break;
+
+					case false:
+						newCapacity = requestedCapacity;
+						break;
+				}
+
+				list._memoryBlock = Resize(list._memoryBlock, newCapacity);
+				newCapacity = list._memoryBlock.Length;
+				list._capacity = newCapacity;
+				return newCapacity;
 			}
 
 			[Obsolete("This method WILL be removed in the near future. Please use the existing enumerators instead of it.")]
@@ -209,6 +236,33 @@ namespace Recyclable.Collections
 				}
 
 				return values[middle];
+			}
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+			public static T[] Resize(in T[]? source, int newSize)
+			{
+				ArrayPool<T> arrayPool = _arrayPool;
+				T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
+					? arrayPool.Rent(newSize)
+					: new T[newSize];
+
+				if (source?.Length > 0)
+				{
+					Array.Copy(source!, 0, newMemoryBlock, 0, source!.Length);
+					if (source!.Length >= RecyclableDefaults.MinPooledArrayLength)
+					{
+						// TODO: Measure gain vs relying on arrayPool to clear
+						//if (NeedsClearing)
+						//{
+						//	Array.Clear(source);
+						//}
+
+						// If anything, it has been already cleared above, so we don't need to repeat it.
+						arrayPool.Return(source, NeedsClearing);
+					}
+				}
+
+				return newMemoryBlock;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
