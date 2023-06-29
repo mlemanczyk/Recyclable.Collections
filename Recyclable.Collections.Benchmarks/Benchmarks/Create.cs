@@ -4,6 +4,12 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
+		public void Array_Create()
+		{
+			var list = new long[0];
+			DoNothing(list);
+		}
+
 		public void List_Create()
 		{
 			var list = new List<long>();
