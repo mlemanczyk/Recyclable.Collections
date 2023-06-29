@@ -4,6 +4,17 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
+		public void Array_Add()
+		{
+			var data = TestObjects;
+			var dataCount = TestObjectCount;
+			var list = new long[dataCount];
+			for (var i = 0; i < dataCount; i++)
+			{
+				list[i] = data[i];
+			}
+		}
+
 		public void List_Add()
 		{
 			var data = TestObjects;
