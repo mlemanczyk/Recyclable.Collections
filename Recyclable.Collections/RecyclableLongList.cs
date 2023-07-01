@@ -376,7 +376,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -405,7 +405,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(in T[] source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -435,7 +435,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(ReadOnlySpan<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -465,7 +465,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(RecyclableList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -495,7 +495,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(RecyclableLongList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -525,7 +525,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(List<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -555,7 +555,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(IList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
@@ -585,7 +585,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
+#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
 #pragma warning restore CS8618
 		{
