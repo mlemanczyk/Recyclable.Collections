@@ -6,7 +6,6 @@ namespace Recyclable.Collections
 	[Serializable]
 	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-		// private static readonly T[] _emptyMemoryBlock = new T[0];
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
@@ -173,7 +172,6 @@ namespace Recyclable.Collections
 				if (_capacity != value)
 				{
 					RecyclableListHelpers<T>.ResizeAndCopy(this, value);
-					// _capacity = _memoryBlock.Length;
 					_version++;
 				}
 			}
@@ -189,16 +187,6 @@ namespace Recyclable.Collections
 		{
 			// TODO: Measure performance
 			// ArrayPool<T> arrayPool = _arrayPool;
-			// & WAS SLOWER
-			// int newSize = _capacity << 1;
-			// & WAS SLOWER
-			// if ((_capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength)
-			// {
-			// 	Array.Resize(ref _memoryBlock, _capacity);
-			// 	// _capacity <<= 1;
-			// 	return;
-			// }
-
 			// TODO: Measure performance after RecyclableArrayPool is reworked
 			// T[] newMemoryBlock = RecyclableListHelpers<T>._arrayPool.Rent(_capacity <<= 1);
 			T[] newMemoryBlock = (_capacity <<= 1) >= RecyclableDefaults.MinPooledArrayLength
@@ -208,8 +196,6 @@ namespace Recyclable.Collections
 			// & WAS SLOWER WITHOUT
 			T[] oldMemoryBlock = _memoryBlock;
 			new Span<T>(oldMemoryBlock).CopyTo(newMemoryBlock);
-			// & WAS SLOWER
-			// Array.Copy(oldMemoryBlock, newMemoryBlock, oldMemoryBlock.Length);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
@@ -233,27 +219,8 @@ namespace Recyclable.Collections
 			if (_count == _capacity)
 			{
 				ResizeAndCopy();
-			// & WAS SLOWER
-			// 	new Span<T>(_memoryBlock)[_count++] = item;
-			// }
-			// else
-			// if (_capacity == _count)
-			// {
-				// 		break;
-
-				// 	case false:
-				// 		newCapacity = requestedCapacity;
-				// 		list._memoryBlock = Resize(list, newCapacity);
-				// 		break;
-				// }
-
-				// var newCapacity = list._memoryBlock.Length;
-				// _capacity = _memoryBlock.Length;
 			}
 
-			// & WAS SLOWER
-			// new Span<T>(_memoryBlock)[_count++] = item;
-			// new Span<T>(_memoryBlock, _count++, 1)[0] = item;
 			_memoryBlock[_count++] = item;
 			_version++;
 		}
