@@ -1275,11 +1275,6 @@ namespace Recyclable.Collections
 			_version++;
 		}
 
-		~RecyclableLongList()
-		{
-			Dispose();
-		}
-
 		public void Dispose()
 		{
 			if (_capacity > 0)
