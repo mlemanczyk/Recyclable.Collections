@@ -238,7 +238,7 @@ namespace Recyclable.Collections
 			T[] oldMemoryBlock = sourceList._memoryBlock;
 
 			// & WAS SLOWER AS ARRAY
-			Array.Copy(oldMemoryBlock, newMemoryBlock, oldMemoryBlock.Length);
+			new Span<T>(oldMemoryBlock).CopyTo(newMemoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
