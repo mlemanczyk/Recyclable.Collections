@@ -11,8 +11,6 @@ namespace Recyclable.Collections
 			private static readonly T _default = default;
 #nullable restore
 
-			private static readonly bool _isReferenceType = !typeof(T).IsValueType;
-
 			private int _currentBlockIndex;
 			private int _currentItemIndex;
 			private readonly RecyclableLongList<T> _list;
@@ -69,14 +67,18 @@ namespace Recyclable.Collections
 
 			public void Reset()
 			{
-				_current = _default;
+				if (NeedsClearing)
+				{
+					_current = _default;
+				}
+
 				_currentBlockIndex = 0;
 				_currentItemIndex = 0;
 			}
 
 			public void Dispose()
 			{
-				if (_isReferenceType)
+				if (NeedsClearing)
 				{
 					_current = _default;
 				}
