@@ -6,6 +6,8 @@ using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
+#pragma warning disable CA1825, RCS1085, CA2208
+
 namespace Recyclable.Collections.Benchmarks.POC
 {
 	#region ItemRangesIterator V1
@@ -19,7 +21,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public ItemRangeV1()
 		{
-
 		}
 
 		public ItemRangeV1(int blockIndex, int startingItemIndex, long itemsToSearchCount)
@@ -560,7 +561,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 						{
 							break;
 						}
-					};
+					}
 				}
 				else
 				{
@@ -3802,7 +3803,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization | MethodImplOptions.AggressiveInlining)]
 		private long DoIndexOfParallel(T item)
-		{	
+		{
 			var synchronizationContext = new ParallelSynchronizationContextV4(1);
 			// (long)(_longCount * 0.329) => most efficient step, based on benchmarks
 			Iterate(synchronizationContext, this, item, ScheduleIndexOfTasks);

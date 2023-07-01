@@ -271,7 +271,9 @@ namespace Recyclable.Collections
 					: RecyclableArrayPool<T>.Null;
 			}
 
+#pragma warning disable CA2208
 			public static void ThrowIndexOutOfRangeException(in string message) => throw new ArgumentOutOfRangeException("index", message);
+#pragma warning restore CA2208
 			public static void ThrowArgumentOutOfRangeException(in string argumentName, in string message) => throw new ArgumentOutOfRangeException(argumentName, message);
 		}
 	}

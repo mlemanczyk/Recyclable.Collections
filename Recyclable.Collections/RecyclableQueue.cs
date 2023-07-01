@@ -96,17 +96,11 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static int ToArrayIndex(long index, int blockSize) => (int)(index / blockSize);
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public static long ToItemIndex(long index, int blockSize) => index % blockSize;
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		private void SetItem(long index, T value)
 		{
 			long absoluteIndex = GetAbsoluteIndex(index, RemovedCount);
-			int arrayIndex = ToArrayIndex(absoluteIndex, BlockSize);
-			long itemIndex = ToItemIndex(absoluteIndex, BlockSize);
+			int arrayIndex = RecyclableQueueHelpers.ToArrayIndex(absoluteIndex, BlockSize);
+			long itemIndex = RecyclableQueueHelpers.ToItemIndex(absoluteIndex, BlockSize);
 			Memory[arrayIndex][itemIndex] = value;
 		}
 
@@ -114,8 +108,8 @@ namespace Recyclable.Collections
 		private T GetItem(long index)
 		{
 			long absoluteIndex = GetAbsoluteIndex(index, RemovedCount);
-			int arrayIndex = ToArrayIndex(absoluteIndex, BlockSize);
-			long itemIndex = ToItemIndex(absoluteIndex, BlockSize);
+			int arrayIndex = RecyclableQueueHelpers.ToArrayIndex(absoluteIndex, BlockSize);
+			long itemIndex = RecyclableQueueHelpers.ToItemIndex(absoluteIndex, BlockSize);
 			return Memory[arrayIndex][itemIndex];
 		}
 
@@ -156,10 +150,10 @@ namespace Recyclable.Collections
 					{
 						RemoveBlock(Memory.Count - 1);
 					}
+#pragma warning disable RCS1075 // We want to try returning as many arrays, as possible, before the list is cleared.
 					catch (Exception)
+#pragma warning restore RCS1075
 					{
-						// We want to try returning as many arrays, as possible, before
-						// the list is cleared.
 					}
 				}
 			}
@@ -171,6 +165,7 @@ namespace Recyclable.Collections
 			}
 		}
 
+#pragma	warning disable CS0618
 		public bool Contains(T item) => RecyclableListHelpers<T>.Contains(Memory, item);
 		public void CopyTo(T[] array, int arrayIndex) => RecyclableListHelpers<T>.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
 		public IEnumerable<T> Enumerate() => RecyclableListHelpers<T>.Enumerate(Memory, BlockSize, LongCount);
@@ -178,6 +173,8 @@ namespace Recyclable.Collections
 		IEnumerator IEnumerable.GetEnumerator() => RecyclableListHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
 		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableListHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
 		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableListHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+#pragma warning restore CS0618
+
 		public void Insert(int index, T item) => throw new NotSupportedException();
 		public void RemoveAt(int index) => throw new NotSupportedException();
 		public bool TryDequeue(out T? item) => TryDequeue(this, out item);

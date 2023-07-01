@@ -4,6 +4,8 @@ using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
+#pragma warning disable CA1825, RCS1085, CA2208
+
 namespace Recyclable.Collections.Benchmarks.POC
 {
 	#region RecyclableLongList v1
@@ -26,7 +28,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		protected ArrayPool<T[]> _memoryBlocksPool;
 		protected ArrayPool<T> _blockArrayPool;
+
+#nullable disable
 		protected T[][] _memoryBlocks;
+#nullable restore
 
 		private long _capacity;
 		public long Capacity
@@ -341,10 +346,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 				? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
 				: requestedCapacity;
 
-			newCapacity = Resize(ref _memoryBlocks!, _blockSize, _capacity, newCapacity, _memoryBlocksPool, _blockArrayPool);
+			newCapacity = Resize(ref _memoryBlocks, _blockSize, _capacity, newCapacity, _memoryBlocksPool, _blockArrayPool);
 			if (newCapacity > 0 && _capacity == 0)
 			{
-				_blockSize = _memoryBlocks[0].Length;
+				_blockSize = _memoryBlocks![0].Length;
 				_blockSizePow2Shift = MathUtils.GetPow2Shift(_blockSize);
 			}
 
@@ -361,8 +366,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 			if (expectedItemsCount > 0)
 			{
-				_capacity = Resize(ref _memoryBlocks!, (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
-				if (_memoryBlocks.Length > 0)
+				_capacity = Resize(ref _memoryBlocks, (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
+				if (_memoryBlocks!.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
 				}
@@ -387,8 +392,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 			if (expectedItemsCount > 0)
 			{
-				_capacity = Resize(ref _memoryBlocks!, (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
-				if (_memoryBlocks.Length > 0)
+				_capacity = Resize(ref _memoryBlocks, (int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize), 0, expectedItemsCount.Value, memoryBlocksPool, blockArrayPool);
+				if (_memoryBlocks!.Length > 0)
 				{
 					minBlockSize = _memoryBlocks[0].Length;
 				}

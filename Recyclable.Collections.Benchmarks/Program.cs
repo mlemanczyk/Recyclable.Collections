@@ -1,39 +1,42 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
-using Recyclable.Collections.Benchmarks;
 using Recyclable.Collections.Benchmarks.POC;
 
-public static class Program
+#pragma warning disable RCS1036, RCS1213, IDE0051
+
+namespace Recyclable.Collections.Benchmarks
 {
-	static IConfig BenchmarkConfig { get; } = ManualConfig.Create(DefaultConfig.Instance)
-		.WithOptions(ConfigOptions.DisableOptimizationsValidator | ConfigOptions.JoinSummary );
-
-	static void RunAssemblyBenchmarks()
+	public static class Program
 	{
-		_ = BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(new[] { "-f*" });
-	}
+		static IConfig BenchmarkConfig { get; } = ManualConfig.Create(DefaultConfig.Instance)
+			.WithOptions(ConfigOptions.DisableOptimizationsValidator | ConfigOptions.JoinSummary);
 
-	private static void RunRecyclableCollectionsBenchmarks()
-	{
-		_ = BenchmarkRunner.Run<RecyclableCollectionsBenchmarks>(BenchmarkConfig);
-	}
+		static void RunAssemblyBenchmarks()
+		{
+			_ = BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(new[] { "-f*" });
+		}
 
-	static void RunSelectedBenchmarks()
-	{
-		// ****************
-		// *** Template ***
-		// ****************
-		var benchmark = new RecyclableCollectionsBenchmarks();
-		benchmark.Setup();
+		private static void RunRecyclableCollectionsBenchmarks()
+		{
+			_ = BenchmarkRunner.Run<RecyclableCollectionsBenchmarks>(BenchmarkConfig);
+		}
 
-		// foreach (var _ in Enumerable.Range(1, 1000))
-		// {
-		benchmark.List_ForEach();
-		benchmark.RecyclableList_ForEach();
-		// }
+		static void RunSelectedBenchmarks()
+		{
+			// ****************
+			// *** Template ***
+			// ****************
+			var benchmark = new RecyclableCollectionsBenchmarks();
+			benchmark.Setup();
 
-		benchmark.Cleanup();
-	}
+			// foreach (var _ in Enumerable.Range(1, 1000))
+			// {
+			benchmark.List_ForEach();
+			benchmark.RecyclableList_ForEach();
+			// }
+
+			benchmark.Cleanup();
+		}
 
 	static void RunPocBenchmarks()
 	{
@@ -50,11 +53,12 @@ public static class Program
 		// ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 	}
 
-	static void Main(string[] args)
-	{
-		RunRecyclableCollectionsBenchmarks();
-		// RunPocBenchmarks();
-		// RunSelectedBenchmarks();
-		// RunAssemblyBenchmarks();
+		static void Main()
+		{
+			RunRecyclableCollectionsBenchmarks();
+			// RunPocBenchmarks();
+			// RunSelectedBenchmarks();
+			// RunAssemblyBenchmarks();
+		}
 	}
 }

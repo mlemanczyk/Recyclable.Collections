@@ -22,7 +22,7 @@ namespace Recyclable.Collections.Benchmarks
 		protected long[] TestObjects => _testObjects ?? throw new NullReferenceException("Something is wrong and the field is not initialized");
 
 		protected List<long>? _testObjectsAsList;
-		protected List<long> TestObjectsAsList => _testObjectsAsList ?? throw new NullReferenceException("Something went wront and the field is not initialized");
+		protected List<long> TestObjectsAsList => _testObjectsAsList ?? throw new NullReferenceException("Something went wrong and the field is not initialized");
 
 		protected PooledList<long>? _testObjectsAsPooledList;
 		public PooledList<long> TestObjectsAsPooledList => _testObjectsAsPooledList ?? throw new NullReferenceException("Something is wrong and the field is not initialized");

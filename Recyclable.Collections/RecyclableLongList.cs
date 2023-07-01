@@ -12,9 +12,12 @@ namespace Recyclable.Collections
 	{
 		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
 		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
+#pragma warning disable CA1825
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
+#pragma warning restore CA1825
 		private static readonly bool _defaultIsNull = default(T) == null;
+		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		internal int _blockSize;
 		internal byte _blockSizePow2BitShift;
@@ -23,9 +26,7 @@ namespace Recyclable.Collections
 		internal int _nextItemIndex;
 		private int _reservedBlockCount;
 
-		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
-
-		private ArrayPool<T[]> _memoryBlocksPool;
+		private readonly ArrayPool<T[]> _memoryBlocksPool;
 		private ArrayPool<T> _blockArrayPool;
 #nullable disable
 		internal T[][] _memoryBlocks;
