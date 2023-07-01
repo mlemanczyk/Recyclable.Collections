@@ -36,7 +36,7 @@ namespace Recyclable.Collections
 				{
 					if (targetItemIdx + growByCount > capacity)
 					{
-						capacity = Helpers.EnsureCapacity(this, capacity + growByCount);
+						capacity = RecyclableListHelpers<T>.EnsureCapacity(this, capacity + growByCount);
 						memorySpan = new(_memoryBlock);
 						available = capacity - targetItemIdx;
 					}
@@ -59,7 +59,7 @@ namespace Recyclable.Collections
 
 		private void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
 		{
-			_ = Helpers.EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
+			_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
 
 			Span<T> memorySpan = new(_memoryBlock);
 			foreach (var item in source)
@@ -82,7 +82,7 @@ namespace Recyclable.Collections
 		{
 			if (initialCapacity > 0)
 			{
-				_memoryBlock = Helpers.Resize(_memoryBlock, initialCapacity);
+				_memoryBlock = RecyclableListHelpers<T>.Resize(_memoryBlock, initialCapacity);
 				_capacity = _memoryBlock.Length;
 			}
 		}
@@ -131,7 +131,7 @@ namespace Recyclable.Collections
 
 		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
-			_memoryBlock = Helpers.Resize(_memoryBlock, initialCapacity);
+			_memoryBlock = RecyclableListHelpers<T>.Resize(_memoryBlock, initialCapacity);
 			_capacity = _memoryBlock.Length;
 			AddRange(source);
 		}
@@ -149,7 +149,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		private int _capacity;
+		internal int _capacity;
 		public int Capacity
 		{
 			get => _capacity;
@@ -157,7 +157,7 @@ namespace Recyclable.Collections
 			{
 				if (_capacity != value)
 				{
-					_memoryBlock = Helpers.Resize(_memoryBlock, value);
+					_memoryBlock = RecyclableListHelpers<T>.Resize(_memoryBlock, value);
 					_capacity = _memoryBlock.Length;
 					_version++;
 				}
@@ -175,7 +175,7 @@ namespace Recyclable.Collections
 			int requiredCapacity = _count + 1;
 			if (_capacity < requiredCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, requiredCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, requiredCapacity);
 			}
 
 			_memoryBlock[_count++] = item;
@@ -194,14 +194,13 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
 			Span<T> itemsSpan = new(items);
 			itemsSpan.CopyTo(targetSpan);
 			_count = targetCapacity;
-
 			_version++;
 		}
 
@@ -217,7 +216,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -239,7 +238,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
@@ -260,7 +259,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
@@ -281,7 +280,7 @@ namespace Recyclable.Collections
 			var targetCapacity = _count + sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
 			var targetSpan = new Span<T>(_memoryBlock, _count, sourceItemsCount);
@@ -314,7 +313,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + (int)sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
 			Span<T> targetSpan = new Span<T>(_memoryBlock)[_count..],
@@ -415,7 +414,7 @@ namespace Recyclable.Collections
 			int requestedCapacity = oldCount + 1;
 			if (_capacity < requestedCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, requestedCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, requestedCapacity);
 			}
 
 			if (oldCount > 0)
