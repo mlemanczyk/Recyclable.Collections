@@ -1,5 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 
+#pragma warning disable RCS1085
+
 namespace Recyclable.Collections.Benchmarks.POC
 {
     public class RefVsInstanceMemberPocBenchmarks

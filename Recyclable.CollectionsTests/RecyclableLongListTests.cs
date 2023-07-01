@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using Recyclable.Collections;
 
+#pragma warning disable xUnit1026, RCS1163, IDE0060, RCS1235
+
 namespace Recyclable.CollectionsTests
 {
 	public class RecyclableLongListTests
@@ -352,7 +354,7 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		//[InlineData("Debuging case", new[] { 1L, 2, }, 2, 2)]
+		//[InlineData("Debugging case", new[] { 1L, 2, }, 2, 2)]
 		public void CopyToShouldCopyAllItemsInTheCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare

@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 
+#pragma warning disable xUnit1026, RCS1163, IDE0060
+
 namespace Recyclable.Collections.Benchmarks.POC
 {
     [MemoryDiagnoser]
@@ -124,7 +126,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             DoNothing(result, remainder);
         }
 
-        private void CalculateWithSubractWithWhileWithSse2(long i)
+        private void CalculateWithSubtractWithWhileWithSse2(long i)
         {
             var state = Vector128.Create(i, 0);
             int blockSize = BlockSize;
@@ -137,7 +139,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             DoNothing(state.GetElement(1), state.GetElement(0));
         }
 
-        private void CalculateWithMixedApproachWithSubractWithWhile(long i)
+        private void CalculateWithMixedApproachWithSubtractWithWhile(long i)
         {
             long remainder;
             if (i >= _cutoff)
@@ -317,7 +319,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             long testNumber = TestNumber;
             for (long i = testNumber; i >= _lastCaseIndex; i--)
             {
-                CalculateWithSubractWithWhileWithSse2(i);
+                CalculateWithSubtractWithWhileWithSse2(i);
             }
         }
 
@@ -327,7 +329,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             long testNumber = TestNumber;
             for (long i = testNumber; i >= _lastCaseIndex; i--)
             {
-                CalculateWithMixedApproachWithSubractWithWhile(i);
+                CalculateWithMixedApproachWithSubtractWithWhile(i);
             }
         }
 

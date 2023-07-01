@@ -1,5 +1,7 @@
 ﻿using Collections.Pooled;
 
+#pragma warning disable CA1822, CA1825
+
 namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks

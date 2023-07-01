@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using Recyclable.Collections;
 
+#pragma warning disable xUnit1026, RCS1163, IDE0060, RCS1235
+
 namespace Recyclable.CollectionsTests
 {
 	public class RecyclableListTests

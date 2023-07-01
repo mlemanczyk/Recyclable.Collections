@@ -53,7 +53,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		private struct MyComparerStruct<T> : IComparer<T>
 		{
-            public int Compare(T? x, T? y) => Comparer<T>.Default.Compare(x, y);
+            public readonly int Compare(T? x, T? y) => Comparer<T>.Default.Compare(x, y);
         }
 
 		private class MyComparer : IComparer<long>
@@ -132,7 +132,7 @@ namespace Recyclable.Collections.Benchmarks.POC
             }
         }
 
-        private void TestWithDelegate<T>(Compare<long> compareFunc)
+        private void TestWithDelegate(Compare<long> compareFunc)
         {
             var testData = _testObjects!.ToArray();
             for (var itemIdx = 0; itemIdx < testData.Length - 1; itemIdx++)
@@ -177,7 +177,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
         public void Delegate()
         {
-            TestWithDelegate<long>((x, y) => (x - y) switch
+            TestWithDelegate((x, y) => (x - y) switch
             {
                 > 0 => 1,
                 < 0 => -1,

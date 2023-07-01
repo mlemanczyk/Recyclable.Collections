@@ -143,7 +143,7 @@
 1. 🅿️ Implement `ILongList<T>` interface
 	1. 🅿️ `RecyclableList<T>`
 	1. 🅿️ `RecyclableLongList<T>`
-1. 🅿️ Implement `RecyclableQeueue<T>`
+1. 🅿️ Implement `RecyclableQueue<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
 	1. 🅿️ Release 0.0.4
 1. 🅿️ Implement `RecyclableStack<T>`
