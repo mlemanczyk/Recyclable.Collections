@@ -86,7 +86,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = list.Capacity.Should().Be(0);
+			_ = list.Capacity.Should().Be(4);
 			_ = list.Count.Should().Be(0);
 			_ = list.Should().BeEmpty();
 		}

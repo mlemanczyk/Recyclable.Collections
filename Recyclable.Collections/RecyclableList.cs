@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Collections;
+﻿using System.Collections;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
@@ -7,7 +6,7 @@ namespace Recyclable.Collections
 	[Serializable]
 	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
+		// private static readonly T[] _emptyMemoryBlock = new T[0];
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
@@ -74,16 +73,25 @@ namespace Recyclable.Collections
 		public RecyclableList()
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 		}
 
 #pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(int initialCapacity)
 #pragma warning restore CS8618
 		{
-			if (initialCapacity > 0)
+			if (initialCapacity >= 4)
 			{
-				_memoryBlock = RecyclableListHelpers<T>.Resize(_memoryBlock, initialCapacity);
+				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
+					? RecyclableListHelpers<T>._arrayPool.Rent(initialCapacity)
+					: new T[initialCapacity];
 				_capacity = _memoryBlock.Length;
+			}
+			else
+			{
+				_memoryBlock = new T[4];
+				_capacity = 4;
 			}
 		}
 
@@ -91,6 +99,8 @@ namespace Recyclable.Collections
 		public RecyclableList(RecyclableList<T> source)
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
@@ -98,6 +108,8 @@ namespace Recyclable.Collections
 		public RecyclableList(RecyclableLongList<T> source)
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
@@ -105,6 +117,8 @@ namespace Recyclable.Collections
 		public RecyclableList(ReadOnlySpan<T> source)
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
@@ -112,6 +126,8 @@ namespace Recyclable.Collections
 		public RecyclableList(in T[] source)
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
@@ -119,6 +135,8 @@ namespace Recyclable.Collections
 		public RecyclableList(List<T> source)
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
@@ -126,13 +144,26 @@ namespace Recyclable.Collections
 		public RecyclableList(IList<T> source)
 #pragma warning restore CS8618
 		{
+			_capacity = 4;
+			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
 		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
-			_memoryBlock = RecyclableListHelpers<T>.Resize(_memoryBlock, initialCapacity);
-			_capacity = _memoryBlock.Length;
+			if (initialCapacity >= 4)
+			{
+				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
+					? RecyclableListHelpers<T>._arrayPool.Rent(initialCapacity)
+					: new T[initialCapacity];
+				_capacity = _memoryBlock.Length;
+			}
+			else
+			{
+				_capacity = 4;
+				_memoryBlock = new T[4];
+			}
+
 			AddRange(source);
 		}
 
@@ -157,8 +188,8 @@ namespace Recyclable.Collections
 			{
 				if (_capacity != value)
 				{
-					_memoryBlock = RecyclableListHelpers<T>.Resize(_memoryBlock, value);
-					_capacity = _memoryBlock.Length;
+					RecyclableListHelpers<T>.ResizeAndCopy(this, value);
+					// _capacity = _memoryBlock.Length;
 					_version++;
 				}
 			}
@@ -169,15 +200,76 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly => false;
 
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		private void ResizeAndCopy()
+		{
+			// TODO: Measure performance
+			// ArrayPool<T> arrayPool = _arrayPool;
+			// & WAS SLOWER
+			// int newSize = _capacity << 1;
+			// & WAS SLOWER
+			// if ((_capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength)
+			// {
+			// 	Array.Resize(ref _memoryBlock, _capacity);
+			// 	// _capacity <<= 1;
+			// 	return;
+			// }
+
+			// TODO: Measure performance after RecyclableArrayPool is reworked
+			// T[] newMemoryBlock = RecyclableListHelpers<T>._arrayPool.Rent(_capacity <<= 1);
+			T[] newMemoryBlock = (_capacity <<= 1) >= RecyclableDefaults.MinPooledArrayLength
+				? RecyclableListHelpers<T>._arrayPool.Rent(_capacity)
+				: new T[_capacity];
+
+			// & WAS SLOWER WITHOUT
+			T[] oldMemoryBlock = _memoryBlock;
+			new Span<T>(oldMemoryBlock).CopyTo(newMemoryBlock);
+			// & WAS SLOWER
+			// Array.Copy(oldMemoryBlock, newMemoryBlock, oldMemoryBlock.Length);
+
+			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				// TODO: Measure gain vs relying on arrayPool to clear
+				//if (NeedsClearing)
+				//{
+				//	Array.Clear(source);
+				//}
+
+				// // If anything, it has been already cleared above, so we don't need to repeat it.
+				RecyclableListHelpers<T>._arrayPool.Return(oldMemoryBlock, NeedsClearing);
+			}
+
+			_memoryBlock = newMemoryBlock;
+			_capacity = newMemoryBlock.Length;
+		}
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
-			int requiredCapacity = _count + 1;
-			if (_capacity < requiredCapacity)
+			if (_count == _capacity)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, requiredCapacity);
+				ResizeAndCopy();
+			// & WAS SLOWER
+			// 	new Span<T>(_memoryBlock)[_count++] = item;
+			// }
+			// else
+			// if (_capacity == _count)
+			// {
+				// 		break;
+
+				// 	case false:
+				// 		newCapacity = requestedCapacity;
+				// 		list._memoryBlock = Resize(list, newCapacity);
+				// 		break;
+				// }
+
+				// var newCapacity = list._memoryBlock.Length;
+				// _capacity = _memoryBlock.Length;
 			}
 
+			// & WAS SLOWER
+			// new Span<T>(_memoryBlock)[_count++] = item;
+			// new Span<T>(_memoryBlock, _count++, 1)[0] = item;
 			_memoryBlock[_count++] = item;
 			_version++;
 		}
@@ -321,6 +413,7 @@ namespace Recyclable.Collections
 
 			int blockIndex,
 				sourceBlockSize = items.BlockSize,
+				// TODO: Convert to bit-shift
 				lastBlockIndex = (int)(sourceItemsCount / sourceBlockSize) - 1;
 
 			for (blockIndex = 0; blockIndex <= lastBlockIndex; blockIndex++)
@@ -502,7 +595,7 @@ namespace Recyclable.Collections
 			{
 				_capacity = 0;
 				// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
-				_arrayPool.Return(_memoryBlock, false);
+				RecyclableListHelpers<T>._arrayPool.Return(_memoryBlock, false);
 			}
 
 			GC.SuppressFinalize(this);

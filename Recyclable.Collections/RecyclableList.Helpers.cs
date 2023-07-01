@@ -52,29 +52,49 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
 		{
-			int newCapacity;
-			switch (list._capacity > 0)
+			// int newCapacity;
+			// switch (list._capacity > 0)
+			// {
+			// 	case true:
+			int newCapacity = list._capacity;
+			while (newCapacity < requestedCapacity)
 			{
-				case true:
-					newCapacity = list._capacity;
-					while (newCapacity < requestedCapacity)
-					{
-						newCapacity <<= 1;
-					}
-
-					break;
-
-				case false:
-					newCapacity = requestedCapacity;
-					break;
+				newCapacity <<= 1;
 			}
 
-			list._memoryBlock = Resize(list._memoryBlock, newCapacity);
-			newCapacity = list._memoryBlock.Length;
-			list._capacity = newCapacity;
-			return newCapacity;
+			ResizeAndCopy(list, newCapacity);
+			// 		break;
+
+			// 	case false:
+			// 		newCapacity = requestedCapacity;
+			// 		list._memoryBlock = Resize(list, newCapacity);
+			// 		break;
+			// }
+
+			// newCapacity = list._memoryBlock.Length;
+			// list._capacity = newCapacity;
+			return list._capacity;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		public static void EnsureExactCapacity(RecyclableList<T> list, int requestedCapacity)
+		{
+			// int newCapacity;
+			// switch (list._capacity > 0)
+			// {
+			// 	case true:
+			ResizeAndCopy(list, requestedCapacity);
+			// 		break;
+
+			// 	case false:
+			// 		newCapacity = requestedCapacity;
+			// 		list._memoryBlock = Resize(list, newCapacity);
+			// 		break;
+			// }
+
+			// var newCapacity = list._memoryBlock.Length;
+			// list._capacity = list._memoryBlock.Length;
+		}
 
 		[Obsolete("This method WILL be removed in the near future. Please use the existing enumerators instead of it.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -237,31 +257,89 @@ namespace Recyclable.Collections
 			return values[middle];
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static T[] Resize(in T[]? source, int newSize)
+		// [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+		// public static T[] Resize(int newSize)
+		// 	// ArrayPool<T> arrayPool = _arrayPool;
+		// 	=> newSize >= RecyclableDefaults.MinPooledArrayLength
+		// 	? _arrayPool.Rent(newSize)
+		// 	: new T[newSize];
+
+		internal static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
+
+		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public static void ResizeAndCopy(RecyclableList<T> sourceList, int newSize)
 		{
-			ArrayPool<T> arrayPool = _arrayPool;
+			// ArrayPool<T> arrayPool = _arrayPool;
 			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
-				? arrayPool.Rent(newSize)
+				? _arrayPool.Rent(newSize)
 				: new T[newSize];
 
-			if (source?.Length > 0)
-			{
-				Array.Copy(source!, 0, newMemoryBlock, 0, source!.Length);
-				if (source!.Length >= RecyclableDefaults.MinPooledArrayLength)
-				{
-					// TODO: Measure gain vs relying on arrayPool to clear
-					//if (NeedsClearing)
-					//{
-					//	Array.Clear(source);
-					//}
+			// & WAS SLOWER WITHOUT
+			T[] oldMemoryBlock = sourceList._memoryBlock;
 
-					// If anything, it has been already cleared above, so we don't need to repeat it.
-					arrayPool.Return(source, NeedsClearing);
-				}
+			// & WAS SLOWER AS ARRAY
+			// new Span<T>(oldMemoryBlock).CopyTo(newMemoryBlock);
+			Array.Copy(oldMemoryBlock, newMemoryBlock, oldMemoryBlock.Length);
+
+			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				// TODO: Measure gain vs relying on arrayPool to clear
+				//if (NeedsClearing)
+				//{
+				//	Array.Clear(source);
+				//}
+
+				// If anything, it has been already cleared above, so we don't need to repeat it.
+				_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+				//_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+			}
+
+			sourceList._memoryBlock = newMemoryBlock;
+			sourceList._capacity = newMemoryBlock.Length;
 		}
 
-				return newMemoryBlock;
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public static void ResizeAndCopy(RecyclableList<T> sourceList)
+		{
+			// ArrayPool<T> arrayPool = _arrayPool;
+			// int newSize = _capacity << 1;
+			if ((sourceList._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength)
+			{
+				Array.Resize(ref sourceList._memoryBlock, sourceList._capacity);
+				// _capacity <<= 1;
+				return;
+			}
+
+			T[] newMemoryBlock = _arrayPool.Rent(sourceList._capacity);
+			//T[] newMemoryBlock = _arrayPool.Rent(sourceList._capacity);
+			// T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
+			// 	? RecyclableListHelpers<T>._arrayPool.Rent(newSize)
+			// 	: new T[newSize];
+
+			// & WAS SLOWER WITHOUT
+			T[] oldMemoryBlock = sourceList._memoryBlock;
+
+			// & WAS SLOWER AS ARRAY
+			new Span<T>(oldMemoryBlock).CopyTo(newMemoryBlock);
+			// Array.Copy(oldMemoryBlock, newMemoryBlock, oldMemoryBlock.Length);
+
+			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				// TODO: Measure gain vs relying on arrayPool to clear
+				//if (NeedsClearing)
+				//{
+				//	Array.Clear(source);
+				//}
+
+				// If anything, it has been already cleared above, so we don't need to repeat it.
+				_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+				//_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+			}
+
+			sourceList._memoryBlock = newMemoryBlock;
+			sourceList._capacity = newMemoryBlock.Length;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
