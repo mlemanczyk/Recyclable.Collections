@@ -69,17 +69,13 @@ namespace Recyclable.Collections
 			_count = targetItemIdx;
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList()
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(int initialCapacity)
-#pragma warning restore CS8618
 		{
 			if (initialCapacity >= 4)
 			{
@@ -95,54 +91,42 @@ namespace Recyclable.Collections
 			}
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(RecyclableList<T> source)
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(RecyclableLongList<T> source)
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(ReadOnlySpan<T> source)
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(in T[] source)
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(List<T> source)
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // _memory will be initialized when the 1st item is added
 		public RecyclableList(IList<T> source)
-#pragma warning restore CS8618
 		{
 			_capacity = 4;
 			_memoryBlock = new T[4];
