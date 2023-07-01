@@ -44,32 +44,13 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public int Count
-		{
-			get => checked((int)_longCount);
-
-			set
-			{
-				_longCount = value;
-				_version++;
-			}
-		}
-
+		public int Count => checked((int)_longCount);
 		public bool IsReadOnly => false;
 		internal int _lastBlockWithData = RecyclableDefaults.ItemNotFoundIndex;
 		public int LastBlockWithData => _lastBlockWithData;
 
 		internal long _longCount;
-
-		public long LongCount
-		{
-			get => _longCount;
-			set
-			{
-				_longCount = value;
-				_version++;
-			}
-		}
+		public long LongCount => _longCount;
 
 		public int ReservedBlockCount => _reservedBlockCount;
 		public int BlockSize => _blockSize;
