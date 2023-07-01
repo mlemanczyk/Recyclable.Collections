@@ -1034,6 +1034,7 @@ namespace Recyclable.Collections
 				}
 			}
 
+			// TODO: Do we want to initialize with empty arrays or null refs? Null refs may be faster.
 			Array.Fill(_memoryBlocks, _emptyBlockArray, 0, _reservedBlockCount);
 			_capacity = 0;
 			_reservedBlockCount = 0;
@@ -1178,6 +1179,7 @@ namespace Recyclable.Collections
 
 				if (NeedsClearing)
 				{
+					// TODO: Can we benefit from Span<T> here?
 					_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
 				}
 
@@ -1246,6 +1248,7 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
+				// TODO: Can we benefit from Span<T> here?
 				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
 			}
 
@@ -1284,6 +1287,7 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
+				// TODO: Can we benefit from Span<T> here?
 				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
 			}
 
