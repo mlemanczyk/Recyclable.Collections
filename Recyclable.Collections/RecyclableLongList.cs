@@ -41,6 +41,11 @@ namespace Recyclable.Collections
 			{
 				_capacity = value;
 				_version++;
+				if (_capacity != value)
+				{
+					_capacity = Resize(this, _blockSize, _blockSizePow2BitShift, value);
+					_version++;
+				}
 			}
 		}
 
@@ -1277,6 +1282,7 @@ namespace Recyclable.Collections
 
 		public void Dispose()
 		{
+			_version++;
 			if (_capacity > 0)
 			{
 				Clear();
