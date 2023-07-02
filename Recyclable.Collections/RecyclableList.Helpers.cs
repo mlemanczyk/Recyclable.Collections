@@ -228,6 +228,35 @@ namespace Recyclable.Collections
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public static void ResizeAndCopy(RecyclableList<T> list)
+		{
+			// TODO: Measure performance
+			// T[] newMemoryBlock = RecyclableListHelpers<T>._arrayPool.Rent(_capacity <<= 1);
+			T[] oldMemoryBlock = list._memoryBlock;
+			list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
+				? new T[list._capacity]
+				: _arrayPool.Rent(list._capacity);
+
+			// & WAS SLOWER WITHOUT
+			new Span<T>(oldMemoryBlock).CopyTo(list._memoryBlock);
+
+			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				// TODO: Measure gain vs relying on arrayPool to clear
+				//if (NeedsClearing)
+				//{
+				//	Array.Clear(source);
+				//}
+
+				// // If anything, it has been already cleared above, so we don't need to repeat it.
+				_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+			}
+
+			// list._memoryBlock = newMemoryBlock;
+			list._capacity = list._memoryBlock.Length;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void ResizeAndCopy(RecyclableList<T> sourceList, int newSize)
 		{
 			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength

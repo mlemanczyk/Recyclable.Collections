@@ -183,43 +183,12 @@ namespace Recyclable.Collections
 
 		public bool IsReadOnly => false;
 
-		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		private void ResizeAndCopy()
-		{
-			// TODO: Measure performance
-			// ArrayPool<T> arrayPool = _arrayPool;
-			// TODO: Measure performance after RecyclableArrayPool is reworked
-			// T[] newMemoryBlock = RecyclableListHelpers<T>._arrayPool.Rent(_capacity <<= 1);
-			T[] newMemoryBlock = (_capacity <<= 1) >= RecyclableDefaults.MinPooledArrayLength
-				? RecyclableListHelpers<T>._arrayPool.Rent(_capacity)
-				: new T[_capacity];
-
-			// & WAS SLOWER WITHOUT
-			T[] oldMemoryBlock = _memoryBlock;
-			new Span<T>(oldMemoryBlock).CopyTo(newMemoryBlock);
-
-			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
-			{
-				// TODO: Measure gain vs relying on arrayPool to clear
-				//if (NeedsClearing)
-				//{
-				//	Array.Clear(source);
-				//}
-
-				// // If anything, it has been already cleared above, so we don't need to repeat it.
-				RecyclableListHelpers<T>._arrayPool.Return(oldMemoryBlock, NeedsClearing);
-			}
-
-			_memoryBlock = newMemoryBlock;
-			_capacity = newMemoryBlock.Length;
-		}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
 			if (_count == _capacity)
 			{
-				ResizeAndCopy();
+				RecyclableListHelpers<T>.ResizeAndCopy(this);
 			}
 
 			_memoryBlock[_count++] = item;
