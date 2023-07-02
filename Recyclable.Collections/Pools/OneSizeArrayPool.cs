@@ -2,7 +2,7 @@
 
 namespace Recyclable.Collections.Pools
 {
-    public class OneSizeArrayPool<T> : ArrayPool<T>
+	public sealed class OneSizeArrayPool<T>
 	{
 		private readonly int _blockSize;
 		private readonly int _minBlockCount;

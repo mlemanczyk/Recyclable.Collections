@@ -1,6 +1,6 @@
 namespace Recyclable.Collections
 {
-	internal class MemoryBucket<T>
+	internal sealed class MemoryBucket<T>
 	{
 		public MemoryBucket(T[] memory, MemoryBucket<T> nextBucket)
 		{
