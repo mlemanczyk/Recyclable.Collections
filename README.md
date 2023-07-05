@@ -202,9 +202,9 @@
 	1. 🅿️ `MathUtils`
 	1. 🅿️ `SystemRandomNumberGenerator`
 	1. 🅿️ `RecyclableLongListExtensions`
-1. 🅿️ Review and remove warnings & hints
-	1. 🅿️ Warnings
-	1. 🅿️ Hints
+1. ✅ Review and remove warnings & hints
+	1. ✅ Warnings
+	1. ✅ Hints
 1. Documentation
 	1. 🅿️ Document the most efficient iteration over array collections
 	1. 🅿️ Document the most efficient iteration over blocked collections
