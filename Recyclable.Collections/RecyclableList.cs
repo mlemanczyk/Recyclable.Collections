@@ -187,7 +187,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
 		{
-			if (_count == _capacity)
+			if (_count >= _capacity)
 			{
 				RecyclableListHelpers<T>.ResizeAndCopy(this);
 			}
