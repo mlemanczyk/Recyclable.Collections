@@ -156,15 +156,6 @@ namespace Recyclable.Collections
 				}
 			}
 
-			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			private static int GetEstimatedBlockSize(int minBlockSize, ArrayPool<T> blockArrayPool)
-			{
-				var array = blockArrayPool.Rent(minBlockSize);
-				minBlockSize = array.Length;
-				blockArrayPool.Return(array);
-				return minBlockSize;
-			}
-
 			/// <summary>
 			/// Creates a set of new memory buffers, if needed, to allow storing at minimum <paramref name="newCapacity"/> no. of items.
 			/// </summary>
@@ -220,11 +211,6 @@ namespace Recyclable.Collections
 				{
 					if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 					{
-						if (sourceBlockCount == 0)
-						{
-							minBlockSize = GetEstimatedBlockSize(minBlockSize, blockArrayPool);
-						}
-
 						blockIndex = sourceBlockCount;
 						while (true)
 						{

@@ -2,18 +2,85 @@
 
 namespace Recyclable.Collections.Pools
 {
-	public sealed class OneSizeArrayPool<T>
+	public sealed class OneSizeArrayPool<T> : ArrayPool<T>
 	{
+		private const int MemoryReleaseTaskSleepMilliseconds = 500;
+		internal bool _memoryExceeded;
+		private bool _disposed;
+
+		~OneSizeArrayPool()
+		{
+			_disposed = true;
+		}
+
+		private async Task ReleaseMemoryOnExcess()
+		{
+			while (!_disposed)
+			{
+				if (_memoryExceeded)
+				{
+					Enter();
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					Exit();
+				}
+
+				await Task.Delay(MemoryReleaseTaskSleepMilliseconds);
+			}
+		}
+
 		private readonly int _blockSize;
 		private readonly int _minBlockCount;
-		private int _blockCount;
-		private MemoryBucket<T>? _currentBucket;
-		private readonly SpinLock _updateLock = new(false);
+		private volatile int _blockCount;
+		private volatile MemoryBucket<T>? _currentBucket;
+		private volatile int _locked;
+
+		private void Enter()
+		{
+			if (Interlocked.CompareExchange(ref _locked, 1, 0) == 0)
+			{
+				return;
+			}
+
+			SpinWait waiter = new();
+			while (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
+			{
+				waiter.SpinOnce();
+			}
+		}
+
+		private void Exit()
+		{
+			_locked = 0;
+		}
 
 		public OneSizeArrayPool(int blockSize, int minBlockCount)
 		{
 			_blockSize = blockSize;
 			_minBlockCount = minBlockCount;
+			_ = Task.Run(ReleaseMemoryOnExcess);
 		}
 
 		public override T[] Rent(int minimumLength)
@@ -24,8 +91,7 @@ namespace Recyclable.Collections.Pools
 			}
 
 			MemoryBucket<T>? bucket;
-			bool lockTaken = false;
-			_updateLock.Enter(ref lockTaken);
+			Enter();
 			if (_currentBucket != null)
 			{
 				_blockCount--;
@@ -37,12 +103,44 @@ namespace Recyclable.Collections.Pools
 				bucket = null;
 			}
 
-			if (lockTaken)
+			Exit();
+			return bucket != null ? bucket.Memory : new T[_blockSize];
+		}
+
+		public T[] Rent()
+		{
+			MemoryBucket<T>? bucket;
+			Enter();
+			if (_currentBucket != null)
 			{
-				_updateLock.Exit(false);
+				_blockCount--;
+				bucket = _currentBucket;
+				_currentBucket = _currentBucket.NextBucket;
+			}
+			else
+			{
+				bucket = null;
 			}
 
+			Exit();
 			return bucket != null ? bucket.Memory : new T[_blockSize];
+		}
+
+		public void ReturnUnchecked(T[] array, bool clearArray)
+		{
+			MemoryBucket<T> bucket = new(array);
+			if (clearArray)
+			{
+				// TODO: Measure performance
+				// new Span<T>(array).Clear();
+				Array.Clear(array, 0, array.Length);
+			}
+
+			Enter();
+			bucket.NextBucket = _currentBucket;
+			_currentBucket = bucket;
+			_blockCount++;
+			Exit();
 		}
 
 		public override void Return(T[] array, bool clearArray = false)
@@ -55,11 +153,12 @@ namespace Recyclable.Collections.Pools
 			MemoryBucket<T> bucket = new(array);
 			if (clearArray)
 			{
+				// TODO: Measure performance
+				// new Span<T>(array).Clear();
 				Array.Clear(array, 0, array.Length);
 			}
 
-			bool lockTaken = false;
-			_updateLock.Enter(ref lockTaken);
+			Enter();
 			if (_blockCount < _minBlockCount)
 			{
 				bucket.NextBucket = _currentBucket;
@@ -67,10 +166,7 @@ namespace Recyclable.Collections.Pools
 				_blockCount++;
 			}
 
-			if (lockTaken)
-			{
-				_updateLock.Exit(false);
-			}
+			Exit();
 		}
 
 		private static void ThrowWrongReturnedArraySizeException(int returnedLength, int blockSize)

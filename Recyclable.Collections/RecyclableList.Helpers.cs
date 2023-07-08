@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
+using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
@@ -223,8 +224,6 @@ namespace Recyclable.Collections
 			return values[middle];
 		}
 
-		internal static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
-
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -235,7 +234,7 @@ namespace Recyclable.Collections
 			T[] oldMemoryBlock = list._memoryBlock;
 			list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
 				? new T[list._capacity]
-				: _arrayPool.Rent(list._capacity);
+				: RecyclableArrayPool<T>.Rent(list._capacity);
 
 			// & WAS SLOWER WITHOUT
 			new Span<T>(oldMemoryBlock).CopyTo(list._memoryBlock);
@@ -249,7 +248,7 @@ namespace Recyclable.Collections
 				//}
 
 				// // If anything, it has been already cleared above, so we don't need to repeat it.
-				_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.Return(oldMemoryBlock, NeedsClearing);
 			}
 
 			// list._memoryBlock = newMemoryBlock;
@@ -260,7 +259,7 @@ namespace Recyclable.Collections
 		public static void ResizeAndCopy(RecyclableList<T> sourceList, int newSize)
 		{
 			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
-				? _arrayPool.Rent(newSize)
+				? RecyclableArrayPool<T>.Rent(newSize)
 				: new T[newSize];
 
 			// & WAS SLOWER WITHOUT
@@ -278,7 +277,7 @@ namespace Recyclable.Collections
 				//}
 
 				// If anything, it has been already cleared above, so we don't need to repeat it.
-				_arrayPool.Return(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.Return(oldMemoryBlock, NeedsClearing);
 			}
 
 			sourceList._memoryBlock = newMemoryBlock;

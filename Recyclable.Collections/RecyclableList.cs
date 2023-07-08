@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Runtime.CompilerServices;
+using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
@@ -80,7 +81,7 @@ namespace Recyclable.Collections
 			if (initialCapacity >= InitialCapacity)
 			{
 				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
-					? RecyclableListHelpers<T>._arrayPool.Rent(initialCapacity)
+					? RecyclableArrayPool<T>.Rent(initialCapacity)
 					: new T[initialCapacity];
 				_capacity = _memoryBlock.Length;
 			}
@@ -138,7 +139,7 @@ namespace Recyclable.Collections
 			if (initialCapacity >= InitialCapacity)
 			{
 				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
-					? RecyclableListHelpers<T>._arrayPool.Rent(initialCapacity)
+					? RecyclableArrayPool<T>.Rent(initialCapacity)
 					: new T[initialCapacity];
 				_capacity = _memoryBlock.Length;
 			}
@@ -515,7 +516,7 @@ namespace Recyclable.Collections
 			{
 				_capacity = 0;
 				// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
-				RecyclableListHelpers<T>._arrayPool.Return(_memoryBlock, false);
+				RecyclableArrayPool<T>.Return(_memoryBlock, false);
 			}
 
 			GC.SuppressFinalize(this);
