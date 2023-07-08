@@ -7,7 +7,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			var list = new List<long>();
+			var list = new List<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 
@@ -21,7 +21,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 

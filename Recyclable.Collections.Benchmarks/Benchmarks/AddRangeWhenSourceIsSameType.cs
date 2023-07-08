@@ -14,11 +14,11 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_AddRangeWhenSourceIsRecyclableList()
 		{
 			var data = TestObjectsAsRecyclableList;
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 
-		public void RecyclableLongList_AddRangeWhenSourceIsRecyclableList()
+		public void RecyclableLongList_AddRangeWhenSourceIsRecyclableLongList()
 		{
 			var data = TestObjectsAsRecyclableList;
 			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);

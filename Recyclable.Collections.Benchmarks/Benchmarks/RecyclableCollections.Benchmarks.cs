@@ -69,8 +69,21 @@ namespace Recyclable.Collections.Benchmarks
 		public override RecyclableCollectionsBenchmarkSource DataType { get => base.DataType; set => base.DataType = value; }
 
 		protected override Action? GetTestMethod(RecyclableCollectionsBenchmarkSource benchmarkType)
-			=> (Action?) GetType().GetMethod($"{benchmarkType}_{TestCase}", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)?.CreateDelegate(typeof(Action), this)
-			?? (Action?)GetType().GetMethod($"{benchmarkType}_AddRangeWhenSourceIs{benchmarkType}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this)
-			?? throw new InvalidOperationException($"Method {benchmarkType}_{TestCase} not found in class {GetType().FullName}");
+			=> TestCase switch
+			{
+				RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType => (Action?)GetType().GetMethod($"{benchmarkType}_AddRangeWhenSourceIs{benchmarkType}", BindingFlags.Instance | BindingFlags.Public)?.CreateDelegate(typeof(Action), this),
+				_ => (Action?) GetType().GetMethod($"{benchmarkType}_{TestCase}", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)?.CreateDelegate(typeof(Action), this) ?? throw new InvalidOperationException($"Method {benchmarkType}_{TestCase} not found in class {GetType().FullName}")
+			};
+
+		public override void Setup()
+		{
+			base.Setup();
+			switch(TestCase)
+			{
+				case RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList:
+					PrepareData(RecyclableCollectionsBenchmarkSource.RecyclableLongList);
+					break;
+			}
+		}
 	}
 }

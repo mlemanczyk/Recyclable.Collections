@@ -4,16 +4,22 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
+		public void Array_AddRangeWhenSourceIsIList()
+		{
+			var data = (IList<long>)TestObjectsAsRecyclableLongList;
+			data.CopyTo(TestObjects, 0);
+		}
+
 		public void List_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<long>)TestObjectsAsRecyclableLongList;
-			var list = new List<long>();
+			var list = new List<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 
 		public void PooledList_AddRangeWhenSourceIsIList()
 		{
-			var data = (IList<long>)TestObjectsAsPooledList;
+			var data = (IList<long>)TestObjectsAsRecyclableLongList;
 			using var list = new PooledList<long>(capacity: TestObjectCount, ClearMode.Auto);
 			list.AddRange(data);
 		}
@@ -21,7 +27,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_AddRangeWhenSourceIsIList()
 		{
 			var data = (IList<long>)TestObjectsAsRecyclableLongList;
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 

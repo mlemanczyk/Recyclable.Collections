@@ -7,7 +7,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void List_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			var list = new List<long>();
+			var list = new List<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 
@@ -21,7 +21,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<long>(TestObjectCount);
 			list.AddRange(data);
 		}
 
