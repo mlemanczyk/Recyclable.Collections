@@ -433,9 +433,8 @@ namespace Recyclable.Collections
 
 			if (oldCount > 0)
 			{
-				var sourceSpan = new Span<T>(_memoryBlock, index, oldCount);
-				var targetSpan = new Span<T>(_memoryBlock, index + 1, oldCount);
-				sourceSpan.CopyTo(targetSpan);
+				new Span<T>(_memoryBlock, index, oldCount)
+					.CopyTo(new Span<T>(_memoryBlock, index + 1, oldCount));
 			}
 
 			_memoryBlock[index] = item;
