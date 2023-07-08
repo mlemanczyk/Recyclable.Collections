@@ -264,21 +264,34 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(IList<T> items)
 		{
-			if (items.Count == 0)
-			{
-				return;
-			}
+			// & WAS SLOWER
+			// if (items.Count == 0)
+			// {
+			// 	return;
+			// }
 
-			var sourceItemsCount = items.Count;
-			var targetCapacity = _count + sourceItemsCount;
+			// & WAS SLOWER
+			// var sourceItemsCount = items.Count;
+			var targetCapacity = _count + items.Count;
+			// & WAS SLOWER
+			// var targetCapacity = _count + sourceItemsCount;
+			// & WAS SLOWER
+			// if (_capacity < _count + items.Count)
+			// & WAS SLOWER
+			// if (_capacity < _count + sourceItemsCount)
 			if (_capacity < targetCapacity)
 			{
+				// & WAS SLOWER
+				// _ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Count);
 				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				// & WAS SLOWER
+				// _ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + sourceItemsCount);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
+			// & WAS SLOWER
+			// _count += items.Count;
 			_count = targetCapacity;
-
 			_version++;
 		}
 
