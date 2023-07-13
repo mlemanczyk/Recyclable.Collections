@@ -1535,6 +1535,733 @@ AMD Ryzen 7 4700U with Radeon Graphics, 1 CPU, 8 logical and 8 physical cores
 |   Actual | Add_WithCapacity |         List | RecyclableLongList |          131072 |   268,397.92 ns |  1,542.779 ns |   1,443.116 ns |   268,233.11 ns |  0.54 |    0.01 |        - |        - |        - |     451 B |       0.000 |
 </details>
 
+# `AddRange` with Pre-Initialized Capacity Benchmarks
+## Environment
+```csharp
+BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.1992/22H2/2022Update/SunValley2)
+AMD Ryzen 7 4700U with Radeon Graphics, 1 CPU, 8 logical and 8 physical cores
+.NET SDK=7.0.306
+  [Host]     : .NET 7.0.9 (7.0.923.32018), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.9 (7.0.923.32018), X64 RyuJIT AVX2
+```
+
+<details>
+<summary><strong>Add to the List by 1 Item with Pre-Initialized Capacity Benchmark Results - click to expand</strong></summary>
+
+|   Method |             TestCase | BaseDataType |           DataType | TestObjectCount |            Mean |         Error |         StdDev |          Median | Ratio | RatioSD |     Gen0 |     Gen1 |     Gen2 | Allocated | Alloc Ratio |
+|--------- |--------------------- |------------- |------------------- |---------------- |----------------:|--------------:|---------------:|----------------:|------:|--------:|---------:|---------:|---------:|----------:|------------:|
+| Baseline | AddRa(...)acity [21] |         List |              Array |               0 |        16.34 ns |      0.138 ns |       0.129 ns |        16.34 ns |  1.00 |    0.00 |   0.0153 |        - |        - |      32 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               0 |        11.45 ns |      0.229 ns |       0.203 ns |        11.33 ns |  0.70 |    0.01 |   0.0115 |        - |        - |      24 B |        0.75 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               1 |        26.56 ns |      0.283 ns |       0.265 ns |        26.47 ns |  1.00 |    0.00 |   0.0306 |        - |        - |      64 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               1 |        12.56 ns |      0.032 ns |       0.030 ns |        12.55 ns |  0.47 |    0.00 |   0.0153 |        - |        - |      32 B |        0.50 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               2 |        27.18 ns |      0.366 ns |       0.343 ns |        27.06 ns |  1.00 |    0.00 |   0.0344 |        - |        - |      72 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               2 |        12.76 ns |      0.037 ns |       0.031 ns |        12.76 ns |  0.47 |    0.01 |   0.0191 |        - |        - |      40 B |        0.56 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               3 |        26.99 ns |      0.286 ns |       0.254 ns |        26.99 ns |  1.00 |    0.00 |   0.0382 |        - |        - |      80 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               3 |        13.16 ns |      0.028 ns |       0.026 ns |        13.17 ns |  0.49 |    0.00 |   0.0229 |        - |        - |      48 B |        0.60 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               4 |        27.34 ns |      0.191 ns |       0.169 ns |        27.36 ns |  1.00 |    0.00 |   0.0421 |        - |        - |      88 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               4 |        13.25 ns |      0.061 ns |       0.057 ns |        13.22 ns |  0.48 |    0.00 |   0.0268 |        - |        - |      56 B |        0.64 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               5 |        27.74 ns |      0.190 ns |       0.178 ns |        27.67 ns |  1.00 |    0.00 |   0.0459 |        - |        - |      96 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               5 |        13.56 ns |      0.097 ns |       0.081 ns |        13.51 ns |  0.49 |    0.00 |   0.0306 |        - |        - |      64 B |        0.67 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               6 |        28.06 ns |      0.129 ns |       0.115 ns |        28.00 ns |  1.00 |    0.00 |   0.0497 |        - |        - |     104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               6 |        13.72 ns |      0.044 ns |       0.039 ns |        13.71 ns |  0.49 |    0.00 |   0.0344 |        - |        - |      72 B |        0.69 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               7 |        28.08 ns |      0.054 ns |       0.045 ns |        28.07 ns |  1.00 |    0.00 |   0.0536 |        - |        - |     112 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               7 |        13.87 ns |      0.035 ns |       0.033 ns |        13.87 ns |  0.49 |    0.00 |   0.0382 |        - |        - |      80 B |        0.71 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               8 |        29.74 ns |      0.253 ns |       0.236 ns |        29.79 ns |  1.00 |    0.00 |   0.0573 |        - |        - |     120 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               8 |        14.01 ns |      0.022 ns |       0.019 ns |        14.01 ns |  0.47 |    0.00 |   0.0421 |        - |        - |      88 B |        0.73 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |               9 |        30.67 ns |      0.630 ns |       0.674 ns |        30.54 ns |  1.00 |    0.00 |   0.0612 |        - |        - |     128 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |               9 |        15.04 ns |      0.034 ns |       0.031 ns |        15.04 ns |  0.49 |    0.01 |   0.0459 |        - |        - |      96 B |        0.75 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              10 |        31.10 ns |      0.552 ns |       0.516 ns |        31.35 ns |  1.00 |    0.00 |   0.0650 |        - |        - |     136 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              10 |        15.20 ns |      0.029 ns |       0.024 ns |        15.20 ns |  0.49 |    0.01 |   0.0497 |        - |        - |     104 B |        0.76 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              11 |        32.41 ns |      0.528 ns |       0.494 ns |        32.54 ns |  1.00 |    0.00 |   0.0688 |        - |        - |     144 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              11 |        16.08 ns |      0.043 ns |       0.038 ns |        16.08 ns |  0.50 |    0.01 |   0.0536 |        - |        - |     112 B |        0.78 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              12 |        32.96 ns |      0.283 ns |       0.236 ns |        33.02 ns |  1.00 |    0.00 |   0.0727 |        - |        - |     152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              12 |        16.27 ns |      0.014 ns |       0.012 ns |        16.27 ns |  0.49 |    0.00 |   0.0574 |        - |        - |     120 B |        0.79 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              13 |        33.43 ns |      0.377 ns |       0.334 ns |        33.43 ns |  1.00 |    0.00 |   0.0765 |        - |        - |     160 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              13 |        16.48 ns |      0.027 ns |       0.024 ns |        16.48 ns |  0.49 |    0.00 |   0.0612 |        - |        - |     128 B |        0.80 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              14 |        33.74 ns |      0.479 ns |       0.425 ns |        33.58 ns |  1.00 |    0.00 |   0.0803 |        - |        - |     168 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              14 |        16.71 ns |      0.071 ns |       0.067 ns |        16.71 ns |  0.49 |    0.01 |   0.0650 |        - |        - |     136 B |        0.81 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              15 |        33.22 ns |      0.310 ns |       0.275 ns |        33.31 ns |  1.00 |    0.00 |   0.0842 |        - |        - |     176 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              15 |        16.63 ns |      0.016 ns |       0.015 ns |        16.63 ns |  0.50 |    0.00 |   0.0688 |        - |        - |     144 B |        0.82 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              16 |        33.35 ns |      0.563 ns |       0.527 ns |        33.52 ns |  1.00 |    0.00 |   0.0880 |        - |        - |     184 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              16 |        16.89 ns |      0.027 ns |       0.021 ns |        16.89 ns |  0.51 |    0.01 |   0.0727 |        - |        - |     152 B |        0.83 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              17 |        33.81 ns |      0.647 ns |       0.605 ns |        34.03 ns |  1.00 |    0.00 |   0.0918 |        - |        - |     192 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              17 |        17.21 ns |      0.087 ns |       0.081 ns |        17.16 ns |  0.51 |    0.01 |   0.0765 |        - |        - |     160 B |        0.83 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              18 |        35.68 ns |      0.648 ns |       0.606 ns |        35.67 ns |  1.00 |    0.00 |   0.0956 |        - |        - |     200 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              18 |        17.41 ns |      0.021 ns |       0.018 ns |        17.40 ns |  0.49 |    0.01 |   0.0803 |        - |        - |     168 B |        0.84 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              19 |        35.07 ns |      0.665 ns |       0.622 ns |        35.00 ns |  1.00 |    0.00 |   0.0994 |        - |        - |     208 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              19 |        18.23 ns |      0.045 ns |       0.038 ns |        18.21 ns |  0.52 |    0.01 |   0.0842 |        - |        - |     176 B |        0.85 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              20 |        36.98 ns |      0.581 ns |       0.544 ns |        37.33 ns |  1.00 |    0.00 |   0.1033 |        - |        - |     216 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              20 |        18.50 ns |      0.074 ns |       0.057 ns |        18.50 ns |  0.50 |    0.01 |   0.0880 |        - |        - |     184 B |        0.85 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              30 |        38.84 ns |      0.768 ns |       0.822 ns |        38.84 ns |  1.00 |    0.00 |   0.1415 |        - |        - |     296 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              30 |        21.34 ns |      0.039 ns |       0.036 ns |        21.33 ns |  0.55 |    0.01 |   0.1262 |        - |        - |     264 B |        0.89 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              32 |        38.51 ns |      0.479 ns |       0.449 ns |        38.67 ns |  1.00 |    0.00 |   0.1492 |        - |        - |     312 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              32 |        21.61 ns |      0.103 ns |       0.097 ns |        21.60 ns |  0.56 |    0.01 |   0.1339 |        - |        - |     280 B |        0.90 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              36 |        40.21 ns |      0.352 ns |       0.329 ns |        40.24 ns |  1.00 |    0.00 |   0.1644 |        - |        - |     344 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              36 |        23.39 ns |      0.124 ns |       0.110 ns |        23.33 ns |  0.58 |    0.01 |   0.1492 |        - |        - |     312 B |        0.91 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              37 |        40.72 ns |      0.450 ns |       0.421 ns |        40.73 ns |  1.00 |    0.00 |   0.1683 |        - |        - |     352 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              37 |        23.68 ns |      0.019 ns |       0.017 ns |        23.68 ns |  0.58 |    0.01 |   0.1530 |        - |        - |     320 B |        0.91 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              40 |        42.24 ns |      0.640 ns |       0.599 ns |        42.39 ns |  1.00 |    0.00 |   0.1798 |        - |        - |     376 B |        1.00 |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              40 |        40.52 ns |      0.299 ns |       0.279 ns |        40.42 ns |  0.96 |    0.02 |   0.1798 |        - |        - |     376 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              40 |        24.61 ns |      0.225 ns |       0.210 ns |        24.53 ns |  0.58 |    0.01 |   0.1645 |        - |        - |     344 B |        0.91 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              40 |        24.72 ns |      0.223 ns |       0.209 ns |        24.70 ns |  0.59 |    0.01 |   0.1645 |        - |        - |     344 B |        0.91 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              50 |        44.50 ns |      0.425 ns |       0.398 ns |        44.59 ns |  1.00 |    0.00 |   0.2180 |        - |        - |     456 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              50 |        27.35 ns |      0.037 ns |       0.031 ns |        27.37 ns |  0.61 |    0.01 |   0.2027 |        - |        - |     424 B |        0.93 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              60 |        48.27 ns |      0.465 ns |       0.435 ns |        48.32 ns |  1.00 |    0.00 |   0.2562 |        - |        - |     536 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              60 |        31.38 ns |      0.168 ns |       0.149 ns |        31.43 ns |  0.65 |    0.01 |   0.2410 |        - |        - |     504 B |        0.94 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              70 |        50.88 ns |      0.276 ns |       0.245 ns |        50.96 ns |  1.00 |    0.00 |   0.2945 |        - |        - |     616 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              70 |        34.17 ns |      0.073 ns |       0.065 ns |        34.17 ns |  0.67 |    0.00 |   0.2792 |        - |        - |     584 B |        0.95 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              80 |        53.64 ns |      0.116 ns |       0.091 ns |        53.66 ns |  1.00 |    0.00 |   0.3328 |        - |        - |     696 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              80 |        36.49 ns |      0.033 ns |       0.030 ns |        36.49 ns |  0.68 |    0.00 |   0.3175 |        - |        - |     664 B |        0.95 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |              90 |        56.90 ns |      0.126 ns |       0.105 ns |        56.90 ns |  1.00 |    0.00 |   0.3710 |        - |        - |     776 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |              90 |        39.42 ns |      0.061 ns |       0.057 ns |        39.40 ns |  0.69 |    0.00 |   0.3557 |        - |        - |     744 B |        0.96 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |             100 |        61.16 ns |      0.232 ns |       0.217 ns |        61.06 ns |  1.00 |    0.00 |   0.4092 |        - |        - |     856 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |             100 |        43.57 ns |      0.232 ns |       0.217 ns |        43.44 ns |  0.71 |    0.00 |   0.3940 |        - |        - |     824 B |        0.96 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |             128 |        67.81 ns |      0.285 ns |       0.238 ns |        67.75 ns |  1.00 |    0.00 |   0.5162 |        - |        - |    1080 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |             128 |        51.82 ns |      0.081 ns |       0.068 ns |        51.79 ns |  0.76 |    0.00 |   0.5010 |        - |        - |    1048 B |        0.97 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |             256 |       112.59 ns |      0.448 ns |       0.397 ns |       112.70 ns |  1.00 |    0.00 |   1.0060 |        - |        - |    2104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |             256 |        97.11 ns |      0.317 ns |       0.247 ns |        97.12 ns |  0.86 |    0.00 |   0.9900 |        - |        - |    2072 B |        0.98 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |             512 |       197.97 ns |      0.353 ns |       0.313 ns |       198.00 ns |  1.00 |    0.00 |   1.9841 |        - |        - |    4152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |             512 |       176.35 ns |      0.534 ns |       0.474 ns |       176.45 ns |  0.89 |    0.00 |   1.9684 |        - |        - |    4120 B |        0.99 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |            1024 |       383.07 ns |      3.773 ns |       3.529 ns |       384.96 ns |  1.00 |    0.00 |   3.9368 |        - |        - |    8248 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |            1024 |       343.76 ns |      0.679 ns |       0.602 ns |       343.61 ns |  0.90 |    0.01 |   3.9215 |        - |        - |    8216 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |            2048 |       741.93 ns |      1.340 ns |       1.188 ns |       742.52 ns |  1.00 |    0.00 |   7.8125 |        - |        - |   16440 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |            2048 |       644.71 ns |      0.832 ns |       0.650 ns |       644.66 ns |  0.87 |    0.00 |   7.8125 |        - |        - |   16408 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |            4096 |     1,451.96 ns |      3.237 ns |       3.028 ns |     1,451.30 ns |  1.00 |    0.00 |  15.6231 |        - |        - |   32824 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |            4096 |     1,385.37 ns |      5.226 ns |       4.364 ns |     1,386.00 ns |  0.95 |    0.00 |  15.6250 |        - |        - |   32792 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |            8192 |     2,726.49 ns |     11.401 ns |      10.665 ns |     2,722.30 ns |  1.00 |    0.00 |  31.2462 |        - |        - |   65592 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |            8192 |     2,613.00 ns |     10.817 ns |       9.589 ns |     2,611.12 ns |  0.96 |    0.00 |  31.2500 |        - |        - |   65560 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |           16384 |    57,953.22 ns |  1,139.541 ns |   2,140.334 ns |    57,999.79 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |  131142 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |           16384 |    57,456.68 ns |  1,139.437 ns |   2,378.428 ns |    57,477.16 ns |  0.99 |    0.06 |  41.6260 |  41.6260 |  41.6260 |  131110 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |           32768 |   115,547.37 ns |  2,309.242 ns |   4,393.573 ns |   116,156.34 ns |  1.00 |    0.00 |  83.2520 |  83.2520 |  83.2520 |  262228 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |           32768 |   114,011.44 ns |  2,247.498 ns |   5,208.918 ns |   113,784.61 ns |  0.99 |    0.07 |  83.2520 |  83.2520 |  83.2520 |  262196 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |           65536 |   109,243.89 ns |  1,537.170 ns |   1,437.870 ns |   109,555.60 ns |  1.00 |    0.00 | 126.2207 | 125.1221 | 125.1221 |  524917 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |           65536 |   111,356.33 ns |  1,792.790 ns |   1,676.977 ns |   111,145.61 ns |  1.02 |    0.02 | 108.8867 | 108.5205 | 108.5205 |  524342 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |          131072 |   272,342.52 ns |  5,423.251 ns |   9,354.841 ns |   271,091.99 ns |  1.00 |    0.00 | 207.5195 | 206.0547 | 206.0547 | 1048847 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |          131072 |   284,186.99 ns |  5,574.458 ns |   8,678.759 ns |   285,796.61 ns |  1.04 |    0.04 | 169.4336 | 168.9453 | 168.9453 | 1048652 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |              Array |          850000 | 2,085,307.04 ns | 40,460.389 ns |  59,306.314 ns | 2,093,972.66 ns |  1.00 |    0.00 | 156.2500 | 156.2500 | 156.2500 | 6800109 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |              Array |          850000 | 2,100,901.69 ns | 41,949.831 ns |  68,924.776 ns | 2,117,853.12 ns |  1.01 |    0.04 | 156.2500 | 156.2500 | 156.2500 | 6800077 B |        1.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               0 |        17.26 ns |      0.346 ns |       0.307 ns |        17.16 ns |  1.00 |    0.00 |   0.0153 |        - |        - |      32 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               0 |        17.72 ns |      0.117 ns |       0.109 ns |        17.67 ns |  1.03 |    0.01 |   0.0268 |        - |        - |      56 B |        1.75 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               1 |        25.80 ns |      0.134 ns |       0.125 ns |        25.79 ns |  1.00 |    0.00 |   0.0306 |        - |        - |      64 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               1 |        44.07 ns |      0.732 ns |       0.611 ns |        44.29 ns |  1.71 |    0.02 |   0.0268 |        - |        - |      56 B |        0.88 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               2 |        25.97 ns |      0.056 ns |       0.046 ns |        25.97 ns |  1.00 |    0.00 |   0.0344 |        - |        - |      72 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               2 |        42.92 ns |      0.853 ns |       0.912 ns |        42.88 ns |  1.65 |    0.03 |   0.0268 |        - |        - |      56 B |        0.78 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               3 |        26.36 ns |      0.062 ns |       0.048 ns |        26.36 ns |  1.00 |    0.00 |   0.0382 |        - |        - |      80 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               3 |        43.86 ns |      0.811 ns |       0.759 ns |        43.96 ns |  1.66 |    0.03 |   0.0268 |        - |        - |      56 B |        0.70 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               4 |        26.81 ns |      0.085 ns |       0.079 ns |        26.85 ns |  1.00 |    0.00 |   0.0421 |        - |        - |      88 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               4 |        44.61 ns |      0.352 ns |       0.312 ns |        44.65 ns |  1.66 |    0.01 |   0.0268 |        - |        - |      56 B |        0.64 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               5 |        27.39 ns |      0.057 ns |       0.051 ns |        27.40 ns |  1.00 |    0.00 |   0.0459 |        - |        - |      96 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               5 |        42.25 ns |      0.846 ns |       1.101 ns |        42.17 ns |  1.56 |    0.04 |   0.0268 |        - |        - |      56 B |        0.58 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               6 |        27.66 ns |      0.056 ns |       0.047 ns |        27.67 ns |  1.00 |    0.00 |   0.0497 |        - |        - |     104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               6 |        41.58 ns |      0.823 ns |       1.011 ns |        41.55 ns |  1.50 |    0.04 |   0.0268 |        - |        - |      56 B |        0.54 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               7 |        28.18 ns |      0.029 ns |       0.026 ns |        28.18 ns |  1.00 |    0.00 |   0.0536 |        - |        - |     112 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               7 |        43.34 ns |      0.789 ns |       0.738 ns |        43.80 ns |  1.54 |    0.03 |   0.0268 |        - |        - |      56 B |        0.50 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               8 |        28.38 ns |      0.069 ns |       0.065 ns |        28.39 ns |  1.00 |    0.00 |   0.0573 |        - |        - |     120 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               8 |        43.24 ns |      0.872 ns |       1.071 ns |        43.36 ns |  1.53 |    0.04 |   0.0268 |        - |        - |      56 B |        0.47 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |               9 |        28.94 ns |      0.099 ns |       0.083 ns |        28.93 ns |  1.00 |    0.00 |   0.0612 |        - |        - |     128 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |               9 |        44.29 ns |      0.909 ns |       1.082 ns |        44.43 ns |  1.54 |    0.03 |   0.0268 |        - |        - |      56 B |        0.44 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              10 |        29.28 ns |      0.097 ns |       0.086 ns |        29.25 ns |  1.00 |    0.00 |   0.0650 |        - |        - |     136 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              10 |        44.31 ns |      0.908 ns |       0.932 ns |        44.10 ns |  1.51 |    0.03 |   0.0268 |        - |        - |      56 B |        0.41 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              11 |        30.18 ns |      0.167 ns |       0.156 ns |        30.10 ns |  1.00 |    0.00 |   0.0688 |        - |        - |     144 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              11 |        47.00 ns |      0.477 ns |       0.446 ns |        47.24 ns |  1.56 |    0.01 |   0.0268 |        - |        - |      56 B |        0.39 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              12 |        30.51 ns |      0.188 ns |       0.166 ns |        30.50 ns |  1.00 |    0.00 |   0.0727 |        - |        - |     152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              12 |        45.74 ns |      0.935 ns |       0.829 ns |        45.80 ns |  1.50 |    0.03 |   0.0268 |        - |        - |      56 B |        0.37 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              13 |        30.90 ns |      0.172 ns |       0.161 ns |        30.99 ns |  1.00 |    0.00 |   0.0765 |        - |        - |     160 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              13 |        44.10 ns |      0.887 ns |       0.911 ns |        44.07 ns |  1.43 |    0.03 |   0.0268 |        - |        - |      56 B |        0.35 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              14 |        31.25 ns |      0.313 ns |       0.244 ns |        31.24 ns |  1.00 |    0.00 |   0.0803 |        - |        - |     168 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              14 |        46.51 ns |      0.935 ns |       0.874 ns |        46.54 ns |  1.49 |    0.02 |   0.0268 |        - |        - |      56 B |        0.33 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              15 |        31.54 ns |      0.425 ns |       0.397 ns |        31.29 ns |  1.00 |    0.00 |   0.0842 |        - |        - |     176 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              15 |        46.93 ns |      0.505 ns |       0.472 ns |        47.09 ns |  1.49 |    0.02 |   0.0268 |        - |        - |      56 B |        0.32 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              16 |        31.22 ns |      0.182 ns |       0.161 ns |        31.17 ns |  1.00 |    0.00 |   0.0880 |        - |        - |     184 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              16 |        46.23 ns |      0.764 ns |       0.715 ns |        46.57 ns |  1.48 |    0.02 |   0.0268 |        - |        - |      56 B |        0.30 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              17 |        31.92 ns |      0.231 ns |       0.205 ns |        31.85 ns |  1.00 |    0.00 |   0.0918 |        - |        - |     192 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              17 |        44.72 ns |      0.579 ns |       0.542 ns |        44.86 ns |  1.40 |    0.02 |   0.0268 |        - |        - |      56 B |        0.29 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              18 |        31.89 ns |      0.179 ns |       0.159 ns |        31.84 ns |  1.00 |    0.00 |   0.0956 |        - |        - |     200 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              18 |        44.67 ns |      0.914 ns |       1.053 ns |        44.50 ns |  1.40 |    0.04 |   0.0268 |        - |        - |      56 B |        0.28 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              19 |        32.91 ns |      0.174 ns |       0.154 ns |        32.86 ns |  1.00 |    0.00 |   0.0994 |        - |        - |     208 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              19 |        47.44 ns |      0.739 ns |       0.691 ns |        47.84 ns |  1.44 |    0.02 |   0.0268 |        - |        - |      56 B |        0.27 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              20 |        33.21 ns |      0.100 ns |       0.083 ns |        33.20 ns |  1.00 |    0.00 |   0.1033 |        - |        - |     216 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              20 |        47.66 ns |      0.491 ns |       0.459 ns |        47.85 ns |  1.44 |    0.01 |   0.0268 |        - |        - |      56 B |        0.26 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              30 |        36.63 ns |      0.111 ns |       0.104 ns |        36.66 ns |  1.00 |    0.00 |   0.1415 |        - |        - |     296 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              30 |        47.58 ns |      0.956 ns |       1.308 ns |        47.64 ns |  1.29 |    0.04 |   0.0268 |        - |        - |      56 B |        0.19 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              32 |        37.21 ns |      0.035 ns |       0.031 ns |        37.21 ns |  1.00 |    0.00 |   0.1492 |        - |        - |     312 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              32 |        46.76 ns |      0.875 ns |       0.819 ns |        46.85 ns |  1.26 |    0.02 |   0.0268 |        - |        - |      56 B |        0.18 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              36 |        38.93 ns |      0.046 ns |       0.036 ns |        38.94 ns |  1.00 |    0.00 |   0.1644 |        - |        - |     344 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              36 |        48.81 ns |      0.525 ns |       0.491 ns |        48.97 ns |  1.25 |    0.01 |   0.0268 |        - |        - |      56 B |        0.16 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              37 |        39.20 ns |      0.353 ns |       0.330 ns |        39.09 ns |  1.00 |    0.00 |   0.1683 |        - |        - |     352 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              37 |        48.46 ns |      0.599 ns |       0.561 ns |        48.62 ns |  1.24 |    0.02 |   0.0268 |        - |        - |      56 B |        0.16 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              40 |        39.77 ns |      0.233 ns |       0.206 ns |        39.71 ns |  1.00 |    0.00 |   0.1798 |        - |        - |     376 B |        1.00 |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              40 |        40.29 ns |      0.110 ns |       0.098 ns |        40.26 ns |  1.01 |    0.01 |   0.1798 |        - |        - |     376 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              40 |        47.93 ns |      0.339 ns |       0.317 ns |        47.84 ns |  1.21 |    0.01 |   0.0268 |        - |        - |      56 B |        0.15 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              40 |        46.31 ns |      0.787 ns |       0.736 ns |        46.24 ns |  1.16 |    0.02 |   0.0268 |        - |        - |      56 B |        0.15 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              50 |        43.92 ns |      0.083 ns |       0.078 ns |        43.91 ns |  1.00 |    0.00 |   0.2180 |        - |        - |     456 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              50 |        47.33 ns |      0.970 ns |       1.227 ns |        47.42 ns |  1.08 |    0.03 |   0.0268 |        - |        - |      56 B |        0.12 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              60 |        47.50 ns |      0.080 ns |       0.071 ns |        47.48 ns |  1.00 |    0.00 |   0.2562 |        - |        - |     536 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              60 |        49.67 ns |      0.804 ns |       0.752 ns |        49.61 ns |  1.04 |    0.02 |   0.0268 |        - |        - |      56 B |        0.10 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              70 |        50.44 ns |      0.075 ns |       0.067 ns |        50.42 ns |  1.00 |    0.00 |   0.2945 |        - |        - |     616 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              70 |        50.92 ns |      0.578 ns |       0.541 ns |        51.02 ns |  1.01 |    0.01 |   0.0268 |        - |        - |      56 B |        0.09 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              80 |        53.98 ns |      0.164 ns |       0.153 ns |        53.89 ns |  1.00 |    0.00 |   0.3328 |        - |        - |     696 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              80 |        49.62 ns |      0.959 ns |       0.942 ns |        49.67 ns |  0.92 |    0.02 |   0.0268 |        - |        - |      56 B |        0.08 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |          850000 | 2,649,472.60 ns | 52,816.593 ns |  95,239.213 ns | 2,692,395.31 ns |  1.00 |    0.00 |  93.7500 |  93.7500 |  93.7500 | 6800089 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |          850000 |   888,858.44 ns | 17,152.327 ns |  16,044.298 ns |   895,759.47 ns |  0.34 |    0.02 |        - |        - |        - |      57 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |              90 |        58.01 ns |      0.445 ns |       0.416 ns |        57.74 ns |  1.00 |    0.00 |   0.3710 |        - |        - |     776 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |              90 |        50.15 ns |      1.014 ns |       1.207 ns |        50.32 ns |  0.86 |    0.03 |   0.0268 |        - |        - |      56 B |        0.07 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |             100 |        61.39 ns |      0.080 ns |       0.075 ns |        61.38 ns |  1.00 |    0.00 |   0.4092 |        - |        - |     856 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |             100 |        50.89 ns |      1.017 ns |       1.088 ns |        50.62 ns |  0.83 |    0.02 |   0.0268 |        - |        - |      56 B |        0.07 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |             128 |        69.18 ns |      0.401 ns |       0.355 ns |        69.28 ns |  1.00 |    0.00 |   0.5162 |        - |        - |    1080 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |             128 |        54.68 ns |      0.542 ns |       0.507 ns |        54.92 ns |  0.79 |    0.01 |   0.0268 |        - |        - |      56 B |        0.05 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |             256 |       113.57 ns |      0.158 ns |       0.148 ns |       113.55 ns |  1.00 |    0.00 |   1.0060 |        - |        - |    2104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |             256 |        57.24 ns |      0.461 ns |       0.385 ns |        57.35 ns |  0.50 |    0.00 |   0.0267 |        - |        - |      56 B |        0.03 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |             512 |       204.58 ns |      0.198 ns |       0.185 ns |       204.60 ns |  1.00 |    0.00 |   1.9841 |        - |        - |    4152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |             512 |        77.68 ns |      0.153 ns |       0.136 ns |        77.69 ns |  0.38 |    0.00 |   0.0267 |        - |        - |      56 B |        0.01 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |            1024 |       385.54 ns |      0.457 ns |       0.428 ns |       385.59 ns |  1.00 |    0.00 |   3.9368 |        - |        - |    8248 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |            1024 |       110.27 ns |      1.301 ns |       1.153 ns |       110.25 ns |  0.29 |    0.00 |   0.0267 |        - |        - |      56 B |       0.007 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |            2048 |       756.03 ns |      2.237 ns |       2.092 ns |       755.05 ns |  1.00 |    0.00 |   7.8125 |        - |        - |   16440 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |            2048 |       243.43 ns |      4.889 ns |       5.434 ns |       245.03 ns |  0.32 |    0.01 |   0.0267 |        - |        - |      56 B |       0.003 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |            4096 |     1,497.08 ns |     22.999 ns |      30.703 ns |     1,490.15 ns |  1.00 |    0.00 |  15.6231 |        - |        - |   32824 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |            4096 |       574.22 ns |      5.571 ns |       5.211 ns |       570.80 ns |  0.38 |    0.01 |   0.0267 |        - |        - |      56 B |       0.002 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |            8192 |     2,832.03 ns |      7.834 ns |       6.945 ns |     2,834.16 ns |  1.00 |    0.00 |  31.2462 |        - |        - |   65592 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |            8192 |     1,070.25 ns |      1.023 ns |       0.854 ns |     1,070.13 ns |  0.38 |    0.00 |   0.0267 |        - |        - |      56 B |       0.001 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |           16384 |    57,845.50 ns |  1,149.762 ns |   2,710.123 ns |    57,640.73 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |  131142 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |           16384 |     2,449.33 ns |      1.761 ns |       1.471 ns |     2,449.31 ns |  0.04 |    0.00 |   0.0267 |        - |        - |      56 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |           32768 |   115,521.92 ns |  2,274.329 ns |   5,179.798 ns |   115,517.56 ns |  1.00 |    0.00 |  83.2520 |  83.2520 |  83.2520 |  262228 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |           32768 |     5,310.23 ns |      4.518 ns |       3.772 ns |     5,309.30 ns |  0.05 |    0.00 |   0.0229 |        - |        - |      56 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |           65536 |   105,523.79 ns |  1,262.923 ns |   1,181.339 ns |   105,712.01 ns |  1.00 |    0.00 | 123.7793 | 122.6807 | 122.6807 |  524930 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |           65536 |    11,924.14 ns |     29.830 ns |      26.444 ns |    11,930.45 ns |  0.11 |    0.00 |   0.0153 |        - |        - |      56 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |         PooledList |          131072 |   327,220.18 ns |  6,473.780 ns |  16,594.773 ns |   327,879.49 ns |  1.00 |    0.00 | 171.3867 | 170.4102 | 170.4102 | 1048867 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |         PooledList |          131072 |    22,415.12 ns |     32.828 ns |      25.630 ns |    22,412.29 ns |  0.07 |    0.00 |        - |        - |        - |      56 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               0 |        17.16 ns |      0.122 ns |       0.102 ns |        17.12 ns |  1.00 |    0.00 |   0.0153 |        - |        - |      32 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               0 |        22.79 ns |      0.084 ns |       0.078 ns |        22.76 ns |  1.33 |    0.01 |   0.0497 |        - |        - |     104 B |        3.25 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               1 |        29.59 ns |      0.618 ns |       0.962 ns |        29.49 ns |  1.00 |    0.00 |   0.0306 |        - |        - |      64 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               1 |        21.67 ns |      0.209 ns |       0.196 ns |        21.62 ns |  0.73 |    0.03 |   0.0497 |        - |        - |     104 B |        1.62 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               2 |        30.70 ns |      0.616 ns |       0.576 ns |        30.82 ns |  1.00 |    0.00 |   0.0344 |        - |        - |      72 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               2 |        21.98 ns |      0.273 ns |       0.242 ns |        21.90 ns |  0.71 |    0.02 |   0.0497 |        - |        - |     104 B |        1.44 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               3 |        31.52 ns |      0.425 ns |       0.397 ns |        31.70 ns |  1.00 |    0.00 |   0.0382 |        - |        - |      80 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               3 |        21.94 ns |      0.168 ns |       0.149 ns |        21.95 ns |  0.70 |    0.01 |   0.0497 |        - |        - |     104 B |        1.30 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               4 |        31.23 ns |      0.643 ns |       1.126 ns |        31.54 ns |  1.00 |    0.00 |   0.0421 |        - |        - |      88 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               4 |        21.87 ns |      0.313 ns |       0.277 ns |        21.77 ns |  0.70 |    0.02 |   0.0497 |        - |        - |     104 B |        1.18 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               5 |        31.14 ns |      0.652 ns |       0.725 ns |        31.29 ns |  1.00 |    0.00 |   0.0459 |        - |        - |      96 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               5 |        22.49 ns |      0.402 ns |       0.376 ns |        22.44 ns |  0.72 |    0.02 |   0.0536 |        - |        - |     112 B |        1.17 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               6 |        31.63 ns |      0.644 ns |       0.984 ns |        32.10 ns |  1.00 |    0.00 |   0.0497 |        - |        - |     104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               6 |        22.69 ns |      0.304 ns |       0.269 ns |        22.74 ns |  0.72 |    0.03 |   0.0574 |        - |        - |     120 B |        1.15 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               7 |        31.90 ns |      0.260 ns |       0.231 ns |        31.90 ns |  1.00 |    0.00 |   0.0535 |        - |        - |     112 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               7 |        22.66 ns |      0.309 ns |       0.289 ns |        22.65 ns |  0.71 |    0.01 |   0.0612 |        - |        - |     128 B |        1.14 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               8 |        32.47 ns |      0.649 ns |       0.607 ns |        32.66 ns |  1.00 |    0.00 |   0.0573 |        - |        - |     120 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               8 |        23.56 ns |      0.198 ns |       0.176 ns |        23.54 ns |  0.73 |    0.02 |   0.0650 |        - |        - |     136 B |        1.13 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |               9 |        32.08 ns |      0.647 ns |       0.908 ns |        32.06 ns |  1.00 |    0.00 |   0.0612 |        - |        - |     128 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |               9 |        23.68 ns |      0.155 ns |       0.130 ns |        23.70 ns |  0.74 |    0.02 |   0.0688 |        - |        - |     144 B |        1.12 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              10 |        34.82 ns |      0.709 ns |       0.758 ns |        34.74 ns |  1.00 |    0.00 |   0.0650 |        - |        - |     136 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              10 |        23.86 ns |      0.254 ns |       0.212 ns |        23.88 ns |  0.69 |    0.01 |   0.0727 |        - |        - |     152 B |        1.12 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              11 |        35.95 ns |      0.743 ns |       0.885 ns |        36.05 ns |  1.00 |    0.00 |   0.0688 |        - |        - |     144 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              11 |        24.91 ns |      0.309 ns |       0.289 ns |        24.98 ns |  0.70 |    0.02 |   0.0765 |        - |        - |     160 B |        1.11 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              12 |        34.68 ns |      0.595 ns |       0.557 ns |        34.60 ns |  1.00 |    0.00 |   0.0727 |        - |        - |     152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              12 |        24.96 ns |      0.349 ns |       0.310 ns |        24.95 ns |  0.72 |    0.01 |   0.0803 |        - |        - |     168 B |        1.11 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              13 |        36.61 ns |      0.370 ns |       0.328 ns |        36.57 ns |  1.00 |    0.00 |   0.0765 |        - |        - |     160 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              13 |        25.15 ns |      0.248 ns |       0.220 ns |        25.13 ns |  0.69 |    0.01 |   0.0842 |        - |        - |     176 B |        1.10 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              14 |        36.83 ns |      0.580 ns |       0.543 ns |        36.99 ns |  1.00 |    0.00 |   0.0803 |        - |        - |     168 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              14 |        25.81 ns |      0.314 ns |       0.293 ns |        25.84 ns |  0.70 |    0.02 |   0.0880 |        - |        - |     184 B |        1.10 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              15 |        36.43 ns |      0.750 ns |       0.921 ns |        36.41 ns |  1.00 |    0.00 |   0.0842 |        - |        - |     176 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              15 |        25.64 ns |      0.157 ns |       0.139 ns |        25.62 ns |  0.70 |    0.02 |   0.0918 |        - |        - |     192 B |        1.09 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              16 |        38.31 ns |      0.780 ns |       0.730 ns |        38.40 ns |  1.00 |    0.00 |   0.0880 |        - |        - |     184 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              16 |        26.34 ns |      0.513 ns |       0.455 ns |        26.28 ns |  0.69 |    0.02 |   0.0956 |        - |        - |     200 B |        1.09 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              17 |        37.76 ns |      0.771 ns |       0.791 ns |        37.54 ns |  1.00 |    0.00 |   0.0918 |        - |        - |     192 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              17 |        26.32 ns |      0.501 ns |       0.469 ns |        26.21 ns |  0.70 |    0.02 |   0.0995 |        - |        - |     208 B |        1.08 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              18 |        37.21 ns |      0.754 ns |       0.838 ns |        37.12 ns |  1.00 |    0.00 |   0.0956 |        - |        - |     200 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              18 |        26.48 ns |      0.467 ns |       0.437 ns |        26.36 ns |  0.71 |    0.02 |   0.1033 |        - |        - |     216 B |        1.08 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              19 |        36.29 ns |      0.755 ns |       1.130 ns |        36.05 ns |  1.00 |    0.00 |   0.0994 |        - |        - |     208 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              19 |        27.55 ns |      0.299 ns |       0.280 ns |        27.64 ns |  0.75 |    0.02 |   0.1071 |        - |        - |     224 B |        1.08 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              20 |        37.87 ns |      0.751 ns |       0.950 ns |        37.93 ns |  1.00 |    0.00 |   0.1033 |        - |        - |     216 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              20 |        27.39 ns |      0.183 ns |       0.171 ns |        27.36 ns |  0.73 |    0.02 |   0.1109 |        - |        - |     232 B |        1.07 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              30 |        39.84 ns |      0.809 ns |       1.108 ns |        39.96 ns |  1.00 |    0.00 |   0.1415 |        - |        - |     296 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              30 |        30.75 ns |      0.451 ns |       0.422 ns |        30.74 ns |  0.77 |    0.03 |   0.1492 |        - |        - |     312 B |        1.05 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              32 |        41.72 ns |      0.521 ns |       0.487 ns |        41.73 ns |  1.00 |    0.00 |   0.1492 |        - |        - |     312 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              32 |        31.17 ns |      0.327 ns |       0.306 ns |        31.14 ns |  0.75 |    0.01 |   0.1568 |        - |        - |     328 B |        1.05 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              36 |        44.83 ns |      0.865 ns |       0.850 ns |        44.75 ns |  1.00 |    0.00 |   0.1644 |        - |        - |     344 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              36 |        32.35 ns |      0.324 ns |       0.287 ns |        32.28 ns |  0.72 |    0.02 |   0.1721 |        - |        - |     360 B |        1.05 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              37 |        48.01 ns |      0.629 ns |       0.557 ns |        47.99 ns |  1.00 |    0.00 |   0.1683 |        - |        - |     352 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              37 |        41.35 ns |      0.524 ns |       0.490 ns |        41.37 ns |  0.86 |    0.02 |   0.0382 |        - |        - |      80 B |        0.23 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              40 |        49.12 ns |      0.987 ns |       1.013 ns |        49.24 ns |  1.00 |    0.00 |   0.1798 |        - |        - |     376 B |        1.00 |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              40 |        51.62 ns |      0.443 ns |       0.415 ns |        51.67 ns |  1.05 |    0.02 |   0.1798 |        - |        - |     376 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              40 |        41.29 ns |      0.451 ns |       0.422 ns |        41.47 ns |  0.84 |    0.02 |   0.0382 |        - |        - |      80 B |        0.21 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              40 |        41.26 ns |      0.681 ns |       0.637 ns |        41.44 ns |  0.84 |    0.02 |   0.0382 |        - |        - |      80 B |        0.21 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              50 |        54.75 ns |      0.747 ns |       0.662 ns |        54.93 ns |  1.00 |    0.00 |   0.2180 |        - |        - |     456 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              50 |        41.73 ns |      0.494 ns |       0.462 ns |        41.63 ns |  0.76 |    0.02 |   0.0382 |        - |        - |      80 B |        0.18 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              60 |        58.06 ns |      0.478 ns |       0.447 ns |        58.02 ns |  1.00 |    0.00 |   0.2562 |        - |        - |     536 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              60 |        43.02 ns |      0.543 ns |       0.508 ns |        42.98 ns |  0.74 |    0.01 |   0.0382 |        - |        - |      80 B |        0.15 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              70 |        65.28 ns |      1.033 ns |       0.916 ns |        65.22 ns |  1.00 |    0.00 |   0.2944 |        - |        - |     616 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              70 |        40.30 ns |      0.307 ns |       0.287 ns |        40.24 ns |  0.62 |    0.01 |   0.0382 |        - |        - |      80 B |        0.13 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              80 |        67.91 ns |      0.793 ns |       0.742 ns |        67.74 ns |  1.00 |    0.00 |   0.3327 |        - |        - |     696 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              80 |        41.51 ns |      0.745 ns |       0.660 ns |        41.24 ns |  0.61 |    0.01 |   0.0382 |        - |        - |      80 B |        0.11 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |              90 |        73.91 ns |      0.690 ns |       0.645 ns |        74.09 ns |  1.00 |    0.00 |   0.3710 |        - |        - |     776 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |              90 |        44.61 ns |      0.416 ns |       0.389 ns |        44.67 ns |  0.60 |    0.01 |   0.0382 |        - |        - |      80 B |        0.10 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |             100 |        77.38 ns |      0.991 ns |       0.927 ns |        77.51 ns |  1.00 |    0.00 |   0.4092 |        - |        - |     856 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |             100 |        45.68 ns |      0.421 ns |       0.394 ns |        45.69 ns |  0.59 |    0.01 |   0.0382 |        - |        - |      80 B |        0.09 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |             128 |        89.99 ns |      1.118 ns |       1.045 ns |        89.91 ns |  1.00 |    0.00 |   0.5162 |        - |        - |    1080 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |             128 |        42.70 ns |      0.306 ns |       0.271 ns |        42.57 ns |  0.47 |    0.01 |   0.0382 |        - |        - |      80 B |        0.07 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |             256 |       152.91 ns |      2.989 ns |       3.198 ns |       153.43 ns |  1.00 |    0.00 |   1.0059 |        - |        - |    2104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |             256 |        58.62 ns |      0.194 ns |       0.162 ns |        58.58 ns |  0.38 |    0.01 |   0.0382 |        - |        - |      80 B |        0.04 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |             512 |       276.03 ns |      5.456 ns |       5.103 ns |       275.95 ns |  1.00 |    0.00 |   1.9841 |        - |        - |    4152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |             512 |        70.39 ns |      0.285 ns |       0.253 ns |        70.38 ns |  0.26 |    0.00 |   0.0381 |        - |        - |      80 B |        0.02 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |            1024 |       533.44 ns |     10.549 ns |      10.833 ns |       534.63 ns |  1.00 |    0.00 |   3.9368 |        - |        - |    8248 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |            1024 |       103.35 ns |      0.218 ns |       0.204 ns |       103.29 ns |  0.19 |    0.00 |   0.0381 |        - |        - |      80 B |       0.010 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |            2048 |     1,054.78 ns |     18.536 ns |      17.338 ns |     1,052.91 ns |  1.00 |    0.00 |   7.8125 |        - |        - |   16440 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |            2048 |       270.21 ns |      0.724 ns |       0.677 ns |       270.23 ns |  0.26 |    0.00 |   0.0381 |        - |        - |      80 B |       0.005 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |            4096 |     2,089.11 ns |     40.552 ns |      52.730 ns |     2,079.58 ns |  1.00 |    0.00 |  15.6250 |        - |        - |   32824 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |            4096 |       615.19 ns |      1.682 ns |       1.574 ns |       614.86 ns |  0.30 |    0.01 |   0.0381 |        - |        - |      80 B |       0.002 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |            8192 |     3,892.82 ns |     77.228 ns |     174.316 ns |     3,826.15 ns |  1.00 |    0.00 |  31.2424 |        - |        - |   65592 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |            8192 |     1,113.29 ns |      2.665 ns |       2.493 ns |     1,112.63 ns |  0.28 |    0.01 |   0.0381 |        - |        - |      80 B |       0.001 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |           16384 |    60,459.73 ns |  1,191.551 ns |   2,713.765 ns |    60,532.10 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |  131155 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |           16384 |     2,411.13 ns |      2.748 ns |       2.145 ns |     2,411.65 ns |  0.04 |    0.00 |   0.0381 |        - |        - |      80 B |       0.001 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |           32768 |   117,793.63 ns |  2,347.641 ns |   5,669.816 ns |   116,083.59 ns |  1.00 |    0.00 |  83.2520 |  83.2520 |  83.2520 |  262254 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |           32768 |     5,215.51 ns |     13.560 ns |      12.021 ns |     5,210.97 ns |  0.04 |    0.00 |   0.0381 |        - |        - |      80 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |           65536 |   117,722.90 ns |  1,264.284 ns |   1,182.612 ns |   117,781.87 ns |  1.00 |    0.00 | 108.8867 | 107.7881 | 107.7881 |  525108 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |           65536 |    11,293.34 ns |     37.753 ns |      33.467 ns |    11,305.16 ns |  0.10 |    0.00 |   0.0305 |        - |        - |      80 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |          131072 |   556,116.34 ns | 61,446.398 ns | 181,176.090 ns |   634,460.45 ns |  1.00 |    0.00 | 170.8984 | 169.9219 | 169.9219 | 1049016 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |          131072 |    24,918.76 ns |     28.859 ns |      25.583 ns |    24,914.34 ns |  0.08 |    0.00 |   0.0305 |        - |        - |      80 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List |     RecyclableList |          850000 | 2,768,109.11 ns | 54,802.367 ns |  73,159.585 ns | 2,790,339.06 ns |  1.00 |    0.00 |  93.7500 |  93.7500 |  93.7500 | 6800165 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List |     RecyclableList |          850000 |   900,257.31 ns | 11,932.120 ns |  11,161.312 ns |   900,244.92 ns |  0.33 |    0.01 |        - |        - |        - |      93 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               0 |        16.50 ns |      0.048 ns |       0.045 ns |        16.49 ns |  1.00 |    0.00 |   0.0153 |        - |        - |      32 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               0 |        19.46 ns |      0.062 ns |       0.055 ns |        19.45 ns |  1.18 |    0.00 |   0.0421 |        - |        - |      88 B |        2.75 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               1 |        26.75 ns |      0.241 ns |       0.226 ns |        26.70 ns |  1.00 |    0.00 |   0.0306 |        - |        - |      64 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               1 |        59.51 ns |      1.185 ns |       1.164 ns |        59.85 ns |  2.22 |    0.05 |   0.0726 |        - |        - |     152 B |        2.38 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               2 |        27.07 ns |      0.034 ns |       0.032 ns |        27.06 ns |  1.00 |    0.00 |   0.0344 |        - |        - |      72 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               2 |        61.26 ns |      0.294 ns |       0.275 ns |        61.22 ns |  2.26 |    0.01 |   0.0764 |        - |        - |     160 B |        2.22 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               3 |        27.59 ns |      0.066 ns |       0.058 ns |        27.60 ns |  1.00 |    0.00 |   0.0382 |        - |        - |      80 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               3 |        62.69 ns |      1.039 ns |       0.921 ns |        63.05 ns |  2.27 |    0.03 |   0.0842 |        - |        - |     176 B |        2.20 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               4 |        27.77 ns |      0.094 ns |       0.088 ns |        27.74 ns |  1.00 |    0.00 |   0.0421 |        - |        - |      88 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               4 |        61.37 ns |      0.769 ns |       0.642 ns |        61.08 ns |  2.21 |    0.02 |   0.0842 |        - |        - |     176 B |        2.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               5 |        29.28 ns |      0.060 ns |       0.053 ns |        29.29 ns |  1.00 |    0.00 |   0.0459 |        - |        - |      96 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               5 |        64.29 ns |      0.487 ns |       0.455 ns |        64.29 ns |  2.20 |    0.02 |   0.0994 |        - |        - |     208 B |        2.17 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               6 |        28.40 ns |      0.040 ns |       0.031 ns |        28.41 ns |  1.00 |    0.00 |   0.0497 |        - |        - |     104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               6 |        64.50 ns |      0.344 ns |       0.287 ns |        64.59 ns |  2.27 |    0.01 |   0.0994 |        - |        - |     208 B |        2.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               7 |        28.72 ns |      0.068 ns |       0.057 ns |        28.73 ns |  1.00 |    0.00 |   0.0535 |        - |        - |     112 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               7 |        63.30 ns |      0.271 ns |       0.240 ns |        63.38 ns |  2.20 |    0.01 |   0.0994 |        - |        - |     208 B |        1.86 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               8 |        29.02 ns |      0.178 ns |       0.166 ns |        28.95 ns |  1.00 |    0.00 |   0.0573 |        - |        - |     120 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               8 |        62.05 ns |      0.635 ns |       0.594 ns |        62.02 ns |  2.14 |    0.02 |   0.0994 |        - |        - |     208 B |        1.73 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |               9 |        29.45 ns |      0.073 ns |       0.065 ns |        29.46 ns |  1.00 |    0.00 |   0.0612 |        - |        - |     128 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |               9 |        67.66 ns |      0.626 ns |       0.586 ns |        67.56 ns |  2.30 |    0.02 |   0.1301 |        - |        - |     272 B |        2.12 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              10 |        29.74 ns |      0.121 ns |       0.101 ns |        29.71 ns |  1.00 |    0.00 |   0.0650 |        - |        - |     136 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              10 |        66.41 ns |      0.449 ns |       0.398 ns |        66.44 ns |  2.23 |    0.02 |   0.1301 |        - |        - |     272 B |        2.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              11 |        31.66 ns |      0.112 ns |       0.093 ns |        31.62 ns |  1.00 |    0.00 |   0.0688 |        - |        - |     144 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              11 |        67.91 ns |      0.520 ns |       0.486 ns |        67.80 ns |  2.15 |    0.02 |   0.1301 |        - |        - |     272 B |        1.89 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              12 |        31.07 ns |      0.234 ns |       0.219 ns |        31.03 ns |  1.00 |    0.00 |   0.0727 |        - |        - |     152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              12 |        67.43 ns |      0.549 ns |       0.487 ns |        67.34 ns |  2.17 |    0.02 |   0.1301 |        - |        - |     272 B |        1.79 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              13 |        31.16 ns |      0.049 ns |       0.038 ns |        31.16 ns |  1.00 |    0.00 |   0.0765 |        - |        - |     160 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              13 |        67.52 ns |      0.581 ns |       0.454 ns |        67.51 ns |  2.17 |    0.01 |   0.1301 |        - |        - |     272 B |        1.70 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              14 |        31.42 ns |      0.069 ns |       0.058 ns |        31.41 ns |  1.00 |    0.00 |   0.0803 |        - |        - |     168 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              14 |        67.74 ns |      0.532 ns |       0.497 ns |        67.80 ns |  2.15 |    0.02 |   0.1301 |        - |        - |     272 B |        1.62 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              15 |        31.86 ns |      0.203 ns |       0.180 ns |        31.77 ns |  1.00 |    0.00 |   0.0842 |        - |        - |     176 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              15 |        67.42 ns |      0.651 ns |       0.577 ns |        67.44 ns |  2.12 |    0.02 |   0.1301 |        - |        - |     272 B |        1.55 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              16 |        32.46 ns |      0.181 ns |       0.151 ns |        32.52 ns |  1.00 |    0.00 |   0.0880 |        - |        - |     184 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              16 |        68.43 ns |      0.703 ns |       0.623 ns |        68.61 ns |  2.11 |    0.02 |   0.1301 |        - |        - |     272 B |        1.48 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              17 |        32.69 ns |      0.031 ns |       0.024 ns |        32.69 ns |  1.00 |    0.00 |   0.0918 |        - |        - |     192 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              17 |        72.11 ns |      0.882 ns |       0.825 ns |        72.23 ns |  2.21 |    0.02 |   0.1912 |        - |        - |     400 B |        2.08 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              18 |        32.80 ns |      0.133 ns |       0.111 ns |        32.83 ns |  1.00 |    0.00 |   0.0956 |        - |        - |     200 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              18 |        71.61 ns |      0.691 ns |       0.646 ns |        71.75 ns |  2.18 |    0.02 |   0.1912 |        - |        - |     400 B |        2.00 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              19 |        33.75 ns |      0.070 ns |       0.058 ns |        33.75 ns |  1.00 |    0.00 |   0.0994 |        - |        - |     208 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              19 |        73.13 ns |      0.244 ns |       0.216 ns |        73.12 ns |  2.17 |    0.01 |   0.1912 |        - |        - |     400 B |        1.92 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              20 |        34.97 ns |      0.052 ns |       0.043 ns |        34.96 ns |  1.00 |    0.00 |   0.1033 |        - |        - |     216 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              20 |        73.07 ns |      0.325 ns |       0.304 ns |        73.08 ns |  2.09 |    0.01 |   0.1912 |        - |        - |     400 B |        1.85 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              30 |        37.71 ns |      0.608 ns |       0.475 ns |        37.53 ns |  1.00 |    0.00 |   0.1415 |        - |        - |     296 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              30 |        73.31 ns |      0.820 ns |       0.767 ns |        73.54 ns |  1.94 |    0.02 |   0.1912 |        - |        - |     400 B |        1.35 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              32 |        38.23 ns |      0.058 ns |       0.052 ns |        38.24 ns |  1.00 |    0.00 |   0.1492 |        - |        - |     312 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              32 |        74.13 ns |      0.794 ns |       0.703 ns |        74.08 ns |  1.94 |    0.02 |   0.1912 |        - |        - |     400 B |        1.28 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              36 |        47.63 ns |      0.811 ns |       0.759 ns |        47.66 ns |  1.00 |    0.00 |   0.1644 |        - |        - |     344 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              36 |        93.27 ns |      0.748 ns |       0.699 ns |        93.29 ns |  1.96 |    0.04 |   0.0726 |        - |        - |     152 B |        0.44 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              37 |        47.02 ns |      0.370 ns |       0.328 ns |        46.98 ns |  1.00 |    0.00 |   0.1683 |        - |        - |     352 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              37 |        92.90 ns |      0.832 ns |       0.778 ns |        93.05 ns |  1.97 |    0.02 |   0.0726 |        - |        - |     152 B |        0.43 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              40 |        48.73 ns |      0.519 ns |       0.460 ns |        48.60 ns |  1.00 |    0.00 |   0.1798 |        - |        - |     376 B |        1.00 |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              40 |        48.31 ns |      0.195 ns |       0.173 ns |        48.30 ns |  0.99 |    0.01 |   0.1798 |        - |        - |     376 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              40 |        94.22 ns |      0.897 ns |       0.839 ns |        94.48 ns |  1.93 |    0.03 |   0.0726 |        - |        - |     152 B |        0.40 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              40 |        93.54 ns |      1.211 ns |       1.133 ns |        93.91 ns |  1.92 |    0.02 |   0.0726 |        - |        - |     152 B |        0.40 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              50 |        54.28 ns |      0.669 ns |       0.625 ns |        54.42 ns |  1.00 |    0.00 |   0.2180 |        - |        - |     456 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              50 |        93.62 ns |      0.567 ns |       0.503 ns |        93.70 ns |  1.72 |    0.01 |   0.0726 |        - |        - |     152 B |        0.33 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              60 |        57.61 ns |      0.444 ns |       0.393 ns |        57.46 ns |  1.00 |    0.00 |   0.2562 |        - |        - |     536 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              60 |        94.66 ns |      0.731 ns |       0.683 ns |        94.64 ns |  1.64 |    0.02 |   0.0726 |        - |        - |     152 B |        0.28 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              70 |        64.33 ns |      1.118 ns |       1.046 ns |        64.38 ns |  1.00 |    0.00 |   0.2944 |        - |        - |     616 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              70 |        98.01 ns |      1.900 ns |       2.032 ns |        98.03 ns |  1.53 |    0.04 |   0.0726 |        - |        - |     152 B |        0.25 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              80 |        65.83 ns |      0.944 ns |       0.883 ns |        66.04 ns |  1.00 |    0.00 |   0.3327 |        - |        - |     696 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              80 |        95.46 ns |      1.151 ns |       1.077 ns |        95.16 ns |  1.45 |    0.03 |   0.0726 |        - |        - |     152 B |        0.22 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |          850000 | 2,649,445.31 ns | 52,674.631 ns | 111,108.674 ns | 2,646,149.41 ns |  1.00 |    0.00 |  89.8438 |  89.8438 |  89.8438 | 6800161 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |          850000 | 1,274,873.03 ns |  1,667.661 ns |   1,478.338 ns | 1,274,552.44 ns |  0.47 |    0.03 |        - |        - |        - |     445 B |       0.000 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |              90 |        70.46 ns |      1.089 ns |       1.018 ns |        69.84 ns |  1.00 |    0.00 |   0.3710 |        - |        - |     776 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |              90 |        88.84 ns |      0.706 ns |       0.661 ns |        88.95 ns |  1.26 |    0.02 |   0.0726 |        - |        - |     152 B |        0.20 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |             100 |        76.23 ns |      0.998 ns |       0.934 ns |        76.08 ns |  1.00 |    0.00 |   0.4092 |        - |        - |     856 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |             100 |        96.84 ns |      1.325 ns |       1.239 ns |        96.76 ns |  1.27 |    0.02 |   0.0726 |        - |        - |     152 B |        0.18 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |             128 |        90.14 ns |      0.992 ns |       0.928 ns |        90.06 ns |  1.00 |    0.00 |   0.5162 |        - |        - |    1080 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |             128 |        96.62 ns |      0.965 ns |       0.902 ns |        96.64 ns |  1.07 |    0.02 |   0.0726 |        - |        - |     152 B |        0.14 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |             256 |       150.98 ns |      3.004 ns |       2.810 ns |       150.38 ns |  1.00 |    0.00 |   1.0059 |        - |        - |    2104 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |             256 |       108.79 ns |      1.681 ns |       1.573 ns |       108.98 ns |  0.72 |    0.02 |   0.0726 |        - |        - |     152 B |        0.07 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |             512 |       286.26 ns |      5.735 ns |       5.632 ns |       286.24 ns |  1.00 |    0.00 |   1.9841 |        - |        - |    4152 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |             512 |       113.76 ns |      0.559 ns |       0.495 ns |       113.79 ns |  0.40 |    0.01 |   0.0726 |        - |        - |     152 B |        0.04 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |            1024 |       544.37 ns |     10.783 ns |      11.074 ns |       542.49 ns |  1.00 |    0.00 |   3.9368 |        - |        - |    8248 B |        1.00 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |            1024 |       148.11 ns |      0.974 ns |       0.911 ns |       148.09 ns |  0.27 |    0.01 |   0.0725 |        - |        - |     152 B |        0.02 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |            2048 |     1,074.57 ns |     21.337 ns |      24.572 ns |     1,068.78 ns |  1.00 |    0.00 |   7.8125 |        - |        - |   16440 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |            2048 |       334.11 ns |      1.290 ns |       1.207 ns |       333.66 ns |  0.31 |    0.01 |   0.0725 |        - |        - |     152 B |       0.009 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |            4096 |     2,104.01 ns |     32.894 ns |      30.769 ns |     2,101.82 ns |  1.00 |    0.00 |  15.6250 |        - |        - |   32824 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |            4096 |       604.28 ns |      1.735 ns |       1.449 ns |       603.72 ns |  0.29 |    0.00 |   0.0725 |        - |        - |     152 B |       0.005 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |            8192 |     4,013.72 ns |     33.257 ns |      29.481 ns |     4,011.83 ns |  1.00 |    0.00 |  31.2424 |        - |        - |   65592 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |            8192 |     1,107.34 ns |      2.914 ns |       2.725 ns |     1,106.98 ns |  0.28 |    0.00 |   0.0725 |        - |        - |     152 B |       0.002 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |           16384 |    62,383.18 ns |  1,239.731 ns |   2,823.495 ns |    62,740.53 ns |  1.00 |    0.00 |  41.6260 |  41.6260 |  41.6260 |  131155 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |           16384 |     2,426.99 ns |      3.192 ns |       2.830 ns |     2,426.52 ns |  0.04 |    0.00 |   0.2060 |        - |        - |     432 B |       0.003 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |           32768 |   120,477.96 ns |  2,404.947 ns |   3,672.608 ns |   120,954.94 ns |  1.00 |    0.00 |  83.2520 |  83.2520 |  83.2520 |  262254 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |           32768 |     4,866.65 ns |     24.344 ns |      22.772 ns |     4,860.40 ns |  0.04 |    0.00 |   0.2060 |        - |        - |     432 B |       0.002 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |           65536 |   115,054.46 ns |  2,104.958 ns |   1,968.979 ns |   115,173.56 ns |  1.00 |    0.00 | 112.6709 | 111.5723 | 111.5723 |  524993 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |           65536 |    10,675.32 ns |     58.852 ns |      52.171 ns |    10,661.32 ns |  0.09 |    0.00 |   0.1984 |        - |        - |     432 B |       0.001 |
+|          |                      |              |                    |                 |                 |               |                |
+ |       |         |          |          |          |           |             |
+| Baseline | AddRa(...)acity [21] |         List | RecyclableLongList |          131072 |   542,918.31 ns | 74,846.075 ns | 220,685.339 ns |   411,759.42 ns |  1.00 |    0.00 | 150.3906 | 149.4141 | 149.4141 | 1049103 B |       1.000 |
+|   Actual | AddRa(...)acity [21] |         List | RecyclableLongList |          131072 |    21,969.52 ns |     75.673 ns |      70.785 ns |    21,952.84 ns |  0.03 |    0.00 |   0.1831 |        - |        - |     432 B |       0.000 |
+</details>
+
 # `foreach` Benchmarks
 ## Environment
 
