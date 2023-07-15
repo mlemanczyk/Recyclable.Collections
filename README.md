@@ -191,6 +191,7 @@
 	1. 🅿️ `RecyclableLongListExtensions.CopyTo`
 1. 🅿️ Cleanup
 	1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
+	1. 🅿️ Replace properties with field refs, where possible
 	1. ✅ `RecyclableLongListExtensions`
 	1. ✅ `ListExtensions`
 	1. 🅿️ `MathUtils`
@@ -227,6 +228,9 @@
 	1. 🅿️ `RecyclableLongList<T>.Resize`
 	1. 🅿️ `RecyclableLongList<T>.CopyTo`
 	1. 🅿️ Check if we can benefit from Sse2 in `.IndexOf`/`.Contains` methods as given in [MS blog](https://devblogs.microsoft.com/dotnet/hardware-intrinsics-in-net-core/).
+	1. 🅿️ Memory pools
+		1. 🅿️ `OneSizeArrayPool<T>`
+		1. 🅿️ `RecyclableArrayPool<T>`
 1. 🅿️ Add support for `ICollection<T>` interface in `.AddRange` & `constructor`
 1. 🅿️ Final optimizations
 	1. 🅿️ Replace `Math` class usages with `if` statements
