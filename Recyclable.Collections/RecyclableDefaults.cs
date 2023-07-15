@@ -5,6 +5,7 @@
 		public const int BlockIndexLimit = int.MaxValue;
 		public const int BlockSize = 16_384;
 		public const int Capacity = 1;
+		public const int InitialCapacity = 4;
 		public const long MinItemsCountForParallelization = 850_000;
 		public const int MinPooledArrayLength = 37;
 		public const int MaxPooledBlockSize = 2_147_483_591;
