@@ -7,7 +7,6 @@ namespace Recyclable.Collections
 	[Serializable]
 	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-		private const int InitialCapacity = 4;
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
@@ -72,13 +71,13 @@ namespace Recyclable.Collections
 
 		public RecyclableList()
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 		}
 
 		public RecyclableList(int initialCapacity)
 		{
-			if (initialCapacity >= InitialCapacity)
+			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
 			{
 				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
 					? RecyclableArrayPool<T>.Rent(initialCapacity)
@@ -87,56 +86,56 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_memoryBlock = new T[InitialCapacity];
-				_capacity = InitialCapacity;
+				_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
+				_capacity = RecyclableDefaults.InitialCapacity;
 			}
 		}
 
 		public RecyclableList(RecyclableList<T> source)
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
 		public RecyclableList(RecyclableLongList<T> source)
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
 		public RecyclableList(ReadOnlySpan<T> source)
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
 		public RecyclableList(in T[] source)
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
 		public RecyclableList(List<T> source)
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
 		public RecyclableList(IList<T> source)
 		{
-			_capacity = InitialCapacity;
-			_memoryBlock = new T[InitialCapacity];
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
 		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
 		{
-			if (initialCapacity >= InitialCapacity)
+			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
 			{
 				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
 					? RecyclableArrayPool<T>.Rent(initialCapacity)
@@ -145,8 +144,8 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				_capacity = InitialCapacity;
-				_memoryBlock = new T[InitialCapacity];
+				_capacity = RecyclableDefaults.InitialCapacity;
+				_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			}
 
 			AddRange(source);
