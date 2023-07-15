@@ -4,6 +4,18 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
+		public void Array_AddRangeWhenSourceIsIEnumerable()
+		{
+			var data = TestObjectsAsIEnumerable;
+			var list = new long[TestObjectCount];
+			int itemIndex = 0;
+
+			foreach (var item in data)
+			{
+				list[itemIndex++] = item;
+			}
+		}
+
 		public void List_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;

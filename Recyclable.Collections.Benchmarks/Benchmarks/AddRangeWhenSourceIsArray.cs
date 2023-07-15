@@ -4,6 +4,13 @@ namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
+		public void Array_AddRangeWhenSourceIsArray()
+		{
+			var data = TestObjects;
+			var list = new long[TestObjectCount];
+			data.CopyTo(list, 0);
+		}
+
 		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
