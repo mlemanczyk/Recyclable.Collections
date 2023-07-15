@@ -244,7 +244,7 @@ namespace Recyclable.Collections
 				}
 
 				list._reservedBlockCount = requiredBlockCount;
-				return (long)requiredBlockCount << minBlockSizePow2Shift;
+				return requiredBlockCount << minBlockSizePow2Shift;
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
