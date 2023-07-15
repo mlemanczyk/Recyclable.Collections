@@ -263,6 +263,11 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(RecyclableLongList<T> items)
 		{
+			if (items._longCount == 0)
+			{
+				return;
+			}
+
 			var sourceItemsCount = items.LongCount;
 			if (sourceItemsCount > int.MaxValue)
 			{
