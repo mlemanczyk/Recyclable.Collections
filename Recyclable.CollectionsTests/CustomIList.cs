@@ -22,7 +22,7 @@ namespace Recyclable.CollectionsTests
 		public void Add(T item) => _list.Add(item);
 		public void Clear() => _list.Clear();
 		public bool Contains(T item) => _list.Contains(item);
-		public void CopyTo(T[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => _list.CopyTo(0, array, arrayIndex, _list.Count);
 		public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 		public int IndexOf(T item) => _list.IndexOf(item);
 		public void Insert(int index, T item) => _list.Insert(index, item);
