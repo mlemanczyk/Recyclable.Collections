@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
@@ -35,7 +36,7 @@ namespace Recyclable.Collections
 				{
 					if (targetItemIdx + growByCount > capacity)
 					{
-						capacity = RecyclableListHelpers<T>.EnsureCapacity(this, capacity + growByCount);
+						capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(capacity + growByCount))));
 						memorySpan = new(_memoryBlock);
 						available = capacity - targetItemIdx;
 					}
@@ -52,13 +53,14 @@ namespace Recyclable.Collections
 				while (i >= available);
 			}
 
+			_capacity = capacity;
 			_count = targetItemIdx;
 			return enumerator;
 		}
 
 		private void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
 		{
-			_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetItemIdx + requiredAdditionalCapacity);
+			_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIdx + requiredAdditionalCapacity))));
 
 			Span<T> memorySpan = new(_memoryBlock);
 			foreach (var item in source)
@@ -80,7 +82,7 @@ namespace Recyclable.Collections
 			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
 			{
 				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
-					? RecyclableArrayPool<T>.Rent(initialCapacity)
+					? RecyclableArrayPool<T>.RentShared(checked((int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity)))
 					: new T[initialCapacity];
 				_capacity = _memoryBlock.Length;
 			}
@@ -138,7 +140,7 @@ namespace Recyclable.Collections
 			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
 			{
 				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
-					? RecyclableArrayPool<T>.Rent(initialCapacity)
+					? RecyclableArrayPool<T>.RentShared(checked((int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity)))
 					: new T[initialCapacity];
 				_capacity = _memoryBlock.Length;
 			}
@@ -172,7 +174,7 @@ namespace Recyclable.Collections
 			{
 				if (_capacity != value)
 				{
-					RecyclableListHelpers<T>.ResizeAndCopy(this, value);
+					_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)value)));
 					_version++;
 				}
 			}
@@ -200,7 +202,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _count + items.Length)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Length);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Length))));
 			}
 
 			new Span<T>(items).CopyTo(new Span<T>(_memoryBlock, _count, items.Length));
@@ -213,7 +215,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _count + items.Length)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Length);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Length))));
 			}
 
 			items.CopyTo(new Span<T>(_memoryBlock, _count, items.Length));
@@ -226,7 +228,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _count + items.Count)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Count);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Count))));
 			}
 
 			items.CopyTo(_memoryBlock, _count);
@@ -239,7 +241,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _count + items.Count)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Count);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Count))));
 			}
 
 			items.CopyTo(_memoryBlock, _count);
@@ -252,7 +254,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _count + items._count)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items._count);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items._count))));
 			}
 
 			new Span<T>(items._memoryBlock, 0, items._count).CopyTo(new Span<T>(_memoryBlock, _count, items._count));
@@ -282,7 +284,7 @@ namespace Recyclable.Collections
 			int targetCapacity = _count + (int)sourceItemsCount;
 			if (_capacity < targetCapacity)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
 			}
 
 			Span<T> targetSpan = new Span<T>(_memoryBlock)[_count..],
@@ -291,7 +293,7 @@ namespace Recyclable.Collections
 			int blockIndex,
 				sourceBlockSize = items.BlockSize,
 				// TODO: Convert to bit-shift
-				lastBlockIndex = (int)(sourceItemsCount / sourceBlockSize) - 1;
+				lastBlockIndex = (int)(sourceItemsCount >> items._blockSizePow2BitShift) - 1;
 
 			for (blockIndex = 0; blockIndex <= lastBlockIndex; blockIndex++)
 			{
@@ -381,7 +383,7 @@ namespace Recyclable.Collections
 			int requestedCapacity = oldCount + 1;
 			if (_capacity < requestedCapacity)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, requestedCapacity);
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)requestedCapacity)));
 			}
 
 			if (oldCount > 0)
@@ -468,7 +470,7 @@ namespace Recyclable.Collections
 			{
 				_capacity = 0;
 				// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
-				RecyclableArrayPool<T>.Return(_memoryBlock, false);
+				RecyclableArrayPool<T>.ReturnShared(_memoryBlock, false);
 			}
 
 			GC.SuppressFinalize(this);

@@ -900,7 +900,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
 		protected ArrayPool<T[]> _memoryBlocksPool;
-		protected ArrayPool<T> _blockArrayPool;
+		protected OneSizeArrayPool<T> _blockArrayPool;
 		protected T[][] _memoryBlocks;
 
 		private long _capacity;
@@ -1133,7 +1133,6 @@ namespace Recyclable.Collections.Benchmarks.POC
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		protected static long Resize(RecyclableLongListV3<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 		{
-			ArrayPool<T> blockArrayPool = list._blockArrayPool;
 			int sourceBlockCount = list._reservedBlockCount;
 			int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0));
 			int blockIndex;
@@ -1146,7 +1145,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				blockIndex = 0;
 				while (blockIndex < memoryBlocksSpan.Length)
 				{
-					blockArrayPool.Return(memoryBlocksSpan[blockIndex++], NeedsClearing);
+					list._blockArrayPool.ReturnUnchecked(memoryBlocksSpan[blockIndex++], NeedsClearing);
 				}
 			}
 
@@ -1177,8 +1176,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 				{
 					if (sourceBlockCount == 0)
 					{
-						memoryBlocksSpan[0] = blockArrayPool.Rent(minBlockSize);
-						minBlockSize = memoryBlocksSpan[0].Length;
+						memoryBlocksSpan[0] = list._blockArrayPool.Rent();
 						blockIndex = 1;
 					}
 					else
@@ -1188,7 +1186,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 					while (blockIndex < memoryBlocksSpan.Length)
 					{
-						memoryBlocksSpan[blockIndex++] = blockArrayPool.Rent(minBlockSize);
+						memoryBlocksSpan[blockIndex++] = list._blockArrayPool.Rent();
 					}
 				}
 				else
@@ -1206,14 +1204,14 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		protected static void SetupBlockArrayPooling(RecyclableLongListV3<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+		protected static void SetupBlockArrayPooling(RecyclableLongListV3<T> list, int blockSize, ref OneSizeArrayPool<T> blockArrayPool)
 		{
 			list._blockSize = blockSize;
 			list._blockSizePow2Shift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
 			if (blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
 				list._blockPoolingRequired = true;
-				list._blockArrayPool = blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize);
+				list._blockArrayPool = blockArrayPool;
 			}
 			else
 			{
@@ -1233,7 +1231,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			newCapacity = Resize(list, blockSize, list._blockSizePow2Shift, newCapacity);
 			if (blockSize != list._memoryBlocks[0].Length && newCapacity > 0)
 			{
-				SetupBlockArrayPooling(list, list._memoryBlocks[0].Length);
+				SetupBlockArrayPooling(list, list._memoryBlocks[0].Length, ref list._blockArrayPool);
 				list._blockSizeMinus1 = list._blockSize - 1;
 			}
 
@@ -1243,7 +1241,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableLongListV3(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListV3(ref OneSizeArrayPool<T> blockArrayPool, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
@@ -1251,11 +1249,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 			if (expectedItemsCount > 0)
 			{
 				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
+				SetupBlockArrayPooling(this, minBlockSize, ref blockArrayPool);
 				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
 				if (_blockSize != _memoryBlocks![0].Length && _capacity > 0)
 				{
-					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
+					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, ref blockArrayPool);
 					_blockSizeMinus1 = _blockSize - 1;
 				}
 				else
@@ -1265,25 +1263,25 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 			else
 			{
-				SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), ref blockArrayPool);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
 		}
 
 #pragma warning disable CS8618 // It's set by SetupBlockArrayPooling
-		public RecyclableLongListV3(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongListV3(ref OneSizeArrayPool<T> blockArrayPool, IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default)
 #pragma warning restore CS8618
 		{
 			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
 			if (expectedItemsCount > 0)
 			{
 				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
+				SetupBlockArrayPooling(this, minBlockSize, ref blockArrayPool);
 				_capacity = Resize(this, minBlockSize, _blockSizePow2Shift, expectedItemsCount.Value);
 				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
 				{
-					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
+					SetupBlockArrayPooling(this, _memoryBlocks[0].Length, ref blockArrayPool);
 					_blockSizeMinus1 = _blockSize - 1;
 				}
 				else
@@ -1293,7 +1291,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 			else
 			{
-				SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), ref blockArrayPool);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -1633,10 +1631,10 @@ namespace Recyclable.Collections.Benchmarks.POC
 			{
 				Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _reservedBlockCount);
 				int memoryBlocksCount = memoryBlocksSpan.Length;
-				ArrayPool<T> blockArrayPool = _blockArrayPool;
+				ref OneSizeArrayPool<T> blockArrayPool = ref _blockArrayPool;
 				for (int toRemoveIdx = 0; toRemoveIdx < memoryBlocksCount; toRemoveIdx++)
 				{
-					blockArrayPool.Return(memoryBlocksSpan[toRemoveIdx], NeedsClearing);
+					blockArrayPool.ReturnUnchecked(memoryBlocksSpan[toRemoveIdx], NeedsClearing);
 					memoryBlocksSpan[toRemoveIdx] = _emptyBlockArray;
 				}
 			}
@@ -1733,7 +1731,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		{
 			if (_blockPoolingRequired)
 			{
-				_blockArrayPool.Return(_memoryBlocks[index], NeedsClearing);
+				_blockArrayPool.ReturnUnchecked(_memoryBlocks[index], NeedsClearing);
 			}
 			else
 			{
@@ -1851,7 +1849,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void RecyclableLongList_EnsureCapacityV3_ByPowOf2()
 		{
-			using var list = new RecyclableLongListV3<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongListV3<long>(ref RecyclableArrayPool<long>._pools[BlockSize], minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
 			DoNothing(_ensureCapacityV3Func.Invoke(null, new object[] { list, TestObjectCount }));
 		}
 
@@ -1869,7 +1867,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void RecyclableLongList_EnsureCapacityV3_ByBlockSize()
 		{
-			using var list = new RecyclableLongListV3<long>();
+			using var list = new RecyclableLongListV3<long>(ref RecyclableArrayPool<long>._pools[BlockSize]);
 			DoNothing(_ensureCapacityV3Func.Invoke(null, new object[] { list, TestObjectCount }));
 		}
 

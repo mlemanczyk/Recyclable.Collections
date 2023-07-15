@@ -1,7 +1,7 @@
-﻿using System.Buffers;
-using System.Collections;
+﻿using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Recyclable.Collections.Pools;
 
 [assembly: InternalsVisibleTo("Recyclable.Collections.Benchmarks")]
 [assembly: InternalsVisibleTo("Recyclable.CollectionsTests")]
@@ -10,8 +10,6 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-		private static readonly ArrayPool<T[]> _defaultMemoryBlocksPool = ArrayPool<T[]>.Create();
-		private static readonly ArrayPool<T> _defaultBlockArrayPool = ArrayPool<T>.Create();
 #pragma warning disable CA1825
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
@@ -26,8 +24,6 @@ namespace Recyclable.Collections
 		internal int _nextItemIndex;
 		private int _reservedBlockCount;
 
-		private readonly ArrayPool<T[]> _memoryBlocksPool;
-		private ArrayPool<T> _blockArrayPool;
 #nullable disable
 		internal T[][] _memoryBlocks;
 #nullable restore
@@ -42,7 +38,7 @@ namespace Recyclable.Collections
 				_version++;
 				if (_capacity != value)
 				{
-					_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, value);
+					_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)value)));
 					_version++;
 				}
 			}
@@ -87,7 +83,7 @@ namespace Recyclable.Collections
 			{
 				if (copied + growByCount > capacity)
 				{
-					capacity = Helpers.EnsureCapacity(this, capacity + growByCount);
+					capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + growByCount))));
 					memoryBlocksCount = _reservedBlockCount;
 					if (blockSize != _blockSize)
 					{
@@ -118,6 +114,7 @@ namespace Recyclable.Collections
 							_nextItemIndex = 0;
 						}
 
+						_capacity = capacity;
 						return;
 					}
 
@@ -151,7 +148,7 @@ namespace Recyclable.Collections
 			long requiredCapacity = copied + requiredAdditionalCapacity;
 			if (_capacity < requiredCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, requiredCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity)));
 				blockSize = _blockSize;
 			}
 
@@ -182,57 +179,40 @@ namespace Recyclable.Collections
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (_blockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(in T[] source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(in T[] source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -241,28 +221,20 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(ReadOnlySpan<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(ReadOnlySpan<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -271,28 +243,20 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(RecyclableList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(RecyclableList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -301,28 +265,20 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(RecyclableLongList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(RecyclableLongList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -331,28 +287,20 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(List<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(List<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -361,28 +309,20 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(IList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(IList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -391,28 +331,20 @@ namespace Recyclable.Collections
 		}
 
 #pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
-		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default, ArrayPool<T[]>? memoryBlocksPool = default, ArrayPool<T>? blockArrayPool = default)
+		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 #pragma warning restore CS8618
 		{
-			_memoryBlocksPool = memoryBlocksPool ?? _defaultMemoryBlocksPool;
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
 			if (expectedItemsCount > 0)
 			{
-				minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-				Helpers.SetupBlockArrayPooling(this, minBlockSize, blockArrayPool);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, expectedItemsCount.Value);
-				if (minBlockSize != _memoryBlocks![0].Length && _capacity > 0)
-				{
-					Helpers.SetupBlockArrayPooling(this, _memoryBlocks[0].Length, blockArrayPool);
-					_blockSizeMinus1 = _blockSize - 1;
-				}
-				else
-				{
-					_blockSizeMinus1 = minBlockSize - 1;
-				}
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((int)BitOperations.RoundUpToPowerOf2((uint)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)), blockArrayPool);
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -447,7 +379,7 @@ namespace Recyclable.Collections
 		{
 			if (_capacity < _longCount + 1)
 			{
-				_ = Helpers.EnsureCapacity(this, _longCount + 1);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(_longCount + 1))));
 			}
 
 			_memoryBlocks[_nextItemBlockIndex][_nextItemIndex++] = item;
@@ -480,7 +412,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.LongLength;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			int blockSize = _blockSize,
@@ -529,7 +461,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			int blockSize = _blockSize,
@@ -570,7 +502,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + itemsSpan.Length;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			int blockSize = _blockSize,
@@ -620,7 +552,7 @@ namespace Recyclable.Collections
 
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			int blockSize = _blockSize,
@@ -691,7 +623,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			int blockSize = _blockSize,
@@ -739,7 +671,7 @@ namespace Recyclable.Collections
 			long targetCapacity = _longCount + items.Count;
 			if (_capacity < targetCapacity)
 			{
-				_ = Helpers.EnsureCapacity(this, targetCapacity);
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			int blockSize = _blockSize,
@@ -748,7 +680,7 @@ namespace Recyclable.Collections
 
 			// We're better off to temporarily copy it to a fixed array,
 			// than copying them item by item. We may run into OOMs, though.
-			T[] itemsBuffer = items.Count >= RecyclableDefaults.MinPooledArrayLength ? _defaultBlockArrayPool.Rent(items.Count) : new T[items.Count];
+			T[] itemsBuffer = items.Count >= RecyclableDefaults.MinPooledArrayLength ? RecyclableArrayPool<T>.RentShared((int)BitOperations.RoundUpToPowerOf2((uint)items.Count)) : new T[items.Count];
 			try
 			{
 				items.CopyTo(itemsBuffer, 0);
@@ -779,7 +711,7 @@ namespace Recyclable.Collections
 			{
 				if (items.Count >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					_defaultBlockArrayPool.Return(itemsBuffer, NeedsClearing);
+					RecyclableArrayPool<T>.ReturnShared(itemsBuffer, NeedsClearing);
 				}
 
 				_version++;
@@ -831,11 +763,10 @@ namespace Recyclable.Collections
 			{
 				T[][] memoryBlocks = _memoryBlocks;
 				int memoryBlocksCount = _reservedBlockCount;
-				ArrayPool<T> blockArrayPool = _blockArrayPool;
 				int toRemoveIdx = 0;
 				while (toRemoveIdx < memoryBlocksCount)
 				{
-					blockArrayPool.Return(memoryBlocks[toRemoveIdx++], NeedsClearing);
+					RecyclableArrayPool<T>.ReturnShared(memoryBlocks[toRemoveIdx++], NeedsClearing);
 				}
 			}
 
@@ -999,7 +930,7 @@ namespace Recyclable.Collections
 		{
 			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				_blockArrayPool.Return(_memoryBlocks[index], NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(_memoryBlocks[index], NeedsClearing);
 				_memoryBlocks[index] = _emptyBlockArray;
 			}
 			else
@@ -1108,7 +1039,7 @@ namespace Recyclable.Collections
 				if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
-					_memoryBlocksPool.Return(_memoryBlocks, false);
+					RecyclableArrayPool<T[]>.ReturnShared(_memoryBlocks, false);
 				}
 			}
 

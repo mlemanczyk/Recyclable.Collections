@@ -1,61 +1,13 @@
-﻿using System.Buffers;
-
-namespace Recyclable.Collections.Pools
+﻿namespace Recyclable.Collections.Pools
 {
-	public sealed class OneSizeArrayPool<T> : ArrayPool<T>
+	public struct OneSizeArrayPool<T>
 	{
-		private const int MemoryReleaseTaskSleepMilliseconds = 500;
-		internal bool _memoryExceeded;
-		private bool _disposed;
-
-		~OneSizeArrayPool()
-		{
-			_disposed = true;
-		}
-
-		private async Task ReleaseMemoryOnExcess()
-		{
-			while (!_disposed)
-			{
-				if (_memoryExceeded)
-				{
-					Enter();
-					if (_currentBucket != null)
-					{
-						_blockCount--;
-						_currentBucket = _currentBucket.NextBucket;
-					}
-
-					if (_currentBucket != null)
-					{
-						_blockCount--;
-						_currentBucket = _currentBucket.NextBucket;
-					}
-
-					if (_currentBucket != null)
-					{
-						_blockCount--;
-						_currentBucket = _currentBucket.NextBucket;
-					}
-
-					if (_currentBucket != null)
-					{
-						_blockCount--;
-						_currentBucket = _currentBucket.NextBucket;
-					}
-
-					Exit();
-				}
-
-				await Task.Delay(MemoryReleaseTaskSleepMilliseconds);
-			}
-		}
-
+		private volatile MemoryBucket<T>? _currentBucket;
+		private volatile int _blockCount;
+		private volatile int _locked;
 		private readonly int _blockSize;
 		private readonly int _minBlockCount;
-		private volatile int _blockCount;
-		private volatile MemoryBucket<T>? _currentBucket;
-		private volatile int _locked;
+		internal volatile bool _memoryExceeded;
 
 		private void Enter()
 		{
@@ -78,33 +30,13 @@ namespace Recyclable.Collections.Pools
 
 		public OneSizeArrayPool(int blockSize, int minBlockCount)
 		{
+			_blockCount = 0;
+			_currentBucket = null;
+			_locked = 0;
+			_memoryExceeded = false;
 			_blockSize = blockSize;
 			_minBlockCount = minBlockCount;
 			_ = Task.Run(ReleaseMemoryOnExcess);
-		}
-
-		public override T[] Rent(int minimumLength)
-		{
-			if (minimumLength != _blockSize)
-			{
-				ThrowWrongRentedArraySizeException(minimumLength, _blockSize);
-			}
-
-			MemoryBucket<T>? bucket;
-			Enter();
-			if (_currentBucket != null)
-			{
-				_blockCount--;
-				bucket = _currentBucket;
-				_currentBucket = _currentBucket.NextBucket;
-			}
-			else
-			{
-				bucket = null;
-			}
-
-			Exit();
-			return bucket != null ? bucket.Memory : new T[_blockSize];
 		}
 
 		public T[] Rent()
@@ -143,14 +75,13 @@ namespace Recyclable.Collections.Pools
 			Exit();
 		}
 
-		public override void Return(T[] array, bool clearArray = false)
+		public void Return(T[] array, bool clearArray = false)
 		{
 			if (array.Length != _blockSize)
 			{
-				ThrowWrongReturnedArraySizeException(array.Length, _blockSize);
+				ThrowHelper.ThrowWrongReturnedArraySizeException(array.Length, _blockSize);
 			}
 
-			MemoryBucket<T> bucket = new(array);
 			if (clearArray)
 			{
 				// TODO: Measure performance
@@ -158,6 +89,7 @@ namespace Recyclable.Collections.Pools
 				Array.Clear(array, 0, array.Length);
 			}
 
+			MemoryBucket<T> bucket = new(array);
 			Enter();
 			if (_blockCount < _minBlockCount)
 			{
@@ -169,14 +101,44 @@ namespace Recyclable.Collections.Pools
 			Exit();
 		}
 
-		private static void ThrowWrongReturnedArraySizeException(int returnedLength, int blockSize)
-		{
-			throw new InvalidOperationException($"The array size {returnedLength} doesn't match the size {blockSize} of the pool buffer and cannot be returned to this pool.");
-		}
+		private const int MemoryReleaseTaskSleepMilliseconds = 500;
 
-		private static void ThrowWrongRentedArraySizeException(int requestedSize, int blockSize)
+		private async Task ReleaseMemoryOnExcess()
 		{
-			throw new InvalidOperationException($"The requested size {requestedSize} doesn't match the size {blockSize} of the pool buffer and cannot be taken from this pool.");
+			while (true)
+			{
+				if (_memoryExceeded)
+				{
+					Enter();
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					if (_currentBucket != null)
+					{
+						_blockCount--;
+						_currentBucket = _currentBucket.NextBucket;
+					}
+
+					Exit();
+				}
+
+				await Task.Delay(MemoryReleaseTaskSleepMilliseconds);
+			}
 		}
 	}
 }

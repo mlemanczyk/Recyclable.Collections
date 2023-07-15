@@ -13,5 +13,10 @@ namespace Recyclable.Collections
 			Contract.EnsuresOnThrow<ArgumentOutOfRangeException>(false);
 			throw new ArgumentOutOfRangeException(argumentName, message);
 		}
+
+		public static void ThrowWrongReturnedArraySizeException(int returnedLength, int blockSize)
+		{
+			throw new InvalidOperationException($"The array size {returnedLength} doesn't match the size {blockSize} of the pool buffer and cannot be returned to this pool.");
+		}
 	}
 }

@@ -107,25 +107,6 @@ namespace Recyclable.Collections
 				}
 			}
 
-			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static long EnsureCapacity(RecyclableLongList<T> list, long requestedCapacity)
-			{
-				long newCapacity = list._capacity > 0
-					? checked((long)BitOperations.RoundUpToPowerOf2((ulong)requestedCapacity))
-					: requestedCapacity;
-
-				int blockSize = list._blockSize;
-				newCapacity = Resize(list, blockSize, list._blockSizePow2BitShift, newCapacity);
-				if (blockSize != list._memoryBlocks[0].Length && newCapacity > 0)
-				{
-					SetupBlockArrayPooling(list, list._memoryBlocks[0].Length);
-					list._blockSizeMinus1 = list._blockSize - 1;
-				}
-
-				list._capacity = newCapacity;
-				return newCapacity;
-			}
-
 			public static IEnumerable<T> Enumerate(T[][] arrays, int chunkSize, long totalCount)
 			{
 				long currentCount = 0;
@@ -174,10 +155,9 @@ namespace Recyclable.Collections
 			/// gain - 1+ operation less for each call. If you need this functionality, you need to implement it on a higher level.
 			/// </remarks>
 			/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
-			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 			{
-				ArrayPool<T> blockArrayPool = list._blockArrayPool;
 				int sourceBlockCount = list._reservedBlockCount;
 				int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0));
 				int blockIndex;
@@ -186,7 +166,7 @@ namespace Recyclable.Collections
 				if (requiredBlockCount > (list._memoryBlocks?.Length ?? 0))
 				{
 					// Allocate new memory block for all arrays
-					newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? list._memoryBlocksPool.Rent(requiredBlockCount) : new T[requiredBlockCount][];
+					newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? RecyclableArrayPool<T[]>.RentShared(requiredBlockCount) : new T[requiredBlockCount][];
 
 					// Copy arrays from the old memory block for all arrays
 					if (sourceBlockCount > 0)
@@ -195,7 +175,7 @@ namespace Recyclable.Collections
 						// We can now return the old memory block for all arrays itself
 						if (sourceBlockCount >= RecyclableDefaults.MinPooledArrayLength)
 						{
-							list._memoryBlocksPool.Return(list._memoryBlocks!, NeedsClearing);
+							RecyclableArrayPool<T[]>.ReturnShared(list._memoryBlocks!, NeedsClearing);
 						}
 					}
 
@@ -212,9 +192,10 @@ namespace Recyclable.Collections
 					if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 					{
 						blockIndex = sourceBlockCount;
+						ref OneSizeArrayPool<T> blockArrayPool = ref RecyclableArrayPool<T>.Shared(minBlockSize);
 						while (true)
 						{
-							newMemoryBlocks[blockIndex] = blockArrayPool.Rent(minBlockSize);
+							newMemoryBlocks[blockIndex] = blockArrayPool.Rent();
 							if (blockIndex + 1 < requiredBlockCount)
 							{
 								blockIndex++;
@@ -248,13 +229,10 @@ namespace Recyclable.Collections
 			}
 
 			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-			public static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize, ArrayPool<T>? blockArrayPool = null)
+			public static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize)
 			{
 				list._blockSize = blockSize;
 				list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
-				list._blockArrayPool = blockSize >= RecyclableDefaults.MinPooledArrayLength
-					? blockArrayPool ?? RecyclableArrayPool<T>.Shared(blockSize)
-					: RecyclableArrayPool<T>.Null;
 			}
 
 #pragma warning disable CA2208

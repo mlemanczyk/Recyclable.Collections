@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
@@ -6,6 +7,8 @@ namespace Recyclable.Collections
 {
 	internal static class RecyclableListHelpers<T>
 	{
+		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
+
 		[Obsolete("This method MAY be removed in the near future.")]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static bool Contains(RecyclableList<T[]> arrays, T item) => arrays.Any(x => x.Contains(item));
@@ -48,19 +51,6 @@ namespace Recyclable.Collections
 				sourceMemory = sourceMemory[..maxToCopy];
 				sourceMemory.CopyTo(arrayMemory);
 			}
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-		public static int EnsureCapacity(RecyclableList<T> list, int requestedCapacity)
-		{
-			int newCapacity = list._capacity;
-			while (newCapacity < requestedCapacity)
-			{
-				newCapacity <<= 1;
-			}
-
-			ResizeAndCopy(list, newCapacity);
-			return list._capacity;
 		}
 
 		[Obsolete("This method WILL be removed in the near future. Please use the existing enumerators instead of it.")]
@@ -224,8 +214,6 @@ namespace Recyclable.Collections
 			return values[middle];
 		}
 
-		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
-
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public static void ResizeAndCopy(RecyclableList<T> list)
 		{
@@ -234,7 +222,7 @@ namespace Recyclable.Collections
 			T[] oldMemoryBlock = list._memoryBlock;
 			list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
 				? new T[list._capacity]
-				: RecyclableArrayPool<T>.Rent(list._capacity);
+				: RecyclableArrayPool<T>.RentShared(list._capacity);
 
 			// & WAS SLOWER WITHOUT
 			new Span<T>(oldMemoryBlock, 0, list._count).CopyTo(list._memoryBlock);
@@ -248,25 +236,22 @@ namespace Recyclable.Collections
 				//}
 
 				// // If anything, it has been already cleared above, so we don't need to repeat it.
-				RecyclableArrayPool<T>.Return(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, NeedsClearing);
 			}
-
-			// list._memoryBlock = newMemoryBlock;
-			list._capacity = list._memoryBlock.Length;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void ResizeAndCopy(RecyclableList<T> sourceList, int newSize)
+		public static int ResizeAndCopy(RecyclableList<T> sourceList, int newSize)
 		{
-			T[] newMemoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
-				? RecyclableArrayPool<T>.Rent(newSize)
+			T[] oldMemoryBlock = sourceList._memoryBlock;
+			sourceList._memoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
+				? RecyclableArrayPool<T>.RentShared(newSize)
 				: new T[newSize];
 
 			// & WAS SLOWER WITHOUT
-			T[] oldMemoryBlock = sourceList._memoryBlock;
 
 			// & WAS SLOWER AS ARRAY
-			new Span<T>(oldMemoryBlock, 0, sourceList._count).CopyTo(newMemoryBlock);
+			new Span<T>(oldMemoryBlock, 0, sourceList._count).CopyTo(sourceList._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
@@ -277,11 +262,10 @@ namespace Recyclable.Collections
 				//}
 
 				// If anything, it has been already cleared above, so we don't need to repeat it.
-				RecyclableArrayPool<T>.Return(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, NeedsClearing);
 			}
 
-			sourceList._memoryBlock = newMemoryBlock;
-			sourceList._capacity = newMemoryBlock.Length;
+			return newSize;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
