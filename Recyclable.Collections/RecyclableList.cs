@@ -261,7 +261,7 @@ namespace Recyclable.Collections
 				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
-			new Span<T>(items._memoryBlock).CopyTo(new Span<T>(_memoryBlock, _count, items._count));
+			new Span<T>(items._memoryBlock, 0, items._count).CopyTo(new Span<T>(_memoryBlock, _count, items._count));
 			_count = targetCapacity;
 			_version++;
 		}
