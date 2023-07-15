@@ -198,70 +198,65 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(in T[] items)
 		{
-			int targetCapacity = _count + items.Length;
-			if (_capacity < targetCapacity)
+			if (_capacity < _count + items.Length)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Length);
 			}
 
 			new Span<T>(items).CopyTo(new Span<T>(_memoryBlock, _count, items.Length));
-			_count = targetCapacity;
+			_count += items.Length;
 			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(ReadOnlySpan<T> items)
 		{
-			int targetCapacity = _count + items.Length;
-			if (_capacity < targetCapacity)
+			if (_capacity < _count + items.Length)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Length);
 			}
 
 			items.CopyTo(new Span<T>(_memoryBlock, _count, items.Length));
-			_count = targetCapacity;
+			_count += items.Length;
 			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(List<T> items)
 		{
-			var targetCapacity = _count + items.Count;
-			if (_capacity < targetCapacity)
+			if (_capacity < _count + items.Count)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Count);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
-			_count = targetCapacity;
+			_count += items.Count;
 			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(IList<T> items)
 		{
-			var targetCapacity = _count + items.Count;
-			if (_capacity < targetCapacity)
+			if (_capacity < _count + items.Count)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items.Count);
 			}
 
 			items.CopyTo(_memoryBlock, _count);
-			_count = targetCapacity;
+			_count += items.Count;
 			_version++;
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(RecyclableList<T> items)
 		{
-			var targetCapacity = _count + items._count;
-			if (_capacity < targetCapacity)
+			if (_capacity < _count + items._count)
 			{
-				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
+				_ = RecyclableListHelpers<T>.EnsureCapacity(this, _count + items._count);
 			}
 
 			new Span<T>(items._memoryBlock, 0, items._count).CopyTo(new Span<T>(_memoryBlock, _count, items._count));
-			_count = targetCapacity;
+			_count += items._count;
 			_version++;
 		}
 
