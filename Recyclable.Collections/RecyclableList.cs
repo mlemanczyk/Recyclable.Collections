@@ -210,15 +210,15 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public void AddRange(ReadOnlySpan<T> itemsSpan)
+		public void AddRange(ReadOnlySpan<T> items)
 		{
-			int targetCapacity = _count + itemsSpan.Length;
+			int targetCapacity = _count + items.Length;
 			if (_capacity < targetCapacity)
 			{
 				_ = RecyclableListHelpers<T>.EnsureCapacity(this, targetCapacity);
 			}
 
-			itemsSpan.CopyTo(new Span<T>(_memoryBlock, _count, itemsSpan.Length));
+			items.CopyTo(new Span<T>(_memoryBlock, _count, items.Length));
 			_count = targetCapacity;
 			_version++;
 		}
@@ -316,32 +316,32 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		public void AddRange(IEnumerable<T> items, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
-			if (source is T[] sourceArray)
+			if (items is T[] sourceArray)
 			{
 				AddRange(sourceArray);
 			}
-			else if (source is List<T> sourceList)
+			else if (items is List<T> sourceList)
 			{
 				AddRange(sourceList);
 			}
-			else if (source is RecyclableList<T> sourceRecyclableList)
+			else if (items is RecyclableList<T> sourceRecyclableList)
 			{
 				AddRange(sourceRecyclableList);
 			}
-			else if (source is IList<T> sourceIList)
+			else if (items is IList<T> sourceIList)
 			{
 				AddRange(sourceIList);
 			}
-			else if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+			else if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				AddRangeWithKnownCount(source, _count, requiredAdditionalCapacity);
+				AddRangeWithKnownCount(items, _count, requiredAdditionalCapacity);
 				_version++;
 			}
 			else
 			{
-				AddRangeEnumerated(source, growByCount);
+				AddRangeEnumerated(items, growByCount);
 				_version++;
 			}
 		}
