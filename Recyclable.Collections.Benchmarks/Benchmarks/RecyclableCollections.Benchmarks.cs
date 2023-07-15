@@ -83,6 +83,10 @@ namespace Recyclable.Collections.Benchmarks
 				case RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList:
 					PrepareData(RecyclableCollectionsBenchmarkSource.RecyclableLongList);
 					break;
+
+				case RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType:
+					PrepareData(RecyclableCollectionsBenchmarkSource.RecyclableList);
+					break;
 			}
 		}
 	}
