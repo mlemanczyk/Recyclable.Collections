@@ -7,28 +7,28 @@ namespace Recyclable.Collections.Benchmarks
 		public void List_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			var list = new List<long>(TestObjectCount);
+			var list = new List<long>();
 			list.AddRange(data);
 		}
 
 		public void PooledList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			using var list = new PooledList<long>(capacity: TestObjectCount, ClearMode.Auto);
+			using var list = new PooledList<long>(ClearMode.Auto);
 			list.AddRange(data);
 		}
 
 		public void RecyclableList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			using var list = new RecyclableList<long>(TestObjectCount);
+			using var list = new RecyclableList<long>();
 			list.AddRange(data);
 		}
 
 		public void RecyclableLongList_AddRangeWhenSourceIsIEnumerable()
 		{
 			var data = TestObjectsAsIEnumerable;
-			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize);
 			list.AddRange(data);
 		}
 	}
