@@ -7,7 +7,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
-		<PackageVersion>0.0.3.3-alpha</PackageVersion>
+		<PackageVersion>0.0.3.4-alpha</PackageVersion>
 		<Authors>Marek Lemańczyk</Authors>
 		<Company>N/A</Company>
 		<Product>Recyclable.Collections</Product>
@@ -19,7 +19,7 @@
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Various performance improvements, including enumerators.</PackageReleaseNotes>
+		<PackageReleaseNotes>Various performance improvements and fixes.</PackageReleaseNotes>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
