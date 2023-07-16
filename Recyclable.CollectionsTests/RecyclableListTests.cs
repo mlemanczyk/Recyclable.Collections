@@ -137,14 +137,14 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			var expectedData = testData.Concat(testData).ToArray();
+			var expectedData = testData.Concat(testData).ToRecyclableLongList();
 
 			if (itemsCount > 0)
 			{
 				_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount * 2);
 			}
 
-			_ = list.Count.Should().Be(expectedData.Length);
+			_ = list.Count.Should().Be(expectedData.Count);
 			_ = list.Should().ContainInConsecutiveOrder(expectedData);
 		}
 
@@ -153,7 +153,7 @@ namespace Recyclable.CollectionsTests
 		public void AddShouldAcceptDuplicates(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			testData = testData.Concat(testData).ToArray();
+			testData = testData.Concat(testData).ToRecyclableLongList();
 
 			// Act
 			using var list = new RecyclableList<long>();
