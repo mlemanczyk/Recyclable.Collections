@@ -293,7 +293,6 @@ namespace Recyclable.Collections
 
 			int blockIndex,
 				sourceBlockSize = items.BlockSize,
-				// TODO: Convert to bit-shift
 				lastBlockIndex = (int)(sourceItemsCount >> items._blockSizePow2BitShift) - 1;
 
 			for (blockIndex = 0; blockIndex <= lastBlockIndex; blockIndex++)
@@ -381,10 +380,9 @@ namespace Recyclable.Collections
 		public void Insert(int index, T item)
 		{
 			int oldCount = _count;
-			int requestedCapacity = oldCount + 1;
-			if (_capacity < requestedCapacity)
+			if (_capacity < oldCount + 1)
 			{
-				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)requestedCapacity)));
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)oldCount + 1)));
 			}
 
 			if (oldCount > 0)
