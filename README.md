@@ -277,7 +277,7 @@
 	* when `.MoveNext()` returned `false`, after reaching the end of the collection.
 
 * ⚠️ If you decide to use `.GetEnumerator()` / `.GetVersionedEnumerator()`, instead of relying on `foreach` loops
-	* you MUST ensure that you always respect the the result of `.MoveNext()` call, and
+	* you MUST ensure that you always respect the result of `.MoveNext()` call, and
 	* you MUST NOT access `.Current` property before calling `.MoveNext()` or after reaching the end of the collection.
 	
 	\
