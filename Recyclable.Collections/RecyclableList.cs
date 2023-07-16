@@ -21,7 +21,7 @@ namespace Recyclable.Collections
 
 		private IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
 		{
-			int targetItemIdx = _count;
+			int targetItemIndex = _count;
 			Span<T> memorySpan;
 
 			int i;
@@ -31,19 +31,19 @@ namespace Recyclable.Collections
 			memorySpan = new(_memoryBlock);
 			if (enumerator.MoveNext())
 			{
-				int available = capacity - targetItemIdx;
+				int available = capacity - targetItemIndex;
 				do
 				{
-					if (targetItemIdx + growByCount > capacity)
+					if (targetItemIndex + growByCount > capacity)
 					{
-						capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(capacity + growByCount))));
+						capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIndex + growByCount))));
 						memorySpan = new(_memoryBlock);
-						available = capacity - targetItemIdx;
+						available = capacity - targetItemIndex;
 					}
 
 					for (i = 0; i < available; i++)
 					{
-						memorySpan[targetItemIdx++] = enumerator.Current;
+						memorySpan[targetItemIndex++] = enumerator.Current;
 						if (!enumerator.MoveNext())
 						{
 							break;
@@ -54,7 +54,7 @@ namespace Recyclable.Collections
 			}
 
 			_capacity = capacity;
-			_count = targetItemIdx;
+			_count = targetItemIndex;
 			return enumerator;
 		}
 
