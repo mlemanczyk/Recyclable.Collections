@@ -146,6 +146,11 @@ namespace Recyclable.Collections
 			Span<T[]> memoryBlocksSpan;
 			Span<T> blockArraySpan;
 			long requiredCapacity = copied + requiredAdditionalCapacity;
+			if (requiredCapacity == 0)
+			{
+				return;
+			}
+
 			if (_capacity < requiredCapacity)
 			{
 				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity)));
