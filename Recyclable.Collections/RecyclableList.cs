@@ -36,6 +36,7 @@ namespace Recyclable.Collections
 				{
 					if (targetItemIndex + growByCount > capacity)
 					{
+						_count = targetItemIndex;
 						capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIndex + growByCount))));
 						memorySpan = new(_memoryBlock);
 						available = capacity - targetItemIndex;
