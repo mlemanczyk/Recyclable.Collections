@@ -589,6 +589,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			var listAsArray = list.ToArray();
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= itemsCount; deleted++)
@@ -599,7 +600,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
+				_ = list.Should().ContainInConsecutiveOrder(listAsArray[deleted..]);
 			}
 
 			_ = list.Should().BeEmpty();
@@ -613,6 +614,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			var listAsArray = list.ToArray();
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= itemsCount; deleted++)
@@ -623,7 +625,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().ContainInConsecutiveOrder(testData.Take((int)(itemsCount - deleted)));
+				_ = list.Should().ContainInConsecutiveOrder(listAsArray[..(int)(itemsCount - deleted)]);
 			}
 
 			_ = list.Should().BeEmpty();
@@ -637,6 +639,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			var listAsArray = list.ToArray();
 
 			// Act & Validate
 			for (var deleted = 1; deleted <= itemsCount; deleted++)
@@ -647,7 +650,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().ContainInConsecutiveOrder(testData.Skip(deleted));
+				_ = list.Should().ContainInConsecutiveOrder(listAsArray[deleted..]);
 			}
 
 			_ = list.Should().BeEmpty();
@@ -661,14 +664,14 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
-			var expectedData = testData.ToArray();
+			var listAsArray = testData.ToArray();
 			int removedCount = 0;
 			foreach (var item in testData.Reverse())
 			{
 				// Act & Validate
 				_ = list.Remove(item).Should().BeTrue($"we search for {item} which should exist");
 				removedCount++;
-				var expectedList = expectedData[0..((int)itemsCount - removedCount)];
+				var expectedList = listAsArray[..((int)itemsCount - removedCount)];
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
 				_ = list.LongCount.Should().Be(expectedList.Length);
 				_ = list.Should().ContainInConsecutiveOrder(expectedList);
