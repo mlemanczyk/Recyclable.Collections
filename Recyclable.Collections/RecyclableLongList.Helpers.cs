@@ -57,75 +57,37 @@ namespace Recyclable.Collections
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static void CopyFollowingItems(RecyclableLongList<T> list, long destinationItemIndex)
 			{
+				T[] currentBlock;
 				T[][] memoryBlocks = list._memoryBlocks;
 				int blockSizeMinus1 = list._blockSizeMinus1,
 					targetItemIndex = (int)(destinationItemIndex & blockSizeMinus1),
 					targetBlockIndex = (int)(destinationItemIndex >> list._blockSizePow2BitShift) + (targetItemIndex != 0 ? 1 : 0),
 					lastTakenBlockIndex = list._lastBlockWithData - 1;
 
-				// long remainingItems,
-				// 	itemsCount = list._longCount;
-
 				// Each iteration should
 				// 1. copy the remaining items in the current block (those after the deleted item)
 				// 2. copy the 1st item from the next block. We deleted 1 item which leaves 1 item gap in the block.
 				//    We need to fill it.
-				// T[] currentMemoryBlock = memoryBlocks[targetBlockIndex];
+				currentBlock = memoryBlocks[targetBlockIndex];
 				if (targetItemIndex < blockSizeMinus1)
 				{
-					// new Span<T>(currentMemoryBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
-					// 	.CopyTo(new Span<T>(currentMemoryBlock, targetItemIndex, blockSizeMinus1 - targetItemIndex));
-					// remainingItems = blockSizeMinus1 - targetItemIndex;
-					new Span<T>(memoryBlocks[targetBlockIndex], targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
-						.CopyTo(new Span<T>(memoryBlocks[targetBlockIndex], targetItemIndex, blockSizeMinus1 - targetItemIndex));
-					// new Span<T>(currentMemoryBlock, targetItemIndex + 1, unchecked((int)remainingItems))
-					// 	.CopyTo(new Span<T>(currentMemoryBlock, targetItemIndex, unchecked((int)remainingItems)));
-					// Array.Copy(currentMemoryBlock, targetItemIndex + 1, currentMemoryBlock, targetItemIndex, remainingItems);
+					new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
+						.CopyTo(new Span<T>(currentBlock, targetItemIndex, blockSizeMinus1 - targetItemIndex));
 				}
-				// else
-				// {
-				// 	remainingItems = destinationItemIndex;
-				// }
 
 				while (targetBlockIndex < lastTakenBlockIndex)
 				{
-					new Span<T>(memoryBlocks[targetBlockIndex])[blockSizeMinus1] = memoryBlocks[++targetBlockIndex][0];
-					// currentMemoryBlock[blockSizeMinus1] = memoryBlocks[++targetBlockIndex][0];
-					// new Span<T>(currentMemoryBlock)[blockSizeMinus1] = memoryBlocks[++targetBlockIndex][0];
-					// currentMemoryBlock = memoryBlocks[targetBlockIndex];
-
-					// if (remainingItems > 1)
-					// {
-						new Span<T>(memoryBlocks[targetBlockIndex], 1, blockSizeMinus1)
-							.CopyTo(new Span<T>(memoryBlocks[targetBlockIndex]));
-						// new Span<T>(currentMemoryBlock, 1, blockSizeMinus1)
-						// 	.CopyTo(new Span<T>(currentMemoryBlock));
-						// Array.Copy(currentMemoryBlock, 1, currentMemoryBlock, 0, blockSizeMinus1);
-						// remainingItems += blockSize;
-					// }
-					// else
-					// {
-					// 	remainingItems = 0;
-					// }
-					// new Span<T>(currentMemoryBlock, 1, blockSizeMinus1).CopyTo(new Span<T>(currentMemoryBlock));
+					new Span<T>(currentBlock)[blockSizeMinus1] = (currentBlock = memoryBlocks[++targetBlockIndex])[0];
+					new Span<T>(currentBlock, 1, blockSizeMinus1)
+						.CopyTo(new Span<T>(currentBlock));
 				}
 
 				if (lastTakenBlockIndex >= 0)
 				{
-					new Span<T>(memoryBlocks[targetBlockIndex])[blockSizeMinus1] = memoryBlocks[++targetBlockIndex][0];
-					if (list._nextItemIndex != 0)
-					{
-						new Span<T>(memoryBlocks[targetBlockIndex], 1, list._nextItemIndex - 1)
-							.CopyTo(new Span<T>(memoryBlocks[targetBlockIndex]));
-					}
-					else
-					{
-						new Span<T>(memoryBlocks[targetBlockIndex], 1, blockSizeMinus1)
-							.CopyTo(new Span<T>(memoryBlocks[targetBlockIndex]));
-					}
+					new Span<T>(currentBlock)[blockSizeMinus1] = (currentBlock = memoryBlocks[targetBlockIndex + 1])[0];
+					new Span<T>(currentBlock, 1, list._nextItemIndex != 0 ? list._nextItemIndex - 1 : blockSizeMinus1)
+						.CopyTo(new Span<T>(currentBlock));
 				}
-				// currentMemoryBlock = memoryBlocks[lastTakenBlockIndex];
-				// Array.ConstrainedCopy(currentMemoryBlock, 1, currentMemoryBlock, 0, remainderLength);
 			}
 
 			public static void CopyTo(T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
