@@ -902,8 +902,9 @@ namespace Recyclable.Collections
 
 				if (NeedsClearing)
 				{
-					// TODO: Can we benefit from Span<T> here?
-					_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
+#nullable disable
+					new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = default;
+#nullable restore
 				}
 
 				_version++;
@@ -971,8 +972,9 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
-				// TODO: Can we benefit from Span<T> here?
-				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
+#nullable disable
+				new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = default;
+#nullable restore
 			}
 
 			_version++;
@@ -1010,8 +1012,9 @@ namespace Recyclable.Collections
 
 			if (NeedsClearing)
 			{
-				// TODO: Can we benefit from Span<T> here?
-				_memoryBlocks[_nextItemBlockIndex][_nextItemIndex] = default;
+#nullable disable
+				new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = default;
+#nullable restore
 			}
 
 			_version++;
