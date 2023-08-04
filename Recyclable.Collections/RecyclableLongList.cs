@@ -10,10 +10,8 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-#pragma warning disable CA1825
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
-#pragma warning restore CA1825
 		private static readonly bool _defaultIsNull = default(T) == null;
 		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
 
@@ -183,9 +181,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -203,9 +199,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(in T[] source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -225,9 +219,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(ReadOnlySpan<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -247,9 +239,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(RecyclableList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -269,9 +259,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(RecyclableLongList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -291,9 +279,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(List<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -313,9 +299,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(IList<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
@@ -335,9 +319,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-#pragma warning disable CS8618 // The reported properties / fields are set by SetupBlockArrayPooling
 		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
-#pragma warning restore CS8618
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
