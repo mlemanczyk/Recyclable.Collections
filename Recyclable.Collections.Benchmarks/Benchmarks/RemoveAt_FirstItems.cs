@@ -11,7 +11,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				list.RemoveAt(i);
+				list.RemoveAt(0);
 			}
 		}
 
@@ -22,7 +22,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				list.RemoveAt(i);
+				list.RemoveAt(0);
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				list.RemoveAt(i);
+				list.RemoveAt(0);
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				list.RemoveAt(i);
+				list.RemoveAt(0);
 			}
 		}
 	}
