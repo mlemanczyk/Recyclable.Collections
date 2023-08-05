@@ -472,6 +472,21 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void InsertAtTheEndShouldAppend(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData);
+
+			// Act
+			list.Insert((int)itemsCount, -1);
+
+			// Assert
+			_ = list.Count.Should().Be((int)itemsCount + 1);
+			_ = list[^1].Should().Be(-1);
+		}
+
+		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void RemoveAtFromTheBeginningShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount)
 		{

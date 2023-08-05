@@ -385,7 +385,7 @@ namespace Recyclable.Collections
 				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)oldCount + 1)));
 			}
 
-			if (oldCount > 0)
+			if (index < oldCount)
 			{
 				new Span<T>(_memoryBlock, index, oldCount)
 					.CopyTo(new Span<T>(_memoryBlock, index + 1, oldCount));
