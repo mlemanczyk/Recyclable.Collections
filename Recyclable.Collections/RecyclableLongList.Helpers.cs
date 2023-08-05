@@ -90,6 +90,38 @@ namespace Recyclable.Collections
 				}
 			}
 
+			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+			public static void MakeRoomAndSet(RecyclableLongList<T> list, long startingItemIndex, T item)
+			{
+				T[] currentBlock;
+				T[][] memoryBlocks = list._memoryBlocks;
+				int blockSizeMinus1 = list._blockSizeMinus1,
+					targetItemIndex = (int)(startingItemIndex & blockSizeMinus1),
+					targetBlockIndex = (int)(startingItemIndex >> list._blockSizePow2BitShift) + (targetItemIndex != 0 ? 1 : 0),
+					lastTakenBlockIndex = list._lastBlockWithData;
+
+				if (list._nextItemIndex == 0)
+				{
+					new Span<T>(memoryBlocks[lastTakenBlockIndex + 1])[0] = memoryBlocks[lastTakenBlockIndex][blockSizeMinus1];
+				}
+
+				int currentBlockIndex = lastTakenBlockIndex;
+				while (currentBlockIndex > targetBlockIndex)
+				{
+					new Span<T>(currentBlock = memoryBlocks[currentBlockIndex--], 0, blockSizeMinus1)
+						.CopyTo(new Span<T>(currentBlock, 1, blockSizeMinus1));						
+					new Span<T>(currentBlock)[0] = memoryBlocks[currentBlockIndex][blockSizeMinus1];
+				}
+
+				if (lastTakenBlockIndex >= 0)
+				{
+					new Span<T>(currentBlock = memoryBlocks[targetBlockIndex], targetItemIndex, blockSizeMinus1 - targetItemIndex)
+						.CopyTo(new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex));
+				}
+
+				new Span<T>(memoryBlocks[targetBlockIndex])[targetItemIndex] = item;
+			}
+
 			public static void CopyTo(T[][] sourceMemoryBlocks, long startingIndex, int blockSize, long itemsCount, T[] destinationArray, int destinationArrayIndex)
 			{
 				if (itemsCount <= 0)

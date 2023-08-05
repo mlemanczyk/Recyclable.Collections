@@ -835,7 +835,43 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void Insert(int index, T item) => throw new NotSupportedException();
+		public void Insert(int index, T item)
+		{
+			if (index > _longCount++ || index < 0)
+			{
+				_longCount--;
+				Helpers.ThrowIndexOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount}");
+			}
+
+			if (_capacity < _longCount)
+			{
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)_longCount)));
+			}
+
+			if (_longCount > 1)
+			{
+				Helpers.MakeRoomAndSet(this, index, item);
+			}
+			else
+			{
+				new Span<T>(_memoryBlocks[0])[0] = item;
+			}
+
+			if (_nextItemIndex < _blockSizeMinus1)
+			{
+				if (++_nextItemIndex == 1)
+				{
+					_lastBlockWithData++;
+				}
+			}
+			else
+			{
+				_nextItemIndex = 0;
+				_nextItemBlockIndex++;
+			}
+
+			_version++;
+		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public long LongIndexOf(T item)

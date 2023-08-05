@@ -513,10 +513,19 @@ namespace Recyclable.CollectionsTests
 		public void InsertAtTheBeginningShouldMoveItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>();
 
 			// Act
-			_ = Assert.Throws<NotSupportedException>(() => list.Insert(0, -1));
+			foreach (var item in testData)
+			{
+				list.Insert(0, item);
+				_ = list.Count.Should().Be((int)item);
+			}
+
+			// Validate
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			_ = list.Count.Should().Be((int)itemsCount);
+			_ = list.Should().ContainInConsecutiveOrder(testData.Reverse());
 		}
 
 		[Theory]
