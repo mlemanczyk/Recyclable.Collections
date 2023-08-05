@@ -9,52 +9,6 @@ namespace Recyclable.Collections
 		internal static class Helpers
 		{
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static void CopyFollowingItemsOld(RecyclableLongList<T> list, long destinationItemIndex)
-			{
-				T[][] memoryBlocks = list._memoryBlocks;
-				int nextItemIndex = list._nextItemIndex;
-				int blockSize = list._blockSize;
-				int sourceBlockIndex = (int)((destinationItemIndex + 1) >> list._blockSizePow2BitShift);
-				int sourceItemIndex = (int)((destinationItemIndex + 1) & list._blockSizeMinus1);
-
-				int targetBlockIndex = (int)(destinationItemIndex >> list._blockSizePow2BitShift);
-				int targetItemIndex = (int)(destinationItemIndex & list._blockSizeMinus1);
-
-				int lastTakenBlockIndex = list._lastBlockWithData;
-				while (sourceBlockIndex < lastTakenBlockIndex || (sourceBlockIndex == lastTakenBlockIndex && (sourceItemIndex < nextItemIndex || sourceBlockIndex != list._nextItemBlockIndex)))
-				{
-					int toCopy = sourceBlockIndex < lastTakenBlockIndex || nextItemIndex == 0
-						? blockSize - (sourceItemIndex >= targetItemIndex ? sourceItemIndex : targetItemIndex)
-						: Math.Min(nextItemIndex, blockSize - targetItemIndex);
-
-					Array.Copy(memoryBlocks[sourceBlockIndex], sourceItemIndex, memoryBlocks[targetBlockIndex], targetItemIndex, toCopy);
-
-					// We didn't have enough room in the target array block. There are still items in the source array block to copy.
-					if (sourceItemIndex + toCopy < blockSize)
-					{
-						sourceItemIndex += toCopy;
-						targetBlockIndex++;
-						targetItemIndex = 0;
-					}
-					// We copied all the source items in the current array block. But have we filled the target?
-					else
-					{
-						sourceItemIndex = 0;
-						sourceBlockIndex++;
-						if (targetItemIndex + toCopy < blockSize)
-						{
-							targetItemIndex += toCopy;
-						}
-						else
-						{
-							targetBlockIndex++;
-							targetItemIndex = 0;
-						}
-					}
-				}
-			}
-
-			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static void CopyFollowingItems(RecyclableLongList<T> list, long destinationItemIndex)
 			{
 				T[] currentBlock;
