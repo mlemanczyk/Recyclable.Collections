@@ -539,10 +539,9 @@ namespace Recyclable.CollectionsTests
 			list.Insert(itemsCount, -1);
 
 			// Assert
-			list.LongCount.Should().Be(itemsCount + 1);
-			list.LongCount.Should().Be(list.Count);
-			list[list.LongCount - 1].Should().Be(-1);
-
+			_ = list.LongCount.Should().Be(itemsCount + 1);
+			_ = list.LongCount.Should().Be(list.Count);
+			_ = list[list.LongCount - 1].Should().Be(-1);
 		}
 
 		[Fact]
