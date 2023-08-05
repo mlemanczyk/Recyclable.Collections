@@ -875,29 +875,25 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public bool Remove(T item)
 		{
-			var index = LongIndexOf(item);
-			if (index >= 0)
+			long index;
+			if ((index = LongIndexOf(item)) >= 0)
 			{
-				_longCount--;
-
-				if (index < _longCount)
+				if (index < --_longCount)
 				{
 					Helpers.CopyFollowingItems(this, index);
 				}
 
 				if (_nextItemIndex > 0)
 				{
-					_nextItemIndex--;
+					if (--_nextItemIndex == 0)
+					{
+						_lastBlockWithData--;
+					}
 				}
 				else
 				{
 					_nextItemIndex = _blockSizeMinus1;
 					_nextItemBlockIndex--;
-				}
-
-				if (_nextItemIndex == 0)
-				{
-					_lastBlockWithData--;
 				}
 
 				if (NeedsClearing)
@@ -948,26 +944,22 @@ namespace Recyclable.Collections
 				Helpers.ThrowIndexOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
 
-			_longCount--;
-
-			if (index < _longCount)
+			if (index < --_longCount)
 			{
 				Helpers.CopyFollowingItems(this, index);
 			}
 
 			if (_nextItemIndex > 0)
 			{
-				_nextItemIndex--;
+				if (--_nextItemIndex == 0)
+				{
+					_lastBlockWithData--;
+				}
 			}
 			else
 			{
 				_nextItemIndex = _blockSizeMinus1;
 				_nextItemBlockIndex--;
-			}
-
-			if (_nextItemIndex == 0)
-			{
-				_lastBlockWithData--;
 			}
 
 			if (NeedsClearing)
@@ -988,26 +980,22 @@ namespace Recyclable.Collections
 				Helpers.ThrowIndexOutOfRangeException($"Argument \"{nameof(index)}\" = {index} is out of range. Expected value between 0 and {_longCount - 1}");
 			}
 
-			_longCount--;
-
-			if (index < _longCount)
+			if (index < --_longCount)
 			{
 				Helpers.CopyFollowingItems(this, index);
 			}
 
 			if (_nextItemIndex > 0)
 			{
-				_nextItemIndex--;
+				if (--_nextItemIndex == 0)
+				{
+					_lastBlockWithData--;
+				}
 			}
 			else
 			{
 				_nextItemIndex = _blockSizeMinus1;
 				_nextItemBlockIndex--;
-			}
-
-			if (_nextItemIndex == 0)
-			{
-				_lastBlockWithData--;
 			}
 
 			if (NeedsClearing)
