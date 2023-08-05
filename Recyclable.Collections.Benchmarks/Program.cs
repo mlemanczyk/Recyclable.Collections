@@ -29,11 +29,10 @@ namespace Recyclable.Collections.Benchmarks
 			var benchmark = new RecyclableCollectionsBenchmarks();
 			benchmark.Setup();
 
-			// foreach (var _ in Enumerable.Range(1, 1000))
-			// {
-			benchmark.List_ForEach();
-			benchmark.RecyclableList_ForEach();
-			// }
+			foreach (var _ in Enumerable.Range(1, 1000))
+			{
+				// benchmark.RecyclableList_Create_WithCapacity();
+			}
 
 			benchmark.Cleanup();
 		}
