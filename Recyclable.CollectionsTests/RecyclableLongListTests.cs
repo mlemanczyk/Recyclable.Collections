@@ -530,13 +530,19 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void InsertShouldRaiseNotSupportedException(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		public void InsertAtTheEndShouldAppend(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
 
 			// Act
-			_ = Assert.Throws<NotSupportedException>(() => list.Insert(0, -1));
+			list.Insert(itemsCount, -1);
+
+			// Assert
+			list.LongCount.Should().Be(itemsCount + 1);
+			list.LongCount.Should().Be(list.Count);
+			list[list.LongCount - 1].Should().Be(-1);
+
 		}
 
 		[Fact]
