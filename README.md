@@ -116,10 +116,11 @@
 				1. ✅ `EnsureCapacity`
 				1. ✅ `Resize`
 			1. ✅ `RecyclableLongList<T>.IndexOfHelpers`
-	1. 👉 Complete the implementation of `RecyclableLongList<T>`
-		1. 🅿️ `InsertAt` to allow inserting items anywhere
-		1. 🅿️ `RemoveAt` to allow removing item at any index
-	1. 🅿️ Add `.ToRecyclableList` / `.ToRecyclableLongList` variants for all supported collection types
+	1. ✅ Complete the implementation of `RecyclableLongList<T>`
+		1. ✅ `InsertAt` to allow inserting items anywhere
+		1. ✅ `RemoveAt` to allow removing item at any index
+	1. ✅ Release 0.0.4
+	1. 👉 Add `.ToRecyclableList` / `.ToRecyclableLongList` variants for all supported collection types
 		1. 🅿️ `RecyclableList`
 		1. 🅿️ `RecyclableLongList`
 		1. 🅿️ `IList<T>`
@@ -130,7 +131,7 @@
 		1. 🅿️ `IReadOnlyCollection<T>`
 		1. 🅿️ `IList`
 		1. 🅿️ `ICollection`
-	1. 🅿️ Release 0.0.3-beta
+	1. 🅿️ Release 0.0.5
 	1. 🅿️ Add support for `ulong` indexing
 		1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
 		1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
@@ -139,26 +140,26 @@
 		1. 🅿️ Make type castings `checked`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
 		1. `IndexOf` parallelization 
-	1. 🅿️ Release 0.0.3
+	1. 🅿️ Release 0.0.6
 1. 🅿️ Implement `ILongList<T>` interface
 	1. 🅿️ `RecyclableList<T>`
 	1. 🅿️ `RecyclableLongList<T>`
 1. 🅿️ Implement `RecyclableQueue<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
-	1. 🅿️ Release 0.0.4
+	1. 🅿️ Release 0.0.7
 1. 🅿️ Implement `RecyclableStack<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
-	1. 🅿️ Release 0.0.5
+	1. 🅿️ Release 0.0.8
 1. 🅿️ Implement `RecyclableSortedList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
-	1. 🅿️ Release 0.0.6
+	1. 🅿️ Release 0.0.9
 1. 🅿️ Implement `RecyclableUnorderedList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
-	1. 🅿️ Release 0.0.7
+	1. 🅿️ Release 0.0.10
 1. 🅿️ Implement `RecyclableVersionedList<T>`
 	1. 🅿️ Port `RecyclableList<T>` to `RecyclableVersionedList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` to `RecyclableVersionedLongList<T>`
-	1. 🅿️ Release 0.0.7a
+	1. 🅿️ Release 0.0.11
 1. 🅿️ Optimize `OneSizeArrayPool`
 	1. 🅿️ Review locks
 	1. 🅿️ Measure multi-threading performance
@@ -174,7 +175,7 @@
 1. 🅿️ Optimize `MemoryBucket<T>`
 	1. 🅿️ Convert to `struct`, if possible
 	1. 🅿️ Find out if there are better replacements
-	1. 🅿️ Release 0.0.8
+	1. 🅿️ Release 0.0.12
 1. 🅿️ Optimize
 	1. 🅿️ `IndexOfSynchronizationContext`
 	1. 🅿️ `IndexOfSynchronizationContextPool`
@@ -184,7 +185,7 @@
 		1. 🅿️ Multi-threading benchmarks
 	1. 🅿️ `SpinLockSlimmer`
 		1. 🅿️ Multi-threading benchmarks
-1. 🅿️ Release 0.0.9-beta
+1. 🅿️ Release 0.0.13
 1. 🅿️ Extend unit tests
 	1. 🅿️ `.Add` / `.AddRange` must allow `null` values
 	1. 🅿️ `.Remove` / `.RemoveAt` / `.Clear` must clear reference when reference type
@@ -198,11 +199,13 @@
 	1. 🅿️ Resolve TODOs
 	1. 🅿️ Remove obsolete methods
 	1. 🅿️ `RecyclableLongListHelpers.Enumerate` to benchmarks
+1. 🅿️ Release 0.0.14
 1. 🅿️ Optimize
 	1. 🅿️ `ListExtensions`
 	1. 🅿️ `MathUtils`
 	1. 🅿️ `SystemRandomNumberGenerator`
 	1. 🅿️ `RecyclableLongListExtensions`
+1. 🅿️ Release 0.0.15
 1. ✅ Review and remove warnings & hints
 	1. ✅ Warnings
 	1. ✅ Hints
