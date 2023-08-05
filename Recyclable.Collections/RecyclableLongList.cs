@@ -921,15 +921,17 @@ namespace Recyclable.Collections
 
 				if (_nextItemIndex > 0)
 				{
-					if (--_nextItemIndex == 0)
-					{
-						_lastBlockWithData--;
-					}
+					_nextItemIndex--;
 				}
 				else
 				{
 					_nextItemIndex = _blockSizeMinus1;
 					_nextItemBlockIndex--;
+				}
+
+				if (_nextItemIndex == 0)
+				{
+					_lastBlockWithData--;
 				}
 
 				if (NeedsClearing)
@@ -987,15 +989,17 @@ namespace Recyclable.Collections
 
 			if (_nextItemIndex > 0)
 			{
-				if (--_nextItemIndex == 0)
-				{
-					_lastBlockWithData--;
-				}
+				_nextItemIndex--;
 			}
 			else
 			{
 				_nextItemIndex = _blockSizeMinus1;
 				_nextItemBlockIndex--;
+			}
+
+			if (_nextItemIndex == 0)
+			{
+				_lastBlockWithData--;
 			}
 
 			if (NeedsClearing)
@@ -1023,15 +1027,17 @@ namespace Recyclable.Collections
 
 			if (_nextItemIndex > 0)
 			{
-				if (--_nextItemIndex == 0)
-				{
-					_lastBlockWithData--;
-				}
+				_nextItemIndex--;
 			}
 			else
 			{
 				_nextItemIndex = _blockSizeMinus1;
 				_nextItemBlockIndex--;
+			}
+
+			if (_nextItemIndex == 0)
+			{
+				_lastBlockWithData--;
 			}
 
 			if (NeedsClearing)
