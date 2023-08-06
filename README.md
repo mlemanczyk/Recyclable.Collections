@@ -308,8 +308,6 @@ This is the direct equivalent of `List<T>` class, except that the arrays are tak
 
 	### [Benchmark Results](https://github.com/mlemanczyk/Recyclable.Collections/blob/main/Recyclable.Collections.Benchmarks/Results/Benchmarks.md)
 
-* `Insert`, `Remove` & `RemoveAt` methods raise `NotSupportedException`. This is by design in the current version, because it involves performance degradation. I'm planning works around this in the upcoming weeks. If you need that sooner, you're welcomed to file a PR with the proposed changes.
-
 # Architecture Decisions
 The architecture of the classes included in this project is driven primarily by performance & memory footprints. The following decisions were made to support it.
 
