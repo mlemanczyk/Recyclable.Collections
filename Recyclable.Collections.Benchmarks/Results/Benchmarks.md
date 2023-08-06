@@ -6460,7 +6460,7 @@ AMD Ryzen 7 4700U with Radeon Graphics, 1 CPU, 8 logical and 8 physical cores
 |   Actual | Index(...)Cases [25] |                  List | RecyclableLongList |          850000 |               110.3 s |               2.11 s |             2.07 s |                       |  0.97 |        0.03 | 399750776 B |  666,251.29 |
 </details>
 
-# `this[]` Getter Benchmarks
+# `this[]` Benchmarks
 ## Environment
 ```csharp
 BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.1992/22H2/2022Update/SunValley2)
@@ -7009,6 +7009,415 @@ AMD Ryzen 7 4700U with Radeon Graphics, 1 CPU, 8 logical and 8 physical cores
 |          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
 | Baseline |  GetItem |         List | RecyclableLongList |          131072 |   190,302.858 ns |    259.6908 ns |    202.7495 ns |   190,348.962 ns |  1.00 |    0.00 |       3 B |        1.00 |
 |   Actual |  GetItem |         List | RecyclableLongList |          131072 |   221,654.380 ns |    593.1635 ns |    495.3184 ns |   221,454.614 ns |  1.16 |    0.00 |       3 B |        1.00 |
+
+</details>
+
+<details>
+<summary><strong>this[] Setter Benchmark Results - click to expand</strong></summary>
+
+|   Method | TestCase | BaseDataType |           DataType | TestObjectCount |             Mean |          Error |         StdDev |           Median | Ratio | RatioSD | Allocated | Alloc Ratio |
+|--------- |--------- |------------- |------------------- |---------------- |-----------------:|---------------:|---------------:|-----------------:|------:|--------:|----------:|------------:|
+| Baseline |  SetItem |         List |         PooledList |               0 |         5.103 ns |      0.0171 ns |      0.0160 ns |         5.105 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               0 |         5.100 ns |      0.0237 ns |      0.0210 ns |         5.093 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               1 |         5.050 ns |      0.0284 ns |      0.0266 ns |         5.044 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               1 |         5.095 ns |      0.0802 ns |      0.0750 ns |         5.051 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               2 |         6.183 ns |      0.0384 ns |      0.0320 ns |         6.178 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               2 |         6.156 ns |      0.0085 ns |      0.0071 ns |         6.157 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               3 |         7.723 ns |      0.0139 ns |      0.0130 ns |         7.724 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               3 |         7.713 ns |      0.0390 ns |      0.0346 ns |         7.712 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               4 |         8.871 ns |      0.0244 ns |      0.0216 ns |         8.874 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               4 |         8.862 ns |      0.0164 ns |      0.0153 ns |         8.859 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               5 |         9.909 ns |      0.0681 ns |      0.0637 ns |         9.907 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               5 |         9.960 ns |      0.1300 ns |      0.1216 ns |         9.944 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               6 |        10.948 ns |      0.1666 ns |      0.1558 ns |        10.907 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               6 |        10.824 ns |      0.0642 ns |      0.0601 ns |        10.803 ns |  0.99 |    0.02 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               7 |        12.308 ns |      0.2760 ns |      0.4377 ns |        12.159 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               7 |        12.070 ns |      0.1569 ns |      0.1468 ns |        12.050 ns |  0.97 |    0.05 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               8 |        12.704 ns |      0.1175 ns |      0.1099 ns |        12.740 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               8 |        12.701 ns |      0.1207 ns |      0.1129 ns |        12.654 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |               9 |        14.148 ns |      0.2327 ns |      0.2177 ns |        14.029 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |               9 |        13.977 ns |      0.0509 ns |      0.0476 ns |        13.961 ns |  0.99 |    0.02 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              10 |        15.826 ns |      0.2243 ns |      0.1988 ns |        15.751 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              10 |        15.798 ns |      0.1065 ns |      0.0996 ns |        15.807 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              11 |        17.334 ns |      0.1308 ns |      0.1223 ns |        17.270 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              11 |        17.217 ns |      0.0460 ns |      0.0408 ns |        17.204 ns |  0.99 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              12 |        18.936 ns |      0.0664 ns |      0.0621 ns |        18.938 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              12 |        18.917 ns |      0.0310 ns |      0.0275 ns |        18.910 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              13 |        20.818 ns |      0.2407 ns |      0.2252 ns |        20.783 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              13 |        21.113 ns |      0.2407 ns |      0.2251 ns |        21.110 ns |  1.01 |    0.02 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              14 |        22.505 ns |      0.1524 ns |      0.1351 ns |        22.495 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              14 |        23.010 ns |      0.3177 ns |      0.2816 ns |        22.993 ns |  1.02 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              15 |        24.641 ns |      0.3720 ns |      0.3297 ns |        24.599 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              15 |        24.129 ns |      0.1323 ns |      0.1237 ns |        24.112 ns |  0.98 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              16 |        25.918 ns |      0.1618 ns |      0.1434 ns |        25.937 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              16 |        25.986 ns |      0.2334 ns |      0.2184 ns |        25.933 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              17 |        27.805 ns |      0.2277 ns |      0.2129 ns |        27.831 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              17 |        27.481 ns |      0.1161 ns |      0.1029 ns |        27.499 ns |  0.99 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              18 |        29.440 ns |      0.2658 ns |      0.2220 ns |        29.446 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              18 |        29.930 ns |      0.6224 ns |      0.6392 ns |        29.754 ns |  1.02 |    0.03 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              19 |        31.452 ns |      0.5389 ns |      0.4500 ns |        31.469 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              19 |        31.310 ns |      0.4873 ns |      0.4319 ns |        31.131 ns |  1.00 |    0.02 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              20 |        32.811 ns |      0.2576 ns |      0.2283 ns |        32.714 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              20 |        32.725 ns |      0.2172 ns |      0.2032 ns |        32.697 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              30 |        49.587 ns |      0.2819 ns |      0.2201 ns |        49.549 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              30 |        49.570 ns |      0.2785 ns |      0.2469 ns |        49.567 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              32 |        52.885 ns |      0.2549 ns |      0.2385 ns |        52.811 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              32 |        52.853 ns |      0.3732 ns |      0.3491 ns |        52.681 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              36 |        58.842 ns |      0.2818 ns |      0.2498 ns |        58.796 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              36 |        59.101 ns |      0.5022 ns |      0.4194 ns |        59.028 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              37 |        60.554 ns |      0.1693 ns |      0.1414 ns |        60.561 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              37 |        60.666 ns |      0.2363 ns |      0.2210 ns |        60.598 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              40 |        65.960 ns |      0.3043 ns |      0.2697 ns |        65.884 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |  SetItem |         List |         PooledList |              40 |        66.048 ns |      0.2830 ns |      0.2209 ns |        66.168 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              40 |        66.043 ns |      0.2166 ns |      0.1920 ns |        66.094 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              40 |        66.877 ns |      0.2354 ns |      0.2087 ns |        66.909 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              50 |        83.433 ns |      0.2620 ns |      0.2046 ns |        83.396 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              50 |        84.313 ns |      0.8985 ns |      0.8405 ns |        84.081 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              60 |       102.372 ns |      1.3392 ns |      1.1183 ns |       102.158 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              60 |       101.079 ns |      0.1732 ns |      0.1535 ns |       101.096 ns |  0.99 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              70 |       118.242 ns |      0.3427 ns |      0.3038 ns |       118.176 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              70 |       118.983 ns |      1.2317 ns |      1.0918 ns |       118.424 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              80 |       135.922 ns |      0.2631 ns |      0.2054 ns |       135.988 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              80 |       136.791 ns |      1.4803 ns |      1.3846 ns |       136.196 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |              90 |       153.854 ns |      0.5985 ns |      0.5598 ns |       153.819 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |              90 |       153.641 ns |      0.8821 ns |      0.7366 ns |       153.721 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |             100 |       175.565 ns |      3.3769 ns |      4.1471 ns |       175.703 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |             100 |       172.267 ns |      0.7617 ns |      0.6361 ns |       172.520 ns |  0.98 |    0.03 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |             128 |       225.628 ns |      3.1487 ns |      2.9453 ns |       224.846 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |             128 |       220.946 ns |      0.3092 ns |      0.2741 ns |       220.977 ns |  0.98 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |             256 |       445.129 ns |      0.8922 ns |      0.8345 ns |       445.147 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |             256 |       447.566 ns |      3.3103 ns |      2.9345 ns |       447.040 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |             512 |       903.438 ns |      5.6756 ns |      4.7394 ns |       902.990 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |             512 |       906.238 ns |      7.9669 ns |      7.0625 ns |       905.876 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |            1024 |     1,814.556 ns |     14.5947 ns |     12.9378 ns |     1,813.487 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |            1024 |     1,811.492 ns |     12.6903 ns |     11.2496 ns |     1,808.885 ns |  1.00 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |            2048 |     3,602.719 ns |     17.9662 ns |     16.8056 ns |     3,594.394 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |            2048 |     3,652.575 ns |     45.6346 ns |     42.6867 ns |     3,632.915 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |            4096 |     7,198.960 ns |     15.2979 ns |     11.9436 ns |     7,198.082 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |            4096 |     7,270.793 ns |     37.8028 ns |     33.5112 ns |     7,280.167 ns |  1.01 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |            8192 |    14,484.956 ns |     69.2892 ns |     57.8596 ns |    14,481.416 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |            8192 |    15,262.408 ns |    301.1303 ns |    721.4890 ns |    15,298.782 ns |  1.09 |    0.06 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |           16384 |    29,742.475 ns |    589.9692 ns |  1,205.1507 ns |    29,057.147 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |           16384 |    29,035.933 ns |    194.1147 ns |    172.0776 ns |    29,000.674 ns |  0.96 |    0.04 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |           32768 |    58,708.778 ns |    260.4952 ns |    243.6674 ns |    58,758.472 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |           32768 |    58,345.286 ns |    255.4219 ns |    226.4248 ns |    58,264.194 ns |  0.99 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |           65536 |   117,017.933 ns |    370.1307 ns |    346.2205 ns |   116,882.086 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |           65536 |   117,071.260 ns |    376.4902 ns |    314.3864 ns |   117,026.349 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |          131072 |   239,911.071 ns |  4,723.9668 ns |  5,974.3055 ns |   235,766.846 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |         PooledList |          131072 |   233,139.014 ns |    398.5584 ns |    372.8117 ns |   233,199.683 ns |  0.96 |    0.02 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |         PooledList |          850000 | 1,614,054.311 ns |  1,881.5120 ns |  1,667.9114 ns | 1,614,055.957 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |  SetItem |         List |         PooledList |          850000 | 1,636,356.362 ns |  1,904.0917 ns |  1,687.9277 ns | 1,635,736.133 ns |  1.01 |    0.00 |       1 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               0 |         4.156 ns |      0.0040 ns |      0.0033 ns |         4.156 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               0 |         4.161 ns |      0.0079 ns |      0.0062 ns |         4.162 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               1 |         5.042 ns |      0.0171 ns |      0.0143 ns |         5.035 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               1 |         4.720 ns |      0.0313 ns |      0.0293 ns |         4.701 ns |  0.94 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               2 |         6.141 ns |      0.0361 ns |      0.0338 ns |         6.131 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               2 |         5.807 ns |      0.0400 ns |      0.0375 ns |         5.819 ns |  0.95 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               3 |         7.664 ns |      0.0277 ns |      0.0259 ns |         7.656 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               3 |         7.001 ns |      0.0324 ns |      0.0303 ns |         6.992 ns |  0.91 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               4 |         8.861 ns |      0.0120 ns |      0.0113 ns |         8.862 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               4 |         8.193 ns |      0.0374 ns |      0.0350 ns |         8.175 ns |  0.92 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               5 |         9.823 ns |      0.0589 ns |      0.0551 ns |         9.817 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               5 |         8.929 ns |      0.0318 ns |      0.0298 ns |         8.935 ns |  0.91 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               6 |        10.710 ns |      0.0528 ns |      0.0494 ns |        10.690 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               6 |         9.779 ns |      0.0509 ns |      0.0476 ns |         9.797 ns |  0.91 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               7 |        11.510 ns |      0.0509 ns |      0.0477 ns |        11.537 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               7 |        10.224 ns |      0.0155 ns |      0.0129 ns |        10.224 ns |  0.89 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               8 |        12.455 ns |      0.1109 ns |      0.1038 ns |        12.464 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               8 |        11.120 ns |      0.0525 ns |      0.0491 ns |        11.120 ns |  0.89 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |               9 |        13.854 ns |      0.0651 ns |      0.0609 ns |        13.864 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |               9 |        11.899 ns |      0.0302 ns |      0.0283 ns |        11.888 ns |  0.86 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              10 |        15.569 ns |      0.0810 ns |      0.0758 ns |        15.537 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              10 |        12.573 ns |      0.0439 ns |      0.0410 ns |        12.567 ns |  0.81 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              11 |        17.148 ns |      0.0811 ns |      0.0758 ns |        17.151 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              11 |        13.365 ns |      0.0561 ns |      0.0525 ns |        13.377 ns |  0.78 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              12 |        18.848 ns |      0.0419 ns |      0.0372 ns |        18.854 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              12 |        14.158 ns |      0.0200 ns |      0.0187 ns |        14.151 ns |  0.75 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              13 |        20.596 ns |      0.0394 ns |      0.0369 ns |        20.600 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              13 |        14.823 ns |      0.0437 ns |      0.0409 ns |        14.826 ns |  0.72 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              14 |        22.222 ns |      0.0435 ns |      0.0407 ns |        22.226 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              14 |        15.547 ns |      0.0364 ns |      0.0323 ns |        15.545 ns |  0.70 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              15 |        23.967 ns |      0.1462 ns |      0.1367 ns |        23.979 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              15 |        16.288 ns |      0.0467 ns |      0.0390 ns |        16.288 ns |  0.68 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              16 |        25.516 ns |      0.0227 ns |      0.0190 ns |        25.518 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              16 |        17.142 ns |      0.1401 ns |      0.1311 ns |        17.076 ns |  0.67 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              17 |        27.208 ns |      0.0501 ns |      0.0418 ns |        27.207 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              17 |        17.746 ns |      0.1036 ns |      0.0969 ns |        17.727 ns |  0.65 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              18 |        28.856 ns |      0.1391 ns |      0.1301 ns |        28.818 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              18 |        18.452 ns |      0.0529 ns |      0.0469 ns |        18.440 ns |  0.64 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              19 |        30.485 ns |      0.1158 ns |      0.1083 ns |        30.439 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              19 |        19.228 ns |      0.0725 ns |      0.0679 ns |        19.238 ns |  0.63 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              20 |        32.198 ns |      0.1400 ns |      0.1309 ns |        32.177 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              20 |        20.006 ns |      0.0802 ns |      0.0750 ns |        19.984 ns |  0.62 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              30 |        48.866 ns |      0.1972 ns |      0.1844 ns |        48.786 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              30 |        27.271 ns |      0.1413 ns |      0.1322 ns |        27.330 ns |  0.56 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              32 |        52.267 ns |      0.1993 ns |      0.1865 ns |        52.185 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              32 |        28.790 ns |      0.1928 ns |      0.1804 ns |        28.730 ns |  0.55 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              36 |        59.086 ns |      0.1370 ns |      0.1069 ns |        59.062 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              36 |        32.022 ns |      0.1975 ns |      0.1751 ns |        32.011 ns |  0.54 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              37 |        60.990 ns |      0.1680 ns |      0.1571 ns |        60.938 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              37 |        32.277 ns |      0.2095 ns |      0.1960 ns |        32.182 ns |  0.53 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              40 |        66.020 ns |      0.3297 ns |      0.3084 ns |        65.898 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |  SetItem |         List |     RecyclableList |              40 |        65.355 ns |      0.2859 ns |      0.2674 ns |        65.212 ns |  0.99 |    0.01 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              40 |        34.545 ns |      0.2373 ns |      0.2220 ns |        34.543 ns |  0.52 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              40 |        35.101 ns |      0.3045 ns |      0.2848 ns |        35.234 ns |  0.53 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              50 |        83.164 ns |      0.1985 ns |      0.1857 ns |        83.173 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              50 |        41.963 ns |      0.0545 ns |      0.0509 ns |        41.958 ns |  0.50 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              60 |       100.384 ns |      0.1905 ns |      0.1782 ns |       100.371 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              60 |        49.250 ns |      0.2741 ns |      0.2564 ns |        49.215 ns |  0.49 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              70 |       117.084 ns |      0.1740 ns |      0.1543 ns |       117.083 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              70 |        57.215 ns |      0.4810 ns |      0.4264 ns |        57.015 ns |  0.49 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              80 |       134.850 ns |      0.2508 ns |      0.2346 ns |       134.826 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              80 |        63.910 ns |      0.2125 ns |      0.1988 ns |        63.798 ns |  0.47 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |              90 |       151.902 ns |      0.3191 ns |      0.2829 ns |       151.926 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |              90 |        70.334 ns |      0.1558 ns |      0.1381 ns |        70.312 ns |  0.46 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |             100 |       169.898 ns |      0.3010 ns |      0.2668 ns |       169.854 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |             100 |        83.242 ns |      0.5769 ns |      0.5114 ns |        83.195 ns |  0.49 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |             128 |       218.509 ns |      0.4452 ns |      0.4165 ns |       218.412 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |             128 |       102.693 ns |      0.6832 ns |      0.6391 ns |       102.592 ns |  0.47 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |             256 |       441.374 ns |      0.5467 ns |      0.4846 ns |       441.315 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |             256 |       195.366 ns |      0.5711 ns |      0.4769 ns |       195.342 ns |  0.44 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |             512 |       890.019 ns |      1.4326 ns |      1.3401 ns |       889.832 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |             512 |       381.412 ns |      0.9534 ns |      0.8919 ns |       381.402 ns |  0.43 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |            1024 |     1,784.926 ns |      3.5513 ns |      3.3219 ns |     1,783.905 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |            1024 |       756.539 ns |      2.8184 ns |      2.6364 ns |       756.645 ns |  0.42 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |            2048 |     3,560.123 ns |      5.8350 ns |      5.4580 ns |     3,559.407 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |            2048 |     1,535.637 ns |      3.6021 ns |      3.3694 ns |     1,534.931 ns |  0.43 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |            4096 |     7,106.307 ns |      8.0662 ns |      6.7356 ns |     7,104.748 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |            4096 |     3,083.148 ns |     16.7197 ns |     14.8216 ns |     3,080.522 ns |  0.43 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |            8192 |    14,244.027 ns |     38.1153 ns |     33.7882 ns |    14,224.635 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |            8192 |     6,189.434 ns |    121.5271 ns |    153.6929 ns |     6,118.095 ns |  0.44 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |           16384 |    28,373.944 ns |     63.4455 ns |     56.2427 ns |    28,378.809 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List |     RecyclableList |           16384 |    12,253.457 ns |     41.7170 ns |     36.9810 ns |    12,240.319 ns |  0.43 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |           32768 |    57,291.683 ns |     75.8897 ns |     70.9873 ns |    57,264.532 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |  SetItem |         List |     RecyclableList |           32768 |    52,664.990 ns |  1,600.4152 ns |  4,718.8604 ns |    54,821.466 ns |  0.89 |    0.10 |       1 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |           65536 |   114,542.764 ns |    131.5650 ns |    123.0660 ns |   114,604.321 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual |  SetItem |         List |     RecyclableList |           65536 |   104,949.636 ns |  3,246.2519 ns |  9,571.6470 ns |   110,177.533 ns |  0.90 |    0.10 |       2 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |          131072 |   227,530.510 ns |    480.6588 ns |    401.3719 ns |   227,454.102 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual |  SetItem |         List |     RecyclableList |          131072 |   213,330.067 ns |  5,820.4604 ns | 16,793.3592 ns |   220,374.353 ns |  0.94 |    0.07 |       3 B |        1.50 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List |     RecyclableList |          850000 | 1,635,076.510 ns | 12,454.8715 ns | 11,650.2945 ns | 1,630,901.758 ns |  1.00 |    0.00 |      25 B |        1.00 |
+|   Actual |  SetItem |         List |     RecyclableList |          850000 | 1,558,273.837 ns | 29,608.9837 ns | 35,247.3888 ns | 1,565,659.570 ns |  0.95 |    0.02 |      25 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               0 |         6.542 ns |      0.2424 ns |      0.7148 ns |         6.693 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               0 |         4.594 ns |      0.0255 ns |      0.0239 ns |         4.589 ns |  0.72 |    0.11 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               1 |         5.025 ns |      0.0078 ns |      0.0069 ns |         5.028 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               1 |         5.659 ns |      0.0095 ns |      0.0088 ns |         5.662 ns |  1.13 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               2 |         6.099 ns |      0.0434 ns |      0.0385 ns |         6.109 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               2 |         8.196 ns |      0.0460 ns |      0.0430 ns |         8.200 ns |  1.34 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               3 |         7.644 ns |      0.0388 ns |      0.0344 ns |         7.642 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               3 |         9.213 ns |      0.0131 ns |      0.0109 ns |         9.212 ns |  1.21 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               4 |         8.841 ns |      0.0174 ns |      0.0136 ns |         8.847 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               4 |        10.723 ns |      0.0352 ns |      0.0330 ns |        10.724 ns |  1.21 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               5 |         9.781 ns |      0.0081 ns |      0.0071 ns |         9.781 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               5 |        12.036 ns |      0.0146 ns |      0.0114 ns |        12.035 ns |  1.23 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               6 |        10.708 ns |      0.0249 ns |      0.0233 ns |        10.693 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               6 |        13.773 ns |      0.0395 ns |      0.0350 ns |        13.784 ns |  1.29 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               7 |        11.528 ns |      0.0544 ns |      0.0509 ns |        11.502 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               7 |        14.909 ns |      0.0482 ns |      0.0428 ns |        14.912 ns |  1.29 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               8 |        12.412 ns |      0.0407 ns |      0.0340 ns |        12.421 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               8 |        16.475 ns |      0.0817 ns |      0.0765 ns |        16.487 ns |  1.33 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |               9 |        13.806 ns |      0.0766 ns |      0.0717 ns |        13.784 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |               9 |        18.070 ns |      0.1220 ns |      0.1141 ns |        18.047 ns |  1.31 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              10 |        15.496 ns |      0.0629 ns |      0.0588 ns |        15.475 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              10 |        19.438 ns |      0.0573 ns |      0.0536 ns |        19.433 ns |  1.25 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              11 |        17.066 ns |      0.0414 ns |      0.0346 ns |        17.053 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              11 |        20.802 ns |      0.1217 ns |      0.1139 ns |        20.796 ns |  1.22 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              12 |        18.804 ns |      0.0796 ns |      0.0744 ns |        18.775 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              12 |        22.465 ns |      0.0750 ns |      0.0702 ns |        22.487 ns |  1.19 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              13 |        20.438 ns |      0.0832 ns |      0.0779 ns |        20.416 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              13 |        23.807 ns |      0.1355 ns |      0.1267 ns |        23.854 ns |  1.16 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              14 |        22.115 ns |      0.0799 ns |      0.0747 ns |        22.076 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              14 |        25.292 ns |      0.1482 ns |      0.1387 ns |        25.347 ns |  1.14 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              15 |        23.781 ns |      0.1056 ns |      0.0988 ns |        23.826 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              15 |        26.799 ns |      0.1866 ns |      0.1745 ns |        26.806 ns |  1.13 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              16 |        25.489 ns |      0.1171 ns |      0.1095 ns |        25.532 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              16 |        28.513 ns |      0.2027 ns |      0.1896 ns |        28.513 ns |  1.12 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              17 |        27.236 ns |      0.0628 ns |      0.0588 ns |        27.210 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              17 |        29.802 ns |      0.0698 ns |      0.0583 ns |        29.778 ns |  1.09 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              18 |        28.953 ns |      0.0871 ns |      0.0815 ns |        28.943 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              18 |        31.238 ns |      0.2010 ns |      0.1881 ns |        31.232 ns |  1.08 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              19 |        30.489 ns |      0.1496 ns |      0.1400 ns |        30.439 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              19 |        32.718 ns |      0.2164 ns |      0.2024 ns |        32.685 ns |  1.07 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              20 |        32.126 ns |      0.0849 ns |      0.0753 ns |        32.095 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              20 |        34.373 ns |      0.1937 ns |      0.1618 ns |        34.393 ns |  1.07 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              30 |        48.850 ns |      0.1431 ns |      0.1339 ns |        48.782 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              30 |        49.625 ns |      0.1209 ns |      0.1131 ns |        49.595 ns |  1.02 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              32 |        52.158 ns |      0.0960 ns |      0.0802 ns |        52.138 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              32 |        52.982 ns |      0.1951 ns |      0.1730 ns |        52.996 ns |  1.02 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              36 |        58.923 ns |      0.0680 ns |      0.0636 ns |        58.932 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              36 |        60.999 ns |      1.2144 ns |      1.4456 ns |        61.677 ns |  1.03 |    0.03 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              37 |        60.981 ns |      0.1422 ns |      0.1330 ns |        60.935 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              37 |        59.821 ns |      0.9038 ns |      0.8454 ns |        60.248 ns |  0.98 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              40 |        65.697 ns |      0.0664 ns |      0.0589 ns |        65.695 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |  SetItem |         List | RecyclableLongList |              40 |        66.420 ns |      0.1375 ns |      0.1286 ns |        66.382 ns |  1.01 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              40 |        65.534 ns |      0.4883 ns |      0.4568 ns |        65.506 ns |  1.00 |    0.01 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              40 |        64.957 ns |      0.7585 ns |      0.7095 ns |        65.131 ns |  0.99 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              50 |        82.854 ns |      0.2000 ns |      0.1871 ns |        82.765 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              50 |        82.505 ns |      0.3937 ns |      0.3490 ns |        82.504 ns |  1.00 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              60 |       100.261 ns |      0.1607 ns |      0.1503 ns |       100.299 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              60 |        97.532 ns |      0.6003 ns |      0.5615 ns |        97.518 ns |  0.97 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              70 |       117.551 ns |      0.2649 ns |      0.2478 ns |       117.499 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              70 |       114.466 ns |      0.6859 ns |      0.6416 ns |       114.497 ns |  0.97 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              80 |       135.250 ns |      0.4412 ns |      0.4127 ns |       135.131 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              80 |       129.391 ns |      0.7980 ns |      0.7074 ns |       129.364 ns |  0.96 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |             100 |       169.776 ns |      0.1301 ns |      0.1153 ns |       169.760 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |             100 |       160.278 ns |      0.9019 ns |      0.8436 ns |       160.288 ns |  0.94 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |             128 |       219.352 ns |      0.5782 ns |      0.5408 ns |       219.438 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |             128 |       207.590 ns |      0.9508 ns |      0.8893 ns |       207.527 ns |  0.95 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |             256 |       441.669 ns |      0.5803 ns |      0.5144 ns |       441.543 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |             256 |       409.848 ns |      6.2375 ns |      5.8345 ns |       409.970 ns |  0.93 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |             512 |       888.875 ns |      0.5806 ns |      0.4848 ns |       888.858 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |             512 |       801.378 ns |      8.6206 ns |      7.6419 ns |       800.193 ns |  0.90 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |            1024 |     1,781.131 ns |      1.0381 ns |      0.9710 ns |     1,780.862 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |            1024 |     1,605.911 ns |     13.8722 ns |     11.5839 ns |     1,608.300 ns |  0.90 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |            2048 |     3,569.133 ns |      6.7815 ns |      6.3435 ns |     3,571.936 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |            2048 |     3,266.587 ns |     34.6037 ns |     28.8956 ns |     3,271.237 ns |  0.92 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |            4096 |     7,109.312 ns |      9.8761 ns |      9.2381 ns |     7,105.371 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |            4096 |     6,636.983 ns |     26.9146 ns |     25.1760 ns |     6,632.346 ns |  0.93 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |            8192 |    14,233.875 ns |     13.8498 ns |     12.2775 ns |    14,234.982 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |            8192 |    13,282.448 ns |     45.6999 ns |     42.7477 ns |    13,279.364 ns |  0.93 |    0.00 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |           16384 |    28,503.933 ns |     81.9571 ns |     76.6627 ns |    28,487.123 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |           16384 |    26,464.668 ns |    171.8065 ns |    160.7079 ns |    26,460.243 ns |  0.93 |    0.01 |         - |          NA |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |           32768 |    57,326.667 ns |    242.8422 ns |    227.1547 ns |    57,222.314 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |  SetItem |         List | RecyclableLongList |           32768 |    55,355.616 ns |     93.1621 ns |     77.7946 ns |    55,332.666 ns |  0.97 |    0.00 |       1 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |           65536 |   114,002.581 ns |    131.1817 ns |    122.7074 ns |   113,951.843 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual |  SetItem |         List | RecyclableLongList |           65536 |   109,114.963 ns |    466.7859 ns |    389.7874 ns |   109,180.310 ns |  0.96 |    0.00 |       2 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |          131072 |   227,937.367 ns |    282.4864 ns |    250.4168 ns |   227,909.534 ns |  1.00 |    0.00 |       3 B |        1.00 |
+|   Actual |  SetItem |         List | RecyclableLongList |          131072 |   221,966.255 ns |    644.8796 ns |    603.2207 ns |   222,073.511 ns |  0.97 |    0.00 |       3 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |          850000 | 1,626,362.142 ns |  5,010.4787 ns |  3,911.8522 ns | 1,625,986.523 ns |  1.00 |    0.00 |      25 B |        1.00 |
+|   Actual |  SetItem |         List | RecyclableLongList |          850000 | 1,584,812.005 ns | 12,789.2487 ns | 11,963.0712 ns | 1,585,505.859 ns |  0.98 |    0.01 |      25 B |        1.00 |
+|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
+| Baseline |  SetItem |         List | RecyclableLongList |              90 |       152.769 ns |      0.3186 ns |      0.2980 ns |       152.770 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |  SetItem |         List | RecyclableLongList |              90 |       145.514 ns |      1.2202 ns |      1.1413 ns |       145.627 ns |  0.95 |    0.01 |         - |          NA |
 </details>
 
 # `RemoveAt` Benchmarks
