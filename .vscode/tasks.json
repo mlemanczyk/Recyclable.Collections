@@ -3,17 +3,30 @@
     "tasks": [
         {
             "isBuildCommand": true,
+            "label": "build",
+			"dependsOn": ["build debug", "build release"],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "isBuildCommand": true,
             "label": "build debug",
             "command": "dotnet",
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj",
+                "${workspaceFolder}/Recyclable.Collections.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
-                "-f", "net7.0"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
         },
         {
             "label": "build release",
@@ -21,16 +34,15 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj",
+                "${workspaceFolder}/Recyclable.Collections.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary",
                 "-c", "Release",
-                "-f", "net7.0"
             ],
             "problemMatcher": "$msCompile",
             "group": {
                 "kind": "build",
-                "isDefault": true
+                "isDefault": false
             }
         },
         {
@@ -39,7 +51,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj",
+                "${workspaceFolder}/Recyclable.Collections.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -53,7 +65,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Recyclable.Collections.Benchmarks/Recyclable.Collections.Benchmarks.csproj"
+                "${workspaceFolder}/Recyclable.Collections.sln"
             ],
             "problemMatcher": "$msCompile"
         }
