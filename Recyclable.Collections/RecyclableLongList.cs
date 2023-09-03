@@ -60,7 +60,7 @@ namespace Recyclable.Collections
 		public int ReservedBlockCount => _reservedBlockCount;
 		public ulong Version => _version;
 
-		private void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
+		private void AddRangeEnumerated(IEnumerable<T> source)
 		{
 			long i, copied = _longCount;
 			int blockSize = _blockSize, targetItemIdx = _nextItemIndex, targetBlockIdx = _nextItemBlockIndex;
@@ -79,9 +79,9 @@ namespace Recyclable.Collections
 			var memoryBlocksCount = memoryBlocksSpan.Length;
 			while (true)
 			{
-				if (copied + growByCount > capacity)
+				if (copied + blockSize > capacity)
 				{
-					capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + growByCount))));
+					capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + blockSize))));
 					memoryBlocksCount = _reservedBlockCount;
 					if (blockSize != _blockSize)
 					{
@@ -705,7 +705,7 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void AddRange(IEnumerable<T> source, int growByCount = RecyclableDefaults.BlockSize)
+		public void AddRange(IEnumerable<T> source)
 		{
 			if (source is RecyclableLongList<T> sourceRecyclableLongList)
 			{
@@ -734,7 +734,7 @@ namespace Recyclable.Collections
 			}
 			else
 			{
-				AddRangeEnumerated(source, growByCount);
+				AddRangeEnumerated(source);
 				_version++;
 			}
 		}
