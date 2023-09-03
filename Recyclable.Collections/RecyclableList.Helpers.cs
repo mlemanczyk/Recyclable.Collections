@@ -130,7 +130,7 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static int ResizeAndCopy(RecyclableList<T> sourceList, int newSize)
+		public static int ResizeAndCopy(RecyclableList<T> sourceList, int oldSize, int newSize)
 		{
 			T[] oldMemoryBlock = sourceList._memoryBlock;
 			sourceList._memoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
@@ -140,7 +140,7 @@ namespace Recyclable.Collections
 			// & WAS SLOWER WITHOUT
 
 			// & WAS SLOWER AS ARRAY
-			new Span<T>(oldMemoryBlock, 0, sourceList._count).CopyTo(sourceList._memoryBlock);
+			new Span<T>(oldMemoryBlock, 0, oldSize).CopyTo(sourceList._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
