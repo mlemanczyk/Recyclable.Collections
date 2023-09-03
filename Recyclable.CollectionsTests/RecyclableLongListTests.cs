@@ -271,25 +271,13 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void ConstructorShouldAddItemsInCorrectOrderWhenSourceIsIEnumerable(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Act
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
-
-			// Validate
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount, "when we succeed in taking count without enumerating, then we allocate as much memory as needed, only");
-			_ = list.LongCount.Should().Be(itemsCount);
-			_ = list.Should().Equal(testData);
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConstructorSourceShouldInitializeList(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Act
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
 
 			// Validate
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount, "when we succeed in taking count without enumerating, then we allocate as much memory as needed, only");
 			_ = list.LongCount.Should().Be(itemsCount);
 			_ = list.Should().Equal(testData);
 		}
