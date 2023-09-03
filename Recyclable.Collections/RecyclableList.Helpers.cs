@@ -17,13 +17,14 @@ namespace Recyclable.Collections
 		{
 			Span<T> arrayMemory = destinationArray.AsSpan();
 			arrayMemory = arrayMemory[destinationArrayIndex..];
+			// TODO: Convert "/" & "%" to bit-shifting
 			int startingArrayIndex = (int)(startingIndex / blockSize);
 			startingIndex %= blockSize;
-			if (arrays.Count > 0)
+			if (arrays._count > 0)
 			{
 				ReadOnlySpan<T> sourceMemory = arrays[0].AsSpan();
 				var maxToCopy = (int)Math.Min(blockSize - startingIndex, arrayMemory.Length);
-				if (arrays.Count == 1)
+				if (arrays._count == 1)
 				{
 					maxToCopy = Math.Min(maxToCopy, lastBlockSize);
 				}
@@ -33,7 +34,7 @@ namespace Recyclable.Collections
 				arrayMemory = arrayMemory[maxToCopy..];
 			}
 
-			for (var arrayIdx = startingArrayIndex + 1; arrayIdx < arrays.Count - 1 && arrayMemory.Length > 0; arrayIdx++)
+			for (var arrayIdx = startingArrayIndex + 1; arrayIdx < arrays._count - 1 && arrayMemory.Length > 0; arrayIdx++)
 			{
 				ReadOnlySpan<T> sourceMemory = arrays[arrayIdx].AsSpan();
 				var maxToCopy = Math.Min(blockSize, arrayMemory.Length);
@@ -42,7 +43,7 @@ namespace Recyclable.Collections
 				arrayMemory = arrayMemory[maxToCopy..];
 			}
 
-			if (arrays.Count > 1 && arrayMemory.Length > 0)
+			if (arrays._count > 1 && arrayMemory.Length > 0)
 			{
 				ReadOnlySpan<T> sourceMemory = arrays[^1].AsSpan();
 				var maxToCopy = Math.Min(lastBlockSize, arrayMemory.Length);
@@ -56,7 +57,7 @@ namespace Recyclable.Collections
 		public static IEnumerable<T> Enumerate(RecyclableList<T[]> arrays, int chunkSize, long totalCount)
 		{
 			long currentCount = 0;
-			for (var arrayIdx = 0; (arrayIdx < arrays.Count) && (currentCount < totalCount); arrayIdx++)
+			for (var arrayIdx = 0; (arrayIdx < arrays._count) && (currentCount < totalCount); arrayIdx++)
 			{
 				var array = arrays[arrayIdx];
 				currentCount += Math.Min(chunkSize, totalCount);
@@ -86,7 +87,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long LongIndexOf(RecyclableList<T[]> arrays, int blockSize, T item, IEqualityComparer<T> comparer)
 		{
-			for (var arrayIdx = 0; arrayIdx < arrays.Count; arrayIdx++)
+			for (var arrayIdx = 0; arrayIdx < arrays._count; arrayIdx++)
 			{
 				var array = arrays[arrayIdx];
 				Span<T> arrayMemory = array.AsSpan();

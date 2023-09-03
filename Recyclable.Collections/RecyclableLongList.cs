@@ -10,23 +10,32 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
+#pragma warning disable CA1825
 		private static readonly T[][] _emptyMemoryBlocksArray = new T[0][];
 		private static readonly T[] _emptyBlockArray = new T[0];
+#pragma warning restore CA1825
 		private static readonly bool _defaultIsNull = default(T) == null;
-		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
+		private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
 		internal int _blockSize;
 		internal byte _blockSizePow2BitShift;
 		internal int _blockSizeMinus1;
-		internal int _nextItemBlockIndex;
-		internal int _nextItemIndex;
-		private int _reservedBlockCount;
-
+		internal long _capacity;
+		internal int _lastBlockWithData = RecyclableDefaults.ItemNotFoundIndex;
+		internal long _longCount;
 #nullable disable
 		internal T[][] _memoryBlocks;
 #nullable restore
+		internal int _nextItemBlockIndex;
+		internal int _nextItemIndex;
+#pragma warning disable IDE0032
+		internal int _reservedBlockCount;
+#pragma warning restore IDE0032
+		internal ulong _version;
 
-		private long _capacity;
+		public int BlockSize => _blockSize;
+		public int BlockSizeMinus1 => _blockSizeMinus1;
+		public byte BlockSizePow2BitShift => _blockSizePow2BitShift;
 		public long Capacity
 		{
 			get => _capacity;
@@ -44,20 +53,11 @@ namespace Recyclable.Collections
 
 		public int Count => checked((int)_longCount);
 		public bool IsReadOnly => false;
-		internal int _lastBlockWithData = RecyclableDefaults.ItemNotFoundIndex;
 		public int LastBlockWithData => _lastBlockWithData;
-
-		internal long _longCount;
 		public long LongCount => _longCount;
-
-		public int ReservedBlockCount => _reservedBlockCount;
-		public int BlockSize => _blockSize;
-		public int BlockSizeMinus1 => _blockSizeMinus1;
-		public byte BlockSizePow2BitShift => _blockSizePow2BitShift;
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
-
-		internal ulong _version;
+		public int ReservedBlockCount => _reservedBlockCount;
 		public ulong Version => _version;
 
 		private void AddRangeEnumerated(IEnumerable<T> source, int growByCount)
@@ -74,7 +74,7 @@ namespace Recyclable.Collections
 			long capacity = _capacity;
 			long available = capacity - copied;
 
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, ReservedBlockCount);
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _reservedBlockCount);
 			Span<T> blockArraySpan;
 			var memoryBlocksCount = memoryBlocksSpan.Length;
 			while (true)
@@ -155,7 +155,7 @@ namespace Recyclable.Collections
 				blockSize = _blockSize;
 			}
 
-			var memoryBlocksCount = ReservedBlockCount;
+			var memoryBlocksCount = _reservedBlockCount;
 			memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlocksCount);
 			blockArraySpan = new(memoryBlocksSpan[targetBlockIdx], 0, blockSize);
 			foreach (var item in source)
@@ -440,12 +440,12 @@ namespace Recyclable.Collections
 
 		public void AddRange(RecyclableList<T> items)
 		{
-			if (items.Count == 0)
+			if (items._count == 0)
 			{
 				return;
 			}
 
-			long targetCapacity = _longCount + items.Count;
+			long targetCapacity = _longCount + items._count;
 			if (_capacity < targetCapacity)
 			{
 				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
@@ -455,7 +455,7 @@ namespace Recyclable.Collections
 				targetBlockIndex = _nextItemBlockIndex,
 				memoryBlockCount = _reservedBlockCount;
 
-			Span<T> itemsSpan = new(items.AsArray, 0, items.Count);
+			Span<T> itemsSpan = new(items._memoryBlock, 0, items._count);
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlockCount);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
 			while (targetBlockArraySpan.Length <= itemsSpan.Length)
@@ -529,12 +529,12 @@ namespace Recyclable.Collections
 
 		public void AddRange(RecyclableLongList<T> items)
 		{
-			if (items.LongCount == 0)
+			if (items._longCount == 0)
 			{
 				return;
 			}
 
-			long itemsCount = items.LongCount,
+			long itemsCount = items._longCount,
 				targetCapacity = _longCount + itemsCount;
 
 			if (_capacity < targetCapacity)
@@ -698,7 +698,7 @@ namespace Recyclable.Collections
 			{
 				if (items.Count >= RecyclableDefaults.MinPooledArrayLength)
 				{
-					RecyclableArrayPool<T>.ReturnShared(itemsBuffer, NeedsClearing);
+					RecyclableArrayPool<T>.ReturnShared(itemsBuffer, _needsClearing);
 				}
 
 				_version++;
@@ -753,7 +753,7 @@ namespace Recyclable.Collections
 				int toRemoveIdx = 0;
 				while (toRemoveIdx < memoryBlocksCount)
 				{
-					RecyclableArrayPool<T>.ReturnShared(memoryBlocks[toRemoveIdx++], NeedsClearing);
+					RecyclableArrayPool<T>.ReturnShared(memoryBlocks[toRemoveIdx++], _needsClearing);
 				}
 			}
 
@@ -970,7 +970,7 @@ namespace Recyclable.Collections
 					_lastBlockWithData--;
 				}
 
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 #nullable disable
 					new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = default;
@@ -988,7 +988,7 @@ namespace Recyclable.Collections
 		{
 			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				RecyclableArrayPool<T>.ReturnShared(_memoryBlocks[index], NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(_memoryBlocks[index], _needsClearing);
 				_memoryBlocks[index] = _emptyBlockArray;
 			}
 			else
@@ -1038,7 +1038,7 @@ namespace Recyclable.Collections
 				_lastBlockWithData--;
 			}
 
-			if (NeedsClearing)
+			if (_needsClearing)
 			{
 #nullable disable
 				new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = default;
@@ -1076,7 +1076,7 @@ namespace Recyclable.Collections
 				_lastBlockWithData--;
 			}
 
-			if (NeedsClearing)
+			if (_needsClearing)
 			{
 #nullable disable
 				new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = default;

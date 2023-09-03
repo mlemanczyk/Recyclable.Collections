@@ -89,7 +89,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = list.Capacity.Should().Be(4);
+			_ = list.Capacity.Should().Be(RecyclableDefaults.InitialCapacity);
 			_ = list.Count.Should().Be(0);
 			_ = list.Should().BeEmpty();
 		}
@@ -138,7 +138,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			var expectedData = testData.Concat(testData).ToRecyclableLongList();
+			using var expectedData = testData.Concat(testData).ToRecyclableLongList();
 
 			if (itemsCount > 0)
 			{

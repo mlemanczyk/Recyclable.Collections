@@ -8,9 +8,9 @@ namespace Recyclable.Collections
 	[Serializable]
 	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
-		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
+		private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
-		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source.Count);
+		public static explicit operator ReadOnlySpan<T>(RecyclableList<T> source) => new(source._memoryBlock, 0, source._count);
 
 #nullable disable
 		internal T[] _memoryBlock;
@@ -59,17 +59,17 @@ namespace Recyclable.Collections
 			return enumerator;
 		}
 
-		private void AddRangeWithKnownCount(IEnumerable<T> source, int targetItemIdx, int requiredAdditionalCapacity)
+		private void AddRangeWithKnownCount(IEnumerable<T> source, int currentItemsCount, int requiredAdditionalCapacity)
 		{
-			_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIdx + requiredAdditionalCapacity))));
+			_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)(currentItemsCount + requiredAdditionalCapacity))));
 
 			Span<T> memorySpan = new(_memoryBlock);
 			foreach (var item in source)
 			{
-				memorySpan[targetItemIdx++] = item;
+				memorySpan[currentItemsCount++] = item;
 			}
 
-			_count = targetItemIdx;
+			_count = currentItemsCount;
 		}
 
 		public RecyclableList()
@@ -136,7 +136,7 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.Capacity)
+		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.InitialCapacity)
 		{
 			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
 			{
@@ -271,7 +271,7 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			var sourceItemsCount = items.LongCount;
+			var sourceItemsCount = items._longCount;
 			if (sourceItemsCount > int.MaxValue)
 			{
 				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), $"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
@@ -292,7 +292,7 @@ namespace Recyclable.Collections
 				itemsSpan;
 
 			int blockIndex,
-				sourceBlockSize = items.BlockSize,
+				sourceBlockSize = items._blockSize,
 				lastBlockIndex = (int)(sourceItemsCount >> items._blockSizePow2BitShift) - 1;
 
 			for (blockIndex = 0; blockIndex <= lastBlockIndex; blockIndex++)
@@ -307,9 +307,9 @@ namespace Recyclable.Collections
 				itemsSpan = new(items._memoryBlocks[blockIndex], 0, (int)sourceItemsCount);
 				itemsSpan.CopyTo(targetSpan);
 			}
-			else if (blockIndex <= items.LastBlockWithData)
+			else if (blockIndex <= items._lastBlockWithData)
 			{
-				itemsSpan = new(items._memoryBlocks[blockIndex], 0, items.NextItemIndex);
+				itemsSpan = new(items._memoryBlocks[blockIndex], 0, items._nextItemIndex);
 				itemsSpan.CopyTo(targetSpan);
 			}
 
@@ -358,7 +358,7 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			if (NeedsClearing)
+			if (_needsClearing)
 			{
 				Array.Clear(_memoryBlock, 0, _count);
 			}
@@ -408,7 +408,7 @@ namespace Recyclable.Collections
 					Array.Copy(_memoryBlock, index + 1, _memoryBlock, index, _count - index);
 				}
 
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 					_memoryBlock[_count] = default;
 				}
@@ -435,7 +435,7 @@ namespace Recyclable.Collections
 				Array.Copy(_memoryBlock, index + 1, _memoryBlock, index, _count - index);
 			}
 
-			if (NeedsClearing)
+			if (_needsClearing)
 			{
 				_memoryBlock[_count] = default;
 			}
@@ -457,7 +457,7 @@ namespace Recyclable.Collections
 			_version++;
 			if (_count != 0)
 			{
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 					Array.Clear(_memoryBlock, 0, _count);
 				}

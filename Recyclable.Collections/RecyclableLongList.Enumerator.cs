@@ -67,7 +67,7 @@ namespace Recyclable.Collections
 
 			public void Reset()
 			{
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 					_current = _default;
 				}
@@ -78,7 +78,7 @@ namespace Recyclable.Collections
 
 			public void Dispose()
 			{
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 					_current = _default;
 				}

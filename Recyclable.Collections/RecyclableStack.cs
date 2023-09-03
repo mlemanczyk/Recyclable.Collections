@@ -14,7 +14,7 @@ namespace Recyclable.Collections
 			get => List._longCount;
 			set => List._longCount = value;
 		}
-		public bool IsReadOnly => List.IsReadOnly;
+		public bool IsReadOnly => false;
 
 		public T this[int index] { get => this[(long)index]; set => this[(long)index] = value; }
 		public T this[long index] { get => List[index]; set => List[index] = value; }
@@ -46,9 +46,9 @@ namespace Recyclable.Collections
 		{
 			var toRemove = List[LongCount - 1];
 			LongCount--;
-			if ((List.Capacity * _blockSize) - LongCount == _blockSize)
+			if ((List._capacity * _blockSize) - LongCount == _blockSize)
 			{
-				List.RemoveBlock(List.ReservedBlockCount - 1);
+				List.RemoveBlock(List._reservedBlockCount - 1);
 			}
 
 			return toRemove;

@@ -144,11 +144,11 @@ namespace Recyclable.Collections
 			try
 			{
 				// Remove in reversed order for performance savings
-				while (Memory.Count > 0)
+				while (Memory._count > 0)
 				{
 					try
 					{
-						RemoveBlock(Memory.Count - 1);
+						RemoveBlock(Memory._count - 1);
 					}
 #pragma warning disable RCS1075 // We want to try returning as many arrays, as possible, before the list is cleared.
 					catch (Exception)
