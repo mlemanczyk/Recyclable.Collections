@@ -50,7 +50,7 @@ namespace Recyclable.CollectionsTests
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo(expectedItemsCount, "when capacity == 0, then we should allocate as much memory as needed, only");
 			_ = list.LastBlockWithData.Should().Be((int)(itemsCount / list.BlockSize) - (itemsCount % list.BlockSize != 0 ? 0 : 1));
 			_ = list.LongCount.Should().Be(expectedItemsCount);
-			_ = list.Should().ContainInConsecutiveOrder(testData);
+			_ = list.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -150,7 +150,7 @@ namespace Recyclable.CollectionsTests
 
 			_ = list.LongCount.Should().Be(expectedData.Length);
 			_ = list.LastBlockWithData.Should().Be((int)(itemsCount * 2 / list.BlockSize) - (itemsCount * 2 % list.BlockSize != 0 ? 0 : 1));
-			_ = list.Should().ContainInConsecutiveOrder(expectedData);
+			_ = list.Should().Equal(expectedData);
 		}
 
 		[Theory]
@@ -170,7 +170,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount * 2);
 			_ = list.LastBlockWithData.Should().Be((int)(itemsCount * 2 / list.BlockSize) - (itemsCount * 2 % list.BlockSize != 0 ? 0 : 1));
-			_ = list.Should().ContainInConsecutiveOrder(testData);
+			_ = list.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -189,7 +189,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount, "we added so many items");
 			_ = list.LastBlockWithData.Should().Be((int)(itemsCount / list.BlockSize) - (itemsCount % list.BlockSize == 0 ? 1 : 0));
-			_ = list.Should().ContainInConsecutiveOrder(testData);
+			_ = list.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -222,7 +222,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount * 2);
 			_ = list.LastBlockWithData.Should().Be((int)(itemsCount * 2 / list.BlockSize) - (itemsCount * 2 % list.BlockSize != 0 ? 0 : 1));
-			_ = list.Should().ContainInConsecutiveOrder(testData.Concat(testData));
+			_ = list.Should().Equal(testData.Concat(testData));
 		}
 
 		[Theory]
@@ -279,7 +279,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount, "when we succeed in taking count without enumerating, then we allocate as much memory as needed, only");
 			_ = list.LongCount.Should().Be(itemsCount);
-			_ = list.Should().ContainInConsecutiveOrder(testData);
+			_ = list.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -291,7 +291,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount);
-			_ = list.Should().ContainInConsecutiveOrder(testData);
+			_ = list.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -364,7 +364,7 @@ namespace Recyclable.CollectionsTests
 			// Act
 			var actual = new long[itemsCount];
 			list.CopyTo(actual, 0);
-			_ = actual.Should().ContainInConsecutiveOrder(testData);
+			_ = actual.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -398,7 +398,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = actual.Should().ContainInConsecutiveOrder(testData);
+			_ = actual.Should().Equal(testData);
 		}
 
 		[Theory]
@@ -416,7 +416,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = actual.Should().ContainInConsecutiveOrder(testData);
+			_ = actual.Should().Equal(testData);
 		}
 
 		[Fact]
@@ -500,7 +500,7 @@ namespace Recyclable.CollectionsTests
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount);
-			_ = list.Should().ContainInConsecutiveOrder(testData);
+			_ = list.Should().Equal(testData);
 
 			// Act
 			foreach (var item in testData.Reverse())
@@ -526,7 +526,7 @@ namespace Recyclable.CollectionsTests
 			// Validate
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
 			_ = list.Count.Should().Be((int)itemsCount);
-			_ = list.Should().ContainInConsecutiveOrder(testData.Reverse());
+			_ = list.Should().Equal(testData.Reverse());
 		}
 
 		[Theory]
@@ -615,7 +615,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().ContainInConsecutiveOrder(listAsArray[deleted..]);
+				_ = list.Should().Equal(listAsArray[deleted..]);
 			}
 
 			_ = list.Should().BeEmpty();
@@ -640,7 +640,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().ContainInConsecutiveOrder(listAsArray[..(int)(itemsCount - deleted)]);
+				_ = list.Should().Equal(listAsArray[..(int)(itemsCount - deleted)]);
 			}
 
 			_ = list.Should().BeEmpty();
@@ -665,7 +665,7 @@ namespace Recyclable.CollectionsTests
 				// Validate
 				_ = list.Count.Should().Be((int)(itemsCount - deleted));
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().ContainInConsecutiveOrder(listAsArray[deleted..]);
+				_ = list.Should().Equal(listAsArray[deleted..]);
 			}
 
 			_ = list.Should().BeEmpty();
@@ -689,7 +689,7 @@ namespace Recyclable.CollectionsTests
 				var expectedList = listAsArray[..((int)itemsCount - removedCount)];
 				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
 				_ = list.LongCount.Should().Be(expectedList.Length);
-				_ = list.Should().ContainInConsecutiveOrder(expectedList);
+				_ = list.Should().Equal(expectedList);
 			}
 
 			_ = list.Should().BeEmpty();
