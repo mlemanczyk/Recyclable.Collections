@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Recyclable.Collections;
 using Recyclable.Collections.Linq;
+using System.Numerics;
 
 #pragma warning disable xUnit1026, RCS1163, IDE0060, RCS1235
 
@@ -8,8 +9,24 @@ namespace Recyclable.CollectionsTests
 {
 	public class RecyclableLongListTests
 	{
+		private static long CalculateExpectedCapacity(string testCase, long itemsCount, int targetBlockSize)
+		{
+			var expectedCapacity = (long)BitOperations.RoundUpToPowerOf2((uint)itemsCount + 1);
+			if (testCase.Contains("non-enumerated"))
+			{
+				expectedCapacity = (long)BitOperations.RoundUpToPowerOf2((ulong)itemsCount + RecyclableDefaults.BlockSize);
+				expectedCapacity = expectedCapacity >= RecyclableDefaults.InitialCapacity ? expectedCapacity : RecyclableDefaults.InitialCapacity;
+			}
+			else if (targetBlockSize > itemsCount)
+			{
+				expectedCapacity = ((itemsCount / targetBlockSize) + (itemsCount % targetBlockSize > 0 ? 1 : 0)) * targetBlockSize;
+			}
+
+			return expectedCapacity;
+		}
+
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void AddRangeShouldAddItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -55,7 +72,7 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.EmptySourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void AddRangeShouldDoNothingWhenSourceIsEmpty(string testCase, IEnumerable<long> testData)
+		public void AddRangeShouldDoNothingWhenSourceIsEmpty(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>();
@@ -98,7 +115,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void AddRangeShouldNotOverrideItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -154,7 +171,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void AddShouldAcceptDuplicates(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -174,7 +191,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void AddShouldAddItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -193,21 +210,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void GetByIndexShouldReturnCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
-
-			// Act & Validate
-			foreach (var item in testData)
-			{
-				_ = list[item - 1].Should().Be(item);
-			}
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		//[InlineData("Debugging case", new long[1] { 1 }, 1, 2)]
 		public void AddShouldAddItemWhenAfterAddRange(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
@@ -226,7 +229,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ClearShouldRemoveAllItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -243,7 +246,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConsecutiveDisposeShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -255,14 +258,14 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConstructorShouldAcceptDuplicates(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
 			testData = testData.Concat(testData).ToArray();
 
 			// Act
-			using var list = new RecyclableLongList<long>(expectedData, minBlockSize: targetBlockSize, itemsCount);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount * 2);
@@ -270,7 +273,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void ConstructorSourceShouldInitializeList(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Act
@@ -283,24 +286,17 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void ContainsShouldFindAllItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void ContainsShouldFindAllItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
 			// Prepare
-			if (itemsCount == 0)
-			{
-				// There is nothing to search for when our lists are empty
-				return;
-			}
-
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
-			// Act
-			foreach (var item in testData)
+			// Act & Validate
+			foreach (var itemIndex in itemIndexes)
 			{
-				// Validate
-				_ = list.Contains(item).Should().BeTrue($"we searched for {item}");
+				_ = list.Contains(list[itemIndex]).Should().BeTrue($"we searched for {list[itemIndex]}");
 			}
 		}
 
@@ -317,32 +313,22 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void ContainsShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void ContainsShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
 			// Prepare
-			if (itemsCount == 0)
-			{
-				// There is nothing to search for when our lists are empty
-				return;
-			}
-
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
-			// Act
-			foreach (var item in testData)
+			// Act & Validate
+			foreach (var itemIndex in itemIndexes)
 			{
-				// Validate
-				_ = list.Contains(-item).Should().BeFalse();
+				_ = list.Contains(-list[itemIndex]).Should().BeFalse();
 			}
-
-			// Validate - this case is special, because this is the default item value
-			_ = list.Contains(0).Should().BeFalse();
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		//[InlineData("Debugging case", new[] { 1L, 2, }, 2, 2)]
 		public void CopyToShouldCopyAllItemsInTheCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
@@ -356,7 +342,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void DisposeShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -371,7 +357,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void EnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
@@ -390,21 +376,17 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void VersionedEnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void GetByIndexShouldReturnCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
-			// Act
-			var actual = new List<long>((int)itemsCount);
-			foreach(var item in (IRecyclableVersionedLongList<long>)list)
+			// Act & Validate
+			foreach (var item in testData)
 			{
-				actual.Add(item);
+				_ = list[item - 1].Should().Be(item);
 			}
-
-			// Validate
-			_ = actual.Should().Equal(testData);
 		}
 
 		[Fact]
@@ -419,118 +401,103 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void IndexOfShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void IndexOfShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
-			// Prepare
-			if (itemsCount == 0)
-			{
-				// There is nothing to search for when our lists are empty
-				return;
-			}
-
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
-			// Act
-			foreach (var item in testData)
+			// Act & Validate
+			foreach (var itemIndex in itemIndexes)
 			{
-				// Validate
-				_ = list.IndexOf(-item).Should().Be(-1);
+				_ = list.IndexOf(-list[itemIndex]).Should().Be(-1);
 			}
-
-			// Validate
-			_ = list.IndexOf(0).Should().Be(-1);
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void IndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void IndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act & Validate
-			foreach (var item in testData)
+			foreach (var itemIndex in itemIndexes)
 			{
-				var actual = list.IndexOf(item);
-				_ = actual.Should().Be((int)item - 1);
+				_ = list.IndexOf(list[itemIndex]).Should().Be((int)itemIndex);
 			}
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void InitializeSortClearAddRangeRemoveShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void InitializeSortClearAddRangeRemoveShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
-			if (itemsCount == 0)
+			foreach (var itemIndex in itemIndexes)
 			{
-				return;
-			}
+				// Prepare
+				using var testDataList = testData.ToRecyclableList();
+				var item = testDataList[(int)itemIndex];
 
-			// Act
-			using RecyclableLongList<long> list = new(testData, minBlockSize: targetBlockSize, itemsCount);
-			QuickSortExtensions<long>.QuickSort(list);
+				// Act
+				using RecyclableLongList<long> list = new(testData, minBlockSize: targetBlockSize);
+				QuickSortExtensions<long>.QuickSort(list);
 
-			// Validate
-			_ = list.LongCount.Should().Be(itemsCount);
-			_ = list.Should().Equal(testData);
+				// Validate
+				_ = list.LongCount.Should().Be(itemsCount);
+				_ = list.Should().Equal(testDataList);
 
-			// Act
-			list.Clear();
+				// Act
+				list.Clear();
 
-			// Validate
-			_ = list.LongCount.Should().Be(0);
-			_ = list.Should().BeEmpty();
+				// Validate
+				_ = list.LongCount.Should().Be(0);
+				_ = list.Should().BeEmpty();
 
-			// Act
-			list.AddRange(testData);
+				// Act
+				list.AddRange(testData);
 
-			// Validate
-			_ = list.LongCount.Should().Be(itemsCount);
-			_ = list.Should().Equal(testData);
+				// Validate
+				_ = list.LongCount.Should().Be(itemsCount);
+				_ = list.Should().Equal(testDataList);
 
-			// Act
-			foreach (var item in testData.Reverse())
-			{
+				// Prepare
+				testDataList.RemoveAt((int)itemIndex);
+
+				// Act
 				_ = list.Remove(item).Should().BeTrue();
+				_ = list.LongIndexOf(item).Should().Be(RecyclableDefaults.ItemNotFoundIndexLong);
+				_ = list.Contains(item).Should().BeFalse();
+				_ = list.LongCount.Should().Be(itemsCount - 1);
+				_ = list.Should().Equal(testDataList);
 			}
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void InsertAtTheBeginningShouldMoveItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void InsertShouldMoveItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, targetBlockSize, itemsCount);
-
-			// Act
-			foreach (var item in testData)
+			foreach (var itemIndex in itemIndexes)
 			{
-				list.Insert(0, item);
-				_ = list.Count.Should().Be((int)item);
+				// Prepare
+				using var list = new RecyclableLongList<long>(testData, targetBlockSize, itemsCount);
+				long expectedCapacity = CalculateExpectedCapacity(testCase, itemsCount, targetBlockSize);
+
+				var item = list[itemIndex];
+				var expectedItems = list.ToList();
+				expectedItems.Insert((int)itemIndex, item);
+
+				// Act
+				list.Insert(itemIndex, item);
+
+				// Validate
+
+				_ = list[itemIndex].Should().Be(item);
+				_ = list[itemIndex + 1].Should().Be(item);
+				_ = list.Capacity.Should().Be(expectedCapacity);
+				_ = list.Count.Should().Be((int)itemsCount + 1);
+				_ = list.Should().Equal(expectedItems);
 			}
-
-			// Validate
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
-			_ = list.Count.Should().Be((int)itemsCount);
-			_ = list.Should().Equal(testData.Reverse());
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void InsertAtTheEndShouldAppend(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
-
-			// Act
-			list.Insert(itemsCount, -1);
-
-			// Assert
-			_ = list.LongCount.Should().Be(itemsCount + 1);
-			_ = list.LongCount.Should().Be(list.Count);
-			_ = list[list.LongCount - 1].Should().Be(-1);
 		}
 
 		[Fact]
@@ -545,144 +512,95 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void LongIndexOfShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void LongIndexOfShouldNotFindNonExistingItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{
-			if (itemsCount == 0)
-			{
-				return;
-			}
-
 			// Prepare
 			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
-			// Act
-			foreach (var item in testData)
+			// Act & Validate
+			foreach (var itemIndex in itemIndexes)
 			{
+				_ = list.LongIndexOf(-list[itemIndex]).Should().Be(-1);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void LongIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
+		{
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
+
+			// Act & Validate
+			foreach (var itemIndex in itemIndexes)
+			{
+				_ = list.LongIndexOf(list[itemIndex]).Should().Be(itemIndex);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void RemoveAtShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
+		{
+			foreach (var itemIndex in itemIndexes)
+			{
+				// Prepare
+				using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+				var expectedItems = list.ToList();
+				expectedItems.RemoveAt((int)itemIndex);
+
+				// Act
+				list.RemoveAt(itemIndex);
+
 				// Validate
-				_ = list.LongIndexOf(-item).Should().Be(-1);
+				_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
+				_ = list.LongCount.Should().Be(itemsCount - 1);
+				_ = list.Should().Equal(expectedItems);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void RemoveShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
+		{
+			foreach (var itemIndex in itemIndexes)
+			{
+				// Prepare
+				using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+				var expectedItems = list.ToList();
+				var item = expectedItems[(int)itemIndex];
+				expectedItems.RemoveAt((int)itemIndex);
+
+				// Act
+				_ = list.Remove(item).Should().BeTrue();
+
+				// Validate
+				_ = list.LongCount.Should().Be(itemsCount - 1);
+				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
+				_ = list.Should().Equal(expectedItems);
+				_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void VersionedEnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+		{
+			// Prepare
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
+
+			// Act
+			using var actual = new RecyclableList<long>((int)itemsCount);
+			foreach (var item in (IRecyclableVersionedLongList<long>)list)
+			{
+				actual.Add(item);
 			}
 
 			// Validate
-			_ = list.LongIndexOf(0).Should().Be(-1);
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void LongIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
-
-			// Act & Validate
-			foreach (var item in testData)
-			{
-				// Act
-				var index = list.LongIndexOf(item);
-
-				// Validate
-				_ = index.Should().Be(item - 1);
-			}
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void RemoveAtFromTheBeginningShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
-			var listAsArray = list.ToArray();
-
-			// Act & Validate
-			for (var deleted = 1; deleted <= itemsCount; deleted++)
-			{
-				// Act
-				list.RemoveAt(0);
-
-				// Validate
-				_ = list.Count.Should().Be((int)(itemsCount - deleted));
-				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().Equal(listAsArray[deleted..]);
-			}
-
-			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
-			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void RemoveAtFromTheEndShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
-			var listAsArray = list.ToArray();
-
-			// Act & Validate
-			for (var deleted = 1; deleted <= itemsCount; deleted++)
-			{
-				// Act
-				list.RemoveAt(list.Count - 1);
-
-				// Validate
-				_ = list.Count.Should().Be((int)(itemsCount - deleted));
-				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().Equal(listAsArray[..(int)(itemsCount - deleted)]);
-			}
-
-			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
-			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void RemoveFromTheBeginningShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, targetBlockSize, itemsCount)
-			var listAsArray = list.ToArray();
-
-			// Act & Validate
-			for (var deleted = 1; deleted <= itemsCount; deleted++)
-			{
-				// Act
-				_ = list.Remove(deleted).Should().BeTrue();
-
-				// Validate
-				_ = list.Count.Should().Be((int)(itemsCount - deleted));
-				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.Should().Equal(listAsArray[deleted..]);
-			}
-
-			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
-			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
-		}
-
-		[Theory]
-		[MemberData(nameof(RecyclableLongListTestData.SourceTargetDataVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void RemoveFromTheEndShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
-			var listAsArray = testData.ToArray();
-			int removedCount = 0;
-			foreach (var item in testData.Reverse())
-			{
-				// Act & Validate
-				_ = list.Remove(item).Should().BeTrue($"we search for {item} which should exist");
-				removedCount++;
-				var expectedList = listAsArray[..((int)itemsCount - removedCount)];
-				_ = list.LastBlockWithData.Should().Be((int)(list.LongCount >> list.BlockSizePow2BitShift) - ((list.LongCount & list.BlockSizeMinus1) != 0 ? 0 : 1));
-				_ = list.LongCount.Should().Be(expectedList.Length);
-				_ = list.Should().Equal(expectedList);
-			}
-
-			_ = list.Should().BeEmpty();
-			_ = list.Capacity.Should().BeGreaterThanOrEqualTo((int)itemsCount);
-			_ = list.LastBlockWithData.Should().Be(RecyclableDefaults.ItemNotFoundIndex);
+			_ = actual.Should().Equal(testData);
 		}
 	}
 }
