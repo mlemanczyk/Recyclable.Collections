@@ -138,7 +138,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			using var expectedData = testData.Concat(testData).ToRecyclableLongList();
+			var expectedData = testData.Concat(testData).ToArray();
 
 			if (itemsCount > 0)
 			{
@@ -154,7 +154,7 @@ namespace Recyclable.CollectionsTests
 		public void AddShouldAcceptDuplicates(string testCase, IEnumerable<long> testData, long itemsCount)
 		{
 			// Prepare
-			testData = testData.Concat(testData).ToRecyclableLongList();
+			testData = testData.Concat(testData).ToArray();
 
 			// Act
 			using var list = new RecyclableList<long>();
