@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Recyclable.Collections;
+using Recyclable.Collections.Linq;
 
 #pragma warning disable xUnit1026, RCS1163, IDE0060, RCS1235
 
@@ -424,7 +425,7 @@ namespace Recyclable.CollectionsTests
 
 			// Act
 			using RecyclableList<long> list = new(testData);
-			RecyclableListHelpers<long>.QuickSort(list);
+			QuickSortExtensions<long>.QuickSort(list);
 
 			// Validate
 			_ = list.Count.Should().Be((int)itemsCount);

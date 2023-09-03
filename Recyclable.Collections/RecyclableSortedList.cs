@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections
+﻿using Recyclable.Collections.Linq;
+
+namespace Recyclable.Collections
 {
 	internal class RecyclableSortedList<TKey, TValue> : RecyclableLongList<(TKey Key, TValue Value)>
 		where TKey : notnull
@@ -68,7 +70,7 @@
 			BeginUpdate();
 			try
 			{
-				RecyclableListHelpers<(TKey, TValue)>.QuickSort(this, _comparer, _randomNumberGenerator);
+				QuickSortExtensions<(TKey, TValue)>.QuickSort(this, _comparer, _randomNumberGenerator);
 			}
 			finally
 			{
