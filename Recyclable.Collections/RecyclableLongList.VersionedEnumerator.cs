@@ -86,7 +86,7 @@ namespace Recyclable.Collections
 					throw new InvalidOperationException();
 				}
 
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 					_current = _default;
 				}
@@ -97,7 +97,7 @@ namespace Recyclable.Collections
 
 			public void Dispose()
 			{
-				if (NeedsClearing)
+				if (_needsClearing)
 				{
 					_current = _default;
 				}

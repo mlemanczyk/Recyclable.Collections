@@ -196,7 +196,7 @@ namespace Recyclable.Collections
 						// We can now return the old memory block for all arrays itself
 						if (sourceBlockCount >= RecyclableDefaults.MinPooledArrayLength)
 						{
-							RecyclableArrayPool<T[]>.ReturnShared(list._memoryBlocks!, NeedsClearing);
+							RecyclableArrayPool<T[]>.ReturnShared(list._memoryBlocks!, _needsClearing);
 						}
 					}
 
