@@ -197,7 +197,7 @@ namespace Recyclable.CollectionsTests
 		public void GetByIndexShouldReturnCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act & Validate
 			foreach (var item in testData)
@@ -212,7 +212,7 @@ namespace Recyclable.CollectionsTests
 		public void AddShouldAddItemWhenAfterAddRange(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Act
-			using var list = new RecyclableLongList<long>(minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(minBlockSize: targetBlockSize, itemsCount);
 			list.AddRange(testData);
 			foreach (var index in testData)
 			{
@@ -230,7 +230,7 @@ namespace Recyclable.CollectionsTests
 		public void ClearShouldRemoveAllItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, expectedItemsCount: itemsCount);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = list.LongCount.Should().Be(itemsCount);
 
 			// Act		
@@ -247,7 +247,7 @@ namespace Recyclable.CollectionsTests
 		public void ConsecutiveDisposeShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			list.Dispose();
 
 			// Act
@@ -262,7 +262,7 @@ namespace Recyclable.CollectionsTests
 			testData = testData.Concat(testData).ToArray();
 
 			// Act
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(expectedData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Validate
 			_ = list.LongCount.Should().Be(itemsCount * 2);
@@ -305,7 +305,7 @@ namespace Recyclable.CollectionsTests
 				return;
 			}
 
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -321,7 +321,7 @@ namespace Recyclable.CollectionsTests
 		public void ContainsShouldNotFindAnythingWhenListEmpty(long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<int>(minBlockSize: targetBlockSize, expectedItemsCount: itemsCount);
+			using var list = new RecyclableLongList<int>(minBlockSize: targetBlockSize, itemsCount);
 
 			// Validate
 			_ = list.Contains(0).Should().BeFalse();
@@ -339,7 +339,7 @@ namespace Recyclable.CollectionsTests
 				return;
 			}
 
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -359,7 +359,7 @@ namespace Recyclable.CollectionsTests
 		public void CopyToShouldCopyAllItemsInTheCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act
 			var actual = new long[itemsCount];
@@ -372,7 +372,7 @@ namespace Recyclable.CollectionsTests
 		public void DisposeShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act
 			list.Dispose();
@@ -387,10 +387,10 @@ namespace Recyclable.CollectionsTests
 		public void EnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act
-			var actual = new List<long>();
+			var actual = new List<long>((int)itemsCount);
 			using var enumerator = list.GetEnumerator();
 			while (enumerator.MoveNext())
 			{
@@ -406,10 +406,10 @@ namespace Recyclable.CollectionsTests
 		public void VersionedEnumerateShouldYieldAllItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act
-			var actual = new List<long>();
+			var actual = new List<long>((int)itemsCount);
 			foreach(var item in (IRecyclableVersionedLongList<long>)list)
 			{
 				actual.Add(item);
@@ -442,7 +442,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -461,7 +461,7 @@ namespace Recyclable.CollectionsTests
 		public void IndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act & Validate
 			foreach (var item in testData)
@@ -481,7 +481,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Act
-			using RecyclableLongList<long> list = new(testData, minBlockSize: targetBlockSize);
+			using RecyclableLongList<long> list = new(testData, minBlockSize: targetBlockSize, itemsCount);
 			QuickSortExtensions<long>.QuickSort(list);
 
 			// Validate
@@ -514,7 +514,7 @@ namespace Recyclable.CollectionsTests
 		public void InsertAtTheBeginningShouldMoveItems(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>();
+			using var list = new RecyclableLongList<long>(testData, targetBlockSize, itemsCount);
 
 			// Act
 			foreach (var item in testData)
@@ -566,7 +566,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			_ = testData.Any().Should().BeTrue("we need items on the list that we can look for");
 
 			// Act
@@ -585,7 +585,7 @@ namespace Recyclable.CollectionsTests
 		public void LongIndexOfShouldReturnCorrectIndexes(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 
 			// Act & Validate
 			foreach (var item in testData)
@@ -603,7 +603,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveAtFromTheBeginningShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			var listAsArray = list.ToArray();
 
 			// Act & Validate
@@ -628,7 +628,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveAtFromTheEndShouldSucceed(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			var listAsArray = list.ToArray();
 
 			// Act & Validate
@@ -653,7 +653,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveFromTheBeginningShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, targetBlockSize, itemsCount)
 			var listAsArray = list.ToArray();
 
 			// Act & Validate
@@ -678,7 +678,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveFromTheEndShouldRemoveTheCorrectItem(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
 		{
 			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
 			var listAsArray = testData.ToArray();
 			int removedCount = 0;
 			foreach (var item in testData.Reverse())
