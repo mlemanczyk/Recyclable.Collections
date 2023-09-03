@@ -5,6 +5,9 @@ namespace Recyclable.Collections
 	public static class RecyclableLongListExtensions
 	{
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static RecyclableLongList<T> ToRecyclableLongList<T>(this Array values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableLongList<T> ToRecyclableLongList<T>(this IList<T> values, int blockSize = RecyclableDefaults.BlockSize) => new(values, blockSize);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

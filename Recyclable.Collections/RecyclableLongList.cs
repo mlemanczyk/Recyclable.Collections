@@ -219,6 +219,26 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
+		public RecyclableLongList(in Array source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		{
+			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
+
+			if (expectedItemsCount > 0)
+			{
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_blockSizeMinus1 = minBlockSize - 1;
+			}
+			else
+			{
+				Helpers.SetupBlockArrayPooling(this, minBlockSize);
+				_blockSizeMinus1 = _blockSize - 1;
+				_memoryBlocks = _emptyMemoryBlocksArray;
+			}
+
+			AddRange(source);
+		}
+
 		public RecyclableLongList(ReadOnlySpan<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
@@ -386,6 +406,47 @@ namespace Recyclable.Collections
 			}
 
 			_longCount++;
+			_version++;
+		}
+
+		public void AddRange(in Array items)
+		{
+			if (items.LongLength == 0)
+			{
+				return;
+			}
+
+			long targetCapacity = _longCount + items.LongLength;
+			if (_capacity < targetCapacity)
+			{
+				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+			}
+
+			int blockSize = _blockSize,
+				targetBlockIndex = _nextItemBlockIndex;
+
+			long fullBlockItemsCount = items.LongLength - blockSize,
+				 sourceItemIndex = blockSize - _nextItemIndex;
+
+			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, _reservedBlockCount);
+
+			Array.Copy(items, 0, memoryBlocksSpan[targetBlockIndex++], _nextItemIndex, sourceItemIndex);
+			while (sourceItemIndex < fullBlockItemsCount)
+			{
+				Array.Copy(items, sourceItemIndex, memoryBlocksSpan[targetBlockIndex++], 0, blockSize);
+				sourceItemIndex += blockSize;
+			}
+
+			// We're reusing a variable which is no longer needed. That's to avoid unnecessary
+			// allocation.
+			if ((blockSize = (int)(items.LongLength - sourceItemIndex)) > 0)
+			{
+				Array.Copy(items, sourceItemIndex, memoryBlocksSpan[targetBlockIndex], 0, blockSize);
+			}
+
+			_nextItemIndex = blockSize;
+			_longCount = targetCapacity;
+			_lastBlockWithData = targetBlockIndex;
 			_version++;
 		}
 
