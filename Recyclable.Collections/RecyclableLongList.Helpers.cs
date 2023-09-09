@@ -11,24 +11,21 @@ namespace Recyclable.Collections
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static void CopyFollowingItems(RecyclableLongList<T> list, long destinationItemIndex)
 			{
-				T[] currentBlock;
-				T[][] memoryBlocks = list._memoryBlocks;
 				int blockSizeMinus1 = list._blockSizeMinus1,
 					targetItemIndex = (int)(destinationItemIndex & blockSizeMinus1),
-					targetBlockIndex = (int)(destinationItemIndex >> list._blockSizePow2BitShift) + (targetItemIndex != 0 ? 1 : 0),
+					targetBlockIndex = (int)(destinationItemIndex >> list._blockSizePow2BitShift) + (targetItemIndex + 1 == 0 ? 1 : 0),
 					lastTakenBlockIndex = list._lastBlockWithData - 1;
 
 				// Each iteration should
 				// 1. copy the remaining items in the current block (those after the deleted item)
 				// 2. copy the 1st item from the next block. We deleted 1 item which leaves 1 item gap in the block.
 				//    We need to fill it.
-				currentBlock = memoryBlocks[targetBlockIndex];
-				if (targetItemIndex < blockSizeMinus1)
-				{
-					new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
-						.CopyTo(new Span<T>(currentBlock, targetItemIndex, blockSizeMinus1 - targetItemIndex));
-				}
 
+				T[][] memoryBlocks = list._memoryBlocks;
+				T[] currentBlock = memoryBlocks[targetBlockIndex];
+				new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
+					.CopyTo(new Span<T>(currentBlock, targetItemIndex, blockSizeMinus1 - targetItemIndex));
+					
 				while (targetBlockIndex < lastTakenBlockIndex)
 				{
 					new Span<T>(currentBlock)[blockSizeMinus1] = (currentBlock = memoryBlocks[++targetBlockIndex])[0];
@@ -36,7 +33,7 @@ namespace Recyclable.Collections
 						.CopyTo(new Span<T>(currentBlock));
 				}
 
-				if (lastTakenBlockIndex >= 0)
+				if (targetBlockIndex == lastTakenBlockIndex)
 				{
 					new Span<T>(currentBlock)[blockSizeMinus1] = (currentBlock = memoryBlocks[targetBlockIndex + 1])[0];
 					new Span<T>(currentBlock, 1, list._nextItemIndex != 0 ? list._nextItemIndex - 1 : blockSizeMinus1)
@@ -51,7 +48,7 @@ namespace Recyclable.Collections
 				T[][] memoryBlocks = list._memoryBlocks;
 				int blockSizeMinus1 = list._blockSizeMinus1,
 					targetItemIndex = (int)(startingItemIndex & blockSizeMinus1),
-					targetBlockIndex = (int)(startingItemIndex >> list._blockSizePow2BitShift) + (targetItemIndex != 0 ? 1 : 0),
+					targetBlockIndex = (int)(startingItemIndex >> list._blockSizePow2BitShift) + (targetItemIndex + 1 == 0 ? 1 : 0),
 					lastTakenBlockIndex = list._lastBlockWithData;
 
 				if (list._nextItemIndex == 0)
@@ -67,11 +64,8 @@ namespace Recyclable.Collections
 					new Span<T>(currentBlock)[0] = memoryBlocks[currentBlockIndex][blockSizeMinus1];
 				}
 
-				if (lastTakenBlockIndex >= 0)
-				{
-					new Span<T>(currentBlock = memoryBlocks[targetBlockIndex], targetItemIndex, blockSizeMinus1 - targetItemIndex)
-						.CopyTo(new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex));
-				}
+				new Span<T>(currentBlock = memoryBlocks[targetBlockIndex], targetItemIndex, blockSizeMinus1 - targetItemIndex)
+					.CopyTo(new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex));
 
 				new Span<T>(memoryBlocks[targetBlockIndex])[targetItemIndex] = item;
 			}

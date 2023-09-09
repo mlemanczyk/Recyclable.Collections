@@ -26,7 +26,7 @@ namespace Recyclable.Collections
 			{
 				var list = _list;
 
-				if (_currentBlockIndex < list._lastBlockWithData)
+				if (_currentBlockIndex <= list._lastBlockWithData && _currentItemIndex <= (_currentBlockIndex == list._lastBlockWithData && list._nextItemIndex > 0 ? list._nextItemIndex - 1: list._blockSizeMinus1))
 				{
 					_current = list._memoryBlocks[_currentBlockIndex][_currentItemIndex];
 					if (_currentItemIndex + 1 < list._blockSize)
@@ -42,12 +42,6 @@ namespace Recyclable.Collections
 					return true;
 				}
 				// Move to the next item if we're within block boundaries, otherwise report end of collection.
-				else if (list._longCount > 0 && _currentItemIndex < (list._nextItemIndex > 0 ? list._nextItemIndex : list._blockSize))
-				{
-					_current = list._memoryBlocks[_currentBlockIndex][_currentItemIndex];
-					_currentItemIndex++;
-					return true;
-				}
 
 				return false;
 			}

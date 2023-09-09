@@ -30,7 +30,7 @@ namespace Recyclable.CollectionsTests
 		public static readonly IEnumerable<long> ItemsCountVariants = new long[]
 		{
 			//RecyclableDefaults.MinPooledArrayLength - 5, RecyclableDefaults.MinPooledArrayLength - 1, RecyclableDefaults.MinPooledArrayLength, RecyclableDefaults.MinPooledArrayLength + 1, RecyclableDefaults.MinPooledArrayLength + 5, 127, 128, 129, RecyclableDefaults.MinItemsCountForParallelization
-			0, 1, 2, 3, 7, 10, 16, RecyclableDefaults.MinPooledArrayLength - 5, RecyclableDefaults.MinPooledArrayLength - 1, RecyclableDefaults.MinPooledArrayLength, RecyclableDefaults.MinPooledArrayLength + 1, RecyclableDefaults.MinPooledArrayLength + 5, RecyclableDefaults.MinPooledArrayLength * 100, RecyclableDefaults.MinItemsCountForParallelization
+			0, 1, 2, 3, 7, 10, 16, RecyclableDefaults.MinPooledArrayLength - 5, RecyclableDefaults.MinPooledArrayLength - 1, RecyclableDefaults.MinPooledArrayLength, RecyclableDefaults.MinPooledArrayLength + 1, RecyclableDefaults.MinPooledArrayLength + 5, RecyclableDefaults.MinPooledArrayLength * 100
 		};
 
 		public static readonly IEnumerable<int> BlockSizeVariants = new int[]
@@ -83,9 +83,10 @@ namespace Recyclable.CollectionsTests
 			switch (refType)
 			{
 				case false:
-					IEnumerable<long> testData = CreateTestData(itemsCount).ToArray();
+					long[] testData = CreateTestData(itemsCount).ToArray();
 
 					yield return new object[] { $"int[{itemsCount}]", testData, itemsCount };
+					yield return new object[] { $"ReadOnlySpan[{itemsCount}]", testData, itemsCount };
 					//GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 
 					yield return new object[] { $"List<int>(itemsCount: {itemsCount}", testData.ToList(), itemsCount };

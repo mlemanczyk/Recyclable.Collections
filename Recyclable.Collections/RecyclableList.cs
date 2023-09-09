@@ -272,11 +272,6 @@ namespace Recyclable.Collections
 
 			int oldCount = _count;
 			long sourceItemsCount = items._longCount;
-			if (sourceItemsCount > int.MaxValue)
-			{
-				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), $"The number of items exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
-			}
-
 			if (oldCount + sourceItemsCount > int.MaxValue)
 			{
 				ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), $"The total number of items in source and target table exceeds the maximum capacity of {nameof(RecyclableList<T>)}, equal {int.MaxValue}. Please consider using {nameof(RecyclableLongList<T>)}, instead");
@@ -337,7 +332,7 @@ namespace Recyclable.Collections
 			{
 				AddRange(sourceIList);
 			}
-			else if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+			else if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity) && requiredAdditionalCapacity != 0)
 			{
 				AddRangeWithKnownCount(items, _count, requiredAdditionalCapacity);
 				_version++;
@@ -388,7 +383,7 @@ namespace Recyclable.Collections
 
 			if (index < oldCount)
 			{
-				new Span<T>(_memoryBlock, index, oldCount)
+				new Span<T>(_memoryBlock, index, oldCount -= index)
 					.CopyTo(new Span<T>(_memoryBlock, index + 1, oldCount));
 			}
 
@@ -468,11 +463,11 @@ namespace Recyclable.Collections
 
 			if (_capacity >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				_capacity = 0;
 				// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
 				RecyclableArrayPool<T>.ReturnShared(_memoryBlock, false);
 			}
 
+			_capacity = 0;
 			GC.SuppressFinalize(this);
 		}
 	}

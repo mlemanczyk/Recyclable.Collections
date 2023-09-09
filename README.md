@@ -120,6 +120,12 @@
 		1. ✅ `InsertAt` to allow inserting items anywhere
 		1. ✅ `RemoveAt` to allow removing item at any index
 	1. ✅ Release 0.0.4
+	1. ✅ Extend unit tests
+		1. ✅ `.Add` / `.AddRange` must accept `null` values
+		1. ✅ `.AddRange` must accept empty collections
+		1. ✅ `.Remove` / `.RemoveAt` / `.Clear` / `.Dispose` must clear reference when reference type
+		1. ✅ `.Clear` / `.Dispose` must return arrays to pools
+		1. ✅ `int` / `long` variants of `.Count` / `.LongCount`, `.IndexOf` / `.LongIndexOf`, `.Insert`, `.RemoveAt`, `this[]`
 	1. 👉 Add `.ToRecyclableList` / `.ToRecyclableLongList` variants for all supported collection types
 		1. 🅿️ `RecyclableList`
 		1. 🅿️ `RecyclableLongList`
@@ -187,9 +193,9 @@
 		1. 🅿️ Multi-threading benchmarks
 1. 🅿️ Release 0.0.13
 1. 🅿️ Extend unit tests
-	1. 🅿️ `.Add` / `.AddRange` must allow `null` values
-	1. 🅿️ `.Remove` / `.RemoveAt` / `.Clear` must clear reference when reference type
 	1. 🅿️ `RecyclableLongListExtensions.CopyTo`
+	1. 🅿️ Pools
+	1. 🅿️ Multi-threading
 1. 🅿️ Cleanup
 	1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
 	1. 🅿️ Replace properties with field refs, where possible
@@ -198,13 +204,16 @@
 	1. 🅿️ `MathUtils`
 	1. 🅿️ Resolve TODOs
 	1. 🅿️ Remove obsolete methods
-	1. 🅿️ `RecyclableLongListHelpers.Enumerate` to benchmarks
+	1. 🅿️ Add`RecyclableLongListHelpers.Enumerate` to benchmarks
+	1. 🅿️ Review all classes & add `volatile`, where needed
+	1. 🅿️ Remove `expectedItemsCount` parameter from `RecyclableLongList`'s constructor
 1. 🅿️ Release 0.0.14
 1. 🅿️ Optimize
 	1. 🅿️ `ListExtensions`
 	1. 🅿️ `MathUtils`
 	1. 🅿️ `SystemRandomNumberGenerator`
 	1. 🅿️ `RecyclableLongListExtensions`
+	1. 🅿️ Memory release in pools to utilize GC events in case of memory pressure
 1. 🅿️ Release 0.0.15
 1. ✅ Review and remove warnings & hints
 	1. ✅ Warnings

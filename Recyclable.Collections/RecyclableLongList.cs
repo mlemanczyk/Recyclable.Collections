@@ -341,17 +341,14 @@ namespace Recyclable.Collections
 
 		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
 		{
-			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
-
+			Helpers.SetupBlockArrayPooling(this, minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)));
 			if (expectedItemsCount > 0)
 			{
-				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((int)BitOperations.RoundUpToPowerOf2((uint)expectedItemsCount.Value)));
 				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
 			{
-				Helpers.SetupBlockArrayPooling(this, minBlockSize);
 				_blockSizeMinus1 = _blockSize - 1;
 				_memoryBlocks = _emptyMemoryBlocksArray;
 			}
@@ -486,14 +483,22 @@ namespace Recyclable.Collections
 			if (itemsSpan.Length > 0)
 			{
 				itemsSpan.CopyTo(targetBlockArraySpan);
-				_nextItemBlockIndex = targetBlockIndex;
+				if (_nextItemBlockIndex != targetBlockIndex)
+				{
+					_nextItemIndex = itemsSpan.Length;
+					_nextItemBlockIndex = targetBlockIndex;
+				}
+				else
+				{
+					_nextItemIndex += itemsSpan.Length;
+				}
 			}
 			else
 			{
 				_nextItemBlockIndex = targetBlockIndex + 1;
+				_nextItemIndex = 0;
 			}
 
-			_nextItemIndex = itemsSpan.Length;
 			_longCount = targetCapacity;
 			_lastBlockWithData = targetBlockIndex;
 			_version++;
@@ -532,22 +537,38 @@ namespace Recyclable.Collections
 				targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], 0, blockSize);
 			}
 
-			_nextItemIndex = itemsSpan.Length;
-			itemsSpan.CopyTo(targetBlockArraySpan);
+			if (itemsSpan.Length > 0)
+			{
+				itemsSpan.CopyTo(targetBlockArraySpan);
+				if (_nextItemBlockIndex != targetBlockIndex)
+				{
+					_nextItemIndex = itemsSpan.Length;
+					_nextItemBlockIndex = targetBlockIndex;
+				}
+				else
+				{
+					_nextItemIndex += itemsSpan.Length;
+				}
+			}
+			else
+			{
+				_nextItemBlockIndex = targetBlockIndex;
+				_nextItemIndex = 0;
+			}
+
 			_longCount = targetCapacity;
-			_nextItemBlockIndex = targetBlockIndex;
 			_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 			_version++;
 		}
 
-		public void AddRange(ReadOnlySpan<T> itemsSpan)
+		public void AddRange(ReadOnlySpan<T> items)
 		{
-			if (itemsSpan.Length == 0)
+			if (items.Length == 0)
 			{
 				return;
 			}
 
-			long targetCapacity = _longCount + itemsSpan.Length;
+			long targetCapacity = _longCount + items.Length;
 			if (_capacity < targetCapacity)
 			{
 				_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
@@ -559,11 +580,11 @@ namespace Recyclable.Collections
 
 			Span<T[]> memoryBlocksSpan = new(_memoryBlocks, 0, memoryBlockCount);
 			Span<T> targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], _nextItemIndex, blockSize - _nextItemIndex);
-			while (itemsSpan.Length >= targetBlockArraySpan.Length)
+			while (items.Length >= targetBlockArraySpan.Length)
 			{
-				itemsSpan[..targetBlockArraySpan.Length].CopyTo(targetBlockArraySpan);
-				itemsSpan = itemsSpan[targetBlockArraySpan.Length..];
-				if (itemsSpan.Length == 0)
+				items[..targetBlockArraySpan.Length].CopyTo(targetBlockArraySpan);
+				items = items[targetBlockArraySpan.Length..];
+				if (items.Length == 0)
 				{
 					break;
 				}
@@ -572,17 +593,25 @@ namespace Recyclable.Collections
 				targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], 0, blockSize);
 			}
 
-			if (itemsSpan.Length > 0)
+			if (items.Length > 0)
 			{
-				itemsSpan.CopyTo(targetBlockArraySpan);
-				_nextItemBlockIndex = targetBlockIndex;
+				items.CopyTo(targetBlockArraySpan);
+				if (_nextItemBlockIndex != targetBlockIndex)
+				{
+					_nextItemIndex = items.Length;
+					_nextItemBlockIndex = targetBlockIndex;
+				}
+				else
+				{
+					_nextItemIndex += items.Length;
+				}
 			}
 			else
 			{
 				_nextItemBlockIndex = targetBlockIndex + 1;
+				_nextItemIndex = 0;
 			}
 
-			_nextItemIndex = itemsSpan.Length;
 			_longCount = targetCapacity;
 			_lastBlockWithData = targetBlockIndex;
 			_version++;
@@ -749,10 +778,26 @@ namespace Recyclable.Collections
 					targetBlockArraySpan = new(memoryBlocksSpan[targetBlockIndex], 0, blockSize);
 				}
 
-				itemsSpan.CopyTo(targetBlockArraySpan);
+				if (itemsSpan.Length > 0)
+				{
+					itemsSpan.CopyTo(targetBlockArraySpan);
+					if (_nextItemBlockIndex != targetBlockIndex)
+					{
+						_nextItemIndex = itemsSpan.Length;
+						_nextItemBlockIndex = targetBlockIndex;
+					}
+					else
+					{
+						_nextItemIndex += itemsSpan.Length;
+					}
+				}
+				else
+				{
+					_nextItemIndex = 0;
+				}
+
 				_longCount = targetCapacity;
 				_nextItemBlockIndex = targetBlockIndex;
-				_nextItemIndex = itemsSpan.Length;
 				_lastBlockWithData = targetBlockIndex - (itemsSpan.Length > 0 ? 0 : 1);
 			}
 			finally
@@ -766,36 +811,36 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public void AddRange(IEnumerable<T> source)
+		public void AddRange(IEnumerable<T> items)
 		{
-			if (source is RecyclableLongList<T> sourceRecyclableLongList)
+			if (items is RecyclableLongList<T> sourceRecyclableLongList)
 			{
 				AddRange(sourceRecyclableLongList);
 			}
-			else if (source is RecyclableList<T> sourceRecyclableList)
+			else if (items is RecyclableList<T> sourceRecyclableList)
 			{
 				AddRange(sourceRecyclableList);
 			}
-			else if (source is T[] sourceArray)
+			else if (items is T[] sourceArray)
 			{
 				AddRange(sourceArray);
 			}
-			else if (source is List<T> sourceList)
+			else if (items is List<T> sourceList)
 			{
 				AddRange(sourceList);
 			}
-			else if (source is IList<T> sourceIList)
+			else if (items is IList<T> sourceIList)
 			{
 				AddRange(sourceIList);
 			}
-			else if (source.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+			else if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
 			{
-				AddRangeWithKnownCount(source, requiredAdditionalCapacity);
+				AddRangeWithKnownCount(items, requiredAdditionalCapacity);
 				_version++;
 			}
 			else
 			{
-				AddRangeEnumerated(source);
+				AddRangeEnumerated(items);
 				_version++;
 			}
 		}
@@ -807,14 +852,22 @@ namespace Recyclable.Collections
 				return;
 			}
 
+			T[][] memoryBlocks = _memoryBlocks;
+			int memoryBlocksCount = _reservedBlockCount;
+			int toRemoveIdx = 0;
+
 			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
 			{
-				T[][] memoryBlocks = _memoryBlocks;
-				int memoryBlocksCount = _reservedBlockCount;
-				int toRemoveIdx = 0;
 				while (toRemoveIdx < memoryBlocksCount)
 				{
 					RecyclableArrayPool<T>.ReturnShared(memoryBlocks[toRemoveIdx++], _needsClearing);
+				}
+			}
+			else if (_needsClearing)
+			{
+				while (toRemoveIdx < memoryBlocksCount)
+				{
+					Array.Clear(memoryBlocks[toRemoveIdx++]);
 				}
 			}
 
@@ -954,17 +1007,19 @@ namespace Recyclable.Collections
 				new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = item;
 			}
 
-			if (_nextItemIndex < _blockSizeMinus1)
+			if (++_nextItemIndex == _blockSize)
 			{
-				if (++_nextItemIndex == 1)
+				if (_nextItemBlockIndex > _lastBlockWithData)
 				{
 					_lastBlockWithData++;
 				}
-			}
-			else
-			{
-				_nextItemIndex = 0;
+
 				_nextItemBlockIndex++;
+				_nextItemIndex = 0;
+			}
+			else if (_nextItemIndex == 1 && _nextItemBlockIndex > _lastBlockWithData)
+			{
+				_lastBlockWithData++;
 			}
 
 			_version++;
