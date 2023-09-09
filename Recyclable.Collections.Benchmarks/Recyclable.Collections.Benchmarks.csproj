@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Recyclable.CollectionsTests\Recyclable.CollectionsTests.csproj" />
 	  <ProjectReference Include="..\Recyclable.Collections\Recyclable.Collections.csproj" />
 	</ItemGroup>
 
