@@ -970,17 +970,19 @@ namespace Recyclable.Collections
 				new Span<T>(_memoryBlocks[_nextItemBlockIndex])[_nextItemIndex] = item;
 			}
 
-			if (_nextItemIndex < _blockSizeMinus1)
+			if (++_nextItemIndex == _blockSize)
 			{
-				if (++_nextItemIndex == 1)
+				if (_nextItemBlockIndex > _lastBlockWithData)
 				{
 					_lastBlockWithData++;
 				}
-			}
-			else
-			{
-				_nextItemIndex = 0;
+
 				_nextItemBlockIndex++;
+				_nextItemIndex = 0;
+			}
+			else if (_nextItemIndex == 1 && _nextItemBlockIndex > _lastBlockWithData)
+			{
+				_lastBlockWithData++;
 			}
 
 			_version++;
