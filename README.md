@@ -126,18 +126,19 @@
 		1. ✅ `.Remove` / `.RemoveAt` / `.Clear` / `.Dispose` must clear reference when reference type
 		1. ✅ `.Clear` / `.Dispose` must return arrays to pools
 		1. ✅ `int` / `long` variants of `.Count` / `.LongCount`, `.IndexOf` / `.LongIndexOf`, `.Insert`, `.RemoveAt`, `this[]`
-	1. 👉 Add `.ToRecyclableList` / `.ToRecyclableLongList` variants for all supported collection types
-		1. 🅿️ `RecyclableList`
-		1. 🅿️ `RecyclableLongList`
-		1. 🅿️ `IList<T>`
-		1. 🅿️ `ICollection<T>`
-		1. 🅿️ `IEnumerable<T>`
-		1. 🅿️ `IEnumerable`
-		1. 🅿️ `IReadOnlyList<T>`
-		1. 🅿️ `IReadOnlyCollection<T>`
-		1. 🅿️ `IList`
-		1. 🅿️ `ICollection`
-	1. 🅿️ Release 0.0.5
+	1. ✅ Add `.ToRecyclableList` / `.ToRecyclableLongList` variants for all supported collection types
+		1. ✅ `Array`
+		1. ✅ `ICollection`
+		1. ✅ `ICollection<T>`
+		1. ✅ `IEnumerable`
+		1. ✅ `IEnumerable<T>`
+		1. ✅ `IReadOnlyList<T>`
+		1. ✅ `ReadOnlySpan<T>`
+		1. ✅ `RecyclableList`
+		1. ✅ `RecyclableLongList`
+		1. ✅ `Span<T>`
+		1. ✅ `T[]`
+	1. 👉 Release 0.0.5
 	1. 🅿️ Add support for `ulong` indexing
 		1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
 		1. 🅿️ Convert block indexes from `int` to `ulong` or `long`

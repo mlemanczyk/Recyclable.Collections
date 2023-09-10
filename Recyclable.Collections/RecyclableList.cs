@@ -19,13 +19,13 @@ namespace Recyclable.Collections
 		internal ulong _version;
 		public ulong Version => _version;
 
-		private IEnumerator<T> AddRangeEnumerated(IEnumerable<T> source, int growByCount)
+		private void AddRangeEnumerated(IEnumerable<T> items, int growByCount)
 		{
 			int targetItemIndex = _count;
 			Span<T> memorySpan;
 
 			int i;
-			var enumerator = source.GetEnumerator();
+			var enumerator = items.GetEnumerator();
 
 			int capacity = _capacity;
 			memorySpan = new(_memoryBlock);
@@ -55,15 +55,14 @@ namespace Recyclable.Collections
 
 			_capacity = capacity;
 			_count = targetItemIndex;
-			return enumerator;
 		}
 
-		private void AddRangeWithKnownCount(IEnumerable<T> source, int currentItemsCount, int requiredAdditionalCapacity)
+		private void AddRangeWithKnownCount(IEnumerable<T> items, int currentItemsCount, int requiredAdditionalCapacity)
 		{
 			_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, currentItemsCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)(currentItemsCount + requiredAdditionalCapacity))));
 
 			Span<T> memorySpan = new(_memoryBlock);
-			foreach (var item in source)
+			foreach (var item in items)
 			{
 				memorySpan[currentItemsCount++] = item;
 			}
@@ -91,6 +90,30 @@ namespace Recyclable.Collections
 				_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 				_capacity = RecyclableDefaults.InitialCapacity;
 			}
+		}
+
+		public void AddRange(IReadOnlyList<T> items)
+		{
+			int sourceItemsCount = items.Count;
+			if (_capacity < _count + sourceItemsCount)
+			{
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, _count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + sourceItemsCount))));
+			}
+
+			Span<T> memorySpan = new(_memoryBlock, _count, sourceItemsCount);
+			for (var sourceItemIndex = 0; sourceItemIndex < sourceItemsCount; sourceItemIndex++)
+			{
+				memorySpan[sourceItemIndex] = items[sourceItemIndex];
+			}
+
+			_count += sourceItemsCount;
+		}
+
+		public RecyclableList(in Array source)
+		{
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
+			AddRange(source);
 		}
 
 		public RecyclableList(RecyclableList<T> source)
@@ -121,6 +144,13 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
+		public RecyclableList(IReadOnlyList<T> source)
+		{
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
+			AddRange(source);
+		}
+
 		public RecyclableList(List<T> source)
 		{
 			_capacity = RecyclableDefaults.InitialCapacity;
@@ -128,11 +158,36 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-		public RecyclableList(IList<T> source)
+		public RecyclableList(ICollection source)
 		{
 			_capacity = RecyclableDefaults.InitialCapacity;
 			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
+		}
+
+		public RecyclableList(ICollection<T> source)
+		{
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
+			AddRange(source);
+		}
+
+		public RecyclableList(IEnumerable source, int initialCapacity = RecyclableDefaults.InitialCapacity)
+		{
+			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
+			{
+				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
+					? RecyclableArrayPool<T>.RentShared(checked((int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity)))
+					: new T[initialCapacity];
+				_capacity = _memoryBlock.Length;
+			}
+			else
+			{
+				_capacity = RecyclableDefaults.InitialCapacity;
+				_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
+			}
+
+			AddRange(source, RecyclableDefaults.MinPooledArrayLength);
 		}
 
 		public RecyclableList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.InitialCapacity)
@@ -150,6 +205,13 @@ namespace Recyclable.Collections
 				_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			}
 
+			AddRange(source);
+		}
+
+		public RecyclableList(Span<T> source)
+		{
+			_capacity = RecyclableDefaults.InitialCapacity;
+			_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
 			AddRange(source);
 		}
 
@@ -198,6 +260,19 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public void AddRange(in Array items)
+		{
+			if (_capacity < _count + items.Length)
+			{
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, _count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Length))));
+			}
+
+			Array.Copy(items, items.GetLowerBound(0), _memoryBlock, _count, items.LongLength);
+			_count += items.Length;
+			_version++;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(in T[] items)
 		{
 			if (_capacity < _count + items.Length)
@@ -224,6 +299,19 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public void AddRange(Span<T> items)
+		{
+			if (_capacity < _count + items.Length)
+			{
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, _count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Length))));
+			}
+
+			items.CopyTo(new Span<T>(_memoryBlock, _count, items.Length));
+			_count += items.Length;
+			_version++;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(List<T> items)
 		{
 			if (_capacity < _count + items.Count)
@@ -237,7 +325,20 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public void AddRange(IList<T> items)
+		public void AddRange(ICollection items)
+		{
+			if (_capacity < _count + items.Count)
+			{
+				_capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, _count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(_count + items.Count))));
+			}
+
+			items.CopyTo(_memoryBlock, _count);
+			_count += items.Count;
+			_version++;
+		}
+
+		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+		public void AddRange(ICollection<T> items)
 		{
 			if (_capacity < _count + items.Count)
 			{
@@ -313,24 +414,79 @@ namespace Recyclable.Collections
 			_version++;
 		}
 
+		public IEnumerator AddRange(IEnumerable source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
+		{
+			int targetItemIndex = _count;
+			Span<T> memorySpan;
+
+			int i;
+			var enumerator = source.GetEnumerator();
+
+			int capacity = _capacity;
+			memorySpan = new(_memoryBlock);
+			if (enumerator.MoveNext())
+			{
+				int available = capacity - targetItemIndex;
+				do
+				{
+					if (targetItemIndex + growByCount > capacity)
+					{
+						capacity = RecyclableListHelpers<T>.ResizeAndCopy(this, targetItemIndex, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIndex + growByCount))));
+						memorySpan = new(_memoryBlock);
+						available = capacity - targetItemIndex;
+					}
+
+					for (i = 0; i < available; i++)
+					{
+						memorySpan[targetItemIndex++] = (T)enumerator.Current;
+						if (!enumerator.MoveNext())
+						{
+							break;
+						}
+					}
+				}
+				while (i >= available);
+			}
+
+			_capacity = capacity;
+			_count = targetItemIndex;
+			return enumerator;
+		}
+
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public void AddRange(IEnumerable<T> items, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
-			if (items is T[] sourceArray)
+			if (items is RecyclableList<T> sourceRecyclableList)
+			{
+				AddRange(sourceRecyclableList);
+			}
+			else if (items is RecyclableLongList<T> sourceRecyclableLongList)
+			{
+				AddRange(sourceRecyclableLongList);
+			}
+			else if (items is T[] sourceArray)
 			{
 				AddRange(sourceArray);
+			}
+			else if (items is Array sourceArrayWithObjects)
+			{
+				AddRange(sourceArrayWithObjects);
 			}
 			else if (items is List<T> sourceList)
 			{
 				AddRange(sourceList);
 			}
-			else if (items is RecyclableList<T> sourceRecyclableList)
+			else if (items is ICollection<T> sourceICollection)
 			{
-				AddRange(sourceRecyclableList);
+				AddRange(sourceICollection);
 			}
-			else if (items is IList<T> sourceIList)
+			else if (items is ICollection sourceICollectionWithObjects)
 			{
-				AddRange(sourceIList);
+				AddRange(sourceICollectionWithObjects);
+			}
+			else if (items is IReadOnlyList<T> sourceIReadOnlyList)
+			{
+				AddRange(sourceIReadOnlyList);
 			}
 			else if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity) && requiredAdditionalCapacity != 0)
 			{

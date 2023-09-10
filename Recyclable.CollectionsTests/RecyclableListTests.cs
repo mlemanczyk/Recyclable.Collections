@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Recyclable.Collections;
 using Recyclable.Collections.Linq;
+using System.Collections;
 
 #pragma warning disable xUnit1026, RCS1163, IDE0060, RCS1235
 
@@ -29,9 +30,33 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableList<long>();
 
 			// Act
-			if (testCase.Contains("ReadOnlySpan[", StringComparison.OrdinalIgnoreCase))
+			if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((Array)testData);
+			}
+			else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((ICollection)testData);
+			}
+			else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((ICollection<long>)testData);
+			}
+			else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((IEnumerable)testData);
+			}
+			else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((IReadOnlyList<long>)testData);
+			}
+			else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
 			{
 				list.AddRange(new ReadOnlySpan<long>((long[])testData));
+			}
+			else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange(new Span<long>((long[])testData));
 			}
 			else if (testData is long[] testDataArray)
 			{
@@ -76,9 +101,33 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableList<long>();
 
 			// Act
-			if (testCase.Contains("ReadOnlySpan[", StringComparison.OrdinalIgnoreCase))
+			if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((Array)testData);
+			}
+			else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((ICollection)testData);
+			}
+			else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((ICollection<long>)testData);
+			}
+			else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((IEnumerable)testData);
+			}
+			else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((IReadOnlyList<long>)testData);
+			}
+			else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
 			{
 				list.AddRange(new ReadOnlySpan<long>((long[])testData));
+			}
+			else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange(new Span<long>((long[])testData));
 			}
 			else if (testData is long[] testDataArray)
 			{
@@ -123,9 +172,40 @@ namespace Recyclable.CollectionsTests
 			using var list = new RecyclableList<long>();
 
 			// Act
-			if (testCase.Contains("ReadOnlySpan[", StringComparison.OrdinalIgnoreCase))
+			if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((Array)testData);
+				list.AddRange((Array)testData);
+			}
+			else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((ICollection)testData);
+				list.AddRange((ICollection)testData);
+			}
+			else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((ICollection<long>)testData);
+				list.AddRange((ICollection<long>)testData);
+			}
+			else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((IEnumerable)testData);
+				list.AddRange((IEnumerable)testData);
+			}
+			else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				list.AddRange((IReadOnlyList<long>)testData);
+				list.AddRange((IReadOnlyList<long>)testData);
+			}
+			else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
 			{
 				var readOnlySpan = new ReadOnlySpan<long>((long[])testData);
+				list.AddRange(readOnlySpan);
+				list.AddRange(readOnlySpan);
+			}
+			else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+			{
+				var readOnlySpan = new Span<long>((long[])testData);
 				list.AddRange(readOnlySpan);
 				list.AddRange(readOnlySpan);
 			}
