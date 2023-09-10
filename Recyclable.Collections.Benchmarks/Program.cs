@@ -45,7 +45,6 @@ namespace Recyclable.Collections.Benchmarks
 			_ = BenchmarkRunner.Run<RecyclableLongListPocBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<TaskRunVsTaskFactoryStartNewBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<WhenParallelSearchBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<LessOperatorVsAndOperatorBenchmarks>(BenchmarkConfig);
