@@ -137,8 +137,8 @@
 		1. ✅ `RecyclableLongList`
 		1. ✅ `Span<T>`
 		1. ✅ `T[]`
-	1. 👉 Release 0.0.5
-	1. 🅿️ Add support for `ulong` indexing
+	1. ✅ Release 0.0.5
+	1. 👉 Add support for `ulong` indexing
 		1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
 		1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
 	1. 🅿️ Overflow review
