@@ -42,7 +42,6 @@
 	1. ✅ `RemoveAt`
 	1. ✅ `Resize`
 	1. ✅ `this[int index]`
-
 1. ✅ Port `RecyclableList<T>` implementation to `RecyclableLongList<T>`
 1. 👉 Optimize `RecyclableLongList<T>`
 	1. ✅ `Add`
