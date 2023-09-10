@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
-		<PackageVersion>0.0.4</PackageVersion>
+		<PackageVersion>0.0.5</PackageVersion>
 		<Authors>Marek Lemańczyk</Authors>
 		<Company>N/A</Company>
 		<Product>Recyclable.Collections</Product>
@@ -18,7 +17,7 @@
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Various performance improvements and fixes. Initial RecyclableLongList implementation finished.</PackageReleaseNotes>
+		<PackageReleaseNotes>Various performance improvements and fixes. All major .ToRecyclableList() &amp; .ToRecyclableLongList() variants added.</PackageReleaseNotes>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 
