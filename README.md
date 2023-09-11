@@ -194,6 +194,7 @@
 1. 🅿️ Release 0.0.13
 1. 🅿️ Extend unit tests
 	1. 🅿️ `RecyclableLongListExtensions.CopyTo`
+	1. 🅿️ `RecyclableLongList` cases for large items count (&gt;`int.MaxValue`)
 	1. 🅿️ Pools
 	1. 🅿️ Multi-threading
 1. 🅿️ Cleanup
