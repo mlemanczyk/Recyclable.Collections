@@ -369,7 +369,7 @@ namespace Recyclable.CollectionsTests
 			// Assert
 			var afterItems = blocks.SelectMany(x => x.Take(targetBlockSize)).Take((int)itemsCount).ToArray();
 			_ = afterItems.Should().AllSatisfy(x => x.Should().BeNull());
-			_ = list.AsArray.Should().AllBeOfType<object[]>().And.AllSatisfy(x => x.Should().BeEmpty());
+			_ = list.AsArray.Should().AllSatisfy(x => x.Should().BeNull());
 		}
 
 		[Theory]
@@ -404,7 +404,7 @@ namespace Recyclable.CollectionsTests
 
 			// Assert
 			using RecyclableLongList<long> sameInstances = new(testData, RecyclableDefaults.MinPooledArrayLength);
-			_ = sameInstances.AsArray.Should().Equal(firstArrays.Reverse());
+			_ = sameInstances.AsArray.Should().BeEquivalentTo(firstArrays.Reverse());
 
 			using RecyclableLongList<long> otherInstances = new(testData, RecyclableDefaults.MinPooledArrayLength);
 			_ = otherInstances.AsArray.Should().NotIntersectWith(firstArrays);
@@ -533,7 +533,7 @@ namespace Recyclable.CollectionsTests
 
 			// Assert
 			_ = blocks.SelectMany(x => x.Take(targetBlockSize)).Take((int)itemsCount).Should().AllSatisfy(x => x.Should().BeNull());
-			_ = list.AsArray.Should().AllBeOfType<object[]>().And.AllSatisfy(x => x.Should().BeEmpty());
+			_ = list.AsArray.Should().AllSatisfy(x => x.Should().BeNull());
 		}
 
 		[Fact]

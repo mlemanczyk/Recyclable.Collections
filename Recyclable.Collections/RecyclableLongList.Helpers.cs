@@ -173,12 +173,12 @@ namespace Recyclable.Collections
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 			{
-				int sourceBlockCount = list._reservedBlockCount;
+				int sourceBlockCount = list._memoryBlocks?.Length ?? 0;
 				int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0));
 				int blockIndex;
 
 				T[][] newMemoryBlocks;
-				if (requiredBlockCount > (list._memoryBlocks?.Length ?? 0))
+				if (requiredBlockCount > sourceBlockCount)
 				{
 					// Allocate new memory block for all arrays
 					newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? RecyclableArrayPool<T[]>.RentShared(requiredBlockCount) : new T[requiredBlockCount][];
@@ -190,7 +190,7 @@ namespace Recyclable.Collections
 						// We can now return the old memory block for all arrays itself
 						if (sourceBlockCount >= RecyclableDefaults.MinPooledArrayLength)
 						{
-							RecyclableArrayPool<T[]>.ReturnShared(list._memoryBlocks!, _needsClearing);
+							RecyclableArrayPool<T[]>.ReturnShared(list._memoryBlocks!, true);
 						}
 					}
 
@@ -202,44 +202,27 @@ namespace Recyclable.Collections
 				}
 
 				// Allocate arrays for any new blocks
-				if (requiredBlockCount > sourceBlockCount)
+				if (requiredBlockCount > 0)
 				{
 					if (minBlockSize >= RecyclableDefaults.MinPooledArrayLength)
 					{
-						blockIndex = sourceBlockCount;
+						blockIndex = requiredBlockCount - 1;
 						ref OneSizeArrayPool<T> blockArrayPool = ref RecyclableArrayPool<T>.Shared(minBlockSize);
-						while (true)
+						while (blockIndex >= 0 && newMemoryBlocks[blockIndex] == null)
 						{
-							newMemoryBlocks[blockIndex] = blockArrayPool.Rent();
-							if (blockIndex + 1 < requiredBlockCount)
-							{
-								blockIndex++;
-							}
-							else
-							{
-								break;
-							}
+							newMemoryBlocks[blockIndex--] = blockArrayPool.Rent();
 						}
 					}
 					else
 					{
-						blockIndex = sourceBlockCount;
-						while (true)
+						blockIndex = requiredBlockCount - 1;
+						while (blockIndex >= 0 && newMemoryBlocks[blockIndex] == null)
 						{
-							newMemoryBlocks[blockIndex] = new T[minBlockSize];
-							if (blockIndex + 1 < requiredBlockCount)
-							{
-								blockIndex++;
-							}
-							else
-							{
-								break;
-							}
+							newMemoryBlocks[blockIndex--] = new T[minBlockSize];
 						}
 					}
 				}
 
-				list._reservedBlockCount = requiredBlockCount;
 				return requiredBlockCount << minBlockSizePow2Shift;
 			}
 

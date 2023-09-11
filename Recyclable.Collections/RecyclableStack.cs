@@ -4,8 +4,8 @@ namespace Recyclable.Collections
 {
 	internal class RecyclableStack<T> : IList<T>, IDisposable
 	{
+		private static readonly bool _needsClearing = !typeof(T).IsValueType;
 		private bool _disposedValue;
-		private readonly int _blockSize;
 
 		protected RecyclableLongList<T> List { get; }
 		public int Count => checked((int)List._longCount);
@@ -21,19 +21,16 @@ namespace Recyclable.Collections
 
 		public RecyclableStack(int blockSize = RecyclableDefaults.BlockSize)
 		{
-			_blockSize = blockSize;
 			List = new(blockSize);
 		}
 
 		public RecyclableStack(IEnumerable<T> list, int blockSize = RecyclableDefaults.BlockSize)
 		{
-			_blockSize = blockSize;
 			List = new(list, blockSize);
 		}
 
 		public RecyclableStack(RecyclableLongList<T> list, int blockSize = RecyclableDefaults.BlockSize)
 		{
-			_blockSize = blockSize;
 			List = new(list, blockSize);
 		}
 
@@ -44,11 +41,23 @@ namespace Recyclable.Collections
 
 		public T Pop()
 		{
-			var toRemove = List[LongCount - 1];
+			RecyclableLongList<T> list = List;
+			var itemIndex = (int)(list.LongCount & list._blockSizeMinus1) - 1;
+			var blockIndex = (int)(LongCount >> list._blockSizePow2BitShift);
+			var toRemove = list._memoryBlocks[blockIndex][itemIndex];
+			
 			LongCount--;
-			if ((List._capacity * _blockSize) - LongCount == _blockSize)
+
+			if (_needsClearing)
 			{
-				List.RemoveBlock(List._reservedBlockCount - 1);
+#nullable disable
+				new Span<T>(list._memoryBlocks[blockIndex])[itemIndex] = default;
+#nullable restore
+			}
+
+			if (itemIndex == 0)
+			{
+				list.RemoveBlock(blockIndex);
 			}
 
 			return toRemove;
