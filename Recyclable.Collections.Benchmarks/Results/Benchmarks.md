@@ -5570,553 +5570,1089 @@ AMD Ryzen 7 4700U with Radeon Graphics, 1 CPU, 8 logical and 8 physical cores
 ## Environment
 
 ```csharp
-BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.2134/22H2/2022Update/SunValley2)
+BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.2283/22H2/2022Update/SunValley2)
 AMD Ryzen 7 4700U with Radeon Graphics, 1 CPU, 8 logical and 8 physical cores
 .NET SDK=7.0.400
-  [Host]     : .NET 7.0.10 (7.0.1023.36312), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.10 (7.0.1023.36312), X64 RyuJIT AVX2
+  [Host]     : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.11 (7.0.1123.42427), X64 RyuJIT AVX2
 ```
 
 <details>
 <summary><strong>Non-Versioned & Versioned foreach Benchmark Results - click to expand</strong></summary>
 
-|   Method | TestCase | BaseDataType |           DataType | TestObjectCount |             Mean |          Error |         StdDev |           Median | Ratio | RatioSD | Allocated | Alloc Ratio |
-|--------- |--------- |------------- |------------------- |---------------- |-----------------:|---------------:|---------------:|-----------------:|------:|--------:|----------:|------------:|
-| Baseline |  ForEach |         List |              Array |               0 |         3.556 ns |      0.0671 ns |      0.0628 ns |         3.524 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               0 |         3.444 ns |      0.0078 ns |      0.0069 ns |         3.443 ns |  0.97 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               1 |         5.659 ns |      0.0561 ns |      0.0524 ns |         5.628 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               1 |         4.178 ns |      0.0041 ns |      0.0039 ns |         4.177 ns |  0.74 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               2 |         7.425 ns |      0.0407 ns |      0.0318 ns |         7.426 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               2 |         5.379 ns |      0.0038 ns |      0.0034 ns |         5.378 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               3 |         9.516 ns |      0.2201 ns |      0.4497 ns |         9.427 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               3 |         6.898 ns |      0.0413 ns |      0.0366 ns |         6.893 ns |  0.72 |    0.04 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               4 |        11.439 ns |      0.2450 ns |      0.2406 ns |        11.430 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               4 |         7.911 ns |      0.1592 ns |      0.1329 ns |         7.852 ns |  0.69 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               5 |        12.931 ns |      0.0242 ns |      0.0215 ns |        12.930 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               5 |         9.484 ns |      0.0232 ns |      0.0194 ns |         9.485 ns |  0.73 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               6 |        15.346 ns |      0.0565 ns |      0.0501 ns |        15.345 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               6 |        10.753 ns |      0.0351 ns |      0.0328 ns |        10.749 ns |  0.70 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               7 |        17.039 ns |      0.0606 ns |      0.0567 ns |        17.008 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               7 |        11.947 ns |      0.0259 ns |      0.0229 ns |        11.937 ns |  0.70 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               8 |        18.738 ns |      0.0943 ns |      0.0882 ns |        18.742 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               8 |        14.082 ns |      0.1682 ns |      0.1573 ns |        14.048 ns |  0.75 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |               9 |        20.407 ns |      0.1238 ns |      0.1034 ns |        20.415 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |               9 |        14.854 ns |      0.0388 ns |      0.0363 ns |        14.854 ns |  0.73 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              10 |        23.661 ns |      0.5692 ns |      1.6782 ns |        22.771 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              10 |        16.078 ns |      0.0496 ns |      0.0440 ns |        16.073 ns |  0.68 |    0.05 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              11 |        23.594 ns |      0.0553 ns |      0.0518 ns |        23.579 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              11 |        17.301 ns |      0.0634 ns |      0.0593 ns |        17.299 ns |  0.73 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              12 |        25.303 ns |      0.0807 ns |      0.0755 ns |        25.292 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              12 |        18.911 ns |      0.0848 ns |      0.0751 ns |        18.902 ns |  0.75 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              13 |        26.975 ns |      0.0558 ns |      0.0495 ns |        26.966 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              13 |        20.022 ns |      0.0565 ns |      0.0529 ns |        20.021 ns |  0.74 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              14 |        28.710 ns |      0.0363 ns |      0.0284 ns |        28.712 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              14 |        21.406 ns |      0.2113 ns |      0.1977 ns |        21.481 ns |  0.74 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              15 |        30.540 ns |      0.1137 ns |      0.1064 ns |        30.539 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              15 |        22.457 ns |      0.2010 ns |      0.1880 ns |        22.452 ns |  0.74 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              16 |        32.316 ns |      0.2042 ns |      0.1705 ns |        32.352 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              16 |        23.386 ns |      0.0670 ns |      0.0627 ns |        23.375 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              17 |        33.966 ns |      0.1382 ns |      0.1225 ns |        33.983 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              17 |        24.530 ns |      0.0642 ns |      0.0600 ns |        24.515 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              18 |        38.873 ns |      1.0779 ns |      3.1781 ns |        38.324 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              18 |        25.713 ns |      0.0812 ns |      0.0759 ns |        25.687 ns |  0.67 |    0.05 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              19 |        37.383 ns |      0.1885 ns |      0.1671 ns |        37.395 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              19 |        26.977 ns |      0.1188 ns |      0.1111 ns |        26.946 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              20 |        39.126 ns |      0.2292 ns |      0.1789 ns |        39.079 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              20 |        28.166 ns |      0.0744 ns |      0.0696 ns |        28.178 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              30 |        62.877 ns |      0.2241 ns |      0.1871 ns |        62.879 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              30 |        40.162 ns |      0.0436 ns |      0.0387 ns |        40.153 ns |  0.64 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              32 |        66.023 ns |      0.1817 ns |      0.1518 ns |        65.995 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              32 |        49.959 ns |      0.4917 ns |      0.4599 ns |        50.038 ns |  0.76 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              36 |        85.131 ns |      1.7369 ns |      3.7389 ns |        86.603 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              36 |        53.870 ns |      0.1240 ns |      0.1160 ns |        53.854 ns |  0.64 |    0.04 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              37 |        75.447 ns |      0.4714 ns |      0.3937 ns |        75.343 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              37 |        55.012 ns |      0.1682 ns |      0.1573 ns |        54.939 ns |  0.73 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              40 |        80.790 ns |      0.4419 ns |      0.4133 ns |        80.772 ns |  1.00 |    0.00 |         - |          NA |
-| Baseline |  ForEach |         List |              Array |              40 |        80.660 ns |      0.2784 ns |      0.2468 ns |        80.626 ns |  1.00 |    0.01 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              40 |        57.625 ns |      0.0916 ns |      0.0857 ns |        57.595 ns |  0.71 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              40 |        57.795 ns |      0.0560 ns |      0.0524 ns |        57.768 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              50 |        97.797 ns |      0.1702 ns |      0.1422 ns |        97.801 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              50 |        70.114 ns |      0.2507 ns |      0.2345 ns |        70.002 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              60 |       114.620 ns |      0.3906 ns |      0.3262 ns |       114.635 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              60 |        82.251 ns |      0.1860 ns |      0.1740 ns |        82.254 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              70 |       131.926 ns |      0.6398 ns |      0.5343 ns |       131.971 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              70 |        94.263 ns |      0.2776 ns |      0.2461 ns |        94.157 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              80 |       148.975 ns |      0.7613 ns |      0.6749 ns |       148.712 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              80 |       106.379 ns |      0.1411 ns |      0.1251 ns |       106.406 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |              90 |       165.533 ns |      0.5289 ns |      0.4689 ns |       165.383 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |              90 |       118.419 ns |      0.1260 ns |      0.1179 ns |       118.427 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |             100 |       182.215 ns |      0.4544 ns |      0.4028 ns |       182.214 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |             100 |       130.154 ns |      0.2161 ns |      0.1805 ns |       130.189 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |             128 |       229.451 ns |      0.3942 ns |      0.3292 ns |       229.461 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |             128 |       163.894 ns |      0.2560 ns |      0.2137 ns |       163.825 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |             256 |       511.527 ns |     15.2483 ns |     44.9599 ns |       522.173 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |             256 |       319.540 ns |      1.2302 ns |      1.1507 ns |       318.862 ns |  0.62 |    0.06 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |             512 |       883.623 ns |      3.5170 ns |      3.2898 ns |       882.849 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |             512 |       629.541 ns |      1.6830 ns |      1.5743 ns |       629.014 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |            1024 |     1,749.559 ns |      2.1996 ns |      1.8367 ns |     1,749.509 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |            1024 |     1,247.555 ns |      1.2864 ns |      1.0742 ns |     1,247.484 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |            2048 |     3,488.298 ns |     10.3209 ns |      9.6542 ns |     3,485.231 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |            2048 |     2,491.475 ns |      9.7076 ns |      8.6056 ns |     2,487.451 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |            4096 |     6,971.703 ns |     23.2593 ns |     21.7568 ns |     6,963.106 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |            4096 |     4,967.542 ns |     13.5412 ns |     12.0039 ns |     4,962.909 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |            8192 |    13,931.798 ns |     46.8783 ns |     43.8500 ns |    13,914.436 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |            8192 |     9,945.292 ns |     43.8229 ns |     40.9920 ns |     9,922.783 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |           16384 |    27,920.001 ns |    149.3490 ns |    139.7011 ns |    27,882.077 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |           16384 |    19,802.027 ns |     14.5751 ns |     12.9205 ns |    19,801.050 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |           32768 |    55,490.146 ns |     22.6493 ns |     20.0780 ns |    55,488.391 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |           32768 |    39,605.610 ns |     46.3316 ns |     38.6890 ns |    39,597.137 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |           65536 |   111,250.434 ns |    202.8479 ns |    189.7441 ns |   111,173.834 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |           65536 |    79,779.299 ns |     77.8759 ns |     69.0349 ns |    79,773.663 ns |  0.72 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |          131072 |   222,922.867 ns |     86.5954 ns |     72.3111 ns |   222,930.225 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |              Array |          131072 |   158,836.532 ns |     91.8668 ns |     85.9323 ns |   158,847.021 ns |  0.71 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |              Array |          850000 | 1,568,694.713 ns |  1,569.0386 ns |  1,390.9119 ns | 1,568,460.352 ns |  1.00 |    0.00 |       1 B |        1.00 |
-|   Actual |  ForEach |         List |              Array |          850000 | 1,109,400.599 ns |  2,890.8064 ns |  2,704.0621 ns | 1,109,311.523 ns |  0.71 |    0.00 |       1 B |        1.00 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               0 |         3.905 ns |      0.0048 ns |      0.0040 ns |         3.905 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               0 |         3.905 ns |      0.0063 ns |      0.0059 ns |         3.904 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               1 |         5.681 ns |      0.0228 ns |      0.0202 ns |         5.679 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               1 |         5.659 ns |      0.0341 ns |      0.0319 ns |         5.666 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               2 |         7.336 ns |      0.0248 ns |      0.0207 ns |         7.327 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               2 |         7.296 ns |      0.0137 ns |      0.0115 ns |         7.296 ns |  0.99 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               3 |         9.931 ns |      0.0073 ns |      0.0065 ns |         9.929 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               3 |         9.028 ns |      0.0300 ns |      0.0266 ns |         9.038 ns |  0.91 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               4 |        11.631 ns |      0.0090 ns |      0.0075 ns |        11.630 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               4 |        11.604 ns |      0.1003 ns |      0.0838 ns |        11.627 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               5 |        12.882 ns |      0.0585 ns |      0.0547 ns |        12.849 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               5 |        12.845 ns |      0.0113 ns |      0.0088 ns |        12.844 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               6 |        15.373 ns |      0.0431 ns |      0.0360 ns |        15.376 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               6 |        15.356 ns |      0.0367 ns |      0.0343 ns |        15.350 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               7 |        17.008 ns |      0.0503 ns |      0.0471 ns |        17.009 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               7 |        16.991 ns |      0.0510 ns |      0.0477 ns |        16.999 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               8 |        18.672 ns |      0.0790 ns |      0.0660 ns |        18.683 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               8 |        18.701 ns |      0.0651 ns |      0.0577 ns |        18.719 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |               9 |        20.790 ns |      0.4423 ns |      0.8936 ns |        20.357 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |               9 |        20.476 ns |      0.0839 ns |      0.0785 ns |        20.499 ns |  0.98 |    0.04 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              10 |        22.167 ns |      0.1025 ns |      0.0856 ns |        22.152 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              10 |        22.182 ns |      0.0893 ns |      0.0835 ns |        22.175 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              11 |        23.626 ns |      0.0692 ns |      0.0614 ns |        23.637 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              11 |        23.573 ns |      0.0283 ns |      0.0251 ns |        23.568 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              12 |        25.312 ns |      0.0777 ns |      0.0649 ns |        25.302 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              12 |        25.301 ns |      0.0391 ns |      0.0326 ns |        25.313 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              13 |        27.017 ns |      0.0762 ns |      0.0713 ns |        27.026 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              13 |        27.091 ns |      0.1101 ns |      0.1030 ns |        27.091 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              14 |        28.886 ns |      0.1519 ns |      0.1269 ns |        28.859 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              14 |        28.855 ns |      0.1207 ns |      0.1070 ns |        28.844 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              15 |        30.502 ns |      0.1509 ns |      0.1260 ns |        30.485 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              15 |        30.497 ns |      0.1677 ns |      0.1568 ns |        30.482 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              16 |        32.608 ns |      0.1264 ns |      0.0987 ns |        32.623 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              16 |        32.103 ns |      0.0768 ns |      0.0681 ns |        32.096 ns |  0.98 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              17 |        33.819 ns |      0.1837 ns |      0.1628 ns |        33.755 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              17 |        33.762 ns |      0.0890 ns |      0.0789 ns |        33.757 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              18 |        35.432 ns |      0.1027 ns |      0.0961 ns |        35.422 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              18 |        35.485 ns |      0.1061 ns |      0.0940 ns |        35.490 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              19 |        37.331 ns |      0.2493 ns |      0.2210 ns |        37.319 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              19 |        38.919 ns |      0.5864 ns |      0.5485 ns |        39.144 ns |  1.04 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              20 |        40.772 ns |      0.2690 ns |      0.2246 ns |        40.776 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              20 |        39.801 ns |      0.3251 ns |      0.2882 ns |        39.753 ns |  0.98 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              30 |        73.489 ns |      1.5033 ns |      2.0577 ns |        73.492 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              30 |        65.529 ns |      0.7077 ns |      0.6620 ns |        65.559 ns |  0.90 |    0.03 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              32 |        67.447 ns |      0.4442 ns |      0.3710 ns |        67.500 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              32 |        66.976 ns |      0.3145 ns |      0.2626 ns |        66.922 ns |  0.99 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              36 |        74.229 ns |      0.4150 ns |      0.3240 ns |        74.075 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              36 |        74.689 ns |      0.2351 ns |      0.2199 ns |        74.672 ns |  1.01 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              37 |        76.108 ns |      0.1880 ns |      0.1667 ns |        76.134 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              37 |        76.334 ns |      0.1848 ns |      0.1543 ns |        76.340 ns |  1.00 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              40 |        81.499 ns |      0.2516 ns |      0.2101 ns |        81.540 ns |  1.00 |    0.00 |         - |          NA |
-| Baseline |  ForEach |         List |         PooledList |              40 |        82.030 ns |      1.0987 ns |      0.8578 ns |        81.658 ns |  1.01 |    0.01 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              40 |        80.950 ns |      0.3325 ns |      0.2947 ns |        80.905 ns |  0.99 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              40 |        80.652 ns |      0.1661 ns |      0.1297 ns |        80.697 ns |  0.99 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              50 |        98.158 ns |      0.5385 ns |      0.4774 ns |        98.052 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              50 |        98.569 ns |      0.3278 ns |      0.3066 ns |        98.647 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              60 |       135.384 ns |      2.7321 ns |      5.8223 ns |       136.801 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              60 |       114.869 ns |      0.1909 ns |      0.1786 ns |       114.878 ns |  0.84 |    0.03 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              70 |       156.254 ns |      3.1396 ns |      6.3421 ns |       158.544 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              70 |       132.495 ns |      0.5007 ns |      0.4439 ns |       132.426 ns |  0.87 |    0.04 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              80 |       177.422 ns |      3.5299 ns |      7.0496 ns |       179.163 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              80 |       148.800 ns |      0.2688 ns |      0.2245 ns |       148.782 ns |  0.85 |    0.05 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |          850000 | 1,569,423.844 ns |  6,099.0149 ns |  4,761.7097 ns | 1,568,924.121 ns |  1.00 |    0.00 |       1 B |        1.00 |
-|   Actual |  ForEach |         List |         PooledList |          850000 | 1,603,712.057 ns | 24,657.1309 ns | 23,064.2956 ns | 1,595,811.719 ns |  1.02 |    0.02 |       1 B |        1.00 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |              90 |       166.865 ns |      0.7664 ns |      0.6794 ns |       166.773 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |              90 |       166.787 ns |      0.6608 ns |      0.5858 ns |       166.860 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |             100 |       183.993 ns |      0.7702 ns |      0.6828 ns |       183.703 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |             100 |       184.331 ns |      1.1331 ns |      1.0599 ns |       183.974 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |             128 |       235.465 ns |      3.3553 ns |      2.8019 ns |       234.433 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |             128 |       234.201 ns |      2.1271 ns |      1.8856 ns |       234.359 ns |  0.99 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |             256 |       454.332 ns |      4.1826 ns |      3.7077 ns |       453.730 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |             256 |       453.942 ns |      3.8121 ns |      3.5658 ns |       452.192 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |             512 |       903.081 ns |     10.3290 ns |      9.6618 ns |       903.704 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |             512 |       894.861 ns |      8.3752 ns |      7.4244 ns |       893.797 ns |  0.99 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |            1024 |     1,769.057 ns |     13.4052 ns |     12.5392 ns |     1,763.392 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |            1024 |     1,772.205 ns |     11.0806 ns |     10.3648 ns |     1,772.931 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |            2048 |     3,579.848 ns |     41.7912 ns |     34.8976 ns |     3,578.020 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |            2048 |     3,527.064 ns |      8.5367 ns |      7.9853 ns |     3,524.620 ns |  0.99 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |            4096 |     7,054.471 ns |     57.9681 ns |     54.2234 ns |     7,048.180 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |            4096 |     7,056.935 ns |     67.3328 ns |     62.9832 ns |     7,038.900 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |            8192 |    14,108.748 ns |    157.6779 ns |    139.7774 ns |    14,049.905 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |            8192 |    14,257.162 ns |    165.2503 ns |    154.5753 ns |    14,284.633 ns |  1.01 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |           16384 |    28,231.134 ns |    255.1606 ns |    226.1933 ns |    28,221.078 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |           16384 |    28,151.429 ns |    286.3537 ns |    253.8451 ns |    28,028.477 ns |  1.00 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |           32768 |    69,053.119 ns |  1,365.7082 ns |  3,298.3387 ns |    70,369.678 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |           32768 |    56,031.170 ns |    316.9806 ns |    296.5038 ns |    55,851.025 ns |  0.82 |    0.05 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |           65536 |   114,975.594 ns |  2,202.8629 ns |  2,060.5593 ns |   114,017.371 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |           65536 |   113,930.497 ns |  2,059.5530 ns |  1,926.5071 ns |   113,159.607 ns |  0.99 |    0.03 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |         PooledList |          131072 |   231,636.116 ns |  4,551.2278 ns |  4,673.7759 ns |   229,926.587 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |         PooledList |          131072 |   229,447.173 ns |  3,636.9272 ns |  3,401.9839 ns |   227,516.333 ns |  0.99 |    0.03 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               0 |         3.592 ns |      0.0440 ns |      0.0411 ns |         3.590 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               0 |         3.844 ns |      0.0792 ns |      0.0702 ns |         3.833 ns |  1.07 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               1 |         5.360 ns |      0.1295 ns |      0.1148 ns |         5.296 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               1 |         5.152 ns |      0.0074 ns |      0.0069 ns |         5.150 ns |  0.96 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               2 |         7.212 ns |      0.0832 ns |      0.0649 ns |         7.224 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               2 |         6.847 ns |      0.0049 ns |      0.0041 ns |         6.847 ns |  0.95 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               3 |         9.245 ns |      0.2101 ns |      0.3567 ns |         9.495 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               3 |         8.747 ns |      0.2025 ns |      0.2968 ns |         8.708 ns |  0.94 |    0.05 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               4 |        11.148 ns |      0.1912 ns |      0.1788 ns |        11.080 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               4 |        10.692 ns |      0.1704 ns |      0.1594 ns |        10.752 ns |  0.96 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               5 |        12.904 ns |      0.2179 ns |      0.2038 ns |        12.898 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               5 |        12.078 ns |      0.1379 ns |      0.1289 ns |        12.178 ns |  0.94 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               6 |        14.960 ns |      0.0816 ns |      0.0724 ns |        14.962 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               6 |        13.259 ns |      0.0509 ns |      0.0451 ns |        13.240 ns |  0.89 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               7 |        16.834 ns |      0.3439 ns |      0.2872 ns |        16.849 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               7 |        14.697 ns |      0.0355 ns |      0.0332 ns |        14.685 ns |  0.87 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               8 |        18.388 ns |      0.1332 ns |      0.1246 ns |        18.378 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               8 |        17.129 ns |      0.2939 ns |      0.2749 ns |        17.122 ns |  0.93 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |               9 |        20.002 ns |      0.0919 ns |      0.0859 ns |        20.032 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |               9 |        18.019 ns |      0.0506 ns |      0.0473 ns |        18.006 ns |  0.90 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              10 |        21.661 ns |      0.0987 ns |      0.0923 ns |        21.661 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              10 |        19.494 ns |      0.0543 ns |      0.0508 ns |        19.478 ns |  0.90 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              11 |        23.189 ns |      0.0738 ns |      0.0691 ns |        23.178 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              11 |        21.049 ns |      0.0532 ns |      0.0498 ns |        21.047 ns |  0.91 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              12 |        24.851 ns |      0.0523 ns |      0.0489 ns |        24.830 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              12 |        22.553 ns |      0.0785 ns |      0.0734 ns |        22.525 ns |  0.91 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              13 |        26.605 ns |      0.1101 ns |      0.1030 ns |        26.533 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              13 |        23.992 ns |      0.0560 ns |      0.0524 ns |        23.976 ns |  0.90 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              14 |        28.311 ns |      0.1031 ns |      0.0964 ns |        28.347 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              14 |        25.442 ns |      0.0910 ns |      0.0851 ns |        25.444 ns |  0.90 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              15 |        29.905 ns |      0.0732 ns |      0.0649 ns |        29.910 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              15 |        26.985 ns |      0.1076 ns |      0.1007 ns |        26.970 ns |  0.90 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              16 |        31.724 ns |      0.0247 ns |      0.0219 ns |        31.719 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              16 |        28.163 ns |      0.1191 ns |      0.1114 ns |        28.166 ns |  0.89 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              17 |        33.331 ns |      0.0596 ns |      0.0558 ns |        33.324 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              17 |        29.846 ns |      0.0761 ns |      0.0675 ns |        29.857 ns |  0.90 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              18 |        35.012 ns |      0.1696 ns |      0.1416 ns |        34.984 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              18 |        31.307 ns |      0.0832 ns |      0.0778 ns |        31.331 ns |  0.89 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              19 |        36.670 ns |      0.0291 ns |      0.0227 ns |        36.673 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              19 |        32.670 ns |      0.1305 ns |      0.1221 ns |        32.662 ns |  0.89 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              20 |        38.249 ns |      0.0539 ns |      0.0504 ns |        38.256 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              20 |        34.215 ns |      0.1180 ns |      0.1046 ns |        34.223 ns |  0.89 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              30 |        61.295 ns |      0.1472 ns |      0.1377 ns |        61.236 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              30 |        48.894 ns |      0.1535 ns |      0.1436 ns |        48.841 ns |  0.80 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              32 |        64.936 ns |      0.1857 ns |      0.1737 ns |        65.021 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              32 |        57.823 ns |      0.7469 ns |      0.6621 ns |        57.914 ns |  0.89 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              36 |        73.167 ns |      0.2215 ns |      0.1850 ns |        73.220 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              36 |        62.221 ns |      0.3325 ns |      0.2948 ns |        62.224 ns |  0.85 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              37 |        73.932 ns |      0.1903 ns |      0.1780 ns |        73.913 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              37 |        64.178 ns |      0.2283 ns |      0.2023 ns |        64.108 ns |  0.87 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              40 |        81.205 ns |      0.1657 ns |      0.1550 ns |        81.176 ns |  1.00 |    0.00 |         - |          NA |
-| Baseline |  ForEach |         List |     RecyclableList |              40 |        89.701 ns |      2.0568 ns |      6.0644 ns |        90.975 ns |  1.09 |    0.08 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              40 |        69.245 ns |      0.3242 ns |      0.3033 ns |        69.307 ns |  0.85 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              40 |        67.518 ns |      0.2150 ns |      0.1906 ns |        67.583 ns |  0.83 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              50 |        97.771 ns |      0.4112 ns |      0.3433 ns |        97.765 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              50 |        84.214 ns |      0.3761 ns |      0.3518 ns |        84.066 ns |  0.86 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              60 |       113.410 ns |      0.1386 ns |      0.1296 ns |       113.427 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              60 |        97.293 ns |      0.2848 ns |      0.2524 ns |        97.311 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              70 |       131.596 ns |      0.4547 ns |      0.4253 ns |       131.583 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              70 |       111.436 ns |      0.3700 ns |      0.3461 ns |       111.381 ns |  0.85 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              80 |       147.217 ns |      0.4210 ns |      0.3732 ns |       147.157 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              80 |       126.603 ns |      0.5081 ns |      0.4753 ns |       126.425 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |              90 |       164.848 ns |      0.4371 ns |      0.4089 ns |       164.903 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |              90 |       142.266 ns |      0.4951 ns |      0.4134 ns |       142.200 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |             100 |       183.062 ns |      0.9559 ns |      0.8474 ns |       183.020 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |             100 |       155.429 ns |      0.5118 ns |      0.4787 ns |       155.445 ns |  0.85 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |             128 |       228.561 ns |      0.3327 ns |      0.2949 ns |       228.551 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |             128 |       196.573 ns |      0.6783 ns |      0.6345 ns |       196.712 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |             256 |       549.146 ns |     11.0171 ns |     16.4899 ns |       554.800 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |             256 |       384.201 ns |      1.3042 ns |      1.2199 ns |       383.734 ns |  0.70 |    0.03 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |             512 |     1,086.928 ns |     21.5502 ns |     59.7155 ns |     1,106.594 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |             512 |       755.349 ns |      1.2796 ns |      1.1969 ns |       754.959 ns |  0.75 |    0.08 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |            1024 |     1,748.521 ns |      3.1608 ns |      2.9566 ns |     1,747.042 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |            1024 |     1,502.182 ns |      2.8691 ns |      2.6837 ns |     1,501.159 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |            2048 |     3,493.748 ns |     14.2162 ns |     13.2979 ns |     3,486.491 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |            2048 |     2,997.379 ns |      8.7269 ns |      7.7362 ns |     2,995.866 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |            4096 |     6,983.026 ns |     26.6599 ns |     24.9377 ns |     6,977.142 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |            4096 |     5,992.232 ns |      9.7632 ns |      8.6549 ns |     5,990.499 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |            8192 |    13,924.023 ns |     33.1307 ns |     27.6656 ns |    13,915.260 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |            8192 |    12,015.279 ns |     61.8407 ns |     57.8458 ns |    11,989.944 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |           16384 |    27,829.777 ns |     76.7071 ns |     59.8879 ns |    27,808.067 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |           16384 |    23,964.786 ns |    102.5124 ns |     95.8902 ns |    23,926.131 ns |  0.86 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |           32768 |    55,678.057 ns |    122.7413 ns |    108.8070 ns |    55,675.656 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List |     RecyclableList |           32768 |    47,831.556 ns |    125.4126 ns |     97.9139 ns |    47,807.935 ns |  0.86 |    0.00 |       1 B |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |           65536 |   111,638.464 ns |    295.0778 ns |    246.4033 ns |   111,575.269 ns |  1.00 |    0.00 |       2 B |        1.00 |
-|   Actual |  ForEach |         List |     RecyclableList |           65536 |    95,902.572 ns |    324.4270 ns |    270.9112 ns |    95,760.742 ns |  0.86 |    0.00 |       2 B |        1.00 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |          131072 |   224,226.095 ns |    585.7332 ns |    519.2372 ns |   224,311.572 ns |  1.00 |    0.00 |       3 B |        1.00 |
-|   Actual |  ForEach |         List |     RecyclableList |          131072 |   192,068.858 ns |    712.6993 ns |    631.7894 ns |   191,829.883 ns |  0.86 |    0.00 |       3 B |        1.00 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List |     RecyclableList |          850000 | 1,559,870.443 ns |  5,844.5611 ns |  5,467.0061 ns | 1,559,750.195 ns |  1.00 |    0.00 |      25 B |        1.00 |
-|   Actual |  ForEach |         List |     RecyclableList |          850000 | 1,324,235.586 ns |  3,632.9682 ns |  3,398.2807 ns | 1,324,515.039 ns |  0.85 |    0.00 |      13 B |        0.52 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               0 |         3.427 ns |      0.0055 ns |      0.0043 ns |         3.427 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               0 |         5.149 ns |      0.0394 ns |      0.0349 ns |         5.134 ns |  1.50 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               1 |         5.859 ns |      0.0527 ns |      0.0493 ns |         5.868 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               1 |         7.798 ns |      0.0075 ns |      0.0058 ns |         7.797 ns |  1.33 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               2 |         7.373 ns |      0.0129 ns |      0.0108 ns |         7.374 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               2 |        11.696 ns |      0.0693 ns |      0.0579 ns |        11.682 ns |  1.59 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               3 |         9.001 ns |      0.0192 ns |      0.0160 ns |         8.996 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               3 |        15.538 ns |      0.0917 ns |      0.0858 ns |        15.518 ns |  1.73 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               4 |        11.185 ns |      0.0327 ns |      0.0273 ns |        11.175 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               4 |        19.295 ns |      0.1446 ns |      0.1353 ns |        19.285 ns |  1.72 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               5 |        12.923 ns |      0.1788 ns |      0.1396 ns |        12.866 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               5 |        22.311 ns |      0.0526 ns |      0.0466 ns |        22.304 ns |  1.73 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               6 |        15.478 ns |      0.1332 ns |      0.1112 ns |        15.453 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               6 |        25.708 ns |      0.0923 ns |      0.0771 ns |        25.692 ns |  1.66 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               7 |        17.034 ns |      0.0562 ns |      0.0498 ns |        17.036 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               7 |        29.066 ns |      0.1178 ns |      0.0983 ns |        29.029 ns |  1.71 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               8 |        18.760 ns |      0.1275 ns |      0.1065 ns |        18.757 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               8 |        34.084 ns |      0.6136 ns |      0.5740 ns |        34.048 ns |  1.82 |    0.03 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |               9 |        20.536 ns |      0.0922 ns |      0.0770 ns |        20.513 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |               9 |        36.006 ns |      0.2065 ns |      0.1931 ns |        35.933 ns |  1.75 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              10 |        22.201 ns |      0.0845 ns |      0.0749 ns |        22.183 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              10 |        39.627 ns |      0.1981 ns |      0.1853 ns |        39.623 ns |  1.78 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              11 |        23.738 ns |      0.0922 ns |      0.0863 ns |        23.717 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              11 |        42.729 ns |      0.2512 ns |      0.2350 ns |        42.621 ns |  1.80 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              12 |        25.463 ns |      0.1345 ns |      0.1258 ns |        25.465 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              12 |        46.180 ns |      0.0947 ns |      0.0840 ns |        46.171 ns |  1.81 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              13 |        27.032 ns |      0.0754 ns |      0.0630 ns |        27.042 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              13 |        49.661 ns |      0.1844 ns |      0.1540 ns |        49.650 ns |  1.84 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              14 |        28.791 ns |      0.1505 ns |      0.1334 ns |        28.751 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              14 |        52.955 ns |      0.1781 ns |      0.1487 ns |        52.949 ns |  1.84 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              15 |        30.311 ns |      0.1066 ns |      0.0945 ns |        30.273 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              15 |        65.788 ns |      0.7492 ns |      0.7008 ns |        66.058 ns |  2.17 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              16 |        32.166 ns |      0.1012 ns |      0.0897 ns |        32.150 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              16 |        72.545 ns |      0.1944 ns |      0.1724 ns |        72.553 ns |  2.26 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              17 |        33.868 ns |      0.1217 ns |      0.1138 ns |        33.880 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              17 |        72.262 ns |      0.5130 ns |      0.4548 ns |        72.367 ns |  2.13 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              18 |        35.709 ns |      0.1569 ns |      0.1467 ns |        35.760 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              18 |        75.353 ns |      0.4843 ns |      0.4530 ns |        75.341 ns |  2.11 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              19 |        36.928 ns |      0.1529 ns |      0.1431 ns |        36.887 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              19 |        78.960 ns |      0.6034 ns |      0.5644 ns |        79.148 ns |  2.14 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              20 |        38.919 ns |      0.1473 ns |      0.1305 ns |        38.881 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              20 |        82.153 ns |      0.5038 ns |      0.4712 ns |        82.212 ns |  2.11 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              30 |        62.547 ns |      0.1838 ns |      0.1535 ns |        62.570 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              30 |       116.416 ns |      0.6815 ns |      0.6041 ns |       116.541 ns |  1.86 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              32 |        66.010 ns |      0.5608 ns |      0.4378 ns |        65.976 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              32 |       130.017 ns |      0.6146 ns |      0.5749 ns |       129.910 ns |  1.97 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              36 |        73.675 ns |      0.1723 ns |      0.1439 ns |        73.615 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              36 |       135.524 ns |      0.4198 ns |      0.3722 ns |       135.567 ns |  1.84 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              37 |        75.620 ns |      0.5377 ns |      0.4198 ns |        75.518 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              37 |       139.454 ns |      0.8204 ns |      0.7674 ns |       139.087 ns |  1.84 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              40 |        81.023 ns |      0.4801 ns |      0.4009 ns |        80.908 ns |  1.00 |    0.00 |         - |          NA |
-| Baseline |  ForEach |         List | RecyclableLongList |              40 |        79.636 ns |      0.2138 ns |      0.1895 ns |        79.594 ns |  0.98 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              40 |       168.596 ns |      0.5466 ns |      0.5113 ns |       168.361 ns |  2.08 |    0.01 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              40 |       149.225 ns |      0.2808 ns |      0.2627 ns |       149.108 ns |  1.84 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              50 |        97.856 ns |      0.4786 ns |      0.3996 ns |        97.690 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              50 |       183.336 ns |      0.2277 ns |      0.2018 ns |       183.335 ns |  1.87 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              60 |       115.045 ns |      0.3324 ns |      0.2946 ns |       115.068 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              60 |       245.887 ns |      0.6996 ns |      0.5842 ns |       245.587 ns |  2.14 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              70 |       131.706 ns |      0.2995 ns |      0.2501 ns |       131.663 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              70 |       252.408 ns |      1.1611 ns |      1.0861 ns |       252.523 ns |  1.92 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              80 |       149.032 ns |      0.2087 ns |      0.1952 ns |       148.957 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              80 |       286.835 ns |      0.6405 ns |      0.5001 ns |       286.946 ns |  1.92 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |          850000 | 1,809,596.686 ns | 35,775.5257 ns | 81,478.9758 ns | 1,821,366.113 ns |  1.00 |    0.00 |      26 B |        1.00 |
-|   Actual |  ForEach |         List | RecyclableLongList |          850000 | 3,121,764.453 ns |  9,816.7903 ns |  9,182.6317 ns | 3,118,967.188 ns |  1.71 |    0.05 |      50 B |        1.92 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |              90 |       164.241 ns |      0.3030 ns |      0.2834 ns |       164.246 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |              90 |       320.163 ns |      1.4462 ns |      1.3528 ns |       319.398 ns |  1.95 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |             100 |       183.120 ns |      0.7795 ns |      0.7292 ns |       182.933 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |             100 |       353.783 ns |      0.7032 ns |      0.5872 ns |       353.547 ns |  1.93 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |             128 |       230.937 ns |      1.2407 ns |      1.0999 ns |       230.753 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |             128 |       480.276 ns |      2.8315 ns |      2.6486 ns |       478.800 ns |  2.08 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |             256 |       446.636 ns |      1.1720 ns |      1.0963 ns |       446.476 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |             256 |       984.660 ns |      3.9341 ns |      3.6800 ns |       983.154 ns |  2.20 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |             512 |       880.412 ns |      1.1127 ns |      1.0408 ns |       880.166 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |             512 |     1,939.028 ns |      3.8325 ns |      3.3974 ns |     1,938.288 ns |  2.20 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |            1024 |     1,747.676 ns |      1.7786 ns |      1.4852 ns |     1,748.253 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |            1024 |     3,872.588 ns |     16.5993 ns |     12.9597 ns |     3,869.184 ns |  2.22 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |            2048 |     3,482.195 ns |      3.9883 ns |      3.7306 ns |     3,480.941 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |            2048 |     7,760.387 ns |     81.3099 ns |     67.8974 ns |     7,732.835 ns |  2.23 |    0.02 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |            4096 |     6,968.989 ns |     15.2167 ns |     12.7067 ns |     6,967.381 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |            4096 |    15,471.863 ns |     18.2246 ns |     15.2184 ns |    15,471.524 ns |  2.22 |    0.00 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |            8192 |    13,953.035 ns |     31.6526 ns |     29.6079 ns |    13,946.791 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |            8192 |    31,028.678 ns |    142.3626 ns |    133.1660 ns |    31,010.428 ns |  2.22 |    0.01 |         - |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |           16384 |    27,898.119 ns |    105.5337 ns |     98.7163 ns |    27,865.305 ns |  1.00 |    0.00 |         - |          NA |
-|   Actual |  ForEach |         List | RecyclableLongList |           16384 |    64,065.201 ns |     39.8913 ns |     33.3110 ns |    64,054.333 ns |  2.30 |    0.01 |       1 B |          NA |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |           32768 |    55,802.941 ns |     68.0278 ns |     60.3048 ns |    55,782.233 ns |  1.00 |    0.00 |       1 B |        1.00 |
-|   Actual |  ForEach |         List | RecyclableLongList |           32768 |   128,939.511 ns |    202.0783 ns |    179.1371 ns |   128,970.520 ns |  2.31 |    0.00 |       2 B |        2.00 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |           65536 |   111,755.487 ns |    284.2138 ns |    265.8538 ns |   111,692.114 ns |  1.00 |    0.00 |       2 B |        1.00 |
-|   Actual |  ForEach |         List | RecyclableLongList |           65536 |   256,860.362 ns |    403.3158 ns |    357.5290 ns |   256,908.813 ns |  2.30 |    0.01 |       3 B |        1.50 |
-|          |          |              |                    |                 |                  |                |                |                  |       |         |           |             |
-| Baseline |  ForEach |         List | RecyclableLongList |          131072 |   275,666.319 ns |  5,448.8861 ns | 10,367.0721 ns |   278,240.674 ns |  1.00 |    0.00 |       3 B |        1.00 |
-|   Actual |  ForEach |         List | RecyclableLongList |          131072 |   514,548.991 ns |  1,731.3114 ns |  1,619.4698 ns |   513,984.082 ns |  1.87 |    0.10 |       7 B |        2.33 |
+|   Method |         TestCase | BaseDataType |           DataType | TestObjectCount |             Mean |          Error |          StdDev |           Median | Ratio | RatioSD | Allocated | Alloc Ratio |
+|--------- |----------------- |------------- |------------------- |---------------- |-----------------:|---------------:|----------------:|-----------------:|------:|--------:|----------:|------------:|
+| Baseline |          ForEach |         List |              Array |               0 |         3.487 ns |      0.0179 ns |       0.0150 ns |         3.482 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               0 |         3.434 ns |      0.0081 ns |       0.0072 ns |         3.434 ns |  0.98 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               1 |         5.630 ns |      0.0174 ns |       0.0163 ns |         5.627 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               1 |         4.184 ns |      0.0255 ns |       0.0226 ns |         4.178 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               2 |         7.334 ns |      0.0255 ns |       0.0226 ns |         7.331 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               2 |         5.380 ns |      0.0192 ns |       0.0170 ns |         5.372 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               3 |         9.049 ns |      0.0539 ns |       0.0450 ns |         9.029 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               3 |         6.786 ns |      0.0396 ns |       0.0370 ns |         6.798 ns |  0.75 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               4 |        11.407 ns |      0.2501 ns |       0.2977 ns |        11.303 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               4 |         7.772 ns |      0.0253 ns |       0.0224 ns |         7.768 ns |  0.68 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               5 |        12.862 ns |      0.0414 ns |       0.0367 ns |        12.845 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               5 |         9.454 ns |      0.0152 ns |       0.0127 ns |         9.448 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               6 |        15.321 ns |      0.0833 ns |       0.0696 ns |        15.326 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               6 |        10.668 ns |      0.0156 ns |       0.0138 ns |        10.665 ns |  0.70 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               7 |        17.036 ns |      0.0375 ns |       0.0293 ns |        17.043 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               7 |        11.966 ns |      0.0340 ns |       0.0301 ns |        11.965 ns |  0.70 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               8 |        18.712 ns |      0.1134 ns |       0.0947 ns |        18.676 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               8 |        14.084 ns |      0.0917 ns |       0.0858 ns |        14.068 ns |  0.75 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |               9 |        20.313 ns |      0.0572 ns |       0.0478 ns |        20.325 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |               9 |        14.891 ns |      0.0550 ns |       0.0488 ns |        14.889 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              10 |        22.192 ns |      0.4737 ns |       0.3956 ns |        22.071 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              10 |        16.123 ns |      0.0641 ns |       0.0569 ns |        16.114 ns |  0.73 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              11 |        23.641 ns |      0.1011 ns |       0.0946 ns |        23.669 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              11 |        17.335 ns |      0.0499 ns |       0.0417 ns |        17.327 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              12 |        25.257 ns |      0.0708 ns |       0.0662 ns |        25.251 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              12 |        18.630 ns |      0.0767 ns |       0.0717 ns |        18.630 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              13 |        26.951 ns |      0.0753 ns |       0.0629 ns |        26.954 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              13 |        19.711 ns |      0.0645 ns |       0.0603 ns |        19.727 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              14 |        31.153 ns |      0.8776 ns |       2.5877 ns |        30.424 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              14 |        21.176 ns |      0.1692 ns |       0.1583 ns |        21.133 ns |  0.67 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              15 |        30.372 ns |      0.1292 ns |       0.1208 ns |        30.368 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              15 |        22.237 ns |      0.1125 ns |       0.1053 ns |        22.237 ns |  0.73 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              16 |        32.101 ns |      0.1252 ns |       0.1171 ns |        32.097 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              16 |        23.175 ns |      0.0321 ns |       0.0268 ns |        23.164 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              17 |        33.932 ns |      0.1474 ns |       0.1307 ns |        33.933 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              17 |        24.482 ns |      0.0630 ns |       0.0589 ns |        24.484 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              18 |        38.305 ns |      1.0860 ns |       3.2022 ns |        36.323 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              18 |        25.664 ns |      0.0367 ns |       0.0325 ns |        25.654 ns |  0.67 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              19 |        37.343 ns |      0.1699 ns |       0.1589 ns |        37.291 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              19 |        26.873 ns |      0.0570 ns |       0.0533 ns |        26.840 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              20 |        38.951 ns |      0.1495 ns |       0.1399 ns |        38.977 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              20 |        28.079 ns |      0.0525 ns |       0.0465 ns |        28.084 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              30 |        62.954 ns |      0.1634 ns |       0.1276 ns |        62.929 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              30 |        40.119 ns |      0.0740 ns |       0.0692 ns |        40.091 ns |  0.64 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              32 |        76.166 ns |      1.5663 ns |       3.5988 ns |        77.714 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              32 |        50.062 ns |      0.1958 ns |       0.1831 ns |        50.081 ns |  0.66 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              36 |        86.614 ns |      1.7552 ns |       2.1555 ns |        87.531 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              36 |        53.487 ns |      0.0479 ns |       0.0448 ns |        53.469 ns |  0.62 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              37 |        75.856 ns |      0.3714 ns |       0.3102 ns |        75.819 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              37 |        54.833 ns |      0.1245 ns |       0.1164 ns |        54.792 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              40 |        80.450 ns |      0.2158 ns |       0.2018 ns |        80.410 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |          ForEach |         List |              Array |              40 |        95.505 ns |      1.9345 ns |       2.3757 ns |        96.241 ns |  1.18 |    0.03 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              40 |        57.393 ns |      0.1455 ns |       0.1290 ns |        57.330 ns |  0.71 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              40 |        57.380 ns |      0.1309 ns |       0.1161 ns |        57.341 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              50 |       113.094 ns |      2.2972 ns |       5.4596 ns |       114.487 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              50 |        69.941 ns |      0.2646 ns |       0.2346 ns |        69.901 ns |  0.62 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              60 |       135.453 ns |      2.7219 ns |       3.7257 ns |       135.652 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              60 |        82.196 ns |      0.3092 ns |       0.2892 ns |        82.136 ns |  0.61 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              70 |       131.325 ns |      0.3936 ns |       0.3682 ns |       131.332 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              70 |        94.408 ns |      0.2604 ns |       0.2435 ns |        94.316 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              80 |       148.601 ns |      0.6620 ns |       0.6192 ns |       148.551 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              80 |       105.787 ns |      0.2325 ns |       0.2061 ns |       105.737 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |              90 |       165.663 ns |      0.5758 ns |       0.5386 ns |       165.592 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |              90 |       118.377 ns |      0.4253 ns |       0.3978 ns |       118.196 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |             100 |       182.601 ns |      0.6587 ns |       0.5839 ns |       182.786 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |             100 |       130.277 ns |      0.3582 ns |       0.3350 ns |       130.165 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |             128 |       230.132 ns |      0.6950 ns |       0.6161 ns |       230.085 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |             128 |       163.550 ns |      0.3581 ns |       0.3350 ns |       163.526 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |             256 |       446.447 ns |      0.8596 ns |       0.8040 ns |       446.478 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |             256 |       318.035 ns |      0.5664 ns |       0.5021 ns |       317.986 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |             512 |       881.729 ns |      2.9007 ns |       2.7133 ns |       880.546 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |             512 |       627.926 ns |      1.0484 ns |       0.9807 ns |       627.657 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |            1024 |     1,749.543 ns |      3.1759 ns |       2.8154 ns |     1,749.770 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |            1024 |     1,244.577 ns |      1.6036 ns |       1.4216 ns |     1,244.631 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |            2048 |     3,479.646 ns |      7.1813 ns |       6.7174 ns |     3,477.583 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |            2048 |     2,484.262 ns |      3.8278 ns |       3.5806 ns |     2,483.284 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |            4096 |     6,966.203 ns |     14.6556 ns |      13.7088 ns |     6,970.947 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |            4096 |     4,970.602 ns |      9.2895 ns |       8.6894 ns |     4,969.536 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |            8192 |    13,932.168 ns |     38.3528 ns |      35.8753 ns |    13,919.844 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |            8192 |     9,919.799 ns |     17.7701 ns |      16.6222 ns |     9,920.946 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |           16384 |    27,879.434 ns |    146.9250 ns |     130.2452 ns |    27,832.965 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |           16384 |    19,808.677 ns |     46.0551 ns |      43.0800 ns |    19,790.013 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |           32768 |    55,575.696 ns |    129.2643 ns |     120.9139 ns |    55,538.348 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |           32768 |    39,620.633 ns |     99.5818 ns |      88.2767 ns |    39,592.172 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |           65536 |   111,706.166 ns |    159.1455 ns |     141.0783 ns |   111,688.910 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |           65536 |    79,235.173 ns |    103.3609 ns |      91.6267 ns |    79,206.268 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |          131072 |   222,985.042 ns |    722.8065 ns |     676.1137 ns |   222,746.484 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |              Array |          131072 |   158,797.176 ns |    245.8026 ns |     229.9239 ns |   158,728.003 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |              Array |          850000 | 1,559,428.776 ns |  3,833.1196 ns |   3,585.5025 ns | 1,559,275.586 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |          ForEach |         List |              Array |          850000 | 1,108,570.229 ns |  3,343.2555 ns |   2,963.7089 ns | 1,108,734.277 ns |  0.71 |    0.00 |       1 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               0 |         3.434 ns |      0.0141 ns |       0.0132 ns |         3.429 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               0 |         3.444 ns |      0.0110 ns |       0.0103 ns |         3.448 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               1 |         5.614 ns |      0.0233 ns |       0.0218 ns |         5.614 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               1 |         5.583 ns |      0.0185 ns |       0.0173 ns |         5.587 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               2 |         7.765 ns |      0.1669 ns |       0.1479 ns |         7.798 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               2 |         7.342 ns |      0.0477 ns |       0.0398 ns |         7.332 ns |  0.95 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               3 |         9.467 ns |      0.2188 ns |       0.4615 ns |         9.411 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               3 |         9.380 ns |      0.2160 ns |       0.3949 ns |         9.224 ns |  1.00 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               4 |        11.567 ns |      0.2513 ns |       0.3087 ns |        11.491 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               4 |        11.327 ns |      0.1668 ns |       0.1560 ns |        11.260 ns |  0.98 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               5 |        12.887 ns |      0.0472 ns |       0.0394 ns |        12.882 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               5 |        12.827 ns |      0.0344 ns |       0.0321 ns |        12.827 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               6 |        15.519 ns |      0.1414 ns |       0.1181 ns |        15.496 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               6 |        15.445 ns |      0.0905 ns |       0.0803 ns |        15.428 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               7 |        17.103 ns |      0.1409 ns |       0.1177 ns |        17.108 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               7 |        17.039 ns |      0.1346 ns |       0.1259 ns |        17.020 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               8 |        19.299 ns |      0.3939 ns |       0.9661 ns |        18.764 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               8 |        18.884 ns |      0.1780 ns |       0.1486 ns |        18.830 ns |  0.96 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |               9 |        20.700 ns |      0.2643 ns |       0.2343 ns |        20.647 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |               9 |        20.432 ns |      0.0651 ns |       0.0544 ns |        20.435 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              10 |        22.201 ns |      0.0735 ns |       0.0574 ns |        22.197 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              10 |        22.337 ns |      0.2260 ns |       0.2114 ns |        22.364 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              11 |        23.811 ns |      0.1260 ns |       0.1052 ns |        23.796 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              11 |        23.819 ns |      0.0769 ns |       0.0719 ns |        23.809 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              12 |        25.586 ns |      0.0797 ns |       0.0707 ns |        25.574 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              12 |        25.558 ns |      0.0898 ns |       0.0796 ns |        25.559 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              13 |        27.169 ns |      0.0793 ns |       0.0703 ns |        27.160 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              13 |        27.174 ns |      0.1547 ns |       0.1292 ns |        27.117 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              14 |        28.957 ns |      0.1960 ns |       0.1737 ns |        28.968 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              14 |        29.072 ns |      0.2523 ns |       0.2237 ns |        28.988 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              15 |        30.935 ns |      0.4808 ns |       0.4015 ns |        30.814 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              15 |        30.655 ns |      0.1198 ns |       0.1062 ns |        30.629 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              16 |        35.813 ns |      1.0146 ns |       2.9916 ns |        36.201 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              16 |        32.350 ns |      0.1767 ns |       0.1566 ns |        32.320 ns |  0.91 |    0.08 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              17 |        34.243 ns |      0.2892 ns |       0.2705 ns |        34.160 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              17 |        34.064 ns |      0.1255 ns |       0.1112 ns |        34.064 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              18 |        35.583 ns |      0.1969 ns |       0.1745 ns |        35.562 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              18 |        35.784 ns |      0.1352 ns |       0.1199 ns |        35.800 ns |  1.01 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              19 |        37.909 ns |      0.7471 ns |       0.7993 ns |        37.585 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              19 |        37.530 ns |      0.1687 ns |       0.1578 ns |        37.519 ns |  0.99 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              20 |        39.243 ns |      0.1422 ns |       0.1330 ns |        39.228 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              20 |        39.426 ns |      0.2247 ns |       0.1992 ns |        39.361 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              30 |        63.002 ns |      0.2112 ns |       0.1764 ns |        62.997 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              30 |        65.206 ns |      1.2478 ns |       1.1061 ns |        65.334 ns |  1.04 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              32 |        77.233 ns |      1.5675 ns |       2.8265 ns |        77.958 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              32 |        74.176 ns |      1.5220 ns |       4.2174 ns |        74.708 ns |  0.97 |    0.07 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              36 |        76.701 ns |      1.5428 ns |       2.4471 ns |        75.445 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              36 |        73.986 ns |      0.3092 ns |       0.2741 ns |        73.994 ns |  0.97 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              37 |        77.157 ns |      1.5706 ns |       1.6129 ns |        76.256 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              37 |        76.747 ns |      0.9947 ns |       1.1056 ns |        76.332 ns |  1.00 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              40 |        94.101 ns |      1.9021 ns |       2.1142 ns |        93.753 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |          ForEach |         List |         PooledList |              40 |        81.920 ns |      1.0109 ns |       0.8962 ns |        81.665 ns |  0.87 |    0.02 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              40 |        82.126 ns |      0.2497 ns |       0.1950 ns |        82.088 ns |  0.87 |    0.02 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              40 |        81.877 ns |      0.4354 ns |       0.3400 ns |        81.879 ns |  0.87 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              50 |       114.548 ns |      2.3357 ns |       4.2709 ns |       116.251 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              50 |        97.259 ns |      0.4719 ns |       0.3940 ns |        97.210 ns |  0.85 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              60 |       115.943 ns |      0.4975 ns |       0.4155 ns |       116.023 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              60 |       115.545 ns |      0.6375 ns |       0.5652 ns |       115.333 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              70 |       132.611 ns |      0.8738 ns |       0.7746 ns |       132.364 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              70 |       132.470 ns |      0.6565 ns |       0.5820 ns |       132.474 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              80 |       149.596 ns |      0.8339 ns |       0.6510 ns |       149.639 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              80 |       150.304 ns |      0.7272 ns |       0.6072 ns |       150.155 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |              90 |       168.000 ns |      1.5190 ns |       1.3466 ns |       167.437 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |              90 |       169.943 ns |      3.3051 ns |       3.3941 ns |       168.897 ns |  1.02 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |             100 |       184.615 ns |      0.7075 ns |       0.5908 ns |       184.613 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |             100 |       183.936 ns |      0.7194 ns |       0.6729 ns |       184.181 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |             128 |       277.400 ns |      5.5602 ns |      10.9753 ns |       279.962 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |             128 |       234.935 ns |      3.4783 ns |       2.9045 ns |       233.790 ns |  0.85 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |             256 |       463.407 ns |      9.0123 ns |      18.6120 ns |       452.785 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |             256 |       448.334 ns |      2.0213 ns |       1.8907 ns |       447.834 ns |  0.95 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |             512 |       900.356 ns |     15.5701 ns |      28.0761 ns |       890.155 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |             512 |       885.681 ns |      1.9970 ns |       1.8680 ns |       885.209 ns |  0.96 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |            1024 |     1,756.976 ns |      3.2978 ns |       3.0848 ns |     1,758.019 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |            1024 |     1,749.680 ns |      3.1351 ns |       2.9325 ns |     1,749.040 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |            2048 |     3,489.313 ns |      9.7968 ns |       9.1640 ns |     3,486.633 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |            2048 |     3,483.028 ns |      6.0058 ns |       5.3240 ns |     3,481.583 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |            4096 |     6,979.314 ns |     17.1730 ns |      16.0636 ns |     6,982.885 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |            4096 |     8,763.527 ns |    166.6675 ns |     198.4059 ns |     8,845.802 ns |  1.26 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |            8192 |    13,908.613 ns |     17.6154 ns |      15.6156 ns |    13,909.135 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |            8192 |    13,898.685 ns |     15.3045 ns |      14.3158 ns |    13,894.859 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |           16384 |    27,790.455 ns |     49.9030 ns |      44.2377 ns |    27,779.057 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |           16384 |    27,824.080 ns |     72.2218 ns |      67.5563 ns |    27,794.858 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |           32768 |    55,846.212 ns |    302.0570 ns |     282.5443 ns |    55,830.786 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |           32768 |    68,962.246 ns |  1,358.7261 ns |   2,982.4367 ns |    70,118.353 ns |  1.25 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |           65536 |   111,530.071 ns |    121.3229 ns |      94.7209 ns |   111,536.230 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |           65536 |   111,566.079 ns |    406.3781 ns |     339.3442 ns |   111,462.988 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |          131072 |   272,889.139 ns |  5,411.1805 ns |  13,171.5611 ns |   276,588.672 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |         PooledList |          131072 |   223,426.717 ns |    466.1160 ns |     436.0052 ns |   223,518.799 ns |  0.81 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |         PooledList |          850000 | 1,563,831.628 ns |  4,879.2411 ns |   4,564.0451 ns | 1,562,421.094 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |          ForEach |         List |         PooledList |          850000 | 1,559,869.648 ns |  5,975.4829 ns |   5,589.4704 ns | 1,558,741.211 ns |  1.00 |    0.01 |       1 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               0 |         3.897 ns |      0.0079 ns |       0.0061 ns |         3.895 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               0 |         3.889 ns |      0.0093 ns |       0.0073 ns |         3.887 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               1 |         5.196 ns |      0.0596 ns |       0.0558 ns |         5.175 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               1 |         5.105 ns |      0.0202 ns |       0.0158 ns |         5.099 ns |  0.98 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               2 |         6.952 ns |      0.1676 ns |       0.1794 ns |         6.861 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               2 |         6.886 ns |      0.0452 ns |       0.0401 ns |         6.886 ns |  0.99 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               3 |         8.632 ns |      0.1190 ns |       0.1055 ns |         8.586 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               3 |         8.602 ns |      0.1814 ns |       0.2016 ns |         8.557 ns |  0.99 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               4 |        11.269 ns |      0.1537 ns |       0.1363 ns |        11.218 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               4 |        10.469 ns |      0.0791 ns |       0.0701 ns |        10.452 ns |  0.93 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               5 |        12.895 ns |      0.1120 ns |       0.1047 ns |        12.886 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               5 |        11.962 ns |      0.1177 ns |       0.0983 ns |        11.938 ns |  0.93 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               6 |        15.146 ns |      0.1488 ns |       0.1319 ns |        15.131 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               6 |        13.588 ns |      0.2112 ns |       0.3161 ns |        13.518 ns |  0.91 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               7 |        16.795 ns |      0.1409 ns |       0.1318 ns |        16.789 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               7 |        14.441 ns |      0.2025 ns |       0.1894 ns |        14.401 ns |  0.86 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               8 |        18.400 ns |      0.1146 ns |       0.1016 ns |        18.369 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               8 |        17.857 ns |      0.3822 ns |       0.3191 ns |        17.869 ns |  0.97 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |               9 |        20.172 ns |      0.1349 ns |       0.1053 ns |        20.178 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |               9 |        18.270 ns |      0.0718 ns |       0.0599 ns |        18.283 ns |  0.91 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              10 |        21.916 ns |      0.0928 ns |       0.0823 ns |        21.928 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              10 |        19.709 ns |      0.0979 ns |       0.0818 ns |        19.701 ns |  0.90 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              11 |        23.197 ns |      0.0585 ns |       0.0547 ns |        23.196 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              11 |        21.200 ns |      0.0596 ns |       0.0528 ns |        21.219 ns |  0.91 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              12 |        24.881 ns |      0.0510 ns |       0.0477 ns |        24.865 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              12 |        22.752 ns |      0.1361 ns |       0.1136 ns |        22.757 ns |  0.91 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              13 |        26.501 ns |      0.0529 ns |       0.0469 ns |        26.509 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              13 |        24.515 ns |      0.4878 ns |       0.4563 ns |        24.327 ns |  0.93 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              14 |        28.351 ns |      0.1112 ns |       0.1040 ns |        28.341 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              14 |        25.516 ns |      0.1428 ns |       0.1336 ns |        25.543 ns |  0.90 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              15 |        29.926 ns |      0.1134 ns |       0.1005 ns |        29.942 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              15 |        27.125 ns |      0.0984 ns |       0.0921 ns |        27.089 ns |  0.91 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              16 |        31.825 ns |      0.2127 ns |       0.1886 ns |        31.778 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              16 |        28.624 ns |      0.0813 ns |       0.0721 ns |        28.611 ns |  0.90 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              17 |        33.454 ns |      0.0703 ns |       0.0549 ns |        33.465 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              17 |        30.075 ns |      0.1216 ns |       0.1138 ns |        30.086 ns |  0.90 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              18 |        36.200 ns |      0.7540 ns |       1.3976 ns |        35.686 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              18 |        31.591 ns |      0.1500 ns |       0.1330 ns |        31.610 ns |  0.86 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              19 |        36.854 ns |      0.1329 ns |       0.1110 ns |        36.854 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              19 |        32.927 ns |      0.1723 ns |       0.1527 ns |        32.915 ns |  0.89 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              20 |        38.959 ns |      0.5167 ns |       0.4833 ns |        38.720 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              20 |        34.393 ns |      0.0862 ns |       0.0807 ns |        34.391 ns |  0.88 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              30 |        61.256 ns |      0.1077 ns |       0.0954 ns |        61.258 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              30 |        49.502 ns |      0.5085 ns |       0.4756 ns |        49.391 ns |  0.81 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              32 |        64.915 ns |      0.2272 ns |       0.2014 ns |        65.007 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              32 |        58.160 ns |      0.5696 ns |       0.5328 ns |        58.166 ns |  0.90 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              36 |        72.435 ns |      0.2443 ns |       0.2040 ns |        72.404 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              36 |        62.545 ns |      0.3182 ns |       0.2820 ns |        62.634 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              37 |        74.069 ns |      0.1884 ns |       0.1573 ns |        74.063 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              37 |        64.186 ns |      0.1868 ns |       0.1560 ns |        64.160 ns |  0.87 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              40 |        80.944 ns |      0.4681 ns |       0.4150 ns |        80.941 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |          ForEach |         List |     RecyclableList |              40 |        82.404 ns |      0.1928 ns |       0.1804 ns |        82.418 ns |  1.02 |    0.01 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              40 |        69.077 ns |      0.2331 ns |       0.2180 ns |        69.100 ns |  0.85 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              40 |        69.334 ns |      0.2743 ns |       0.2566 ns |        69.322 ns |  0.86 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              50 |        98.201 ns |      0.3462 ns |       0.3069 ns |        98.232 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              50 |        84.078 ns |      0.3052 ns |       0.2548 ns |        84.133 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              60 |       114.693 ns |      0.3332 ns |       0.2953 ns |       114.678 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              60 |        98.711 ns |      0.3461 ns |       0.3237 ns |        98.646 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              70 |       132.078 ns |      0.5282 ns |       0.4941 ns |       132.078 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              70 |       114.073 ns |      0.3592 ns |       0.3184 ns |       113.962 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              80 |       150.952 ns |      1.7599 ns |       1.6462 ns |       150.293 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              80 |       126.950 ns |      0.5323 ns |       0.4719 ns |       126.853 ns |  0.84 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |              90 |       166.176 ns |      0.7985 ns |       0.6668 ns |       166.213 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |              90 |       141.332 ns |      0.4301 ns |       0.4023 ns |       141.242 ns |  0.85 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |             100 |       183.225 ns |      0.7108 ns |       0.6301 ns |       183.186 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |             100 |       159.109 ns |      0.4564 ns |       0.3811 ns |       158.983 ns |  0.87 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |             128 |       231.789 ns |      0.8625 ns |       0.7203 ns |       231.707 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |             128 |       198.749 ns |      1.1534 ns |       1.0225 ns |       198.388 ns |  0.86 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |             256 |       526.449 ns |     11.2327 ns |      33.1200 ns |       535.656 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |             256 |       387.056 ns |      1.9091 ns |       1.6924 ns |       387.088 ns |  0.76 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |             512 |     1,095.189 ns |     21.5183 ns |      38.2488 ns |     1,110.607 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |             512 |       757.916 ns |      2.6272 ns |       2.4575 ns |       758.071 ns |  0.70 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |            1024 |     1,760.360 ns |      5.3118 ns |       4.7087 ns |     1,760.422 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |            1024 |     1,510.912 ns |      5.9692 ns |       5.5836 ns |     1,509.651 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |            2048 |     3,502.355 ns |      7.9543 ns |       6.2102 ns |     3,503.366 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |            2048 |     3,023.332 ns |      9.8529 ns |       8.7343 ns |     3,023.347 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |            4096 |     7,063.648 ns |     37.7039 ns |      35.2683 ns |     7,050.784 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |            4096 |     6,017.671 ns |     21.8350 ns |      17.0473 ns |     6,016.796 ns |  0.85 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |            8192 |    14,038.772 ns |    112.4703 ns |      99.7020 ns |    14,013.964 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |            8192 |    12,272.461 ns |    185.1265 ns |     164.1098 ns |    12,257.167 ns |  0.87 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |           16384 |    28,264.346 ns |    152.1960 ns |     142.3642 ns |    28,255.090 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List |     RecyclableList |           16384 |    24,144.064 ns |    127.1945 ns |     112.7546 ns |    24,172.777 ns |  0.85 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |           32768 |    55,945.263 ns |    217.6655 ns |     203.6044 ns |    55,822.766 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |          ForEach |         List |     RecyclableList |           32768 |    48,280.504 ns |    292.4931 ns |     259.2875 ns |    48,278.644 ns |  0.86 |    0.01 |       1 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |           65536 |   112,192.360 ns |    549.9817 ns |     459.2596 ns |   112,052.478 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual |          ForEach |         List |     RecyclableList |           65536 |    96,424.772 ns |    147.2971 ns |     130.5750 ns |    96,376.611 ns |  0.86 |    0.00 |       2 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |          131072 |   280,593.286 ns |  5,557.9140 ns |   7,226.8581 ns |   282,078.113 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual |          ForEach |         List |     RecyclableList |          131072 |   193,267.340 ns |    602.3478 ns |     563.4365 ns |   193,258.716 ns |  0.69 |    0.02 |       3 B |        1.50 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List |     RecyclableList |          850000 | 1,572,202.204 ns | 15,820.6387 ns |  14,024.5841 ns | 1,565,870.215 ns |  1.00 |    0.00 |      25 B |        1.00 |
+|   Actual |          ForEach |         List |     RecyclableList |          850000 | 1,336,531.069 ns | 10,898.1858 ns |   9,660.9579 ns | 1,332,973.340 ns |  0.85 |    0.01 |      13 B |        0.52 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               0 |         3.920 ns |      0.0250 ns |       0.0209 ns |         3.912 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               0 |         5.460 ns |      0.0539 ns |       0.0477 ns |         5.455 ns |  1.39 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               1 |         6.337 ns |      0.1552 ns |       0.2915 ns |         6.517 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               1 |         8.225 ns |      0.1055 ns |       0.0987 ns |         8.215 ns |  1.29 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               2 |         7.344 ns |      0.0525 ns |       0.0438 ns |         7.328 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               2 |        11.911 ns |      0.2579 ns |       0.2413 ns |        11.793 ns |  1.62 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               3 |         9.086 ns |      0.0767 ns |       0.0680 ns |         9.058 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               3 |        16.080 ns |      0.3512 ns |       0.7636 ns |        16.058 ns |  1.77 |    0.08 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               4 |        11.257 ns |      0.0390 ns |       0.0326 ns |        11.257 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               4 |        18.643 ns |      0.1277 ns |       0.1066 ns |        18.662 ns |  1.66 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               5 |        13.377 ns |      0.2964 ns |       0.5192 ns |        13.175 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               5 |        23.191 ns |      0.3864 ns |       0.3017 ns |        23.221 ns |  1.77 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               6 |        15.426 ns |      0.0340 ns |       0.0284 ns |        15.425 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               6 |        26.109 ns |      0.2736 ns |       0.2425 ns |        26.118 ns |  1.69 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               7 |        17.238 ns |      0.1991 ns |       0.1663 ns |        17.188 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               7 |        29.406 ns |      0.3434 ns |       0.3212 ns |        29.397 ns |  1.71 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               8 |        18.987 ns |      0.1362 ns |       0.1274 ns |        18.938 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               8 |        32.332 ns |      0.0719 ns |       0.0637 ns |        32.334 ns |  1.70 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |               9 |        20.603 ns |      0.1129 ns |       0.1001 ns |        20.592 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |               9 |        36.690 ns |      0.4103 ns |       0.3838 ns |        36.684 ns |  1.78 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              10 |        22.547 ns |      0.2141 ns |       0.2003 ns |        22.540 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              10 |        39.811 ns |      0.5537 ns |       0.5179 ns |        39.642 ns |  1.77 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              11 |        24.009 ns |      0.1994 ns |       0.1767 ns |        23.955 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              11 |        43.239 ns |      0.4869 ns |       0.4554 ns |        43.032 ns |  1.80 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              12 |        25.849 ns |      0.2969 ns |       0.2479 ns |        25.848 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              12 |        47.156 ns |      0.9622 ns |       0.9881 ns |        46.710 ns |  1.83 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              13 |        27.538 ns |      0.3519 ns |       0.2748 ns |        27.473 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              13 |        51.656 ns |      1.0328 ns |       2.0145 ns |        50.958 ns |  1.86 |    0.09 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              14 |        33.262 ns |      1.2784 ns |       3.7493 ns |        32.738 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              14 |        55.363 ns |      1.1436 ns |       2.8691 ns |        54.621 ns |  1.71 |    0.23 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              15 |        32.695 ns |      0.9753 ns |       2.7186 ns |        31.360 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              15 |        66.578 ns |      0.8714 ns |       0.7276 ns |        66.439 ns |  1.95 |    0.09 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              16 |        34.387 ns |      0.8336 ns |       2.3783 ns |        33.290 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              16 |        67.789 ns |      0.6828 ns |       0.5702 ns |        67.800 ns |  1.97 |    0.11 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              17 |        36.782 ns |      1.0920 ns |       3.1333 ns |        35.205 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              17 |        71.822 ns |      0.4487 ns |       0.4198 ns |        71.845 ns |  1.94 |    0.19 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              18 |        39.311 ns |      1.0969 ns |       3.2343 ns |        39.106 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              18 |        74.991 ns |      0.5649 ns |       0.5284 ns |        75.072 ns |  1.88 |    0.16 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              19 |        37.563 ns |      0.1247 ns |       0.1042 ns |        37.530 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              19 |        78.368 ns |      0.2849 ns |       0.2665 ns |        78.339 ns |  2.09 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              20 |        39.201 ns |      0.2381 ns |       0.1859 ns |        39.152 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              20 |        81.695 ns |      0.3233 ns |       0.3024 ns |        81.616 ns |  2.08 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              30 |        63.352 ns |      0.4289 ns |       0.3348 ns |        63.300 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              30 |       117.247 ns |      1.3825 ns |       1.2932 ns |       117.002 ns |  1.85 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              32 |        75.545 ns |      1.5398 ns |       3.4755 ns |        76.149 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              32 |       124.538 ns |      2.2596 ns |       2.0031 ns |       124.019 ns |  1.66 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              36 |        73.480 ns |      0.3846 ns |       0.3409 ns |        73.532 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              36 |       138.077 ns |      1.4030 ns |       1.0954 ns |       138.365 ns |  1.88 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              37 |        75.778 ns |      0.4734 ns |       0.4196 ns |        75.679 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              37 |       141.462 ns |      1.8471 ns |       2.8757 ns |       140.394 ns |  1.88 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              40 |        80.076 ns |      0.1433 ns |       0.1119 ns |        80.111 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline |          ForEach |         List | RecyclableLongList |              40 |        80.585 ns |      0.3080 ns |       0.2405 ns |        80.613 ns |  1.01 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              40 |       167.978 ns |      6.7939 ns |      19.7103 ns |       159.602 ns |  2.03 |    0.08 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              40 |       154.534 ns |      2.5756 ns |       3.4383 ns |       153.739 ns |  1.93 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              50 |        99.272 ns |      1.9526 ns |       1.8264 ns |        98.170 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              50 |       184.432 ns |      1.0074 ns |       0.9423 ns |       184.027 ns |  1.86 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              60 |       113.774 ns |      0.4073 ns |       0.3810 ns |       113.630 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              60 |       219.955 ns |      3.2966 ns |       2.5737 ns |       219.345 ns |  1.93 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              70 |       130.797 ns |      0.6088 ns |       0.5695 ns |       130.696 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              70 |       253.115 ns |      0.3426 ns |       0.3037 ns |       253.111 ns |  1.93 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              80 |       147.581 ns |      0.3430 ns |       0.3208 ns |       147.562 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              80 |       286.753 ns |      0.7081 ns |       0.6624 ns |       286.741 ns |  1.94 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |          850000 | 1,573,933.164 ns | 10,382.2066 ns |   9,711.5225 ns | 1,577,438.672 ns |  1.00 |    0.00 |      25 B |        1.00 |
+|   Actual |          ForEach |         List | RecyclableLongList |          850000 | 2,758,170.938 ns | 13,509.0478 ns |  12,636.3717 ns | 2,758,662.109 ns |  1.75 |    0.01 |      27 B |        1.08 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |              90 |       164.562 ns |      0.3416 ns |       0.3028 ns |       164.540 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |              90 |       321.062 ns |      0.5492 ns |       0.5137 ns |       321.053 ns |  1.95 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |             100 |       183.520 ns |      0.6715 ns |       0.6281 ns |       183.629 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |             100 |       354.458 ns |      0.7867 ns |       0.6974 ns |       354.207 ns |  1.93 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |             128 |       229.202 ns |      0.9552 ns |       0.8467 ns |       229.057 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |             128 |       501.192 ns |     10.0071 ns |      20.8886 ns |       489.900 ns |  2.26 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |             256 |       449.720 ns |      1.9807 ns |       1.7558 ns |       449.356 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |             256 |       949.606 ns |      2.7887 ns |       2.3287 ns |       949.125 ns |  2.11 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |             512 |       884.885 ns |      2.4238 ns |       2.2672 ns |       883.987 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |             512 |     1,882.112 ns |      6.2503 ns |       5.8466 ns |     1,880.750 ns |  2.13 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |            1024 |     1,755.925 ns |      6.0778 ns |       5.3878 ns |     1,754.101 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |            1024 |     3,757.980 ns |      7.7449 ns |       6.8656 ns |     3,759.209 ns |  2.14 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |            2048 |     3,489.102 ns |      4.7328 ns |       3.6951 ns |     3,488.493 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |            2048 |     7,465.174 ns |     14.6889 ns |      13.7400 ns |     7,465.691 ns |  2.14 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |            4096 |     6,964.136 ns |      9.7275 ns |       8.1229 ns |     6,963.749 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |            4096 |    14,998.377 ns |     34.8706 ns |      32.6179 ns |    15,003.624 ns |  2.15 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |            8192 |    13,989.232 ns |     37.1075 ns |      34.7104 ns |    13,992.447 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |            8192 |    29,963.563 ns |     70.8338 ns |      66.2579 ns |    29,977.522 ns |  2.14 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |           16384 |    27,921.346 ns |     78.0018 ns |      69.1466 ns |    27,926.756 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual |          ForEach |         List | RecyclableLongList |           16384 |    52,494.696 ns |    100.1860 ns |      88.8123 ns |    52,480.118 ns |  1.88 |    0.01 |       1 B |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |           32768 |    56,019.953 ns |    186.8463 ns |     174.7761 ns |    56,023.074 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual |          ForEach |         List | RecyclableLongList |           32768 |   104,678.256 ns |    170.7997 ns |     133.3492 ns |   104,692.169 ns |  1.87 |    0.01 |       1 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |           65536 |   111,453.854 ns |    190.9286 ns |     169.2533 ns |   111,418.707 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual |          ForEach |         List | RecyclableLongList |           65536 |   209,495.001 ns |    241.5080 ns |     201.6701 ns |   209,501.685 ns |  1.88 |    0.00 |       2 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline |          ForEach |         List | RecyclableLongList |          131072 |   223,323.181 ns |    411.2504 ns |     321.0773 ns |   223,244.727 ns |  1.00 |    0.00 |       3 B |        1.00 |
+|   Actual |          ForEach |         List | RecyclableLongList |          131072 |   419,358.031 ns |    847.6060 ns |     792.8511 ns |   419,270.996 ns |  1.88 |    0.00 |       6 B |        2.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               0 |         3.459 ns |      0.0083 ns |       0.0074 ns |         3.458 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               0 |         3.414 ns |      0.0063 ns |       0.0049 ns |         3.415 ns |  0.99 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               1 |         5.598 ns |      0.0098 ns |       0.0087 ns |         5.597 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               1 |         4.159 ns |      0.0188 ns |       0.0166 ns |         4.150 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               2 |         7.322 ns |      0.0226 ns |       0.0211 ns |         7.323 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               2 |         5.397 ns |      0.0166 ns |       0.0156 ns |         5.403 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               3 |         9.622 ns |      0.2214 ns |       0.3992 ns |         9.909 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               3 |         6.555 ns |      0.0123 ns |       0.0103 ns |         6.558 ns |  0.70 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               4 |        11.165 ns |      0.0420 ns |       0.0351 ns |        11.158 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               4 |         7.777 ns |      0.0215 ns |       0.0191 ns |         7.783 ns |  0.70 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               5 |        12.944 ns |      0.2631 ns |       0.2054 ns |        12.855 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               5 |         9.448 ns |      0.0127 ns |       0.0099 ns |         9.448 ns |  0.73 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               6 |        15.447 ns |      0.0263 ns |       0.0233 ns |        15.449 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               6 |        10.691 ns |      0.0227 ns |       0.0201 ns |        10.685 ns |  0.69 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               7 |        17.175 ns |      0.3306 ns |       0.2761 ns |        17.059 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               7 |        12.128 ns |      0.0218 ns |       0.0204 ns |        12.122 ns |  0.71 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               8 |        18.742 ns |      0.1322 ns |       0.1237 ns |        18.742 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               8 |        13.691 ns |      0.0573 ns |       0.0536 ns |        13.683 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |               9 |        20.333 ns |      0.1336 ns |       0.1043 ns |        20.301 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |               9 |        14.920 ns |      0.0419 ns |       0.0392 ns |        14.929 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              10 |        21.936 ns |      0.0668 ns |       0.0625 ns |        21.952 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              10 |        16.090 ns |      0.0328 ns |       0.0290 ns |        16.095 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              11 |        23.578 ns |      0.0768 ns |       0.0681 ns |        23.558 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              11 |        17.313 ns |      0.0652 ns |       0.0610 ns |        17.313 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              12 |        25.293 ns |      0.0790 ns |       0.0739 ns |        25.286 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              12 |        18.661 ns |      0.0953 ns |       0.0892 ns |        18.668 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              13 |        27.034 ns |      0.1284 ns |       0.1072 ns |        27.011 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              13 |        19.841 ns |      0.0598 ns |       0.0559 ns |        19.840 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              14 |        28.757 ns |      0.1096 ns |       0.1025 ns |        28.752 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              14 |        21.150 ns |      0.1013 ns |       0.0948 ns |        21.159 ns |  0.74 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              15 |        32.964 ns |      0.8554 ns |       2.5222 ns |        32.617 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              15 |        22.282 ns |      0.0914 ns |       0.0810 ns |        22.287 ns |  0.66 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              16 |        32.237 ns |      0.1148 ns |       0.1074 ns |        32.206 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              16 |        23.180 ns |      0.0366 ns |       0.0342 ns |        23.177 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              17 |        36.880 ns |      0.9614 ns |       2.8346 ns |        36.745 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              17 |        24.494 ns |      0.0758 ns |       0.0709 ns |        24.478 ns |  0.66 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              18 |        35.417 ns |      0.0485 ns |       0.0405 ns |        35.428 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              18 |        25.609 ns |      0.0434 ns |       0.0385 ns |        25.594 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              19 |        37.214 ns |      0.1201 ns |       0.1124 ns |        37.197 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              19 |        26.810 ns |      0.0352 ns |       0.0312 ns |        26.811 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              20 |        38.848 ns |      0.0831 ns |       0.0777 ns |        38.813 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              20 |        28.030 ns |      0.0600 ns |       0.0501 ns |        28.020 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              30 |        62.232 ns |      0.1485 ns |       0.1240 ns |        62.264 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              30 |        40.197 ns |      0.1378 ns |       0.1289 ns |        40.184 ns |  0.65 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              32 |        66.695 ns |      0.2586 ns |       0.2292 ns |        66.676 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              32 |        49.723 ns |      0.4063 ns |       0.3801 ns |        49.735 ns |  0.74 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              36 |        74.231 ns |      1.3120 ns |       2.0810 ns |        73.333 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              36 |        53.480 ns |      0.1465 ns |       0.1298 ns |        53.422 ns |  0.72 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              37 |        75.223 ns |      0.3723 ns |       0.2906 ns |        75.211 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              37 |        54.955 ns |      0.0965 ns |       0.0805 ns |        54.949 ns |  0.73 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              40 |        80.632 ns |      0.2132 ns |       0.1665 ns |        80.611 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline | VersionedForEach |         List |              Array |              40 |        80.928 ns |      0.3209 ns |       0.2845 ns |        81.016 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              40 |        57.571 ns |      0.1620 ns |       0.1516 ns |        57.550 ns |  0.71 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              40 |        57.567 ns |      0.2715 ns |       0.2540 ns |        57.480 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              50 |        98.337 ns |      0.4607 ns |       0.3847 ns |        98.234 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              50 |        69.918 ns |      0.3088 ns |       0.2888 ns |        69.902 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              60 |       114.727 ns |      0.3872 ns |       0.3432 ns |       114.731 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              60 |        82.549 ns |      0.2423 ns |       0.2266 ns |        82.606 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              70 |       131.907 ns |      0.3786 ns |       0.3161 ns |       131.899 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              70 |        94.562 ns |      0.2713 ns |       0.2538 ns |        94.563 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              80 |       148.123 ns |      0.4904 ns |       0.4347 ns |       148.048 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              80 |       105.933 ns |      0.2151 ns |       0.1797 ns |       105.988 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |              90 |       164.847 ns |      0.5387 ns |       0.5039 ns |       164.889 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |              90 |       117.819 ns |      0.3778 ns |       0.3534 ns |       117.754 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |             100 |       182.306 ns |      0.5262 ns |       0.4108 ns |       182.398 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |             100 |       129.732 ns |      0.1857 ns |       0.1737 ns |       129.709 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |             128 |       229.294 ns |      0.5763 ns |       0.5109 ns |       229.472 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |             128 |       163.568 ns |      0.4130 ns |       0.3661 ns |       163.544 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |             256 |       447.474 ns |      1.0745 ns |       1.0050 ns |       447.656 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |             256 |       317.788 ns |      0.7944 ns |       0.7431 ns |       317.833 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |             512 |       879.350 ns |      2.0729 ns |       1.8375 ns |       878.595 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |             512 |       626.624 ns |      1.5525 ns |       1.4522 ns |       626.585 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |            1024 |     1,750.301 ns |      3.1932 ns |       2.9869 ns |     1,750.540 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |            1024 |     1,244.438 ns |      2.3394 ns |       2.0739 ns |     1,244.519 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |            2048 |     3,480.663 ns |      8.0170 ns |       6.6946 ns |     3,479.336 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |            2048 |     2,486.001 ns |      3.2825 ns |       2.7410 ns |     2,485.112 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |            4096 |     6,960.781 ns |     18.3644 ns |      17.1781 ns |     6,958.032 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |            4096 |     4,968.435 ns |      9.0030 ns |       8.4214 ns |     4,967.094 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |            8192 |    13,906.199 ns |     39.5137 ns |      36.9612 ns |    13,891.061 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |            8192 |     9,922.030 ns |     16.2379 ns |      15.1890 ns |     9,917.949 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |           16384 |    27,826.960 ns |     74.5928 ns |      69.7741 ns |    27,804.218 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |           16384 |    19,859.062 ns |     41.2759 ns |      38.6095 ns |    19,862.294 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |           32768 |    55,708.288 ns |    123.8257 ns |      96.6750 ns |    55,745.242 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |           32768 |    39,844.087 ns |     89.7389 ns |      83.9418 ns |    39,847.931 ns |  0.72 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |           65536 |   111,636.830 ns |    295.5719 ns |     276.4781 ns |   111,597.668 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |           65536 |    79,441.596 ns |    126.6409 ns |     112.2638 ns |    79,425.519 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |          131072 |   223,460.151 ns |    552.9382 ns |     490.1653 ns |   223,465.381 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |              Array |          131072 |   159,437.563 ns |    498.6698 ns |     466.4560 ns |   159,408.081 ns |  0.71 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |              Array |          850000 | 1,573,075.240 ns |  3,515.9662 ns |   2,935.9910 ns | 1,572,922.656 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual | VersionedForEach |         List |              Array |          850000 | 1,112,052.201 ns |  4,512.3840 ns |   4,220.8868 ns | 1,111,925.391 ns |  0.71 |    0.00 |       1 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               0 |         3.605 ns |      0.0999 ns |       0.1367 ns |         3.547 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               0 |         3.387 ns |      0.0478 ns |       0.0447 ns |         3.375 ns |  0.94 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               1 |         5.572 ns |      0.0273 ns |       0.0256 ns |         5.562 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               1 |         5.754 ns |      0.0797 ns |       0.0622 ns |         5.742 ns |  1.03 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               2 |         7.342 ns |      0.0333 ns |       0.0296 ns |         7.343 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               2 |         7.338 ns |      0.0370 ns |       0.0328 ns |         7.330 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               3 |         9.520 ns |      0.2201 ns |       0.3678 ns |         9.441 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               3 |         9.495 ns |      0.2189 ns |       0.4712 ns |         9.249 ns |  1.01 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               4 |        11.648 ns |      0.1662 ns |       0.1474 ns |        11.676 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               4 |        11.274 ns |      0.1642 ns |       0.1371 ns |        11.240 ns |  0.97 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               5 |        13.066 ns |      0.2624 ns |       0.2326 ns |        12.992 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               5 |        13.068 ns |      0.1415 ns |       0.1105 ns |        13.038 ns |  1.00 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               6 |        16.836 ns |      0.4463 ns |       1.2805 ns |        16.484 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               6 |        15.372 ns |      0.0496 ns |       0.0439 ns |        15.366 ns |  0.90 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               7 |        17.412 ns |      0.3740 ns |       0.6249 ns |        17.154 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               7 |        17.030 ns |      0.1402 ns |       0.1311 ns |        17.057 ns |  0.97 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               8 |        19.288 ns |      0.3984 ns |       1.0839 ns |        18.725 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               8 |        18.846 ns |      0.1664 ns |       0.1389 ns |        18.807 ns |  0.97 |    0.07 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |               9 |        20.307 ns |      0.1793 ns |       0.1498 ns |        20.339 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |               9 |        20.516 ns |      0.1498 ns |       0.1169 ns |        20.501 ns |  1.01 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              10 |        22.189 ns |      0.1822 ns |       0.1422 ns |        22.153 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              10 |        22.166 ns |      0.1267 ns |       0.1058 ns |        22.165 ns |  1.00 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              11 |        23.817 ns |      0.1630 ns |       0.1273 ns |        23.791 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              11 |        24.184 ns |      0.5098 ns |       0.5870 ns |        23.968 ns |  1.01 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              12 |        26.862 ns |      0.6210 ns |       1.7515 ns |        26.071 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              12 |        26.073 ns |      0.5135 ns |       0.9390 ns |        25.633 ns |  0.96 |    0.07 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              13 |        27.434 ns |      0.5770 ns |       0.4818 ns |        27.261 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              13 |        27.357 ns |      0.1410 ns |       0.1178 ns |        27.379 ns |  1.00 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              14 |        29.172 ns |      0.6069 ns |       0.5961 ns |        28.998 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              14 |        29.223 ns |      0.1778 ns |       0.1664 ns |        29.209 ns |  1.00 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              15 |        31.018 ns |      0.2327 ns |       0.2063 ns |        30.959 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              15 |        30.791 ns |      0.1933 ns |       0.1808 ns |        30.722 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              16 |        32.697 ns |      0.4948 ns |       0.5499 ns |        32.438 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              16 |        32.477 ns |      0.3344 ns |       0.2792 ns |        32.395 ns |  0.99 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              17 |        34.414 ns |      0.5702 ns |       0.5855 ns |        34.231 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              17 |        34.495 ns |      0.6197 ns |       0.7837 ns |        34.140 ns |  1.01 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              18 |        35.883 ns |      0.3110 ns |       0.2428 ns |        35.813 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              18 |        35.834 ns |      0.2171 ns |       0.1813 ns |        35.837 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              19 |        37.951 ns |      0.6024 ns |       0.5030 ns |        37.717 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              19 |        37.936 ns |      0.3289 ns |       0.2916 ns |        37.852 ns |  1.00 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              20 |        39.294 ns |      0.1403 ns |       0.1243 ns |        39.267 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              20 |        39.747 ns |      0.3799 ns |       0.3368 ns |        39.767 ns |  1.01 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              30 |        63.651 ns |      1.2614 ns |       1.1182 ns |        63.192 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              30 |        64.080 ns |      0.2043 ns |       0.1911 ns |        64.072 ns |  1.01 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              32 |        76.701 ns |      1.5564 ns |       1.9683 ns |        76.991 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              32 |        75.454 ns |      1.6036 ns |       4.7283 ns |        77.656 ns |  0.97 |    0.07 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              36 |        73.477 ns |      0.4009 ns |       0.3130 ns |        73.432 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              36 |        73.728 ns |      0.3577 ns |       0.3346 ns |        73.750 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              37 |        77.769 ns |      1.5771 ns |       2.1053 ns |        77.206 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              37 |        76.266 ns |      0.2876 ns |       0.2402 ns |        76.303 ns |  0.98 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              40 |        82.670 ns |      1.0862 ns |       0.9070 ns |        82.414 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline | VersionedForEach |         List |         PooledList |              40 |        81.617 ns |      0.8529 ns |       0.7122 ns |        81.854 ns |  0.99 |    0.01 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              40 |        81.777 ns |      0.2407 ns |       0.2133 ns |        81.772 ns |  0.99 |    0.01 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              40 |        81.803 ns |      0.7038 ns |       0.6239 ns |        81.637 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              50 |       100.467 ns |      1.6927 ns |       1.5005 ns |        99.658 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              50 |        99.949 ns |      0.8722 ns |       0.6810 ns |       100.174 ns |  0.99 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              60 |       116.896 ns |      1.1950 ns |       1.0593 ns |       117.067 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              60 |       116.487 ns |      0.9138 ns |       0.8101 ns |       116.381 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              70 |       132.761 ns |      0.7028 ns |       0.6230 ns |       132.723 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              70 |       133.131 ns |      0.8565 ns |       0.8012 ns |       133.131 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              80 |       150.716 ns |      1.4505 ns |       1.1324 ns |       150.515 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              80 |       153.492 ns |      2.9405 ns |       7.1575 ns |       150.261 ns |  1.06 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |              90 |       167.783 ns |      0.4266 ns |       0.3562 ns |       167.768 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |              90 |       166.777 ns |      0.5967 ns |       0.5290 ns |       166.843 ns |  0.99 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |             100 |       188.789 ns |      3.5107 ns |       6.9297 ns |       186.205 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |             100 |       194.927 ns |      3.9297 ns |      10.8892 ns |       190.716 ns |  1.02 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |             128 |       233.435 ns |      3.2857 ns |       2.5653 ns |       232.631 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |             128 |       231.886 ns |      2.1358 ns |       1.7835 ns |       231.022 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |             256 |       458.486 ns |      8.3274 ns |       9.9132 ns |       453.806 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |             256 |       456.333 ns |      8.9321 ns |       8.7725 ns |       451.573 ns |  0.99 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |             512 |       894.050 ns |     12.9499 ns |      11.4797 ns |       891.104 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |             512 |       894.210 ns |      9.5158 ns |       7.9461 ns |       893.481 ns |  1.00 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |            1024 |     1,794.834 ns |     32.5101 ns |      45.5747 ns |     1,776.326 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |            1024 |     1,825.100 ns |     36.4056 ns |      68.3786 ns |     1,792.576 ns |  1.03 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |            2048 |     3,532.782 ns |     15.0793 ns |      13.3674 ns |     3,533.941 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |            2048 |     4,264.741 ns |     85.1196 ns |     207.1929 ns |     4,304.190 ns |  1.18 |    0.07 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |            4096 |     7,293.178 ns |    144.5093 ns |     307.9610 ns |     7,130.396 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |            4096 |     8,783.656 ns |    252.4283 ns |     744.2904 ns |     8,849.936 ns |  1.18 |    0.10 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |            8192 |    14,100.054 ns |     51.6807 ns |      48.3422 ns |    14,090.756 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |            8192 |    14,046.596 ns |     51.0810 ns |      42.6550 ns |    14,043.178 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |           16384 |    28,099.603 ns |    173.2258 ns |     162.0355 ns |    28,026.727 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |           16384 |    28,120.424 ns |    185.9701 ns |     145.1932 ns |    28,132.475 ns |  1.00 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |           32768 |    56,662.055 ns |    777.0712 ns |     606.6861 ns |    56,564.575 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |           32768 |    56,011.725 ns |    350.9919 ns |     293.0941 ns |    55,856.506 ns |  0.99 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |           65536 |   113,660.577 ns |  1,531.6562 ns |   2,559.0534 ns |   112,542.786 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |           65536 |   112,241.287 ns |    243.4347 ns |     227.7089 ns |   112,286.365 ns |  0.97 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |          131072 |   225,908.205 ns |    599.1738 ns |     467.7955 ns |   225,927.820 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |         PooledList |          131072 |   227,601.839 ns |  4,023.6698 ns |   3,763.7432 ns |   226,865.747 ns |  1.01 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |         PooledList |          850000 | 1,582,789.760 ns | 21,303.7920 ns |  18,885.2567 ns | 1,577,323.242 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual | VersionedForEach |         List |         PooledList |          850000 | 1,664,077.398 ns | 42,919.4063 ns | 124,516.9800 ns | 1,599,284.570 ns |  1.12 |    0.08 |       2 B |        2.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               0 |         3.970 ns |      0.0621 ns |       0.0580 ns |         3.950 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               0 |         3.698 ns |      0.0247 ns |       0.0231 ns |         3.691 ns |  0.93 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               1 |         5.259 ns |      0.0353 ns |       0.0295 ns |         5.255 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               1 |         5.039 ns |      0.0851 ns |       0.0796 ns |         5.020 ns |  0.96 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               2 |         6.904 ns |      0.0501 ns |       0.0419 ns |         6.911 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               2 |         6.440 ns |      0.1260 ns |       0.0984 ns |         6.430 ns |  0.93 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               3 |         8.567 ns |      0.0087 ns |       0.0073 ns |         8.568 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               3 |         8.208 ns |      0.1509 ns |       0.1260 ns |         8.158 ns |  0.96 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               4 |        11.028 ns |      0.1305 ns |       0.1221 ns |        10.974 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               4 |        10.133 ns |      0.1201 ns |       0.1065 ns |        10.182 ns |  0.92 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               5 |        12.580 ns |      0.0143 ns |       0.0127 ns |        12.576 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               5 |        11.299 ns |      0.1078 ns |       0.0842 ns |        11.272 ns |  0.90 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               6 |        14.986 ns |      0.0576 ns |       0.0539 ns |        15.006 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               6 |        12.754 ns |      0.0489 ns |       0.0457 ns |        12.745 ns |  0.85 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               7 |        16.643 ns |      0.0644 ns |       0.0602 ns |        16.635 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               7 |        14.213 ns |      0.0508 ns |       0.0451 ns |        14.201 ns |  0.85 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               8 |        18.626 ns |      0.2364 ns |       0.1845 ns |        18.583 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               8 |        17.240 ns |      0.3647 ns |       0.3233 ns |        17.230 ns |  0.93 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |               9 |        21.199 ns |      0.3213 ns |       0.2683 ns |        21.155 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |               9 |        17.922 ns |      0.0993 ns |       0.0929 ns |        17.913 ns |  0.85 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              10 |        21.629 ns |      0.0608 ns |       0.0568 ns |        21.619 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              10 |        19.547 ns |      0.1213 ns |       0.1134 ns |        19.529 ns |  0.90 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              11 |        23.106 ns |      0.0150 ns |       0.0133 ns |        23.105 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              11 |        20.744 ns |      0.1304 ns |       0.1156 ns |        20.712 ns |  0.90 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              12 |        25.102 ns |      0.1648 ns |       0.1461 ns |        25.053 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              12 |        22.379 ns |      0.0827 ns |       0.0646 ns |        22.389 ns |  0.89 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              13 |        26.654 ns |      0.0997 ns |       0.0884 ns |        26.643 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              13 |        23.560 ns |      0.0891 ns |       0.0833 ns |        23.543 ns |  0.88 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              14 |        28.335 ns |      0.1547 ns |       0.1447 ns |        28.326 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              14 |        25.344 ns |      0.1841 ns |       0.1722 ns |        25.330 ns |  0.89 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              15 |        30.100 ns |      0.1335 ns |       0.1249 ns |        30.060 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              15 |        26.750 ns |      0.2399 ns |       0.2244 ns |        26.862 ns |  0.89 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              16 |        31.844 ns |      0.1452 ns |       0.1213 ns |        31.829 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              16 |        28.104 ns |      0.0794 ns |       0.0743 ns |        28.124 ns |  0.88 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              17 |        33.357 ns |      0.0597 ns |       0.0529 ns |        33.336 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              17 |        29.440 ns |      0.1494 ns |       0.1324 ns |        29.417 ns |  0.88 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              18 |        35.044 ns |      0.0607 ns |       0.0568 ns |        35.030 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              18 |        30.911 ns |      0.1060 ns |       0.0992 ns |        30.916 ns |  0.88 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              19 |        37.121 ns |      0.7513 ns |       0.6273 ns |        36.931 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              19 |        32.346 ns |      0.0841 ns |       0.0746 ns |        32.317 ns |  0.87 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              20 |        38.447 ns |      0.0932 ns |       0.0871 ns |        38.450 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              20 |        34.287 ns |      0.2641 ns |       0.2342 ns |        34.184 ns |  0.89 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              30 |        61.889 ns |      0.1697 ns |       0.1505 ns |        61.884 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              30 |        49.046 ns |      0.0953 ns |       0.0845 ns |        49.051 ns |  0.79 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              32 |        65.466 ns |      0.4431 ns |       0.4145 ns |        65.319 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              32 |        60.715 ns |      0.4172 ns |       0.3902 ns |        60.708 ns |  0.93 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              36 |        72.866 ns |      0.3567 ns |       0.2978 ns |        72.726 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              36 |        65.051 ns |      0.1252 ns |       0.1046 ns |        65.020 ns |  0.89 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              37 |        75.597 ns |      0.3195 ns |       0.2494 ns |        75.523 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              37 |        66.475 ns |      0.2530 ns |       0.2366 ns |        66.528 ns |  0.88 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              40 |        80.759 ns |      0.3199 ns |       0.2671 ns |        80.718 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline | VersionedForEach |         List |     RecyclableList |              40 |        81.291 ns |      0.5024 ns |       0.4700 ns |        81.161 ns |  1.01 |    0.01 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              40 |        71.530 ns |      0.4066 ns |       0.3803 ns |        71.693 ns |  0.88 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              40 |        71.414 ns |      0.5790 ns |       0.5416 ns |        71.294 ns |  0.88 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              50 |        99.816 ns |      0.4537 ns |       0.3789 ns |        99.952 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              50 |        87.417 ns |      0.6406 ns |       0.5992 ns |        87.357 ns |  0.88 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              60 |       115.992 ns |      1.0125 ns |       0.8455 ns |       115.652 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              60 |       102.011 ns |      0.7450 ns |       0.6969 ns |       101.928 ns |  0.88 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              70 |       132.989 ns |      0.5903 ns |       0.5522 ns |       132.996 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              70 |       117.603 ns |      0.3780 ns |       0.3156 ns |       117.497 ns |  0.88 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              80 |       149.451 ns |      0.3851 ns |       0.3215 ns |       149.447 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              80 |       133.267 ns |      0.2987 ns |       0.2794 ns |       133.162 ns |  0.89 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |              90 |       167.282 ns |      1.7481 ns |       1.4598 ns |       166.837 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |              90 |       144.890 ns |      1.1595 ns |       1.0846 ns |       145.010 ns |  0.87 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |             100 |       185.299 ns |      1.6608 ns |       1.5535 ns |       184.837 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |             100 |       159.926 ns |      1.0142 ns |       0.8990 ns |       159.666 ns |  0.86 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |             128 |       231.879 ns |      0.7997 ns |       0.7480 ns |       231.647 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |             128 |       207.422 ns |      1.1795 ns |       1.0456 ns |       207.111 ns |  0.89 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |             256 |       449.530 ns |      1.2971 ns |       1.0831 ns |       449.234 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |             256 |       405.314 ns |      1.1871 ns |       0.9913 ns |       405.506 ns |  0.90 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |             512 |       885.864 ns |      1.6311 ns |       1.4459 ns |       885.790 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |             512 |       800.319 ns |      3.0087 ns |       2.8144 ns |       799.416 ns |  0.90 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |            1024 |     1,756.501 ns |      6.5592 ns |       6.1355 ns |     1,754.186 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |            1024 |     1,587.746 ns |      3.6591 ns |       3.0555 ns |     1,587.691 ns |  0.90 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |            2048 |     3,500.671 ns |     10.6725 ns |       9.9830 ns |     3,498.656 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |            2048 |     3,027.481 ns |      6.4349 ns |       5.7044 ns |     3,027.135 ns |  0.86 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |            4096 |     7,005.156 ns |     21.9654 ns |      19.4717 ns |     6,999.719 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |            4096 |     6,369.114 ns |     23.6503 ns |      22.1225 ns |     6,372.867 ns |  0.91 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |            8192 |    14,029.178 ns |     57.5448 ns |      51.0119 ns |    14,022.577 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |            8192 |    12,686.859 ns |     21.2945 ns |      18.8770 ns |    12,688.882 ns |  0.90 |    0.00 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |           16384 |    28,901.182 ns |    535.1923 ns |     500.6192 ns |    29,047.418 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List |     RecyclableList |           16384 |    24,076.728 ns |     55.7596 ns |      52.1575 ns |    24,056.700 ns |  0.83 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |           32768 |    55,884.292 ns |    151.2645 ns |     141.4929 ns |    55,834.592 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual | VersionedForEach |         List |     RecyclableList |           32768 |    48,089.367 ns |    115.6123 ns |     108.1438 ns |    48,102.243 ns |  0.86 |    0.00 |       1 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |           65536 |   111,826.643 ns |    298.9380 ns |     279.6268 ns |   111,823.712 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual | VersionedForEach |         List |     RecyclableList |           65536 |    96,053.915 ns |    304.9875 ns |     285.2855 ns |    96,019.458 ns |  0.86 |    0.00 |       1 B |        0.50 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |          131072 |   222,706.154 ns |    228.2825 ns |     202.3665 ns |   222,666.797 ns |  1.00 |    0.00 |       3 B |        1.00 |
+|   Actual | VersionedForEach |         List |     RecyclableList |          131072 |   201,764.692 ns |    366.2813 ns |     342.6197 ns |   201,802.710 ns |  0.91 |    0.00 |       3 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List |     RecyclableList |          850000 | 1,548,234.675 ns |  3,936.0544 ns |   3,286.7837 ns | 1,547,516.992 ns |  1.00 |    0.00 |      13 B |        1.00 |
+|   Actual | VersionedForEach |         List |     RecyclableList |          850000 | 1,391,042.746 ns |  3,695.1426 ns |   3,275.6477 ns | 1,390,745.801 ns |  0.90 |    0.00 |      13 B |        1.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               0 |         3.892 ns |      0.0148 ns |       0.0138 ns |         3.887 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               0 |         9.195 ns |      0.0173 ns |       0.0144 ns |         9.192 ns |  2.36 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               1 |         5.705 ns |      0.1444 ns |       0.1827 ns |         5.598 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               1 |        13.761 ns |      0.1153 ns |       0.1022 ns |        13.743 ns |  2.38 |    0.08 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               2 |         7.425 ns |      0.1245 ns |       0.1103 ns |         7.397 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               2 |        18.689 ns |      0.3886 ns |       0.4772 ns |        18.674 ns |  2.51 |    0.08 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               3 |         9.111 ns |      0.0666 ns |       0.0556 ns |         9.087 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               3 |        21.205 ns |      0.2487 ns |       0.2077 ns |        21.150 ns |  2.33 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               4 |        11.537 ns |      0.2177 ns |       0.3258 ns |        11.430 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               4 |        26.664 ns |      0.5420 ns |       0.5070 ns |        26.367 ns |  2.32 |    0.09 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               5 |        12.928 ns |      0.0483 ns |       0.0429 ns |        12.929 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               5 |        28.802 ns |      0.4856 ns |       0.4055 ns |        28.648 ns |  2.23 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               6 |        15.460 ns |      0.0850 ns |       0.0710 ns |        15.460 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               6 |        32.974 ns |      0.5162 ns |       0.4310 ns |        32.935 ns |  2.13 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               7 |        17.443 ns |      0.3691 ns |       0.4394 ns |        17.203 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               7 |        36.249 ns |      0.1810 ns |       0.1605 ns |        36.207 ns |  2.06 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               8 |        18.841 ns |      0.0582 ns |       0.0545 ns |        18.821 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               8 |        42.655 ns |      0.0629 ns |       0.0557 ns |        42.640 ns |  2.26 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |               9 |        20.517 ns |      0.0983 ns |       0.0821 ns |        20.526 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |               9 |        43.668 ns |      0.2121 ns |       0.1656 ns |        43.622 ns |  2.13 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              10 |        22.881 ns |      0.4856 ns |       0.8245 ns |        22.553 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              10 |        48.475 ns |      0.7929 ns |       0.8143 ns |        48.224 ns |  2.10 |    0.10 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              11 |        23.744 ns |      0.2731 ns |       0.2280 ns |        23.666 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              11 |        52.220 ns |      1.0756 ns |       1.0061 ns |        51.834 ns |  2.20 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              12 |        25.488 ns |      0.1728 ns |       0.1349 ns |        25.474 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              12 |        55.805 ns |      1.1427 ns |       1.6019 ns |        55.199 ns |  2.19 |    0.07 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              13 |        27.620 ns |      0.5020 ns |       0.8248 ns |        27.260 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              13 |        59.417 ns |      1.1487 ns |       1.1281 ns |        59.065 ns |  2.13 |    0.06 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              14 |        29.092 ns |      0.4776 ns |       0.4690 ns |        28.971 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              14 |        62.957 ns |      0.5410 ns |       0.4517 ns |        62.894 ns |  2.16 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              15 |        30.958 ns |      0.2021 ns |       0.1578 ns |        30.915 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              15 |        74.870 ns |      0.2460 ns |       0.2181 ns |        74.813 ns |  2.42 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              16 |        32.522 ns |      0.1811 ns |       0.1694 ns |        32.450 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              16 |        84.531 ns |      0.2799 ns |       0.2337 ns |        84.556 ns |  2.60 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              17 |        34.320 ns |      0.3562 ns |       0.2974 ns |        34.276 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              17 |        82.366 ns |      0.1660 ns |       0.1386 ns |        82.364 ns |  2.40 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              18 |        36.846 ns |      0.7708 ns |       1.6920 ns |        35.953 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              18 |        87.370 ns |      1.1269 ns |       0.9989 ns |        87.418 ns |  2.34 |    0.12 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              19 |        38.133 ns |      0.7924 ns |       0.8479 ns |        37.688 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              19 |        91.029 ns |      1.0657 ns |       1.0944 ns |        90.832 ns |  2.39 |    0.05 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              20 |        38.930 ns |      0.2271 ns |       0.1773 ns |        38.943 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              20 |        93.896 ns |      0.2301 ns |       0.2152 ns |        93.971 ns |  2.41 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              30 |        64.492 ns |      1.0191 ns |       1.0009 ns |        64.187 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              30 |       131.506 ns |      0.2769 ns |       0.2455 ns |       131.484 ns |  2.04 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              32 |        66.829 ns |      0.3134 ns |       0.2446 ns |        66.740 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              32 |       150.896 ns |      0.4918 ns |       0.4360 ns |       150.773 ns |  2.26 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              36 |        73.890 ns |      0.1679 ns |       0.1311 ns |        73.896 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              36 |       161.593 ns |      1.8099 ns |       1.6044 ns |       161.146 ns |  2.19 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              37 |        76.400 ns |      1.4287 ns |       1.1930 ns |        75.961 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              37 |       166.064 ns |      1.3873 ns |       1.2298 ns |       166.015 ns |  2.17 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              40 |        81.358 ns |      1.6145 ns |       1.5857 ns |        80.539 ns |  1.00 |    0.00 |         - |          NA |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              40 |        80.915 ns |      0.2279 ns |       0.2020 ns |        80.946 ns |  0.99 |    0.02 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              40 |       177.865 ns |      3.2432 ns |       3.4702 ns |       176.419 ns |  2.19 |    0.07 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              40 |       182.822 ns |      3.7111 ns |       9.0334 ns |       178.670 ns |  2.27 |    0.11 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              50 |        98.457 ns |      1.6879 ns |       1.4963 ns |        97.915 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              50 |       214.826 ns |      0.9471 ns |       0.7909 ns |       214.598 ns |  2.18 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              60 |       115.088 ns |      1.4579 ns |       1.2924 ns |       114.847 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              60 |       254.172 ns |      0.8529 ns |       0.7978 ns |       254.217 ns |  2.21 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              70 |       134.907 ns |      2.7435 ns |       4.2713 ns |       132.610 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              70 |       296.318 ns |      3.1690 ns |       2.6463 ns |       295.252 ns |  2.16 |    0.09 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              80 |       148.501 ns |      2.3051 ns |       1.9249 ns |       147.798 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              80 |       333.637 ns |      1.8319 ns |       1.6239 ns |       333.909 ns |  2.25 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |              90 |       164.902 ns |      0.4841 ns |       0.4528 ns |       164.677 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |              90 |       369.672 ns |      1.0978 ns |       1.0269 ns |       369.473 ns |  2.24 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |             100 |       182.416 ns |      0.8974 ns |       0.8394 ns |       181.986 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |             100 |       410.274 ns |      2.9707 ns |       2.4807 ns |       409.657 ns |  2.25 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |             128 |       230.809 ns |      1.7505 ns |       1.4618 ns |       230.290 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |             128 |       555.014 ns |      7.4810 ns |       6.6317 ns |       552.155 ns |  2.41 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |             256 |       449.877 ns |      4.7384 ns |       3.9568 ns |       448.399 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |             256 |     1,090.100 ns |     17.6323 ns |      13.7662 ns |     1,086.062 ns |  2.42 |    0.02 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |             512 |       885.586 ns |      3.7142 ns |       3.1015 ns |       885.514 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |             512 |     2,160.387 ns |     21.7008 ns |      19.2372 ns |     2,156.652 ns |  2.44 |    0.03 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |            1024 |     1,773.035 ns |      8.2086 ns |       7.2767 ns |     1,772.021 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |            1024 |     4,299.115 ns |     17.5837 ns |      16.4478 ns |     4,300.156 ns |  2.42 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |            2048 |     3,513.094 ns |      9.0646 ns |       8.4790 ns |     3,511.880 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |            2048 |     8,551.012 ns |     33.2680 ns |      31.1189 ns |     8,548.759 ns |  2.43 |    0.01 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |            4096 |     7,080.465 ns |     63.2332 ns |      56.0546 ns |     7,079.928 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |            4096 |    17,419.122 ns |    280.6403 ns |     402.4859 ns |    17,277.155 ns |  2.46 |    0.08 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |            8192 |    14,297.834 ns |    169.8077 ns |     181.6923 ns |    14,285.627 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |            8192 |    34,212.709 ns |    197.9302 ns |     154.5309 ns |    34,152.783 ns |  2.39 |    0.04 |         - |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |           16384 |    27,984.034 ns |     65.8523 ns |      58.3764 ns |    27,978.502 ns |  1.00 |    0.00 |         - |          NA |
+|   Actual | VersionedForEach |         List | RecyclableLongList |           16384 |    61,165.138 ns |    120.0942 ns |     106.4603 ns |    61,160.236 ns |  2.19 |    0.00 |       1 B |          NA |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |           32768 |    56,134.698 ns |    385.7995 ns |     322.1600 ns |    56,012.927 ns |  1.00 |    0.00 |       1 B |        1.00 |
+|   Actual | VersionedForEach |         List | RecyclableLongList |           32768 |   123,321.451 ns |  1,148.3178 ns |   1,017.9538 ns |   123,617.908 ns |  2.19 |    0.02 |       2 B |        2.00 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |           65536 |   112,527.010 ns |    548.6837 ns |     486.3938 ns |   112,364.050 ns |  1.00 |    0.00 |       2 B |        1.00 |
+|   Actual | VersionedForEach |         List | RecyclableLongList |           65536 |   250,991.432 ns |  4,112.0996 ns |   5,200.4893 ns |   249,156.201 ns |  2.24 |    0.07 |       3 B |        1.50 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |          131072 |   229,755.196 ns |  4,559.9314 ns |   4,879.0755 ns |   228,871.570 ns |  1.00 |    0.00 |       3 B |        1.00 |
+|   Actual | VersionedForEach |         List | RecyclableLongList |          131072 |   493,550.419 ns |  2,642.8752 ns |   2,342.8400 ns |   493,029.688 ns |  2.15 |    0.05 |       7 B |        2.33 |
+|          |                  |              |                    |                 |                  |                |                 |                  |       |         |           |             |
+| Baseline | VersionedForEach |         List | RecyclableLongList |          850000 | 1,569,324.137 ns |  8,203.2766 ns |   6,404.5788 ns | 1,568,688.574 ns |  1.00 |    0.00 |      13 B |        1.00 |
+|   Actual | VersionedForEach |         List | RecyclableLongList |          850000 | 3,152,306.941 ns |  9,076.8563 ns |   7,579.5861 ns | 3,149,392.188 ns |  2.01 |    0.01 |      27 B |        2.08 |
 </details>
 
 # `IndexOf` Benchmarks
