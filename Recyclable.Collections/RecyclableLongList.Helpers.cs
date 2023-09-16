@@ -1,5 +1,4 @@
 ﻿using Recyclable.Collections.Pools;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
@@ -119,36 +118,6 @@ namespace Recyclable.Collections
 				if (itemsCount - destinationIndex > 0)
 				{
 					Array.ConstrainedCopy(sourceMemoryBlocksSpan[lastBlockIndex], 0, destinationArray, destinationIndex, (int)(itemsCount - destinationIndex));
-				}
-			}
-
-			public static IEnumerable<T> Enumerate(T[][] arrays, int chunkSize, long totalCount)
-			{
-				long currentCount = 0;
-				for (var arrayIdx = 0; arrayIdx < arrays.Length && currentCount < totalCount; arrayIdx++)
-				{
-					var array = arrays[arrayIdx];
-					currentCount += chunkSize;
-					switch (currentCount < totalCount)
-					{
-						case true:
-							for (var valueIdx = 0; valueIdx < chunkSize; valueIdx++)
-							{
-								yield return array[valueIdx];
-							}
-
-							break;
-
-						case false:
-							var partialCount = (int)(totalCount % chunkSize);
-							int maxCount = partialCount > 0 ? partialCount : chunkSize;
-							for (var valueIdx = 0; valueIdx < maxCount; valueIdx++)
-							{
-								yield return array[valueIdx];
-							}
-
-							break;
-					}
 				}
 			}
 
