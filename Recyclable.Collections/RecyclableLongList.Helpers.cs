@@ -195,13 +195,6 @@ namespace Recyclable.Collections
 				return requiredBlockCount << minBlockSizePow2Shift;
 			}
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-			public static void SetupBlockArrayPooling(RecyclableLongList<T> list, int blockSize)
-			{
-				list._blockSize = blockSize;
-				list._blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
-			}
-
 #pragma warning disable CA2208
 			public static void ThrowIndexOutOfRangeException(in string message) => throw new ArgumentOutOfRangeException("index", message);
 #pragma warning restore CA2208
