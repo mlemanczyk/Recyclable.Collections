@@ -549,28 +549,6 @@ namespace Recyclable.Collections
 			return false;
 		}
 
-		public void RemoveBlock(int index)
-		{
-			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
-			{
-				RecyclableArrayPool<T>.ReturnShared(_memoryBlocks[index], _needsClearing);
-			}
-
-			_memoryBlocks[index] = null;
-			_capacity -= _blockSize;
-			if (_nextItemBlockIndex == index)
-			{
-				_nextItemIndex = 0;
-			}
-			else if (_nextItemBlockIndex > index)
-			{
-				_nextItemBlockIndex--;
-			}
-
-			_lastBlockWithData--;
-			_version++;
-		}
-
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(int index)
 		{
@@ -644,6 +622,28 @@ namespace Recyclable.Collections
 #nullable restore
 			}
 
+			_version++;
+		}
+
+		public void RemoveBlock(int index)
+		{
+			if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
+			{
+				RecyclableArrayPool<T>.ReturnShared(_memoryBlocks[index], _needsClearing);
+			}
+
+			_memoryBlocks[index] = null;
+			_capacity -= _blockSize;
+			if (_nextItemBlockIndex == index)
+			{
+				_nextItemIndex = 0;
+			}
+			else if (_nextItemBlockIndex > index)
+			{
+				_nextItemBlockIndex--;
+			}
+
+			_lastBlockWithData--;
 			_version++;
 		}
 
