@@ -30,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 
 		public void RecyclableLongList_Create_WithCapacity()
 		{
-			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, initialCapacity: TestObjectCount);
 			DoNothing(list);
 		}
 	}

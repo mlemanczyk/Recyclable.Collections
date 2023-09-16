@@ -124,7 +124,6 @@ namespace Recyclable.Collections
 				//	Array.Clear(source);
 				//}
 
-				// // If anything, it has been already cleared above, so we don't need to repeat it.
 				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, NeedsClearing);
 			}
 		}

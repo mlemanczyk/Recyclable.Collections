@@ -72,7 +72,7 @@ namespace Recyclable.Collections.Benchmarks
 					break;
 
 				case RecyclableCollectionsBenchmarkSource.RecyclableLongList:
-					_testObjectsAsRecyclableLongList ??= new(TestObjects, BlockSize, expectedItemsCount: TestObjectCount);
+					_testObjectsAsRecyclableLongList ??= new(TestObjects, BlockSize, initialCapacity: base.TestObjectCount);
 					break;
 
 				default:

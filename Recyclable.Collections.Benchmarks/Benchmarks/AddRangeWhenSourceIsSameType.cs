@@ -21,7 +21,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableLongList_AddRangeWhenSourceIsRecyclableLongList()
 		{
 			var data = TestObjectsAsRecyclableList;
-			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, initialCapacity: TestObjectCount);
 			list.AddRange(data);
 		}
 	}

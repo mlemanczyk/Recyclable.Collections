@@ -40,7 +40,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, expectedItemsCount: dataCount);
+			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize, initialCapacity: dataCount);
 			list.AddRange(data);
 		}
 	}

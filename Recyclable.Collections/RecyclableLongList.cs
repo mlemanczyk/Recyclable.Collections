@@ -167,14 +167,14 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveOptimization)]
-		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
 		{
 			minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize));
 
-			if (expectedItemsCount > 0)
+			if (initialCapacity > 0)
 			{
 				Helpers.SetupBlockArrayPooling(this, minBlockSize);
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)expectedItemsCount.Value)));
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity.Value)));
 				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
@@ -295,12 +295,12 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-		public RecyclableLongList(IEnumerable source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableLongList(IEnumerable source, int minBlockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
 		{
 			Helpers.SetupBlockArrayPooling(this, minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)));
-			if (expectedItemsCount > 0)
+			if (initialCapacity > 0)
 			{
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((int)BitOperations.RoundUpToPowerOf2((uint)expectedItemsCount.Value)));
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity.Value)));
 				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
@@ -312,12 +312,12 @@ namespace Recyclable.Collections
 			AddRange(source);
 		}
 
-		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? expectedItemsCount = default)
+		public RecyclableLongList(IEnumerable<T> source, int minBlockSize = RecyclableDefaults.BlockSize, long? initialCapacity = default)
 		{
 			Helpers.SetupBlockArrayPooling(this, minBlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)minBlockSize)));
-			if (expectedItemsCount > 0)
+			if (initialCapacity > 0)
 			{
-				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((int)BitOperations.RoundUpToPowerOf2((uint)expectedItemsCount.Value)));
+				_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity.Value)));
 				_blockSizeMinus1 = minBlockSize - 1;
 			}
 			else
