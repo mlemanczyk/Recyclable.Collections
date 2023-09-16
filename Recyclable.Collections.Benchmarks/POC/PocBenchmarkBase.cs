@@ -43,7 +43,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		// [Params(262_144, 393_216, 524_288)]
 		// [Params(850_000_000)]
 		// [Params(100_000_000)]
-		// [Params(850_000)]
+		// [Params(RecyclableDefaults.MinItemsCountForParallelization)]
 		// [Params(127)]
 		// [Params(16)]
 		// [Params(10, 15, 128)]
