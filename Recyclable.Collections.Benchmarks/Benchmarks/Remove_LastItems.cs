@@ -40,7 +40,7 @@ namespace Recyclable.Collections.Benchmarks
 		public void RecyclableLongList_Remove_LastItems()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableLongList<long>(data, minBlockSize: BlockSize, expectedItemsCount: TestObjectCount);
+			using var list = new RecyclableLongList<long>(data, minBlockSize: BlockSize, initialCapacity:base.TestObjectCount);
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = data.Length - 1; i > data.Length - dataCount - 1; i--)
 			{

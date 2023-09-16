@@ -344,8 +344,6 @@ namespace Recyclable.Collections
 
 				return itemIndex >= 0 ? itemIndex + ((long)list._lastBlockWithData << list._blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
 			}
-
-			public static int Min(int a, int b, int c) => a < b ? a < c ? a : c : b < c ? b : c;
 		}
 	}
 }
