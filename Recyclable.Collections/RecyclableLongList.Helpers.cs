@@ -79,7 +79,7 @@ namespace Recyclable.Collections
 				Span<T> sourceBlockMemory;
 				Span<T> destinationArrayMemory;
 				int startingBlockIndex = (int)(startingIndex / blockSize);
-				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize > 0 ? 1 : 0)) - 1;
+				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize != 0 ? 1 : 0)) - 1;
 				Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
 				destinationArrayMemory = new Span<T>(destinationArray, destinationArrayIndex, (int)Math.Min(destinationArray.Length - destinationArrayIndex, itemsCount));
 				int memoryBlockIndex;
@@ -90,7 +90,7 @@ namespace Recyclable.Collections
 					destinationArrayMemory = destinationArrayMemory[blockSize..];
 				}
 
-				if (itemsCount - (lastBlockIndex * blockSize) > 0)
+				if (itemsCount - (lastBlockIndex * blockSize) != 0)
 				{
 					sourceBlockMemory = new(sourceMemoryBlocksSpan[lastBlockIndex], 0, (int)(itemsCount - (lastBlockIndex * blockSize)));
 					sourceBlockMemory.CopyTo(destinationArrayMemory);
@@ -105,7 +105,7 @@ namespace Recyclable.Collections
 				}
 
 				int startingBlockIndex = (int)(startingIndex / blockSize);
-				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize > 0 ? 1 : 0)) - 1;
+				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize != 0 ? 1 : 0)) - 1;
 
 				var destinationIndex = destinationArrayIndex;
 				Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
@@ -143,7 +143,7 @@ namespace Recyclable.Collections
 			public static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 			{
 				int sourceBlockCount = list._memoryBlocks?.Length ?? 0;
-				int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) > 0 ? 1 : 0));
+				int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) != 0 ? 1 : 0));
 				int blockIndex;
 
 				T[][] newMemoryBlocks;

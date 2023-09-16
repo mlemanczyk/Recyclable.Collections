@@ -211,13 +211,13 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public bool Contains(T item) => _count > 0 && Array.IndexOf(_memoryBlock, item, 0, _count) >= 0;
+		public bool Contains(T item) => _count != 0 && Array.IndexOf(_memoryBlock, item, 0, _count) >= 0;
 
 		[MethodImpl(MethodImplOptions.NoInlining)]
 		public void CopyTo(T[] array, int index) => Array.Copy(_memoryBlock, 0, array, index, _count);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public int IndexOf(T itemToFind) => _count > 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : RecyclableDefaults.ItemNotFoundIndex;
+		public int IndexOf(T itemToFind) => _count != 0 ? Array.IndexOf(_memoryBlock, itemToFind, 0, _count) : RecyclableDefaults.ItemNotFoundIndex;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void Insert(int index, T item)
