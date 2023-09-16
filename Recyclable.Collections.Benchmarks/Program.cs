@@ -49,6 +49,8 @@ namespace Recyclable.Collections.Benchmarks
 			_ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<LessOperatorVsAndOperatorBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<EqualVsContainsInConsecutiveOrderBenchmarks>(BenchmarkConfig);
+			_ = BenchmarkRunner.Run<RoundUpToPowerOf2vsOtherBenchmarks>(BenchmarkConfig);
+			_ = BenchmarkRunner.Run<GreaterOperatorVsDoesntEqualOperatorBenchmarks>(BenchmarkConfig);
 			// ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 		}
 
