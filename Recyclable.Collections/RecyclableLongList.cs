@@ -60,7 +60,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 		}
@@ -73,7 +73,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.LongLength)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.LongLength)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -88,7 +88,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.LongLength)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.LongLength)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -103,7 +103,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -118,7 +118,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Length)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Length)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -133,7 +133,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -148,7 +148,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -163,7 +163,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Length)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Length)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -178,7 +178,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -193,7 +193,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -208,7 +208,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)source.Count)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -223,7 +223,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
@@ -238,7 +238,7 @@ namespace Recyclable.Collections
 			}
 
 			_blockSizePow2BitShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)minBlockSize));
-			_capacity = RecyclableLongList<T>.Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity)));
+			_capacity = Helpers.Resize(this, minBlockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)initialCapacity)));
 			_blockSize = minBlockSize;
 			_blockSizeMinus1 = minBlockSize - 1;
 
