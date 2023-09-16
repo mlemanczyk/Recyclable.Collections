@@ -337,7 +337,7 @@ namespace Recyclable.Collections
 				return false;
 			}
 
-			if (_nextItemBlockIndex == 0 || (_nextItemBlockIndex == 1 && _nextItemIndex == 0))
+			if (_nextItemBlockIndex == 0 || (_nextItemIndex == 0 && _nextItemBlockIndex == 1))
 			{
 				return Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount)) >= 0;
 			}

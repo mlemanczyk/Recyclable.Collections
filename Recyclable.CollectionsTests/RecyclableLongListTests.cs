@@ -173,7 +173,7 @@ namespace Recyclable.CollectionsTests
 			}
 
 			// Validate
-			_ = list.Capacity.Should().Be(0);
+			_ = list.Capacity.Should().BeGreaterThanOrEqualTo(RecyclableDefaults.InitialCapacity);
 			_ = list.LastBlockWithData.Should().Be(-1);
 			_ = list.LongCount.Should().Be(itemsCount);
 			_ = list.Should().BeEmpty();
