@@ -67,12 +67,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		// [Params(1, 10)]
 		public int Divider = 10;
 		//public int BlockSize = 1_048_576;//int.MaxValue - 1;
-		public int BlockSize => TestObjectCount switch
-		{
-			0 => 1,
-			> 0 and <= 10_240 => TestObjectCount,
-			_ => TestObjectCount / Divider > 0 ? TestObjectCount / Divider : TestObjectCount
-		};
+		public int BlockSize { get; private set; }
 
 		public byte BlockSizePow2BitShift => checked((byte)(31 - BitOperations.LeadingZeroCount((uint)BlockSize)));
 
@@ -107,6 +102,20 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public virtual void Setup()
 		{
 			Console.WriteLine($"******* SETTING UP TEST CASE FOR BENCHMARK {{{DataType}}} *******");
+			
+			BlockSize = TestObjectCount switch
+			{
+				0 => 1,
+				> 0 and <= 10_240 => TestObjectCount,
+				_ => TestObjectCount / Divider > 0 ? TestObjectCount / Divider : TestObjectCount
+			};
+
+			if (BlockSize > 0)
+			{
+				BlockSize = checked((int)BitOperations.RoundUpToPowerOf2((uint)BlockSize));
+			}
+			
+			Console.WriteLine($"******* BaseDataType = {BaseDataType}; default = {default(TBenchmarkType)} *******");
 
 			if (!EqualityComparer<TBenchmarkType>.Default.Equals(BaseDataType, default))
 			{
