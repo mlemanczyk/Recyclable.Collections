@@ -27,18 +27,18 @@ namespace Recyclable.Collections
 
 		object? IList.this[int index]
 		{
-			get => _memoryBlock[index];
+			get => _memoryBlock.GetValue(index);
 
 			set
 			{
 				if (value is T typedValue)
 				{
-					new Span<T>(_memoryBlock)[index] = typedValue;
+					_memoryBlock.SetValue(typedValue, index);
 				}
 				else if (value == null && _defaultIsNull)
 				{
 #nullable disable
-					new Span<T>(_memoryBlock)[index] = default;
+					_memoryBlock.SetValue(default, index);
 #nullable restore
 				}
 				else

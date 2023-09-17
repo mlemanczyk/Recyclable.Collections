@@ -39,7 +39,7 @@
 			_ = Task.Run(ReleaseMemoryOnExcess);
 		}
 
-		public T[] Rent()
+		public Array Rent()
 		{
 			MemoryBucket<T>? bucket;
 			Enter();
@@ -55,10 +55,10 @@
 			}
 
 			Exit();
-			return bucket != null ? bucket.Memory : new T[_blockSize];
+			return bucket != null ? bucket.Memory : Array.CreateInstance(typeof(T), _blockSize);
 		}
 
-		public void ReturnUnchecked(T[] array, bool clearArray)
+		public void ReturnUnchecked(Array array, bool clearArray)
 		{
 			MemoryBucket<T> bucket = new(array);
 			if (clearArray)

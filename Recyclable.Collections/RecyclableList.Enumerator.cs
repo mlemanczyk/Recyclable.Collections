@@ -16,9 +16,9 @@ namespace Recyclable.Collections
 
 #nullable disable
 			[Pure]
-			public readonly T Current => _list._memoryBlock[_currentItemIndex - 1];
+			public readonly T Current => (T)_list._memoryBlock.GetValue(_currentItemIndex - 1);
 			[Pure]
-			readonly object IEnumerator.Current => _list._memoryBlock[_currentItemIndex - 1];
+			readonly object IEnumerator.Current => (T)_list._memoryBlock.GetValue(_currentItemIndex - 1);
 #nullable restore
 
 			public bool MoveNext()

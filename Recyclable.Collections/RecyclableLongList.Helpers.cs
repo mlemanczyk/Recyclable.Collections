@@ -150,7 +150,7 @@ namespace Recyclable.Collections
 				if (requiredBlockCount > sourceBlockCount)
 				{
 					// Allocate new memory block for all arrays
-					newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? RecyclableArrayPool<T[]>.RentShared(requiredBlockCount) : new T[requiredBlockCount][];
+					newMemoryBlocks = requiredBlockCount >= RecyclableDefaults.MinPooledArrayLength ? (T[][])RecyclableArrayPool<T[]>.RentShared(requiredBlockCount) : new T[requiredBlockCount][];
 
 					// Copy arrays from the old memory block for all arrays
 					if (sourceBlockCount > 0)
@@ -179,7 +179,7 @@ namespace Recyclable.Collections
 						ref OneSizeArrayPool<T> blockArrayPool = ref RecyclableArrayPool<T>.Shared(minBlockSize);
 						while (blockIndex >= 0 && newMemoryBlocks[blockIndex] == null)
 						{
-							newMemoryBlocks[blockIndex--] = blockArrayPool.Rent();
+							newMemoryBlocks[blockIndex--] = (T[])blockArrayPool.Rent();
 						}
 					}
 					else

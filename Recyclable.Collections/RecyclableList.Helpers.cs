@@ -108,13 +108,23 @@ namespace Recyclable.Collections
 		{
 			// TODO: Measure performance
 			// T[] newMemoryBlock = RecyclableListHelpers<T>._arrayPool.Rent(_capacity <<= 1);
-			T[] oldMemoryBlock = list._memoryBlock;
-			list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
-				? new T[list._capacity]
-				: RecyclableArrayPool<T>.RentShared(list._capacity);
+			Array oldMemoryBlock = list._memoryBlock;
+			if (oldMemoryBlock.GetLowerBound(0) == 0)
+			{
+				list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
+					? Array.CreateInstance(typeof(T), list._capacity)
+					: RecyclableArrayPool<T>.RentShared(list._capacity);
+			}
+			else
+			{
+				list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
+					? Array.CreateInstance(typeof(T), new[] { list._capacity }, new[] { oldMemoryBlock.GetLowerBound(0) })
+					: RecyclableArrayPool<T>.RentShared(list._capacity, oldMemoryBlock.GetLowerBound(0));
+			}
 
 			// & WAS SLOWER WITHOUT
-			new Span<T>(oldMemoryBlock, 0, list._count).CopyTo(list._memoryBlock);
+			Array.Copy(oldMemoryBlock, list._memoryBlock, list._count);
+			// new Span<T>((T[])oldMemoryBlock, 0, list._count).CopyTo((T[])list._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
@@ -131,7 +141,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 		public static int ResizeAndCopy(RecyclableList<T> sourceList, int oldSize, int newSize)
 		{
-			T[] oldMemoryBlock = sourceList._memoryBlock;
+			T[] oldMemoryBlock = (T[])sourceList._memoryBlock;
 			sourceList._memoryBlock = newSize >= RecyclableDefaults.MinPooledArrayLength
 				? RecyclableArrayPool<T>.RentShared(newSize)
 				: new T[newSize];
@@ -139,7 +149,7 @@ namespace Recyclable.Collections
 			// & WAS SLOWER WITHOUT
 
 			// & WAS SLOWER AS ARRAY
-			new Span<T>(oldMemoryBlock, 0, oldSize).CopyTo(sourceList._memoryBlock);
+			new Span<T>(oldMemoryBlock, 0, oldSize).CopyTo((T[])sourceList._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{

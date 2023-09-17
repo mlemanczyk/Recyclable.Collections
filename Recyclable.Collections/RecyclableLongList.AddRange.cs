@@ -189,7 +189,7 @@ namespace Recyclable.Collections
 
 			// We're better off to temporarily copy it to a fixed array,
 			// than copying them item by item. We may run into OOMs, though.
-			T[] itemsBuffer = items.Count >= RecyclableDefaults.MinPooledArrayLength ? RecyclableArrayPool<T>.RentShared((int)BitOperations.RoundUpToPowerOf2((uint)items.Count)) : new T[items.Count];
+			T[] itemsBuffer = items.Count >= RecyclableDefaults.MinPooledArrayLength ? (T[])RecyclableArrayPool<T>.RentShared((int)BitOperations.RoundUpToPowerOf2((uint)items.Count)) : new T[items.Count];
 			items.CopyTo(itemsBuffer, 0);
 
 			Span<T> itemsSpan = new(itemsBuffer, 0, items.Count);
@@ -255,7 +255,7 @@ namespace Recyclable.Collections
 
 			// We're better off to temporarily copy it to a fixed array,
 			// than copying them item by item. We may run into OOMs, though.
-			T[] itemsBuffer = items.Count >= RecyclableDefaults.MinPooledArrayLength ? RecyclableArrayPool<T>.RentShared((int)BitOperations.RoundUpToPowerOf2((uint)items.Count)) : new T[items.Count];
+			T[] itemsBuffer = items.Count >= RecyclableDefaults.MinPooledArrayLength ? (T[])RecyclableArrayPool<T>.RentShared((int)BitOperations.RoundUpToPowerOf2((uint)items.Count)) : new T[items.Count];
 
 			items.CopyTo(itemsBuffer, 0);
 
@@ -590,7 +590,7 @@ namespace Recyclable.Collections
 				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
-			Span<T> itemsSpan = new(items._memoryBlock, 0, items._count);
+			Span<T> itemsSpan = new((T[])items._memoryBlock, 0, items._count);
 			Span<T[]> targetMemoryBlocksSpan = new(targetList._memoryBlocks);
 			Span<T> targetBlockArraySpan = new(targetMemoryBlocksSpan[targetBlockIndex], targetList._nextItemIndex, targetList._blockSize - targetList._nextItemIndex);
 			
