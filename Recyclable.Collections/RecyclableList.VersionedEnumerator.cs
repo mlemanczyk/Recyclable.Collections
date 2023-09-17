@@ -17,10 +17,10 @@ namespace Recyclable.Collections
 
 #nullable disable
 			[Pure]
-			public readonly T Current => _enumeratorVersion == _list._version ? (T)_list._memoryBlock.GetValue(_currentItemIndex - 1) : throw new InvalidOperationException();
+			public readonly T Current => _enumeratorVersion == _list._version ? _list._memoryBlock[_currentItemIndex - 1] : throw new InvalidOperationException();
 
 			[Pure]
-			readonly object IEnumerator.Current => _enumeratorVersion == _list._version ? _list._memoryBlock.GetValue(_currentItemIndex - 1) : throw new InvalidOperationException();
+			readonly object IEnumerator.Current => _enumeratorVersion == _list._version ? _list._memoryBlock[_currentItemIndex - 1] : throw new InvalidOperationException();
 #nullable restore
 
 			public bool MoveNext()

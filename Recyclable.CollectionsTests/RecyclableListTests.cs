@@ -338,13 +338,13 @@ namespace Recyclable.CollectionsTests
 
 			// Arrange
 			using var list = new RecyclableList<object>(testData, itemsCount);
-			_ = ((object[])list.AsArray)[..itemsCount].Should().AllSatisfy(x => x.Should().NotBeNull());
+			_ = list.AsArray[..itemsCount].Should().AllSatisfy(x => x.Should().NotBeNull());
 
 			// Act
 			list.Clear();
 
 			// Assert
-			_ = ((object[])list.AsArray)[..itemsCount].Should().AllSatisfy(x => x.Should().BeNull());
+			_ = list.AsArray[..itemsCount].Should().AllSatisfy(x => x.Should().BeNull());
 		}
 
 		[Theory]
@@ -391,12 +391,6 @@ namespace Recyclable.CollectionsTests
 			_ = list.Capacity.Should().BeGreaterThanOrEqualTo(itemsCount * 2);
 			_ = list.Count.Should().Be(itemsCount * 2);
 			_ = list.Should().Equal(testData);
-		}
-
-		[Fact]
-		public void ConstructorShouldCreateArrayWithCustomBoundaries()
-		{
-			using var list = new RecyclableList<long>(-10);
 		}
 
 		[Theory]
@@ -481,14 +475,14 @@ namespace Recyclable.CollectionsTests
 			// Arrange
 			using var list = new RecyclableList<object>(testData, itemsCount);
 			var listArray = list.AsArray;
-			_ = ((object[])list.AsArray)[..itemsCount].Should().NotBeNull();
-			_ = ((object[])listArray)[..itemsCount].Should().AllSatisfy(x => x.Should().NotBeNull());
+			_ = list.AsArray[..itemsCount].Should().NotBeNull();
+			_ = listArray[..itemsCount].Should().AllSatisfy(x => x.Should().NotBeNull());
 
 			// Act
 			list.Dispose();
 
 			// Assert
-			_ = ((object[])listArray)[..itemsCount].Should().AllSatisfy(x => x.Should().BeNull());
+			_ = listArray[..itemsCount].Should().AllSatisfy(x => x.Should().BeNull());
 		}
 
 		[Fact]
