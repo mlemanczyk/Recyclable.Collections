@@ -138,34 +138,34 @@
 		1. ✅ `Span<T>`
 		1. ✅ `T[]`
 	1. ✅ Release 0.0.5
-	1. 👉 Add support for `ulong` indexing
-		1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
-		1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
+	1. 👉 Implement `List<T>` compatibility pack in `RecyclableList<T>`
 	1. 🅿️ Overflow review
 		1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
 		1. 🅿️ Make type castings `checked`
+	1. 🅿️ Release 0.0.6
+	1. 🅿️ Implement `List<T>` compatibility pack in `RecyclableLongList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
 		1. `IndexOf` parallelization 
-	1. 🅿️ Release 0.0.6
+	1. 🅿️ Release 0.0.7
 1. 🅿️ Implement `ILongList<T>` interface
 	1. 🅿️ `RecyclableList<T>`
 	1. 🅿️ `RecyclableLongList<T>`
 1. 🅿️ Implement `RecyclableQueue<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableQueue<T>`
-	1. 🅿️ Release 0.0.7
+	1. 🅿️ Release 0.0.8
 1. 🅿️ Implement `RecyclableStack<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableStack<T>`
-	1. 🅿️ Release 0.0.8
+	1. 🅿️ Release 0.0.9
 1. 🅿️ Implement `RecyclableSortedList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableSortedList<T>`
-	1. 🅿️ Release 0.0.9
+	1. 🅿️ Release 0.0.10
 1. 🅿️ Implement `RecyclableUnorderedList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableUnorderedList<T>`
-	1. 🅿️ Release 0.0.10
+	1. 🅿️ Release 0.0.11
 1. 🅿️ Implement `RecyclableVersionedList<T>`
 	1. 🅿️ Port `RecyclableList<T>` to `RecyclableVersionedList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` to `RecyclableVersionedLongList<T>`
-	1. 🅿️ Release 0.0.11
+	1. 🅿️ Release 0.0.12
 1. 🅿️ Optimize `OneSizeArrayPool`
 	1. 🅿️ Review locks
 	1. 🅿️ Measure multi-threading performance
@@ -181,7 +181,7 @@
 1. 🅿️ Optimize `MemoryBucket<T>`
 	1. 🅿️ Convert to `struct`, if possible
 	1. 🅿️ Find out if there are better replacements
-	1. 🅿️ Release 0.0.12
+	1. 🅿️ Release 0.0.13
 1. 🅿️ Optimize
 	1. 🅿️ `IndexOfSynchronizationContext`
 	1. 🅿️ `IndexOfSynchronizationContextPool`
@@ -191,15 +191,16 @@
 		1. 🅿️ Multi-threading benchmarks
 	1. 🅿️ `SpinLockSlimmer`
 		1. 🅿️ Multi-threading benchmarks
-1. 🅿️ Release 0.0.13
+1. 🅿️ Release 0.0.14
 1. 🅿️ Extend unit tests
 	1. 🅿️ `RecyclableLongListExtensions.CopyTo`
 	1. 🅿️ `RecyclableLongList` cases for large items count (&gt;`int.MaxValue`)
 	1. 🅿️ Pools
 	1. 🅿️ Multi-threading
+	1. 🅿️ Add comparison tests vs `T[]` / `List<T>` equivalents
 1. 🅿️ Cleanup
 	1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
-	1. 🅿️ Replace properties with field refs, where possible
+	1. 🅿️ Replace all internal properties refs with fields, where possible
 	1. ✅ `RecyclableLongListExtensions`
 	1. ✅ `ListExtensions`
 	1. 🅿️ `MathUtils`
@@ -208,14 +209,15 @@
 	1. 🅿️ Add`RecyclableLongListHelpers.Enumerate` to benchmarks
 	1. 🅿️ Review all classes & add `volatile`, where needed
 	1. 🅿️ Remove `expectedItemsCount` parameter from `RecyclableLongList`'s constructor
-1. 🅿️ Release 0.0.14
+	1. 🅿️ Remove `array` slicing in favor for indexing, like in `RecyclableCompatibilityListExtensions`
+1. 🅿️ Release 0.0.15
 1. 🅿️ Optimize
 	1. 🅿️ `ListExtensions`
 	1. 🅿️ `MathUtils`
 	1. 🅿️ `SystemRandomNumberGenerator`
 	1. 🅿️ `RecyclableLongListExtensions`
 	1. 🅿️ Memory release in pools to utilize GC events in case of memory pressure
-1. 🅿️ Release 0.0.15
+1. 🅿️ Release 0.0.16
 1. ✅ Review and remove warnings & hints
 	1. ✅ Warnings
 	1. ✅ Hints
@@ -237,6 +239,9 @@
 		1. 🅿️ Add support for methods
 		1. 🅿️ Add support for constructor
 		1. 🅿️ Skip base fields, methods, properties etc. when they're overridden in the child class
+1. 🅿️ Add support for `ulong` indexing
+	1. 🅿️ Convert `_memoryBlocks` to `Array` to allow `ulong` lengths
+	1. 🅿️ Convert block indexes from `int` to `ulong` or `long`
 1. 🅿️ Optimize
 	1. 🅿️ `RecyclableLongList<T>.Resize`
 	1. 🅿️ `RecyclableLongList<T>.CopyTo`
