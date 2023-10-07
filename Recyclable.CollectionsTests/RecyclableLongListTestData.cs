@@ -1,7 +1,6 @@
 ﻿using MoreLinq;
 using Open.Numeric.Primes;
 using Recyclable.Collections;
-using System.Collections;
 using System.Numerics;
 
 namespace Recyclable.CollectionsTests
@@ -33,6 +32,8 @@ namespace Recyclable.CollectionsTests
 			//RecyclableDefaults.MinPooledArrayLength - 5, RecyclableDefaults.MinPooledArrayLength - 1, RecyclableDefaults.MinPooledArrayLength, RecyclableDefaults.MinPooledArrayLength + 1, RecyclableDefaults.MinPooledArrayLength + 5, 127, 128, 129, RecyclableDefaults.MinItemsCountForParallelization
 			0, 1, 2, 3, 7, 10, 16, RecyclableDefaults.MinPooledArrayLength - 5, RecyclableDefaults.MinPooledArrayLength - 1, RecyclableDefaults.MinPooledArrayLength, RecyclableDefaults.MinPooledArrayLength + 1, RecyclableDefaults.MinPooledArrayLength + 5, RecyclableDefaults.MinPooledArrayLength * 100
 		};
+
+		public static readonly IEnumerable<object[]> ItemsCountTestCases = ItemsCountVariants.Select(x => new object[] { (int)x });
 
 		public static readonly IEnumerable<int> BlockSizeVariants = new int[]
 		{

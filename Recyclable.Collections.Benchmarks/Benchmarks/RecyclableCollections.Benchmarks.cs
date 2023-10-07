@@ -6,9 +6,11 @@ namespace Recyclable.Collections.Benchmarks
 	public enum RecyclableCollectionsBenchmarkType
 	{
 		Unknown, Add_WithCapacity, Add, AddRange_WithCapacity, AddRangeWhenSourceIsArray, AddRangeWhenSourceIsIEnumerable,
-		AddRangeWhenSourceIsIList, AddRangeWhenSourceIsList, AddRangeWhenSourceIsSameType, Contains_FirstItems,
-		Contains_LastItems, Count, Create_WithCapacity, Create, ForEach, GetItem, IndexOf_BestAndWorstCases, IndexOf_FirstItems,
-		IndexOf_LastItems, LongCount, Remove_FirstItems, Remove_LastItems, RemoveAt_FirstItems, RemoveAt_LastItems,
+		AddRangeWhenSourceIsIList, AddRangeWhenSourceIsList, AddRangeWhenSourceIsSameType, BinarySearch_BestAndWorstCases, 
+		Contains_FirstItems, Contains_LastItems, ConvertAll, Count, Create_WithCapacity, Create, Exists_BestAndWorstCases,
+		Find_BestAndWorstCases, FindAll_BestAndWorstCases, FindLast_BestAndWorstCases, FindLastIndex_BestAndWorstCases,
+		ForEach, GetItem, IndexOf_BestAndWorstCases,IndexOf_FirstItems, IndexOf_LastItems, LongCount,
+		Remove_FirstItems, Remove_LastItems, RemoveAt_FirstItems, RemoveAt_LastItems,
 		SetItem, VersionedForEach
 	}
 
@@ -31,11 +33,18 @@ namespace Recyclable.Collections.Benchmarks
 			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsIList,
 			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsList,
 			RecyclableCollectionsBenchmarkType.AddRangeWhenSourceIsSameType,
+			RecyclableCollectionsBenchmarkType.BinarySearch_BestAndWorstCases,
 			RecyclableCollectionsBenchmarkType.Contains_FirstItems,
 			RecyclableCollectionsBenchmarkType.Contains_LastItems,
+			RecyclableCollectionsBenchmarkType.ConvertAll,
 			RecyclableCollectionsBenchmarkType.Count,
 			RecyclableCollectionsBenchmarkType.Create_WithCapacity,
 			RecyclableCollectionsBenchmarkType.Create,
+			RecyclableCollectionsBenchmarkType.Exists_BestAndWorstCases,
+			RecyclableCollectionsBenchmarkType.Find_BestAndWorstCases,
+			RecyclableCollectionsBenchmarkType.FindAll_BestAndWorstCases,
+			RecyclableCollectionsBenchmarkType.FindLast_BestAndWorstCases,
+			RecyclableCollectionsBenchmarkType.FindLastIndex_BestAndWorstCases,
 			RecyclableCollectionsBenchmarkType.ForEach,
 			RecyclableCollectionsBenchmarkType.GetItem,
 			RecyclableCollectionsBenchmarkType.IndexOf_BestAndWorstCases,

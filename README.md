@@ -138,10 +138,10 @@
 		1. ✅ `Span<T>`
 		1. ✅ `T[]`
 	1. ✅ Release 0.0.5
-	1. 👉 Implement `List<T>` compatibility pack in `RecyclableList<T>`
-	1. 🅿️ Overflow review
+	1. ✅ Implement `List<T>` compatibility pack in `RecyclableList<T>`
+	1. 👉 Overflow review
 		1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
-		1. 🅿️ Make type castings `checked`
+		1. 🅿️ Make type castings `checked`, where required
 	1. 🅿️ Release 0.0.6
 	1. 🅿️ Implement `List<T>` compatibility pack in `RecyclableLongList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
@@ -198,6 +198,12 @@
 	1. 🅿️ Pools
 	1. 🅿️ Multi-threading
 	1. 🅿️ Add comparison tests vs `T[]` / `List<T>` equivalents
+	1. 🅿️ Add test cases for indexes beyond items count
+	1. 🅿️ Cover border cases
+		1. 🅿️ Non-existing items in `.Contains...()`, `.Exists...()`, `.Find...()`, `.IndexOf...()`, `.Last...()`
+		1. 🅿️ Duplicated items in `.Contains...()`, `.Exists...()`, `.Find...()`, `.IndexOf...()`, `.Last...()`
+		1. 🅿️ Append test data in reversed order in `.AddRange()`, `.InsertRange()` and similar tests
+		1. 🅿️ Switch tests to use Source / Target data variants in `.AddRange()`, `.InsertRange()` and similar tests
 1. 🅿️ Cleanup
 	1. 🅿️ Replace `LastBlockWithData` property with `_lastBlockWithData` field
 	1. 🅿️ Replace all internal properties refs with fields, where possible

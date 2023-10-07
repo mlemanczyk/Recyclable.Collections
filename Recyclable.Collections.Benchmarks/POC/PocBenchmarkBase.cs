@@ -60,7 +60,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		// [Params(RecyclableDefaults.MinItemsCountForParallelization * 3)]
 		// [Params(1_048_576)]
 		public virtual int TestObjectCount { get; set; } = 0; //8_192;//131_072; //1; //33_554_432; //524_288; //131_072;
-		public virtual int TestObjectCountForSlowMethods => (TestObjectCount / 2) + 1;// Math.Min(TestObjectCount, 131_072);
+		public virtual int TestObjectCountForSlowMethods { get; private set; }
 
 		// [Params(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200)]
 		// [Params(10, 20, 50, 100)]
@@ -102,6 +102,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public virtual void Setup()
 		{
 			Console.WriteLine($"******* SETTING UP TEST CASE FOR BENCHMARK {{{DataType}}} *******");
+			
+			TestObjectCountForSlowMethods = (TestObjectCount / 2) + 1;
 			
 			BlockSize = TestObjectCount switch
 			{

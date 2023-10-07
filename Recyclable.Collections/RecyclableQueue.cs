@@ -99,8 +99,8 @@ namespace Recyclable.Collections
 		private void SetItem(long index, T value)
 		{
 			long absoluteIndex = GetAbsoluteIndex(index, RemovedCount);
-			int arrayIndex = RecyclableQueueHelpers.ToArrayIndex(absoluteIndex, BlockSize);
-			long itemIndex = RecyclableQueueHelpers.ToItemIndex(absoluteIndex, BlockSize);
+			int arrayIndex = RecyclableQueueHelpers<T>.ToArrayIndex(absoluteIndex, BlockSize);
+			long itemIndex = RecyclableQueueHelpers<T>.ToItemIndex(absoluteIndex, BlockSize);
 			Memory[arrayIndex][itemIndex] = value;
 		}
 
@@ -108,8 +108,8 @@ namespace Recyclable.Collections
 		private T GetItem(long index)
 		{
 			long absoluteIndex = GetAbsoluteIndex(index, RemovedCount);
-			int arrayIndex = RecyclableQueueHelpers.ToArrayIndex(absoluteIndex, BlockSize);
-			long itemIndex = RecyclableQueueHelpers.ToItemIndex(absoluteIndex, BlockSize);
+			int arrayIndex = RecyclableQueueHelpers<T>.ToArrayIndex(absoluteIndex, BlockSize);
+			long itemIndex = RecyclableQueueHelpers<T>.ToItemIndex(absoluteIndex, BlockSize);
 			return Memory[arrayIndex][itemIndex];
 		}
 
@@ -166,13 +166,13 @@ namespace Recyclable.Collections
 		}
 
 #pragma	warning disable CS0618
-		public bool Contains(T item) => RecyclableListHelpers<T>.Contains(Memory, item);
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableListHelpers<T>.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
-		public IEnumerable<T> Enumerate() => RecyclableListHelpers<T>.Enumerate(Memory, BlockSize, LongCount);
-		public IEnumerator<T> GetEnumerator() => RecyclableListHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => RecyclableListHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableListHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
-		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableListHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+		public bool Contains(T item) => RecyclableQueueHelpers<T>.Contains(Memory, item);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableQueueHelpers<T>.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
+		public IEnumerable<T> Enumerate() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount);
+		public IEnumerator<T> GetEnumerator() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
+		IEnumerator IEnumerable.GetEnumerator() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
+		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
 #pragma warning restore CS0618
 
 		public void Insert(int index, T item) => throw new NotSupportedException();

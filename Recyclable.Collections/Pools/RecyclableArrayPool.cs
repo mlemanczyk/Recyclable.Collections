@@ -7,7 +7,12 @@ namespace Recyclable.Collections.Pools
 		internal static readonly OneSizeArrayPool<T>[] _pools = new OneSizeArrayPool<T>[32];
 		public static T[] RentShared(int blockSize) => _pools[31 - BitOperations.LeadingZeroCount((uint)blockSize)].Rent();
 		public static void ReturnShared(in T[] memoryBlock, bool needsClearing)
-			=> _pools[31 - BitOperations.LeadingZeroCount((uint)memoryBlock.Length)].ReturnUnchecked(memoryBlock, needsClearing);
+		{
+			if (BitOperations.IsPow2(memoryBlock.Length))
+			{
+				_pools[31 - BitOperations.LeadingZeroCount((uint)memoryBlock.Length)].ReturnUnchecked(memoryBlock, needsClearing);
+			}
+		}
 
 		public static ref OneSizeArrayPool<T> Shared(int blockSize)
 			=> ref _pools[31 - BitOperations.LeadingZeroCount((uint)blockSize)];
