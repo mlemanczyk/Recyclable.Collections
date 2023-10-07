@@ -183,7 +183,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableList<long>();
-			itemsCount <<= 1;
+			itemsCount = checked(itemsCount << 1);
 
 			// Act
 			if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
@@ -275,7 +275,7 @@ namespace Recyclable.CollectionsTests
 			// Prepare
 			using var list = new RecyclableList<long>();
 			testData = testData.Concat(testData.Reverse());
-			itemsCount <<= 1;
+			itemsCount = checked(itemsCount << 1);
 
 			// Act
 			foreach (var index in testData)
@@ -340,7 +340,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableList<long>();
-			itemsCount <<= 1;
+			itemsCount = checked(itemsCount << 1);
 
 			// Act
 			list.AddRange(testData);
@@ -416,7 +416,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			testData = testData.Concat(testData.Reverse());
-			itemsCount <<= 1;
+			itemsCount = checked(itemsCount << 1);
 
 			// Act
 			using var list = new RecyclableList<long>(testData, itemsCount);
@@ -1633,7 +1633,7 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			using var list = new RecyclableList<long>(testData, itemsCount);
-			var expectedCapacity = (int)BitOperations.RoundUpToPowerOf2((uint)itemsCount << 1);
+			var expectedCapacity = (int)BitOperations.RoundUpToPowerOf2(checked((uint)itemsCount << 1));
 			expectedCapacity = expectedCapacity >= RecyclableDefaults.InitialCapacity ? expectedCapacity : RecyclableDefaults.InitialCapacity;
 
 			// Act

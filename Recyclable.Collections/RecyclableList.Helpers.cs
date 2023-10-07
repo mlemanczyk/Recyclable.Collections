@@ -15,7 +15,7 @@ namespace Recyclable.Collections
 			// TODO: Measure performance
 			// T[] newMemoryBlock = RecyclableListHelpers<T>._arrayPool.Rent(_capacity <<= 1);
 			T[] oldMemoryBlock = list._memoryBlock;
-			list._memoryBlock = (list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
+			list._memoryBlock = checked(list._capacity <<= 1) < RecyclableDefaults.MinPooledArrayLength
 				? new T[list._capacity]
 				: RecyclableArrayPool<T>.RentShared(list._capacity);
 

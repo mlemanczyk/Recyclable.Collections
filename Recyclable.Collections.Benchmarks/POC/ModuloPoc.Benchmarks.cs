@@ -37,7 +37,7 @@ namespace Recyclable.Collections.Benchmarks.POC
         [GlobalSetup]
         public void Setup()
         {
-            _cutoff = BlockSize << 4;
+            _cutoff = checked((long)BlockSize << 4);
             _increment = Vector128.Create(-BlockSize, 1L);
             _lastCaseIndex = 0;
         }

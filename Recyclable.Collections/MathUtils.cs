@@ -14,7 +14,7 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static long DivMod(long number, int divider, out long remainder)
 		{
-			if (number >= divider << 4)
+			if (number >= checked((long)divider << 4))
 			{
 				return Math.DivRem(number, divider, out remainder);
 			}

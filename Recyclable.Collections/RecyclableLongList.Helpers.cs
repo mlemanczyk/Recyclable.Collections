@@ -192,7 +192,7 @@ namespace Recyclable.Collections
 					}
 				}
 
-				return requiredBlockCount << minBlockSizePow2Shift;
+				return checked(requiredBlockCount << minBlockSizePow2Shift);
 			}
 
 #pragma warning disable CA2208

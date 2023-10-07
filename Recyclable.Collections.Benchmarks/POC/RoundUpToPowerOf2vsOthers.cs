@@ -54,7 +54,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			int result = 1;
 			while (result < value)
 			{
-				result <<= 1;
+				result = checked(result << 1);
 			}
 
 			return result;
