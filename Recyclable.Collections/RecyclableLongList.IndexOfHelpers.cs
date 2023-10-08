@@ -307,31 +307,31 @@ namespace Recyclable.Collections
 					itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, list._blockSize);
 					if (itemIndex >= 0)
 					{
-						return itemIndex + (long)blockIndex << list._blockSizePow2BitShift;
+						return itemIndex + ((long)blockIndex << list._blockSizePow2BitShift);
 					}
 
-					if (blockIndex + 1 <  list._lastBlockWithData)
+					if (blockIndex + 1 < list._lastBlockWithData)
 					{
 						itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 1], item, 0, list._blockSize);
 						if (itemIndex >= 0)
 						{
-							return itemIndex + (long)(blockIndex + 1)<< list._blockSizePow2BitShift;
+							return itemIndex + ((long)(blockIndex + 1) << list._blockSizePow2BitShift);
 						}
 
-						if (blockIndex + 2 <  list._lastBlockWithData)
+						if (blockIndex + 2 < list._lastBlockWithData)
 						{
 							itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 2], item, 0, list._blockSize);
 							if (itemIndex >= 0)
 							{
-								return itemIndex + (long)(blockIndex + 2)<< list._blockSizePow2BitShift;
+								return itemIndex + ((long)(blockIndex + 2) << list._blockSizePow2BitShift);
 							}
 
-							if (blockIndex + 3 <  list._lastBlockWithData)
+							if (blockIndex + 3 < list._lastBlockWithData)
 							{
 								itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 3], item, 0, list._blockSize);
 								if (itemIndex >= 0)
 								{
-									return itemIndex + (long)(blockIndex + 3)<< list._blockSizePow2BitShift;
+									return itemIndex + ((long)(blockIndex + 3) << list._blockSizePow2BitShift);
 								}
 							}
 						}
@@ -342,7 +342,7 @@ namespace Recyclable.Collections
 					? Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._nextItemIndex)
 					: Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._blockSize);
 
-				return itemIndex >= 0 ? itemIndex + (long)list._lastBlockWithData << list._blockSizePow2BitShift : RecyclableDefaults.ItemNotFoundIndexLong;
+				return itemIndex >= 0 ? itemIndex + ((long)list._lastBlockWithData << list._blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
 			}
 		}
 	}
