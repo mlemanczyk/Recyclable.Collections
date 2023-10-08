@@ -76,7 +76,7 @@ namespace Recyclable.Collections
 
 		public int Count
 		{
-			get => (int)LongCount;
+			get => checked((int)LongCount);
 			set => LongCount = value;
 		}
 
@@ -167,11 +167,11 @@ namespace Recyclable.Collections
 
 #pragma	warning disable CS0618
 		public bool Contains(T item) => RecyclableQueueHelpers<T>.Contains(Memory, item);
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableQueueHelpers<T>.CopyTo(Memory, RemovedCount, BlockSize, (int)(LongCount % BlockSize), array, arrayIndex);
+		public void CopyTo(T[] array, int arrayIndex) => RecyclableQueueHelpers<T>.CopyTo(Memory, RemovedCount, BlockSize, checked((int)(LongCount % BlockSize)), array, arrayIndex);
 		public IEnumerable<T> Enumerate() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount);
 		public IEnumerator<T> GetEnumerator() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
 		IEnumerator IEnumerable.GetEnumerator() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		public int IndexOf(T item) => (int)GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
+		public int IndexOf(T item) => checked((int)GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer)));
 		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
 #pragma warning restore CS0618
 

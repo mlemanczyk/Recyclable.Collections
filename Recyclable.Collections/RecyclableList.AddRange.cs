@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace Recyclable.Collections
 {
 	public static class zRecyclableListAddRange
-    {
+	{
 		private static void AddRangeEnumerated<T>(this RecyclableList<T> list, IEnumerable<T> items, int growByCount)
 		{
 			var enumerator = items.GetEnumerator();
@@ -19,19 +19,19 @@ namespace Recyclable.Collections
 				available = capacity - targetItemIndex,
 				i;
 
-			Span<T> memorySpan = new(list._memoryBlock);
+			Span<T> targetSpan = list._memoryBlock;
 			do
 			{
 				if (targetItemIndex + growByCount > capacity)
 				{
 					capacity = RecyclableListHelpers<T>.EnsureCapacity(list, targetItemIndex, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIndex + growByCount))));
-					memorySpan = new(list._memoryBlock);
+					targetSpan = list._memoryBlock;
 					available = capacity - targetItemIndex;
 				}
 
 				for (i = 0; i < available; i++)
 				{
-					memorySpan[targetItemIndex++] = enumerator.Current;
+					targetSpan[targetItemIndex++] = enumerator.Current;
 					if (!enumerator.MoveNext())
 					{
 						break;
@@ -48,10 +48,10 @@ namespace Recyclable.Collections
 		{
 			list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, currentItemsCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)(currentItemsCount + requiredAdditionalCapacity))));
 
-			Span<T> memorySpan = new(list._memoryBlock);
+			Span<T> targetSpan = list._memoryBlock;
 			foreach (var item in items)
 			{
-				memorySpan[currentItemsCount++] = item;
+				targetSpan[currentItemsCount++] = item;
 			}
 
 			list._count = currentItemsCount;
@@ -78,7 +78,7 @@ namespace Recyclable.Collections
 				list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, list._count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(list._count + items.Length))));
 			}
 
-			new Span<T>(items).CopyTo(new Span<T>(list._memoryBlock, list._count, items.Length));
+			new ReadOnlySpan<T>(items).CopyTo(new Span<T>(list._memoryBlock, list._count, items.Length));
 			list._count += items.Length;
 			list._version++;
 		}
@@ -156,7 +156,7 @@ namespace Recyclable.Collections
 				list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, list._count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(list._count + items._count))));
 			}
 
-			new Span<T>(items._memoryBlock, 0, items._count).CopyTo(new Span<T>(list._memoryBlock, list._count, items._count));
+			new ReadOnlySpan<T>(items._memoryBlock, 0, items._count).CopyTo(new Span<T>(list._memoryBlock, list._count, items._count));
 			list._count += items._count;
 			list._version++;
 		}
@@ -215,13 +215,13 @@ namespace Recyclable.Collections
 		public static IEnumerator AddRange<T>(this RecyclableList<T> list, IEnumerable source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
 			int targetItemIndex = list._count;
-			Span<T> memorySpan;
+			Span<T> targetSpan;
 
 			int i;
 			var enumerator = source.GetEnumerator();
 
 			int capacity = list._capacity;
-			memorySpan = new(list._memoryBlock);
+			targetSpan = list._memoryBlock;
 			if (enumerator.MoveNext())
 			{
 				int available = capacity - targetItemIndex;
@@ -230,13 +230,13 @@ namespace Recyclable.Collections
 					if (targetItemIndex + growByCount > capacity)
 					{
 						capacity = RecyclableListHelpers<T>.EnsureCapacity(list, targetItemIndex, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIndex + growByCount))));
-						memorySpan = new(list._memoryBlock);
+						targetSpan = list._memoryBlock;
 						available = capacity - targetItemIndex;
 					}
 
 					for (i = 0; i < available; i++)
 					{
-						memorySpan[targetItemIndex++] = (T)enumerator.Current;
+						targetSpan[targetItemIndex++] = (T)enumerator.Current;
 						if (!enumerator.MoveNext())
 						{
 							break;
@@ -259,10 +259,10 @@ namespace Recyclable.Collections
 				list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, list._count, checked((int)BitOperations.RoundUpToPowerOf2((uint)(list._count + sourceItemsCount))));
 			}
 
-			Span<T> memorySpan = new(list._memoryBlock, list._count, sourceItemsCount);
+			Span<T> targetSpan = new(list._memoryBlock, list._count, sourceItemsCount);
 			for (var sourceItemIndex = 0; sourceItemIndex < sourceItemsCount; sourceItemIndex++)
 			{
-				memorySpan[sourceItemIndex] = items[sourceItemIndex];
+				targetSpan[sourceItemIndex] = items[sourceItemIndex];
 			}
 
 			list._count += sourceItemsCount;
@@ -314,5 +314,5 @@ namespace Recyclable.Collections
 				list._version++;
 			}
 		}
-    }
+	}
 }

@@ -222,7 +222,7 @@ namespace Recyclable.Collections
 				}
 				else
 				{
-					_capacity = RecyclableListHelpers<T>.EnsureCapacity(this, (int)BitOperations.RoundUpToPowerOf2((uint)_capacity));
+					_capacity = RecyclableListHelpers<T>.EnsureCapacity(this, checked((int)BitOperations.RoundUpToPowerOf2((uint)_capacity)));
 				}
 			}
 
@@ -273,7 +273,7 @@ namespace Recyclable.Collections
 			{
 				// TODO: Compare performance
 				// Array.Copy(_memoryBlock, index, _memoryBlock, index + 1, oldCount);
-				new Span<T>(_memoryBlock, index, oldCount -= index)
+				new ReadOnlySpan<T>(_memoryBlock, index, oldCount -= index)
 					.CopyTo(new Span<T>(_memoryBlock, index + 1, oldCount));
 			}
 

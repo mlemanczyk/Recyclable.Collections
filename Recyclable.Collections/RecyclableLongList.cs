@@ -250,7 +250,7 @@ namespace Recyclable.Collections
 			get => _memoryBlocks[index >> _blockSizePow2BitShift][index & _blockSizeMinus1];
 			set
 			{
-				new Span<T>(_memoryBlocks[checked((int)(index >> _blockSizePow2BitShift))])[checked((int)(index & _blockSizeMinus1))] = value;
+				new Span<T>(_memoryBlocks[(int)(index >> _blockSizePow2BitShift)])[(int)(index & _blockSizeMinus1)] = value;
 				_version++;
 			}
 		}
@@ -339,10 +339,10 @@ namespace Recyclable.Collections
 
 			if (_nextItemBlockIndex == 0 || (_nextItemIndex == 0 && _nextItemBlockIndex == 1))
 			{
-				return Array.IndexOf(_memoryBlocks[0], item, 0, checked((int)_longCount)) >= 0;
+				return Array.IndexOf(_memoryBlocks[0], item, 0, (int)_longCount) >= 0;
 			}
 
-			Span<T[]> memoryBlocksSpan = new(_memoryBlocks);
+			ReadOnlySpan<T[]> memoryBlocksSpan = _memoryBlocks;
 			int lastBlockIndex = _lastBlockWithData;
 			for (int blockIndex = 0; blockIndex < lastBlockIndex; blockIndex++)
 			{
@@ -387,7 +387,7 @@ namespace Recyclable.Collections
 				if (_longCount > _blockSize)
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
-					return itemIndex >= 0 ? _blockSize + itemIndex : (int)IndexOfHelpers.IndexOfParallel(this, item);
+					return itemIndex >= 0 ? _blockSize + itemIndex : checked((int)IndexOfHelpers.IndexOfParallel(this, item));
 				}
 				else
 				{

@@ -50,7 +50,7 @@ namespace Recyclable.Collections
 				return;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				action(sourceSpan[itemIndex]);
@@ -65,14 +65,14 @@ namespace Recyclable.Collections
 				return new();
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			RecyclableList<T> result = new(sourceItemsCount);
-			Span<T> resultSpan = result._memoryBlock;
+			Span<T> targetSpan = result._memoryBlock;
 			int resultItemsCount = 0;
 			sourceItemsCount += index;
 			for (var itemIndex = index; itemIndex < sourceItemsCount; itemIndex++)
 			{
-				resultSpan[resultItemsCount++] = sourceSpan[itemIndex];
+				targetSpan[resultItemsCount++] = sourceSpan[itemIndex];
 			}
 
 			result._count = resultItemsCount;
@@ -166,7 +166,7 @@ namespace Recyclable.Collections
 		public static T[] ToArray<T>(this RecyclableList<T> list)
 		{
 			T[] result = new T[list._count];
-			new Span<T>(list._memoryBlock, 0, list._count).CopyTo(new Span<T>(result));
+			new ReadOnlySpan<T>(list._memoryBlock, 0, list._count).CopyTo(result);
 			return result;
 		}
 
@@ -179,7 +179,7 @@ namespace Recyclable.Collections
 				? RecyclableArrayPool<T>.RentShared(requiredCapacity)
 				: new T[requiredCapacity];
 
-			new Span<T>(oldMemoryBlock, 0, list._count).CopyTo(new(result));
+			new ReadOnlySpan<T>(oldMemoryBlock, 0, list._count).CopyTo(result);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
@@ -198,7 +198,7 @@ namespace Recyclable.Collections
 				return false;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				if (!match(sourceSpan[itemIndex]))

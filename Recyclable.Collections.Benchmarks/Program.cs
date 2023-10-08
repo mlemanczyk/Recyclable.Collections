@@ -42,7 +42,6 @@ namespace Recyclable.Collections.Benchmarks
 			_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<DelegateVsComparerPocBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<ModuloPocBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<RecyclableLongListPocBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<TaskRunVsTaskFactoryStartNewBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
@@ -51,6 +50,7 @@ namespace Recyclable.Collections.Benchmarks
 			_ = BenchmarkRunner.Run<EqualVsContainsInConsecutiveOrderBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<RoundUpToPowerOf2vsOtherBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<GreaterOperatorVsDoesntEqualOperatorBenchmarks>(BenchmarkConfig);
+			_ = BenchmarkRunner.Run<SpanConstructorVsTypecastingPocBenchmarks>(BenchmarkConfig);
 			// ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
 		}
 

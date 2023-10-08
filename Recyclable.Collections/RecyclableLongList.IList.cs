@@ -49,12 +49,12 @@ namespace Recyclable.Collections
 			if (value is T typeValue)
 			{
 				Add(typeValue);
-				return (int)(_longCount - 1);
+				return checked((int)(_longCount - 1));
 			}
 			else if (value == null && _defaultIsNull)
 			{
 				Add(null);
-				return (int)(_longCount - 1);
+				return checked((int)(_longCount - 1));
 			}
 			else
 			{

@@ -18,28 +18,28 @@ namespace Recyclable.Collections
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		internal static void CopyTo(RecyclableList<T[]> arrays, long startingIndex, int blockSize, int lastBlockSize, T[] destinationArray, int destinationArrayIndex)
 		{
-			Span<T> arrayMemory = destinationArray.AsSpan();
+			Span<T> arrayMemory = destinationArray;
 			arrayMemory = arrayMemory[destinationArrayIndex..];
 			// TODO: Convert "/" & "%" to bit-shifting
 			int startingArrayIndex = (int)(startingIndex / blockSize);
 			startingIndex %= blockSize;
 			if (arrays._count > 0)
 			{
-				ReadOnlySpan<T> sourceMemory = arrays[0].AsSpan();
+				ReadOnlySpan<T> sourceMemory = arrays[0];
 				var maxToCopy = (int)Math.Min(blockSize - startingIndex, arrayMemory.Length);
 				if (arrays._count == 1)
 				{
 					maxToCopy = Math.Min(maxToCopy, lastBlockSize);
 				}
 
-				sourceMemory = sourceMemory[(int)startingIndex..maxToCopy];
+				sourceMemory = sourceMemory[checked((int)startingIndex)..maxToCopy];
 				sourceMemory.CopyTo(arrayMemory);
 				arrayMemory = arrayMemory[maxToCopy..];
 			}
 
 			for (var arrayIdx = startingArrayIndex + 1; arrayIdx < arrays._count - 1 && arrayMemory.Length > 0; arrayIdx++)
 			{
-				ReadOnlySpan<T> sourceMemory = arrays[arrayIdx].AsSpan();
+				ReadOnlySpan<T> sourceMemory = arrays[arrayIdx];
 				var maxToCopy = Math.Min(blockSize, arrayMemory.Length);
 				sourceMemory = sourceMemory[..maxToCopy];
 				sourceMemory.CopyTo(arrayMemory);
@@ -48,7 +48,7 @@ namespace Recyclable.Collections
 
 			if (arrays._count > 1 && arrayMemory.Length > 0)
 			{
-				ReadOnlySpan<T> sourceMemory = arrays[^1].AsSpan();
+				ReadOnlySpan<T> sourceMemory = arrays[^1];
 				var maxToCopy = Math.Min(lastBlockSize, arrayMemory.Length);
 				sourceMemory = sourceMemory[..maxToCopy];
 				sourceMemory.CopyTo(arrayMemory);
@@ -94,7 +94,7 @@ namespace Recyclable.Collections
 			for (var arrayIdx = 0; arrayIdx < arrays._count; arrayIdx++)
 			{
 				var array = arrays[arrayIdx];
-				Span<T> arrayMemory = array.AsSpan();
+				ReadOnlySpan<T> arrayMemory = array;
 				for (int memoryIdx = 0; memoryIdx < arrayMemory.Length; memoryIdx++)
 				{
 					if (comparer.Equals(arrayMemory[memoryIdx], item))

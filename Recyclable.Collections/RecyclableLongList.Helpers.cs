@@ -22,21 +22,21 @@ namespace Recyclable.Collections
 
 				T[][] memoryBlocks = list._memoryBlocks;
 				T[] currentBlock = memoryBlocks[targetBlockIndex];
-				new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
+				new ReadOnlySpan<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex)
 					.CopyTo(new Span<T>(currentBlock, targetItemIndex, blockSizeMinus1 - targetItemIndex));
 					
 				while (targetBlockIndex < lastTakenBlockIndex)
 				{
 					new Span<T>(currentBlock)[blockSizeMinus1] = (currentBlock = memoryBlocks[++targetBlockIndex])[0];
-					new Span<T>(currentBlock, 1, blockSizeMinus1)
-						.CopyTo(new Span<T>(currentBlock));
+					new ReadOnlySpan<T>(currentBlock, 1, blockSizeMinus1)
+						.CopyTo(currentBlock);
 				}
 
 				if (targetBlockIndex == lastTakenBlockIndex)
 				{
 					new Span<T>(currentBlock)[blockSizeMinus1] = (currentBlock = memoryBlocks[targetBlockIndex + 1])[0];
-					new Span<T>(currentBlock, 1, list._nextItemIndex != 0 ? list._nextItemIndex - 1 : blockSizeMinus1)
-						.CopyTo(new Span<T>(currentBlock));
+					new ReadOnlySpan<T>(currentBlock, 1, list._nextItemIndex != 0 ? list._nextItemIndex - 1 : blockSizeMinus1)
+						.CopyTo(currentBlock);
 				}
 			}
 
@@ -58,12 +58,12 @@ namespace Recyclable.Collections
 				int currentBlockIndex = lastTakenBlockIndex;
 				while (currentBlockIndex > targetBlockIndex)
 				{
-					new Span<T>(currentBlock = memoryBlocks[currentBlockIndex--], 0, blockSizeMinus1)
+					new ReadOnlySpan<T>(currentBlock = memoryBlocks[currentBlockIndex--], 0, blockSizeMinus1)
 						.CopyTo(new Span<T>(currentBlock, 1, blockSizeMinus1));						
 					new Span<T>(currentBlock)[0] = memoryBlocks[currentBlockIndex][blockSizeMinus1];
 				}
 
-				new Span<T>(currentBlock = memoryBlocks[targetBlockIndex], targetItemIndex, blockSizeMinus1 - targetItemIndex)
+				new ReadOnlySpan<T>(currentBlock = memoryBlocks[targetBlockIndex], targetItemIndex, blockSizeMinus1 - targetItemIndex)
 					.CopyTo(new Span<T>(currentBlock, targetItemIndex + 1, blockSizeMinus1 - targetItemIndex));
 
 				new Span<T>(memoryBlocks[targetBlockIndex])[targetItemIndex] = item;
@@ -76,11 +76,12 @@ namespace Recyclable.Collections
 					return;
 				}
 
-				Span<T> sourceBlockMemory;
+				ReadOnlySpan<T> sourceBlockMemory;
 				Span<T> destinationArrayMemory;
+				// TODO: Replace with bit-shifting
 				int startingBlockIndex = (int)(startingIndex / blockSize);
 				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize != 0 ? 1 : 0)) - 1;
-				Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
+				ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
 				destinationArrayMemory = new Span<T>(destinationArray, destinationArrayIndex, (int)Math.Min(destinationArray.Length - destinationArrayIndex, itemsCount));
 				int memoryBlockIndex;
 				for (memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
@@ -104,11 +105,12 @@ namespace Recyclable.Collections
 					return;
 				}
 
+				// TODO: Replace with bit-shifting
 				int startingBlockIndex = (int)(startingIndex / blockSize);
 				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize != 0 ? 1 : 0)) - 1;
 
 				var destinationIndex = destinationArrayIndex;
-				Span<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
+				ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
 				for (int memoryBlockIndex = 0; memoryBlockIndex < lastBlockIndex; memoryBlockIndex++)
 				{
 					Array.ConstrainedCopy(sourceMemoryBlocksSpan[memoryBlockIndex], 0, destinationArray, destinationIndex, blockSize);
@@ -192,7 +194,7 @@ namespace Recyclable.Collections
 					}
 				}
 
-				return checked(requiredBlockCount << minBlockSizePow2Shift);
+				return requiredBlockCount << minBlockSizePow2Shift;
 			}
 
 #pragma warning disable CA2208

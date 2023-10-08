@@ -26,7 +26,7 @@ namespace Recyclable.Collections
 				Array.Copy(memoryBlock, index, memoryBlock, capacity - movingBlockLength, movingBlockLength);
 			}
 
-			Span<T> memorySpan = new(memoryBlock);
+			Span<T> memorySpan = memoryBlock;
 			do
 			{
 				if (index + available + movingBlockLength > capacity)
@@ -34,7 +34,7 @@ namespace Recyclable.Collections
 					var capacityBeforeIncrease = capacity;
 					capacity = checked((int)BitOperations.RoundUpToPowerOf2((uint)(capacity + growByCount)));
 					_ = RecyclableListHelpers<T>.EnsureCapacity(list, memoryBlock.Length, capacity);
-					memorySpan = new(memoryBlock = list._memoryBlock);
+					memorySpan = memoryBlock = list._memoryBlock;
 					available = capacity - index - movingBlockLength;
 					Array.Copy(memoryBlock, capacityBeforeIncrease - movingBlockLength, memoryBlock, capacity - movingBlockLength, movingBlockLength);
 				}
@@ -71,7 +71,7 @@ namespace Recyclable.Collections
 			list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, currentItemsCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)(currentItemsCount + requiredAdditionalCapacity))));
 
 			Array.Copy(list._memoryBlock, index, list._memoryBlock, index + requiredAdditionalCapacity, list._count - index);
-			Span<T> memorySpan = new(list._memoryBlock);
+			Span<T> memorySpan = list._memoryBlock;
 			foreach (var item in items)
 			{
 				memorySpan[index++] = item;
@@ -106,7 +106,7 @@ namespace Recyclable.Collections
 
 			T[] memoryBlock = list._memoryBlock;
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Length, list._count - index);
-			new Span<T>(items).CopyTo(new Span<T>(memoryBlock, index, items.Length));
+			new ReadOnlySpan<T>(items).CopyTo(new Span<T>(memoryBlock, index, items.Length));
 			list._count += items.Length;
 			list._version++;
 		}
@@ -196,7 +196,7 @@ namespace Recyclable.Collections
 
 			T[] memoryBlock = list._memoryBlock;
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Count, list._count - index);
-			new Span<T>(items._memoryBlock, 0, items._count).CopyTo(new(list._memoryBlock, index, items._count));
+			new ReadOnlySpan<T>(items._memoryBlock, 0, items._count).CopyTo(new(list._memoryBlock, index, items._count));
 			list._count += items._count;
 			list._version++;
 		}
@@ -262,7 +262,7 @@ namespace Recyclable.Collections
 			var enumerator = source.GetEnumerator();
 
 			int capacity = list._capacity;
-			memorySpan = new(list._memoryBlock);
+			memorySpan = list._memoryBlock;
 			if (enumerator.MoveNext())
 			{
 				int available = capacity - targetItemIndex;
@@ -271,7 +271,7 @@ namespace Recyclable.Collections
 					if (targetItemIndex + growByCount > capacity)
 					{
 						capacity = RecyclableListHelpers<T>.EnsureCapacity(list, targetItemIndex, checked((int)BitOperations.RoundUpToPowerOf2((uint)(targetItemIndex + growByCount))));
-						memorySpan = new(list._memoryBlock);
+						memorySpan = list._memoryBlock;
 						available = capacity - targetItemIndex;
 					}
 

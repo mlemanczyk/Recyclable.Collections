@@ -20,7 +20,7 @@ namespace Recyclable.Collections
 				: RecyclableArrayPool<T>.RentShared(list._capacity);
 
 			// & WAS SLOWER WITHOUT
-			new Span<T>(oldMemoryBlock, 0, list._count).CopyTo(list._memoryBlock);
+			new ReadOnlySpan<T>(oldMemoryBlock, 0, list._count).CopyTo(list._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
@@ -43,7 +43,7 @@ namespace Recyclable.Collections
 				: new T[newSize];
 
 			// & WAS SLOWER AS ARRAY
-			new Span<T>(oldMemoryBlock, 0, sourceList._capacity).CopyTo(sourceList._memoryBlock);
+			new ReadOnlySpan<T>(oldMemoryBlock, 0, sourceList._capacity).CopyTo(sourceList._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{
@@ -69,7 +69,7 @@ namespace Recyclable.Collections
 				: new T[newSize];
 
 			// & WAS SLOWER AS ARRAY
-			new Span<T>(oldMemoryBlock, 0, oldSize).CopyTo(sourceList._memoryBlock);
+			new ReadOnlySpan<T>(oldMemoryBlock, 0, oldSize).CopyTo(sourceList._memoryBlock);
 
 			if (oldMemoryBlock.Length >= RecyclableDefaults.MinPooledArrayLength)
 			{

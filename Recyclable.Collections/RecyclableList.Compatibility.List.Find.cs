@@ -12,7 +12,7 @@ namespace Recyclable.Collections
 				return false;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -32,7 +32,7 @@ namespace Recyclable.Collections
 				return default;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -52,7 +52,7 @@ namespace Recyclable.Collections
 				return new();
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			RecyclableList<T> result = new(sourceItemsCount >> 3);
 			Span<T> resultSpan = result._memoryBlock;
 			int capacity = result._capacity,
@@ -85,7 +85,7 @@ namespace Recyclable.Collections
 				return new();
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			RecyclableList<int> result = new(sourceItemsCount >> 3);
 			Span<int> resultSpan = result._memoryBlock;
 			int capacity = result._capacity,
@@ -120,7 +120,7 @@ namespace Recyclable.Collections
 			}
 
 			sourceItemsCount = Math.Min(sourceItemsCount, startIndex + sourceItemsCount);
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = startIndex; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -141,7 +141,7 @@ namespace Recyclable.Collections
 			}
 
 			sourceItemsCount = Math.Min(sourceItemsCount, startIndex + sourceItemsCount);
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = startIndex; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -161,7 +161,7 @@ namespace Recyclable.Collections
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = 0; itemIndex < sourceItemsCount; itemIndex++)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -180,7 +180,7 @@ namespace Recyclable.Collections
 				return default;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = list._count - 1; itemIndex >= 0; itemIndex--)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -218,7 +218,7 @@ namespace Recyclable.Collections
 			}
 
 			int lastItemIndex = startIndex - sourceItemsCount;
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = startIndex; itemIndex > lastItemIndex; itemIndex--)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -237,7 +237,7 @@ namespace Recyclable.Collections
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = startIndex; itemIndex >= 0; itemIndex--)
 			{
 				if (match(sourceSpan[itemIndex]))
@@ -256,7 +256,7 @@ namespace Recyclable.Collections
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 
-			ReadOnlySpan<T> sourceSpan = new(list._memoryBlock);
+			ReadOnlySpan<T> sourceSpan = list._memoryBlock;
 			for (var itemIndex = list._count - 1; itemIndex >= 0; itemIndex--)
 			{
 				if (match(sourceSpan[itemIndex]))

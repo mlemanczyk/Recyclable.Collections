@@ -139,9 +139,9 @@
 		1. ✅ `T[]`
 	1. ✅ Release 0.0.5
 	1. ✅ Implement `List<T>` compatibility pack in `RecyclableList<T>`
-	1. 👉 Overflow review
-		1. 🅿️ Add type casting to `long` for `<<` & `>>` operations, where required
-		1. 🅿️ Make type castings `checked`, where required
+	1. ✅ Overflow review
+		1. ✅ Add type casting to `long` for `<<` & `>>` operations, where required
+		1. ✅ Make type castings `checked`, where required
 	1. 🅿️ Release 0.0.6
 	1. 🅿️ Implement `List<T>` compatibility pack in `RecyclableLongList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
@@ -191,6 +191,7 @@
 		1. 🅿️ Multi-threading benchmarks
 	1. 🅿️ `SpinLockSlimmer`
 		1. 🅿️ Multi-threading benchmarks
+	1. 🅿️ Remove range operators, where possible
 1. 🅿️ Release 0.0.14
 1. 🅿️ Extend unit tests
 	1. 🅿️ `RecyclableLongListExtensions.CopyTo`

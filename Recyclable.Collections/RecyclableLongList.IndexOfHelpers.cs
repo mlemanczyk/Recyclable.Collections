@@ -28,7 +28,7 @@ namespace Recyclable.Collections
 					long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
 					if (index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex, checked((long)blockIndex << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex, ((long)blockIndex << list._blockSizePow2BitShift) + index);
 						return;
 					}
 					else if (context._isItemFound)
@@ -41,7 +41,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 1], itemToFind, 0, list._blockSize);
 					if (index >= 0)
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 1, checked((long)(blockIndex + 1) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 1, ((long)(blockIndex + 1) << list._blockSizePow2BitShift) + index);
 						return;
 					}
 					else if (context._isItemFound)
@@ -56,7 +56,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 2], itemToFind, 0, list._blockSize);
 					if (index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 2, checked((long)(blockIndex + 2) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 2, ((long)(blockIndex + 2) << list._blockSizePow2BitShift) + index);
 						return;
 					}
 					else if (context._isItemFound)
@@ -71,7 +71,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 3], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0)
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 3, checked((long)(blockIndex + 3) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 3, ((long)(blockIndex + 3) << list._blockSizePow2BitShift) + index);
 					}
 
 #endif
@@ -81,7 +81,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 4], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 4, checked((long)(blockIndex + 4) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 4, ((long)(blockIndex + 4) << list._blockSizePow2BitShift) + index);
 					}
 					
 #endif
@@ -91,7 +91,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 5], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 5, checked((long)(blockIndex + 5) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 5, ((long)(blockIndex + 5) << list._blockSizePow2BitShift) + index);
 					}
 
 #endif
@@ -101,7 +101,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 6], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 6, checked((long)(blockIndex + 6) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 6, ((long)(blockIndex + 6) << list._blockSizePow2BitShift) + index);
 					}
 
 #endif
@@ -111,7 +111,7 @@ namespace Recyclable.Collections
 					index = Array.IndexOf(list._memoryBlocks[blockIndex + 7], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0 && (!context._isItemFound || index < context.FoundItemIndex))
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex + 7, checked((long)(blockIndex + 7) << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex + 7, ((long)(blockIndex + 7) << list._blockSizePow2BitShift) + index);
 					}
 
 #endif
@@ -157,7 +157,7 @@ namespace Recyclable.Collections
 					long index = Array.IndexOf(list._memoryBlocks[blockIndex], itemToFind, 0, list._blockSize);
 					if (!context._isItemFound && index >= 0)
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex, checked((long)blockIndex << list._blockSizePow2BitShift) + index);
+						ExchangeFoundItemIndexIfLower(context, blockIndex, ((long)blockIndex << list._blockSizePow2BitShift) + index);
 					}
 				}
 				catch (Exception e)
@@ -214,7 +214,7 @@ namespace Recyclable.Collections
 				// & WAS SLOWER
 				// int blockSize = _blockSize;
 				// & WAS SLOWER
-				// while (checked((long)blockIndex << list._blockSizePow2BitShift) + itemIndex > step)
+				// while (((long)blockIndex << list._blockSizePow2BitShift) + itemIndex > step)
 				//long blockSize = checked((long)list._blockSize << 1);
 				int lastBlockWithData = list._lastBlockWithData - BlocksForEachTask;
 				while (blockIndex < lastBlockWithData)
@@ -265,7 +265,7 @@ namespace Recyclable.Collections
 					int itemIndex = Array.IndexOf(list._memoryBlocks[list._lastBlockWithData], item, 0, list._nextItemIndex > 0 ? list._nextItemIndex : list._blockSize);
 					if (!context._isItemFound && itemIndex >= 0)
 					{
-						ExchangeFoundItemIndexIfLower(context, blockIndex, checked((long)blockIndex << list._blockSizePow2BitShift) + itemIndex);
+						ExchangeFoundItemIndexIfLower(context, blockIndex, ((long)blockIndex << list._blockSizePow2BitShift) + itemIndex);
 					}
 				}
 
@@ -300,14 +300,14 @@ namespace Recyclable.Collections
 				int itemIndex;
 				// & WAS SLOWER
 				//int lastBlockWithData = list._lastBlockWithData;
-				Span<T[]> memoryBlocksSpan = new(list._memoryBlocks, 0, list._lastBlockWithData + 1);
+				ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks, 0, list._lastBlockWithData + 1);
 				int blockIndex;
 				for (blockIndex = 1; blockIndex < list._lastBlockWithData; blockIndex += 4)
 				{
 					itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, list._blockSize);
 					if (itemIndex >= 0)
 					{
-						return itemIndex + checked((long)blockIndex << list._blockSizePow2BitShift);
+						return itemIndex + (long)blockIndex << list._blockSizePow2BitShift;
 					}
 
 					if (blockIndex + 1 <  list._lastBlockWithData)
@@ -315,7 +315,7 @@ namespace Recyclable.Collections
 						itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 1], item, 0, list._blockSize);
 						if (itemIndex >= 0)
 						{
-							return itemIndex + checked((long)(blockIndex + 1)<< list._blockSizePow2BitShift);
+							return itemIndex + (long)(blockIndex + 1)<< list._blockSizePow2BitShift;
 						}
 
 						if (blockIndex + 2 <  list._lastBlockWithData)
@@ -323,7 +323,7 @@ namespace Recyclable.Collections
 							itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 2], item, 0, list._blockSize);
 							if (itemIndex >= 0)
 							{
-								return itemIndex + checked((long)(blockIndex + 2)<< list._blockSizePow2BitShift);
+								return itemIndex + (long)(blockIndex + 2)<< list._blockSizePow2BitShift;
 							}
 
 							if (blockIndex + 3 <  list._lastBlockWithData)
@@ -331,7 +331,7 @@ namespace Recyclable.Collections
 								itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 3], item, 0, list._blockSize);
 								if (itemIndex >= 0)
 								{
-									return itemIndex + checked((long)(blockIndex + 3)<< list._blockSizePow2BitShift);
+									return itemIndex + (long)(blockIndex + 3)<< list._blockSizePow2BitShift;
 								}
 							}
 						}
@@ -342,7 +342,7 @@ namespace Recyclable.Collections
 					? Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._nextItemIndex)
 					: Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._blockSize);
 
-				return itemIndex >= 0 ? itemIndex + checked((long)list._lastBlockWithData << list._blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
+				return itemIndex >= 0 ? itemIndex + (long)list._lastBlockWithData << list._blockSizePow2BitShift : RecyclableDefaults.ItemNotFoundIndexLong;
 			}
 		}
 	}
