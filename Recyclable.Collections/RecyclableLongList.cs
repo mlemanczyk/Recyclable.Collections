@@ -5,6 +5,7 @@ using Recyclable.Collections.Pools;
 
 [assembly: InternalsVisibleTo("Recyclable.Collections.Benchmarks")]
 [assembly: InternalsVisibleTo("Recyclable.CollectionsTests")]
+[assembly: InternalsVisibleTo("Recyclable.Collections.Compatibility.List")]
 
 namespace Recyclable.Collections
 {

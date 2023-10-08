@@ -138,12 +138,12 @@
 		1. ✅ `Span<T>`
 		1. ✅ `T[]`
 	1. ✅ Release 0.0.5
-	1. ✅ Implement `List<T>` compatibility pack in `RecyclableList<T>`
+	1. ✅ Implement `List<T>` compatibility pack for `RecyclableList<T>`
 	1. ✅ Overflow review
 		1. ✅ Add type casting to `long` for `<<` & `>>` operations, where required
 		1. ✅ Make type castings `checked`, where required
-	1. 🅿️ Release 0.0.6
-	1. 🅿️ Implement `List<T>` compatibility pack in `RecyclableLongList<T>`
+	1. ✅ Release 0.0.6
+	1. 👉 Implement `List<T>` compatibility pack for `RecyclableLongList<T>`
 	1. 🅿️ Port `RecyclableLongList<T>` optimizations to `RecyclableList<T>`
 		1. `IndexOf` parallelization 
 	1. 🅿️ Release 0.0.7
@@ -308,7 +308,7 @@
 	\
 	**Failing to do so WILL result in unpredictable behavior.**
 
-	### [Benchmark results](https://github.com/mlemanczyk/Recyclable.Collections/blob/main/Recyclable.Collections.Benchmarks/Results/Benchmarks.md#`IndexOf` Benchmarks)
+	### [Benchmark results](https://github.com/mlemanczyk/Recyclable.Collections/blob/main/Recyclable.Collections.Benchmarks/Results/Benchmarks.md)
 
 ## `RecyclableList<T>`
 * Range: `int`
@@ -422,4 +422,4 @@ public void RecyclableListExample()
 }
 ```
 
-### [Benchmark results](https://github.com/mlemanczyk/Recyclable.Collections/blob/main/Recyclable.Collections.Benchmarks/Results/Benchmarks.md#`IndexOf` Benchmarks)
+### [Benchmark results](https://github.com/mlemanczyk/Recyclable.Collections/blob/main/Recyclable.Collections.Benchmarks/Results/Benchmarks.md)

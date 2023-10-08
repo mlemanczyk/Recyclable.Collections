@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
+	[Obsolete("It'll be moved to Recyclable.Collections.Compatibility.List NuGet package in the next release.")]
 	public static class zRecyclableListCompatibilityListInsertRange
 	{
 		private static void InsertRangeEnumerated<T>(this RecyclableList<T> list, int index, IEnumerable<T> items, int growByCount)

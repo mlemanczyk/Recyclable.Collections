@@ -1,5 +1,6 @@
 ﻿namespace Recyclable.Collections
 {
+	[Obsolete("It'll be moved to Recyclable.Collections.Compatibility.List NuGet package in the next release.")]
 	public static class zRecyclableListCompatibilityListIndexOf
 	{
 		public static int IndexOf<T>(this RecyclableList<T> list, T item, int index) => list._count != 0

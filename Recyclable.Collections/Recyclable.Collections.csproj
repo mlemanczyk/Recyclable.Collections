@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
-		<PackageVersion>0.0.5</PackageVersion>
+		<PackageVersion>0.0.6</PackageVersion>
 		<Authors>Marek Lemańczyk</Authors>
 		<Company>N/A</Company>
 		<Product>Recyclable.Collections</Product>
@@ -17,7 +17,7 @@
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>Various performance improvements and fixes. All major .ToRecyclableList() &amp; .ToRecyclableLongList() variants added.</PackageReleaseNotes>
+		<PackageReleaseNotes>List&lt;T&gt; compatibility pack added for RecyclableList&lt;T&gt;. Various performance improvements and fixes.</PackageReleaseNotes>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>
 

@@ -5,6 +5,7 @@ using Recyclable.Collections.Pools;
 namespace Recyclable.Collections
 {
 
+	[Obsolete("It'll be moved to Recyclable.Collections.Compatibility.List NuGet package in the next release.")]
 	public static class zRecyclableListCompatibilityList
 	{
 		public static ReadOnlyCollection<T> AsReadOnly<T>(this RecyclableList<T> list) => new(list);
