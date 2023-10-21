@@ -1,29 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
+// Ignore Spelling: Poc
+
 using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.ObjectPool;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
 	[MemoryDiagnoser]
-    public class TaskRunVsTaskFactoryStartNewBenchmarks
-    {
+	public class TaskRunVsTaskFactoryStartNewBenchmarks
+	{
 		public int NumberOfTasks = 100;
-		private static readonly TaskFactory TaskPool = new();
+		private static readonly TaskFactory _taskPool = new();
 
 		[Benchmark]
 		public void OwnTaskFactory()
 		{
 			for (var i = 0; i < NumberOfTasks; i++)
 			{
-				_ = TaskPool.StartNew(() => {});
+				_ = _taskPool.StartNew(() => {});
 			}
 		}
 
-        [Benchmark]
+		[Benchmark]
 		public void TaskRun()
 		{
 			for (var i = 0; i < NumberOfTasks; i++)
@@ -32,7 +28,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 		}
 
-        [Benchmark(Baseline = true)]
+		[Benchmark(Baseline = true)]
 		public void TaskFactoryStartNew()
 		{
 			for (var i = 0; i < NumberOfTasks; i++)
@@ -59,5 +55,5 @@ namespace Recyclable.Collections.Benchmarks.POC
 				new Task(() => { }).Start(scheduler);
 			}
 		}
-    }
+	}
 }

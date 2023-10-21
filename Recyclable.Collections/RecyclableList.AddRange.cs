@@ -4,7 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
+#pragma warning disable IDE1006 // This is intentional naming for the class to show up at the end of IntelliSense list.
 	public static class zRecyclableListAddRange
+#pragma warning restore IDE1006 // This is intentional naming for the class to show up at the end of IntelliSense list.
 	{
 		private static void AddRangeEnumerated<T>(this RecyclableList<T> list, IEnumerable<T> items, int growByCount)
 		{

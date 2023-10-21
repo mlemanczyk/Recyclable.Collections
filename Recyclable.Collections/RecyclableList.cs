@@ -41,22 +41,6 @@ namespace Recyclable.Collections
 			}
 		}
 
-		public RecyclableList(int initialCapacity, int lowerBound)
-		{
-			if (initialCapacity >= RecyclableDefaults.InitialCapacity)
-			{
-				_memoryBlock = initialCapacity >= RecyclableDefaults.MinPooledArrayLength
-					? RecyclableArrayPool<T>.RentShared(checked((int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity)))
-					: new T[initialCapacity];
-				_capacity = _memoryBlock.Length;
-			}
-			else
-			{
-				_memoryBlock = new T[RecyclableDefaults.InitialCapacity];
-				_capacity = RecyclableDefaults.InitialCapacity;
-			}
-		}
-
 		public RecyclableList(in Array source)
 		{
 			_capacity = RecyclableDefaults.InitialCapacity;

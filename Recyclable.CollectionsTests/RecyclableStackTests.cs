@@ -101,7 +101,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
-		public void PopShoudRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
+		public void PopShouldRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
 		{
 			// Prepare
 			using var list = new RecyclableQueue<string>(_testData);

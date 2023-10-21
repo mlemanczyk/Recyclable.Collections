@@ -5,7 +5,7 @@ namespace Recyclable.Collections
 {
 	internal static class RecyclableListHelpers<T>
 	{
-		private static readonly bool NeedsClearing = !typeof(T).IsValueType;
+		private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
 		public static int CalculateIndex(int index, int lowerBound) => index >= 0 ? index + lowerBound : RecyclableDefaults.ItemNotFoundIndex;
 
@@ -30,7 +30,7 @@ namespace Recyclable.Collections
 				//	Array.Clear(source);
 				//}
 
-				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, _needsClearing);
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace Recyclable.Collections
 				//}
 
 				// If anything, it has been already cleared above, so we don't need to repeat it.
-				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, _needsClearing);
 			}
 
 			return newSize;
@@ -80,7 +80,7 @@ namespace Recyclable.Collections
 				//}
 
 				// If anything, it has been already cleared above, so we don't need to repeat it.
-				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, NeedsClearing);
+				RecyclableArrayPool<T>.ReturnShared(oldMemoryBlock, _needsClearing);
 			}
 
 			return newSize;

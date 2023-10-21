@@ -13,12 +13,12 @@ namespace Recyclable.Collections
 			_memory = memory;
 		}
 
-#pragma warning disable RCS1085
+#pragma warning disable IDE0032 // This is intentional due to better performance
 		private T[] _memory;
 		public T[] Memory { get => _memory; set => _memory = value; }
 
 		private MemoryBucket<T>? _nextBucket;
+#pragma warning restore IDE0032 // Use auto property
 		public MemoryBucket<T>? NextBucket { get => _nextBucket; set => _nextBucket = value; }
-#pragma warning restore RCS1085
 	}
 }

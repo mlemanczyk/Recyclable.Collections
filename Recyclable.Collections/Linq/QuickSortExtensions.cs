@@ -1,10 +1,5 @@
 ﻿// Ignore Spelling: Linq
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 // The source code was taken from
 // https://codereview.stackexchange.com/questions/205407/quicksort-without-recursion.

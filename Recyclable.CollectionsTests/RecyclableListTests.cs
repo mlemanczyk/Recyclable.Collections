@@ -1329,13 +1329,13 @@ namespace Recyclable.CollectionsTests
 		public void RemoveAtShouldClearItemWhenReferenceType(string testCase, IEnumerable<object> testData, int itemsCount, in long[] indexesToRemove)
 		{
 			// Prepare
-			foreach (int indexToRemove in indexesToRemove)
+			foreach (long indexToRemove in indexesToRemove)
 			{
 				using var list = new RecyclableList<object>(testData, itemsCount);
 				_ = list[^1].Should().NotBeNull();
 
 				// Act
-				list.RemoveAt(indexToRemove);
+				list.RemoveAt((int)indexToRemove);
 
 				// Validate
 				_ = list[list.Count].Should().BeNull();
@@ -1391,7 +1391,7 @@ namespace Recyclable.CollectionsTests
 		public void RemoveShouldClearItemWhenReferenceType(string testCase, IEnumerable<object> testData, int itemsCount, in long[] indexesToRemove)
 		{
 
-			foreach (int indexToRemove in indexesToRemove)
+			foreach (long indexToRemove in indexesToRemove)
 			{
 				// Prepare
 				using var list = new RecyclableList<object>(testData, itemsCount);

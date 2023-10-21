@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿// Ignore Spelling: Poc
+
+using BenchmarkDotNet.Attributes;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
@@ -35,11 +37,11 @@ namespace Recyclable.Collections.Benchmarks.POC
 		}
 
 		protected override Action GetTestMethod(RoundBenchmarkType benchmarkType) => benchmarkType switch
-        {
-            RoundBenchmarkType.MathFloor => RoundWithMathFloor,
-            RoundBenchmarkType.MathRound => RoundWithMathRound,
-            RoundBenchmarkType.WithTypecasting => RoundWithTypeCasting,
-            _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
-        };
+		{
+			RoundBenchmarkType.MathFloor => RoundWithMathFloor,
+			RoundBenchmarkType.MathRound => RoundWithMathRound,
+			RoundBenchmarkType.WithTypecasting => RoundWithTypeCasting,
+			_ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+		};
 	}
 }

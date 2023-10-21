@@ -7,26 +7,20 @@ namespace Recyclable.Collections.Pools
 		Low
 	}
 
-    internal static class MemoryUtils
-    {
-        public static MemoryPressure GetMemoryPressure()
-        {
-            const double HighPressureThreshold = .90;       // Percent of GC memory pressure threshold we consider "high"
-            const double MediumPressureThreshold = .70;     // Percent of GC memory pressure threshold we consider "medium"
+	internal static class MemoryUtils
+	{
+		private const double HighPressureThreshold = .90;       // Percent of GC memory pressure threshold we consider "high"
+		private const double MediumPressureThreshold = .70;     // Percent of GC memory pressure threshold we consider "medium"
 
-            GCMemoryInfo memoryInfo = GC.GetGCMemoryInfo();
+		public static MemoryPressure GetMemoryPressure()
+		{
+			GCMemoryInfo memoryInfo = GC.GetGCMemoryInfo();
 
-            if (memoryInfo.MemoryLoadBytes >= memoryInfo.HighMemoryLoadThresholdBytes * HighPressureThreshold)
-            {
-                return MemoryPressure.High;
-            }
-
-            if (memoryInfo.MemoryLoadBytes >= memoryInfo.HighMemoryLoadThresholdBytes * MediumPressureThreshold)
-            {
-                return MemoryPressure.Medium;
-            }
-
-            return MemoryPressure.Low;
-        }
-    }
+			return memoryInfo.MemoryLoadBytes >= memoryInfo.HighMemoryLoadThresholdBytes * HighPressureThreshold
+				? MemoryPressure.High
+				: memoryInfo.MemoryLoadBytes >= memoryInfo.HighMemoryLoadThresholdBytes * MediumPressureThreshold
+				? MemoryPressure.Medium
+				: MemoryPressure.Low;
+		}
+	}
 }

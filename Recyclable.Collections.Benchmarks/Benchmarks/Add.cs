@@ -8,7 +8,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			var list = new long[dataCount];
+			var list = new int[dataCount];
 			for (var i = 0; i < dataCount; i++)
 			{
 				list[i] = data[i];
@@ -19,7 +19,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			var list = new List<long>();
+			var list = new List<int>();
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -30,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new PooledList<long>(ClearMode.Auto);
+			using var list = new PooledList<int>(ClearMode.Auto);
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -41,7 +41,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<int>();
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);
@@ -52,7 +52,7 @@ namespace Recyclable.Collections.Benchmarks
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			using var list = new RecyclableLongList<long>();
+			using var list = new RecyclableLongList<int>();
 			for (var i = 0; i < dataCount; i++)
 			{
 				list.Add(data[i]);

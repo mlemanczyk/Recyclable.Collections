@@ -8,31 +8,31 @@ namespace Recyclable.Collections.Benchmarks
 	{
 		public void Array_Create()
 		{
-			var list = new long[0];
+			var list = new int[0];
 			DoNothing(list);
 		}
 
 		public void List_Create()
 		{
-			var list = new List<long>();
+			var list = new List<int>();
 			DoNothing(list);
 		}
 
 		public void PooledList_Create()
 		{
-			using var list = new PooledList<long>(ClearMode.Auto);
+			using var list = new PooledList<int>(ClearMode.Auto);
 			DoNothing(list);
 		}
 
 		public void RecyclableList_Create()
 		{
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<int>();
 			DoNothing(list);
 		}
 
 		public void RecyclableLongList_Create()
 		{
-			using var list = new RecyclableLongList<long>();
+			using var list = new RecyclableLongList<int>();
 			DoNothing(list);
 		}
 	}

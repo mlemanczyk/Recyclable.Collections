@@ -7,35 +7,35 @@ namespace Recyclable.Collections.Benchmarks
 		public void Array_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			var list = new long[TestObjectCount];
+			var list = new int[TestObjectCount];
 			data.CopyTo(list, 0);
 		}
 
 		public void List_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			var list = new List<long>();
+			var list = new List<int>();
 			list.AddRange(data);
 		}
 
 		public void PooledList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			using var list = new PooledList<long>(ClearMode.Auto);
+			using var list = new PooledList<int>(ClearMode.Auto);
 			list.AddRange(data);
 		}
 
 		public void RecyclableList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableList<long>();
+			using var list = new RecyclableList<int>();
 			list.AddRange(data);
 		}
 
 		public void RecyclableLongList_AddRangeWhenSourceIsArray()
 		{
 			var data = TestObjects;
-			using var list = new RecyclableLongList<long>(minBlockSize: BlockSize);
+			using var list = new RecyclableLongList<int>(minBlockSize: BlockSize);
 			list.AddRange(data);
 		}
 	}

@@ -150,9 +150,7 @@ namespace Recyclable.Collections
 					{
 						RemoveBlock(Memory._count - 1);
 					}
-#pragma warning disable RCS1075 // We want to try returning as many arrays, as possible, before the list is cleared.
 					catch (Exception)
-#pragma warning restore RCS1075
 					{
 					}
 				}

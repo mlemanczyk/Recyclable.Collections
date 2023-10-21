@@ -284,7 +284,7 @@ namespace Recyclable.Collections
 
 				try
 				{
-					context.Exception.CaptureAndRethrow();
+					context.Exception.CaptureAndReThrow();
 				}
 				finally
 				{

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace Recyclable.Collections
+﻿namespace Recyclable.Collections
 {
 	internal static class ThrowHelper
 	{

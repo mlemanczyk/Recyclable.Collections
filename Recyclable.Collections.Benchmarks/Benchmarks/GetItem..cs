@@ -58,10 +58,10 @@
 			int blockSize = data.BlockSize;
 			int nextItemBlockIndex = data.NextItemBlockIndex;
 
-			var memoryBlocks = new Span<long[]>(data.AsArray, 0, data.LastBlockWithData + 1);
+			var memoryBlocks = new Span<int[]>(data.AsArray, 0, data.LastBlockWithData + 1);
 			for (var blockIndex = 0; blockIndex < nextItemBlockIndex; blockIndex++)
 			{
-				var memoryBlock = new Span<long>(memoryBlocks[blockIndex], 0, blockSize);
+				var memoryBlock = new Span<int>(memoryBlocks[blockIndex], 0, blockSize);
 				for (var itemIndex = 0; itemIndex < blockSize; itemIndex++)
 				{
 					DoNothing(memoryBlock[itemIndex]);
@@ -70,7 +70,7 @@
 
 			if (nextItemBlockIndex == data.LastBlockWithData)
 			{
-				var memoryBlock = new Span<long>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
+				var memoryBlock = new Span<int>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
 				for (var itemIndex = 0; itemIndex < memoryBlock.Length; itemIndex++)
 				{
 					DoNothing(memoryBlock[itemIndex]);
@@ -117,7 +117,7 @@
 		public void RecyclableLongList_GetItem_AsWhile()
 		{
 			var data = TestObjectsAsRecyclableLongList;
-			long dataCount = TestObjectCount;
+			int dataCount = TestObjectCount;
 			if (dataCount == 0)
 			{
 				return;

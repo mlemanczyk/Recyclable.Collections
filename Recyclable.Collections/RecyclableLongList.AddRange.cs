@@ -4,7 +4,9 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
+#pragma warning disable IDE1006 // This is intentional naming for the class to show up at the end of IntelliSense list.
 	public static class zRecyclableLongListAddRange
+#pragma warning restore IDE1006
 	{
 		private static void AddRangeEnumerated<T>(this RecyclableLongList<T> targetList, IEnumerable<T> items)
 		{

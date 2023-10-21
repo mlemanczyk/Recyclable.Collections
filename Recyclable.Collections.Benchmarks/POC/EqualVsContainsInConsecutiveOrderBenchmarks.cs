@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿// Ignore Spelling: Poc
+
+using BenchmarkDotNet.Attributes;
 using FluentAssertions;
 using Recyclable.CollectionsTests;
 
@@ -24,7 +26,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			_ = _list1.Should().ContainInConsecutiveOrder(_list2);
 		}
 
-		public void Dispose()
+		void IDisposable.Dispose()
 		{
 			if (_list1 is IDisposable disposable1)
 			{
@@ -35,6 +37,8 @@ namespace Recyclable.Collections.Benchmarks.POC
 			{
 				disposable2.Dispose();
 			}
+
+			GC.SuppressFinalize(this);
 		}
 	}
 }

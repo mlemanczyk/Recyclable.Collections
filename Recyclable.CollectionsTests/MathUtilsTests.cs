@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿// Ignore Spelling: Utils
+
+using FluentAssertions;
 using Recyclable.Collections;
 
 namespace Recyclable.CollectionsTests

@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿// Ignore Spelling: Poc
+
+using BenchmarkDotNet.Attributes;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
@@ -28,21 +30,21 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public override SpanVsArrayBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
 
 		protected override Action GetTestMethod(SpanVsArrayBenchmarkType benchmarkType) => benchmarkType switch
-        {
-            SpanVsArrayBenchmarkType.ArrayGetWithVar => ArrayGetWithVar,
-            SpanVsArrayBenchmarkType.ArrayGetWithField => ArrayGetWithField,
-            SpanVsArrayBenchmarkType.SpanGet => SpanGet,
-            SpanVsArrayBenchmarkType.ArraySetWithVar => ArraySetWithVar,
-            SpanVsArrayBenchmarkType.ArraySetWithField => ArraySetWithField,
-            SpanVsArrayBenchmarkType.SpanSet => SpanSet,
-            _ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
-        };
+		{
+			SpanVsArrayBenchmarkType.ArrayGetWithVar => ArrayGetWithVar,
+			SpanVsArrayBenchmarkType.ArrayGetWithField => ArrayGetWithField,
+			SpanVsArrayBenchmarkType.SpanGet => SpanGet,
+			SpanVsArrayBenchmarkType.ArraySetWithVar => ArraySetWithVar,
+			SpanVsArrayBenchmarkType.ArraySetWithField => ArraySetWithField,
+			SpanVsArrayBenchmarkType.SpanSet => SpanSet,
+			_ => throw CreateUnknownBenchmarkTypeException(benchmarkType),
+		};
 
-        public void ArrayGetWithVar()
+		public void ArrayGetWithVar()
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			for (long i = 0; i < dataCount; i++)
+			for (int i = 0; i < dataCount; i++)
 			{
 				DoNothing(data[i]);
 			}
@@ -51,7 +53,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public void ArrayGetWithField()
 		{
 			var dataCount = TestObjectCount;
-			for (long i = 0; i < dataCount; i++)
+			for (int i = 0; i < dataCount; i++)
 			{
 				DoNothing(_testObjects![i]);
 			}
@@ -60,7 +62,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public void SpanGet()
 		{
 			var dataCount = TestObjectCount;
-			Span<long> data = new(_testObjects, 0, dataCount);
+			Span<int> data = new(_testObjects, 0, dataCount);
 			for (int i = 0; i < dataCount; i++)
 			{
 				DoNothing(data[i]);
@@ -71,7 +73,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		{
 			var data = TestObjects;
 			var dataCount = TestObjectCount;
-			for (long i = 0; i < dataCount; i++)
+			for (int i = 0; i < dataCount; i++)
 			{
 				data[i] = i;
 			}
@@ -80,7 +82,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public void ArraySetWithField()
 		{
 			var dataCount = TestObjectCount;
-			for (long i = 0; i < dataCount; i++)
+			for (int i = 0; i < dataCount; i++)
 			{
 				_testObjects![i] = i;
 			}
@@ -89,7 +91,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public void SpanSet()
 		{
 			var dataCount = TestObjectCount;
-			Span<long> data = new(_testObjects, 0, dataCount);
+			Span<int> data = new(_testObjects, 0, dataCount);
 			for (int i = 0; i < dataCount; i++)
 			{
 				data[i] = i;

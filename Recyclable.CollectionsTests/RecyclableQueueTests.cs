@@ -86,7 +86,7 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Fact]
-		public void DequeueShoudRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
+		public void DequeueShouldRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
 		{
 			// Prepare
 			using var list = new RecyclableQueue<string>(_testData);

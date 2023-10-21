@@ -15,6 +15,7 @@ namespace Recyclable.Collections
 			{
 				return CompareResult.XEqualY;
 			}
+#pragma warning disable IDE0046 // This is intentional due to better performance - IL contained unnecessary local variable.
 			else if (x != null && y == null)
 			{
 				return CompareResult.XGreaterThenY;
@@ -27,6 +28,7 @@ namespace Recyclable.Collections
 			{
 				return _comparison(x!, y!);
 			}
+#pragma warning restore IDE0046
 		}
 	}
 }

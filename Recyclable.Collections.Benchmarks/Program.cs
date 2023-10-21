@@ -51,7 +51,8 @@ namespace Recyclable.Collections.Benchmarks
 			_ = BenchmarkRunner.Run<RoundUpToPowerOf2vsOtherBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<GreaterOperatorVsDoesntEqualOperatorBenchmarks>(BenchmarkConfig);
 			_ = BenchmarkRunner.Run<SpanConstructorVsTypecastingPocBenchmarks>(BenchmarkConfig);
-			// ArraySizeLimitPocBenchmarks>(BenchmarkConfig);
+
+			//ArraySizeLimitBenchmarks.Run();
 		}
 
 		static void Main()

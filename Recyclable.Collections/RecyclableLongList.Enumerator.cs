@@ -16,7 +16,9 @@ namespace Recyclable.Collections
 			private readonly RecyclableLongList<T> _list;
 
 #nullable disable
+#pragma warning disable IDE0032 // This is intentional due to better performance
 			private T _current;
+#pragma warning restore IDE0032
 #nullable restore
 
 			[Pure]
