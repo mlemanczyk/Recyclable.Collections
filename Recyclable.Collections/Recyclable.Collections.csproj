@@ -19,6 +19,7 @@
 		<RepositoryType>git</RepositoryType>
 		<PackageReleaseNotes>List&lt;T&gt; compatibility code moved to Recyclable.Collections.Compatibility.List package. Cleanup.</PackageReleaseNotes>
 		<Platforms>AnyCPU;x64</Platforms>
+		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
