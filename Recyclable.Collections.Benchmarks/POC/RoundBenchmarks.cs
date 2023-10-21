@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: Poc
 
 using BenchmarkDotNet.Attributes;
+using Collections.Benchmarks.Core;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
@@ -11,7 +12,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		WithTypecasting,
 	}
 
-	public class RoundBenchmarks : PocBenchmarkBase<RoundBenchmarkType>
+	public class RoundBenchmarks : BaselineVsActualBenchmarkBase<RoundBenchmarkType>
 	{
 		[Params(RoundBenchmarkType.MathFloor)]
 		public override RoundBenchmarkType BaseDataType { get => base.BaseDataType; set => base.BaseDataType = value; }
@@ -23,17 +24,17 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		public void RoundWithMathFloor()
 		{
-			DoNothing((long)Math.Floor(TestObjectCount * OptimalParallelSearchStep));
+			DoNothing.With((long)Math.Floor(TestObjectCount * OptimalParallelSearchStep));
 		}
 
 		public void RoundWithMathRound()
 		{
-			DoNothing((long)Math.Round(TestObjectCount * OptimalParallelSearchStep, 0));
+			DoNothing.With((long)Math.Round(TestObjectCount * OptimalParallelSearchStep, 0));
 		}
 
 		public void RoundWithTypeCasting()
 		{
-			DoNothing((long)(TestObjectCount * OptimalParallelSearchStep));
+			DoNothing.With((long)(TestObjectCount * OptimalParallelSearchStep));
 		}
 
 		protected override Action GetTestMethod(RoundBenchmarkType benchmarkType) => benchmarkType switch

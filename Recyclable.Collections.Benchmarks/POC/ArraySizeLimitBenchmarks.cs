@@ -1,18 +1,21 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿// Ignore Spelling: Poc
+
+using BenchmarkDotNet.Attributes;
+using Collections.Benchmarks.Core;
 using System.Buffers;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
-	public enum ArraySizeLimitPocBenchmarkType
+	public enum ArraySizeLimitBenchmarkType
 	{
 		ArraySizeLimit
 	}
 
-	public class ArraySizeLimitPocBenchmarks : PocBenchmarkBase<ArraySizeLimitPocBenchmarkType>
+	public class ArraySizeLimitBenchmarks : BaselineVsActualBenchmarkBase<ArraySizeLimitBenchmarkType>
 	{
 		public static void Run()
 		{
-			var benchmark = new ArraySizeLimitPocBenchmarks();
+			var benchmark = new ArraySizeLimitBenchmarks();
 			benchmark.Setup();
 			FindArraySizeLimit();
 			benchmark.Cleanup();
@@ -25,7 +28,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		public void Max_Allowed_Size_2_147_483_605()
 		{
 			long[] arr = ArrayPool<long>.Shared.Rent(TestObjectCount);
-			DoNothing(arr);
+			DoNothing.With(arr);
 		}
 
 		[Benchmark(OperationsPerInvoke = 1)]

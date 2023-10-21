@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections.Benchmarks
+﻿using Collections.Benchmarks.Core;
+
+namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
@@ -8,7 +10,7 @@
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
@@ -18,7 +20,7 @@
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
@@ -28,7 +30,7 @@
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
@@ -38,7 +40,7 @@
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
@@ -48,7 +50,7 @@
 			var dataCount = TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
@@ -64,7 +66,7 @@
 				var memoryBlock = new Span<int>(memoryBlocks[blockIndex], 0, blockSize);
 				for (var itemIndex = 0; itemIndex < blockSize; itemIndex++)
 				{
-					DoNothing(memoryBlock[itemIndex]);
+					DoNothing.With(memoryBlock[itemIndex]);
 				}
 			}
 
@@ -73,7 +75,7 @@
 				var memoryBlock = new Span<int>(memoryBlocks[nextItemBlockIndex], 0, data.NextItemIndex);
 				for (var itemIndex = 0; itemIndex < memoryBlock.Length; itemIndex++)
 				{
-					DoNothing(memoryBlock[itemIndex]);
+					DoNothing.With(memoryBlock[itemIndex]);
 				}
 			}
 		}
@@ -90,7 +92,7 @@
 				var memoryBlock = memoryBlocks[blockIndex];
 				for (var itemIndex = 0; itemIndex < blockSize; itemIndex++)
 				{
-					DoNothing(memoryBlock[itemIndex]);
+					DoNothing.With(memoryBlock[itemIndex]);
 				}
 			}
 
@@ -100,7 +102,7 @@
 				blockSize = data.NextItemIndex;
 				for (var itemIndex = 0; itemIndex < blockSize; itemIndex++)
 				{
-					DoNothing(memoryBlock[itemIndex]);
+					DoNothing.With(memoryBlock[itemIndex]);
 				}
 			}
 		}
@@ -110,7 +112,7 @@
 			var data = TestObjectsAsRecyclableLongList;
 			foreach (var item in data)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -131,7 +133,7 @@
 			var memoryBlock = memoryBlocks[0];
 			while (blockIndex < nextItemBlockIndex)
 			{
-				DoNothing(memoryBlock[itemIndex]);
+				DoNothing.With(memoryBlock[itemIndex]);
 				if (itemIndex + 1 < blockSize)
 				{
 					itemIndex++;
@@ -150,7 +152,7 @@
 				blockSize = data.NextItemIndex;
 				while (itemIndex < blockSize)
 				{
-					DoNothing(memoryBlock[itemIndex++]);
+					DoNothing.With(memoryBlock[itemIndex++]);
 				}
 			}
 		}

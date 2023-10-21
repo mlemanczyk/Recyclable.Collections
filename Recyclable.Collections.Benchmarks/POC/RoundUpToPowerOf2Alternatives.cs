@@ -1,10 +1,13 @@
+// Ignore Spelling: Poc
+
 using BenchmarkDotNet.Attributes;
+using Collections.Benchmarks.Core;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
 	static class RoundUpToPowerOf2Alternatives
 	{
-		private static readonly int[] PowersOfTwo =
+		private static readonly int[] _powersOfTwo =
 		{
 			1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024,
 			2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576,
@@ -19,14 +22,14 @@ namespace Recyclable.Collections.Benchmarks.POC
 			}
 
 			// Find the smallest power of 2 greater than or equal to value using a lookup table
-			int index = Array.BinarySearch(PowersOfTwo, value);
+			int index = Array.BinarySearch(_powersOfTwo, value);
 			if (index < 0)
 			{
 				// If value is not a power of 2, use the next power of 2 from the table
 				index = ~index;
 			}
 
-			return PowersOfTwo[index];
+			return _powersOfTwo[index];
 		}
 
 		public static int RightBitShifting(int value)
@@ -74,7 +77,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		IsPowOf2_GreaterEqual,
 	}
 
-	public class RoundUpToPowerOf2vsOtherBenchmarks : PocBenchmarkBase<RoundUpToPowerOf2BenchmarkType>
+	public class RoundUpToPowerOf2vsOtherBenchmarks : BaselineVsActualBenchmarkBase<RoundUpToPowerOf2BenchmarkType>
 	{
 		// [Params(-850_000, 850_000)]
 		[Params(-int.MaxValue, int.MaxValue)]
@@ -89,42 +92,44 @@ namespace Recyclable.Collections.Benchmarks.POC
 
 		private void BitOperations()
 		{
-			DoNothing(System.Numerics.BitOperations.RoundUpToPowerOf2((uint)base.TestObjectCount));
+			DoNothing.With(System.Numerics.BitOperations.RoundUpToPowerOf2((uint)base.TestObjectCount));
 		}
 
 		private void RightBitShifting()
 		{
-			DoNothing(RoundUpToPowerOf2Alternatives.RightBitShifting(TestObjectCount));
+			DoNothing.With(RoundUpToPowerOf2Alternatives.RightBitShifting(TestObjectCount));
 		}
 
 		private void LeftBitShifting()
 		{
-			DoNothing(RoundUpToPowerOf2Alternatives.LeftBitShifting(TestObjectCount));
+			DoNothing.With(RoundUpToPowerOf2Alternatives.LeftBitShifting(TestObjectCount));
 		}
 
 		private void BinarySearch()
 		{
-			DoNothing(RoundUpToPowerOf2Alternatives.BinarySearch(TestObjectCount));
+			DoNothing.With(RoundUpToPowerOf2Alternatives.BinarySearch(TestObjectCount));
 		}
 
 		private void IsPowOf2()
 		{
-			DoNothing((TestObjectCount & (TestObjectCount - 1)) == 0 && TestObjectCount > 0);
+			DoNothing.With((TestObjectCount & (TestObjectCount - 1)) == 0 && TestObjectCount > 0);
 		}
 
 		private void IsPowOf2_GreaterThanFirst()
 		{
-			DoNothing(TestObjectCount > 0 && (TestObjectCount & (TestObjectCount - 1)) == 0);
+			DoNothing.With(TestObjectCount > 0 && (TestObjectCount & (TestObjectCount - 1)) == 0);
 		}
 
 		private void IsPowOf2_WithIf()
 		{
-			DoNothing(TestObjectCount > 0 ? (TestObjectCount & (TestObjectCount - 1)) == 0 : false);
+#pragma warning disable IDE0075 // This is intentional
+			DoNothing.With(TestObjectCount > 0 ? (TestObjectCount & (TestObjectCount - 1)) == 0 : false);
+#pragma warning restore IDE0075
 		}
 
 		private void IsPowOf2_GreaterEqual()
 		{
-			DoNothing(TestObjectCount >= 0 && TestObjectCount != 0 && (TestObjectCount & (TestObjectCount - 1)) == 0);
+			DoNothing.With(TestObjectCount >= 0 && TestObjectCount != 0 && (TestObjectCount & (TestObjectCount - 1)) == 0);
 		}
 
 		protected override Action? GetTestMethod(RoundUpToPowerOf2BenchmarkType benchmarkType) => benchmarkType switch

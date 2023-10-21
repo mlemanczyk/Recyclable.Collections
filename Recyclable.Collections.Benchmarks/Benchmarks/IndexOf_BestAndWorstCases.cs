@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections.Benchmarks
+﻿using Collections.Benchmarks.Core;
+
+namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
@@ -9,8 +11,8 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(Array.IndexOf(list, data[i]));
-				DoNothing(Array.IndexOf(list, data[^(i + 1)]));
+				DoNothing.With(Array.IndexOf(list, data[i]));
+				DoNothing.With(Array.IndexOf(list, data[^(i + 1)]));
 			}
 		}
 
@@ -21,8 +23,8 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
-				DoNothing(list.IndexOf(data[^(i + 1)]));
+				DoNothing.With(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[^(i + 1)]));
 			}
 		}
 
@@ -33,8 +35,8 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
-				DoNothing(list.IndexOf(data[^(i + 1)]));
+				DoNothing.With(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[^(i + 1)]));
 			}
 		}
 
@@ -45,8 +47,8 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
-				DoNothing(list.IndexOf(data[^(i + 1)]));
+				DoNothing.With(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[^(i + 1)]));
 			}
 		}
 
@@ -57,8 +59,8 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
-				DoNothing(list.IndexOf(data[^(i + 1)]));
+				DoNothing.With(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[^(i + 1)]));
 			}
 		}
 
@@ -69,8 +71,8 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
-				DoNothing(list.LongIndexOf(data[^(i + 1)]));
+				DoNothing.With(list.IndexOf(data[i]));
+				DoNothing.With(list.LongIndexOf(data[^(i + 1)]));
 			}
 		}
 	}

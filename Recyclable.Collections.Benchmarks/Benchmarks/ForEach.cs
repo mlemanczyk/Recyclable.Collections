@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections.Benchmarks
+﻿using Collections.Benchmarks.Core;
+
+namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
@@ -6,7 +8,7 @@
 		{
 			foreach (var item in TestObjects)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -14,7 +16,7 @@
 		{
 			foreach (var item in TestObjects)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -22,7 +24,7 @@
 		{
 			foreach (var item in TestObjectsAsList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -30,7 +32,7 @@
 		{
 			foreach (var item in TestObjectsAsList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -38,7 +40,7 @@
 		{
 			foreach (var item in TestObjectsAsPooledList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -46,7 +48,7 @@
 		{
 			foreach (var item in TestObjectsAsPooledList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -54,15 +56,15 @@
 		{
 			foreach (var item in TestObjectsAsRecyclableList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
 		public void RecyclableList_VersionedForEach()
 		{
-			foreach (var item in (IRecyclableVersionedList<long>)TestObjectsAsRecyclableList)
+			foreach (var item in (IRecyclableVersionedList<int>)TestObjectsAsRecyclableList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
@@ -70,15 +72,15 @@
 		{
 			foreach (var item in TestObjectsAsRecyclableLongList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 
 		public void RecyclableLongList_VersionedForEach()
 		{
-			foreach (var item in (IRecyclableVersionedLongList<long>)TestObjectsAsRecyclableLongList)
+			foreach (var item in (IRecyclableVersionedLongList<int>)TestObjectsAsRecyclableLongList)
 			{
-				DoNothing(item);
+				DoNothing.With(item);
 			}
 		}
 	}

@@ -2,7 +2,7 @@
 
 using BenchmarkDotNet.Attributes;
 using FluentAssertions;
-using Recyclable.CollectionsTests;
+using Recyclable.Collections.TestData;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {

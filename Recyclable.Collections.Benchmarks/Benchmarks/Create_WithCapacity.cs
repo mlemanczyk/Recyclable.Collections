@@ -1,4 +1,5 @@
 ﻿using Collections.Pooled;
+using Collections.Benchmarks.Core;
 
 namespace Recyclable.Collections.Benchmarks
 {
@@ -7,31 +8,31 @@ namespace Recyclable.Collections.Benchmarks
 		public void Array_Create_WithCapacity()
 		{
 			var data = new int[TestObjectCount];
-			DoNothing(data);
+			DoNothing.With(data);
 		}
 
 		public void List_Create_WithCapacity()
 		{
 			var list = new List<int>(TestObjectCount);
-			DoNothing(list);
+			DoNothing.With(list);
 		}
 
 		public void PooledList_Create_WithCapacity()
 		{
 			using var list = new PooledList<int>(capacity: TestObjectCount, ClearMode.Auto);
-			DoNothing(list);
+			DoNothing.With(list);
 		}
 
 		public void RecyclableList_Create_WithCapacity()
 		{
 			using var list = new RecyclableList<int>(TestObjectCount);
-			DoNothing(list);
+			DoNothing.With(list);
 		}
 
 		public void RecyclableLongList_Create_WithCapacity()
 		{
 			using var list = new RecyclableLongList<int>(minBlockSize: BlockSize, initialCapacity: TestObjectCount);
-			DoNothing(list);
+			DoNothing.With(list);
 		}
 	}
 }

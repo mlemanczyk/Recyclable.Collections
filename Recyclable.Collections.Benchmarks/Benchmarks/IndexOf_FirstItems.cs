@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections.Benchmarks
+﻿using Collections.Benchmarks.Core;
+
+namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
@@ -9,7 +11,7 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(Array.IndexOf(list, data[i]));
+				DoNothing.With(Array.IndexOf(list, data[i]));
 			}
 		}
 
@@ -20,7 +22,7 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[i]));
 			}
 		}
 
@@ -31,7 +33,7 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[i]));
 			}
 		}
 
@@ -42,7 +44,7 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[i]));
 			}
 		}
 
@@ -53,7 +55,7 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.IndexOf(data[i]));
+				DoNothing.With(list.IndexOf(data[i]));
 			}
 		}
 
@@ -64,7 +66,7 @@
 			var dataCount = TestObjectCountForSlowMethods;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.LongIndexOf(data[i]));
+				DoNothing.With(list.LongIndexOf(data[i]));
 			}
 		}
 	}

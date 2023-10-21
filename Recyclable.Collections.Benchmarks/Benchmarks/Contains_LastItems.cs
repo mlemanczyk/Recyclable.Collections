@@ -1,4 +1,6 @@
-﻿namespace Recyclable.Collections.Benchmarks
+﻿using Collections.Benchmarks.Core;
+
+namespace Recyclable.Collections.Benchmarks
 {
 	public partial class RecyclableCollectionsBenchmarks
 	{
@@ -9,7 +11,7 @@
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Contains(data[^(i + 1)]));
+				DoNothing.With(list.Contains(data[^(i + 1)]));
 			}
 		}
 
@@ -20,7 +22,7 @@
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Contains(data[^(i + 1)]));
+				DoNothing.With(list.Contains(data[^(i + 1)]));
 			}
 		}
 
@@ -31,7 +33,7 @@
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Contains(data[^(i + 1)]));
+				DoNothing.With(list.Contains(data[^(i + 1)]));
 			}
 		}
 
@@ -42,7 +44,7 @@
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Contains(data[^(i + 1)]));
+				DoNothing.With(list.Contains(data[^(i + 1)]));
 			}
 		}
 
@@ -53,7 +55,7 @@
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Contains(data[^(i + 1)]));
+				DoNothing.With(list.Contains(data[^(i + 1)]));
 			}
 		}
 	}

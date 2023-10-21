@@ -1,4 +1,5 @@
 ﻿using Collections.Pooled;
+using Collections.Benchmarks.Core;
 
 namespace Recyclable.Collections.Benchmarks
 {
@@ -11,7 +12,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Remove(data[i]));
+				DoNothing.With(list.Remove(data[i]));
 			}
 		}
 
@@ -22,7 +23,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Remove(data[i]));
+				DoNothing.With(list.Remove(data[i]));
 			}
 		}
 
@@ -33,7 +34,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Remove(data[i]));
+				DoNothing.With(list.Remove(data[i]));
 			}
 		}
 
@@ -44,7 +45,7 @@ namespace Recyclable.Collections.Benchmarks
 			var dataCount = TestObjectCount / 10 > 0 ? TestObjectCount / 10 : TestObjectCount;
 			for (var i = 0; i < dataCount; i++)
 			{
-				DoNothing(list.Remove(data[i]));
+				DoNothing.With(list.Remove(data[i]));
 			}
 		}
 	}

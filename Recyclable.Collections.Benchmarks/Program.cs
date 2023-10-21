@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Running;
-using Recyclable.Collections.Benchmarks.POC;
 
 #pragma warning disable RCS1036, RCS1213, IDE0051
 
@@ -31,7 +30,7 @@ namespace Recyclable.Collections.Benchmarks
 
 			foreach (var _ in Enumerable.Range(1, 1000))
 			{
-				// benchmark.RecyclableList_Create_WithCapacity();
+				//benchmark.RecyclableList_Create_WithCapacity();
 			}
 
 			benchmark.Cleanup();
@@ -39,26 +38,26 @@ namespace Recyclable.Collections.Benchmarks
 
 		static void RunPocBenchmarks()
 		{
-			_ = BenchmarkRunner.Run<BoolOrComparePocBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<DelegateVsComparerPocBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<ModuloPocBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<TaskRunVsTaskFactoryStartNewBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<RefVsInstanceMemberPocBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<LessOperatorVsAndOperatorBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<EqualVsContainsInConsecutiveOrderBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<RoundUpToPowerOf2vsOtherBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<GreaterOperatorVsDoesntEqualOperatorBenchmarks>(BenchmarkConfig);
-			_ = BenchmarkRunner.Run<SpanConstructorVsTypecastingPocBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<BoolOrCompareBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<DelegateVsComparerBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<ModuloBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<TaskRunVsTaskFactoryStartNewBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<RefVsInstanceMemberBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<RoundBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<SpanVsArrayBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<LessOperatorVsAndOperatorBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<EqualVsContainsInConsecutiveOrderBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<RoundUpToPowerOf2vsOtherBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<GreaterOperatorVsNotEqualOperatorBenchmarks>(BenchmarkConfig);
+			//_ = BenchmarkRunner.Run<SpanConstructorVsTypecastingBenchmarks>(BenchmarkConfig);
 
 			//ArraySizeLimitBenchmarks.Run();
 		}
 
 		static void Main()
 		{
-			RunRecyclableCollectionsBenchmarks();
-			// RunPocBenchmarks();
+			// RunRecyclableCollectionsBenchmarks();
+			RunPocBenchmarks();
 			// RunSelectedBenchmarks();
 			// RunAssemblyBenchmarks();
 		}

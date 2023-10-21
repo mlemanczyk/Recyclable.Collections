@@ -1,6 +1,7 @@
 ﻿// Ignore Spelling: Poc
 
 using BenchmarkDotNet.Attributes;
+using Collections.Benchmarks.Core;
 
 namespace Recyclable.Collections.Benchmarks.POC
 {
@@ -14,7 +15,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 		SpanSet
 	}
 
-	public class SpanVsArrayBenchmarks : RecyclableBenchmarkBase<SpanVsArrayBenchmarkType>
+	public class SpanVsArrayBenchmarks : DataDrivenBenchmarksBase<SpanVsArrayBenchmarkType>
 	{
 		// [Params(SpanVsArrayBenchmarkType.ArrayGetWithVar, SpanVsArrayBenchmarkType.SpanGet)]
 		// [Params(SpanVsArrayBenchmarkType.ArraySetWithVar, SpanVsArrayBenchmarkType.SpanSet)]
@@ -46,7 +47,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			var dataCount = TestObjectCount;
 			for (int i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
@@ -55,7 +56,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			var dataCount = TestObjectCount;
 			for (int i = 0; i < dataCount; i++)
 			{
-				DoNothing(_testObjects![i]);
+				DoNothing.With(_testObjects![i]);
 			}
 		}
 
@@ -65,7 +66,7 @@ namespace Recyclable.Collections.Benchmarks.POC
 			Span<int> data = new(_testObjects, 0, dataCount);
 			for (int i = 0; i < dataCount; i++)
 			{
-				DoNothing(data[i]);
+				DoNothing.With(data[i]);
 			}
 		}
 
