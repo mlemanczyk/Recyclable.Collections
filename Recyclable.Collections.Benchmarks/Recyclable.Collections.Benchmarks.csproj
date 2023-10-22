@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Collections.Benchmarks.Core" Version="0.0.3" />
+	  <PackageReference Include="Collections.Benchmarks.Core" Version="0.0.4" />
 	  <PackageReference Include="Collections.Pooled" Version="1.0.82" />
 	</ItemGroup>
 
