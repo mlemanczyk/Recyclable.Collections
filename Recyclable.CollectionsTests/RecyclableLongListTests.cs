@@ -513,6 +513,34 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void CopyToShouldCopyAllItemsInTheCorrectOrderWhenConstrainedRange(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in long[] itemIndexes)
+		{
+			// Prepare
+			var expectedData = testData.ToList();
+			foreach (var itemIndex in itemIndexes)
+			{
+				TestCopyTo(0);
+				TestCopyTo((int)itemIndex);
+				TestCopyTo((int)itemIndex);
+			}
+
+			void TestCopyTo(int itemIndex)
+			{
+				using var list = new RecyclableLongList<long>(testData, minBlockSize, initialCapacity: itemsCount);
+				long[] expectedItems = new long[itemsCount + itemIndex];
+				expectedData.CopyTo(expectedItems, itemIndex);
+				long[] actualItems = new long[itemsCount + itemIndex];
+
+				// Act
+				list.CopyTo(actualItems, itemIndex);
+
+				// Validate
+				_ = actualItems.Should().Equal(expectedItems);
+			}
+		}
+
+		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceRefDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void DisposeShouldClearItemsWhenReferenceType(string testCase, IEnumerable<object> testData, long itemsCount, int targetBlockSize)
 		{
