@@ -193,7 +193,7 @@ namespace Recyclable.Collections
 #endif
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static long IndexOfParallel(RecyclableLongList<T> list,  T item)
+			public static long IndexOfParallel(RecyclableLongList<T> list, T item)
 			{
 				// & WAS SLOWER
 				//long itemsCount = Array.IndexOf(list._memoryBlocks[0], item, 0, (int)Math.Min(list._blockSize, list._longCount));
@@ -295,6 +295,183 @@ namespace Recyclable.Collections
 			}
 
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+			public static long IndexOfParallel(RecyclableLongList<T> list, T item, int firstBlockIndex)
+			{
+				IndexOfSynchronizationContext context = IndexOfSynchronizationContextPool.GetWithOneParticipant();
+
+				int blockIndex = firstBlockIndex,
+					lastBlockWithData = list._lastBlockWithData,
+					lastFullBlockWithData = lastBlockWithData - BlocksForEachTask;
+
+				while (blockIndex < lastFullBlockWithData)
+				{
+					// At this point itemIndex is limited to blockSize range - int.
+
+					// & WAS SLOWER
+					// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
+					// Task.Factory.StartNew(() =>
+					context.AddParticipant();
+					var startingBlock = blockIndex;
+					_ = Task.Run(() => IndexOfInConsecutiveBlocks(context, list, startingBlock, item));
+
+					// & WAS SLOWER
+					// ScheduleIndexOfTask(context, list, blockIndex, item);
+					if (context._isItemFound)
+					{
+						break;
+					}
+
+					blockIndex += BlocksForEachTask;
+				}
+
+				if (!context._isItemFound)
+				{
+					while (blockIndex < lastBlockWithData)
+					{
+						// & WAS SLOWER
+						// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
+						// Task.Factory.StartNew(() =>
+						var startingBlock = blockIndex;
+						context.AddParticipant();
+						_ = Task.Run(() => IndexOfIn1Block(context, list, startingBlock, item));
+
+						// & WAS SLOWER
+						// ScheduleIndexOfTaskSingle(context, list, blockIndex, item);
+						if (context._isItemFound)
+						{
+							break;
+						}
+
+						blockIndex++;
+					}
+				}
+
+				if (!context._isItemFound)
+				{
+					int itemIndex = list._nextItemIndex != 0
+						? Array.IndexOf(list._memoryBlocks[lastBlockWithData], item, 0, list._nextItemIndex)
+						: Array.IndexOf(list._memoryBlocks[lastBlockWithData], item, 0, list._blockSize);
+
+					if (!context._isItemFound && itemIndex >= 0)
+					{
+						ExchangeFoundItemIndexIfLower(context, lastBlockWithData, ((long)lastBlockWithData << list._blockSizePow2BitShift) + itemIndex);
+					}
+				}
+
+				context.SignalAndWait();
+				if (context.Exception == null)
+				{
+					try
+					{
+						return context.FoundItemIndex;
+					}
+					finally
+					{
+						context.Dispose();
+					}
+				}
+
+				try
+				{
+					context.Exception.CaptureAndReThrow();
+				}
+				finally
+				{
+					context.Dispose();
+				}
+
+				return RecyclableDefaults.ItemNotFoundIndexLong;
+			}
+
+			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+			public static long IndexOfParallel(RecyclableLongList<T> list, T item, int firstBlockIndex, long count)
+			{
+				IndexOfSynchronizationContext context = IndexOfSynchronizationContextPool.GetWithOneParticipant();
+
+				int blockIndex = firstBlockIndex,
+					lastBlockWithData = (int)Math.Min((count >> list._blockSizePow2BitShift) + firstBlockIndex + ((count & list._blockSizeMinus1) > 0 ? 1 : 0) - 1, list._lastBlockWithData),
+					lastFullBlockWithData = lastBlockWithData - BlocksForEachTask;
+
+				while (blockIndex < lastFullBlockWithData)
+				{
+					// At this point itemIndex is limited to blockSize range - int.
+
+					// & WAS SLOWER
+					// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
+					// Task.Factory.StartNew(() =>
+					context.AddParticipant();
+					var startingBlock = blockIndex;
+					_ = Task.Run(() => IndexOfInConsecutiveBlocks(context, list, startingBlock, item));
+
+					// & WAS SLOWER
+					// ScheduleIndexOfTask(context, list, blockIndex, item);
+					if (context._isItemFound)
+					{
+						break;
+					}
+
+					blockIndex += BlocksForEachTask;
+				}
+
+				if (!context._isItemFound)
+				{
+					count -= (blockIndex - firstBlockIndex) << list._blockSizePow2BitShift;
+					while (blockIndex < lastBlockWithData)
+					{
+						// & WAS SLOWER
+						// _ = ThreadPool.QueueUserWorkItem<object?>((_) =>
+						// Task.Factory.StartNew(() =>
+						var startingBlock = blockIndex;
+						context.AddParticipant();
+						_ = Task.Run(() => IndexOfIn1Block(context, list, startingBlock, item));
+
+						// & WAS SLOWER
+						// ScheduleIndexOfTaskSingle(context, list, blockIndex, item);
+						if (context._isItemFound)
+						{
+							break;
+						}
+
+						blockIndex++;
+						count -= list._blockSize;
+					}
+				}
+
+				if (!context._isItemFound && count > 0)
+				{
+					int itemIndex = Array.IndexOf(list._memoryBlocks[lastBlockWithData], item, 0, (int)count);
+					if (!context._isItemFound && itemIndex >= 0)
+					{
+						ExchangeFoundItemIndexIfLower(context, lastBlockWithData, ((long)lastBlockWithData << list._blockSizePow2BitShift) + itemIndex);
+					}
+				}
+
+				context.SignalAndWait();
+				if (context.Exception == null)
+				{
+					try
+					{
+						return context.FoundItemIndex;
+					}
+					finally
+					{
+						context.Dispose();
+					}
+				}
+
+				try
+				{
+					context.Exception.CaptureAndReThrow();
+				}
+				finally
+				{
+					context.Dispose();
+				}
+
+				return RecyclableDefaults.ItemNotFoundIndexLong;
+			}
+
+			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
 			public static long IndexOfSequential(RecyclableLongList<T> list, in T item) //, in T[][] memoryBlocks, int lastBlockIndex, int blockSize, int nextItemIndex)
 			{
 				int itemIndex;
@@ -343,6 +520,119 @@ namespace Recyclable.Collections
 					: Array.IndexOf(memoryBlocksSpan[list._lastBlockWithData], item, 0, list._blockSize);
 
 				return itemIndex >= 0 ? itemIndex + ((long)list._lastBlockWithData << list._blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
+			}
+
+			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+			public static long IndexOfSequential(RecyclableLongList<T> list, in T item, int firstBlockIndex, long count)
+			{
+				int blockIndex,
+					blockSize = list._blockSize,
+					itemIndex,
+					lastBlockWithData = (int)Math.Min((count >> list._blockSizePow2BitShift) + firstBlockIndex + ((count & list._blockSizeMinus1) > 0 ? 1 : 0) - 1, list._lastBlockWithData);
+
+				byte blockSizePow2BitShift = list._blockSizePow2BitShift;
+
+				ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks, 0, lastBlockWithData + 1);
+				for (blockIndex = firstBlockIndex; blockIndex < lastBlockWithData && count > blockSize; blockIndex += 4)
+				{
+
+					itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
+					if (itemIndex >= 0)
+					{
+						return itemIndex + ((long)blockIndex << blockSizePow2BitShift);
+					}
+
+					count -= blockSize;
+					if (blockIndex + 1 < lastBlockWithData && count > blockSize)
+					{
+						itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 1], item, 0, blockSize);
+						if (itemIndex >= 0)
+						{
+							return itemIndex + ((long)(blockIndex + 1) << blockSizePow2BitShift);
+						}
+
+						count -= blockSize;
+						if (blockIndex + 2 < lastBlockWithData && count > blockSize)
+						{
+							itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 2], item, 0, blockSize);
+							if (itemIndex >= 0)
+							{
+								return itemIndex + ((long)(blockIndex + 2) << blockSizePow2BitShift);
+							}
+
+							count -= blockSize;
+							if (blockIndex + 3 < lastBlockWithData && count > blockSize)
+							{
+								itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 3], item, 0, blockSize);
+								if (itemIndex >= 0)
+								{
+									return itemIndex + ((long)(blockIndex + 3) << blockSizePow2BitShift);
+								}
+								
+								count -= blockSize;
+							}
+						}
+					}
+				}
+
+				itemIndex = Array.IndexOf(memoryBlocksSpan[lastBlockWithData], item, 0, (int)count);
+
+				return itemIndex >= 0 ? itemIndex + ((long)lastBlockWithData << blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
+			}
+
+			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+			public static long IndexOfSequential(RecyclableLongList<T> list, in T item, int firstBlockIndex)
+			{
+				int blockIndex,
+					blockSize = list._blockSize,
+					itemIndex,
+					lastBlockWithData = list._lastBlockWithData;
+
+				byte blockSizePow2BitShift = list._blockSizePow2BitShift;
+
+				ReadOnlySpan<T[]> memoryBlocksSpan = new(list._memoryBlocks, 0, lastBlockWithData + 1);
+				for (blockIndex = firstBlockIndex; blockIndex < lastBlockWithData; blockIndex += 4)
+				{
+
+					itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex], item, 0, blockSize);
+					if (itemIndex >= 0)
+					{
+						return itemIndex + ((long)blockIndex << blockSizePow2BitShift);
+					}
+
+					if (blockIndex + 1 < lastBlockWithData)
+					{
+						itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 1], item, 0, blockSize);
+						if (itemIndex >= 0)
+						{
+							return itemIndex + ((long)(blockIndex + 1) << blockSizePow2BitShift);
+						}
+
+						if (blockIndex + 2 < lastBlockWithData)
+						{
+							itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 2], item, 0, blockSize);
+							if (itemIndex >= 0)
+							{
+								return itemIndex + ((long)(blockIndex + 2) << blockSizePow2BitShift);
+							}
+
+							if (blockIndex + 3 < lastBlockWithData)
+							{
+								itemIndex = Array.IndexOf(memoryBlocksSpan[blockIndex + 3], item, 0, blockSize);
+								if (itemIndex >= 0)
+								{
+									return itemIndex + ((long)(blockIndex + 3) << blockSizePow2BitShift);
+								}
+							}
+						}
+					}
+				}
+
+				itemIndex = list._nextItemIndex != 0
+					? Array.IndexOf(memoryBlocksSpan[lastBlockWithData], item, 0, list._nextItemIndex)
+					: Array.IndexOf(memoryBlocksSpan[lastBlockWithData], item, 0, list._blockSize);
+
+				return itemIndex >= 0 ? itemIndex + ((long)lastBlockWithData << blockSizePow2BitShift) : RecyclableDefaults.ItemNotFoundIndexLong;
 			}
 		}
 	}

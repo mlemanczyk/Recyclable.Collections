@@ -31,5 +31,14 @@ namespace Recyclable.Collections
 				return result;
 			}
 		}
+
+		public static long Min(long number1, long number2, long number3) =>
+			number1 <= number2 
+				? number1 <= number3 
+					? number1
+					: number3 
+				: number2 <= number3
+					? number2 
+					: number3;
 	}
 }

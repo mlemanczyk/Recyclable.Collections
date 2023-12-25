@@ -374,7 +374,7 @@ namespace Recyclable.Collections
 				return RecyclableDefaults.ItemNotFoundIndex;
 			}
 
-			int itemIndex = Array.IndexOf(_memoryBlocks[0], item, 0, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+			int itemIndex = Array.IndexOf(_memoryBlocks[0], item, 0, _blockSize);
 			if (itemIndex >= 0)
 			{
 				return itemIndex;
@@ -389,6 +389,81 @@ namespace Recyclable.Collections
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[1], item, 0, (int)Math.Min(_blockSize, _longCount - _blockSize));
 					return itemIndex >= 0 ? _blockSize + itemIndex : checked((int)IndexOfHelpers.IndexOfParallel(this, item));
+				}
+				else
+				{
+					return RecyclableDefaults.ItemNotFoundIndex;
+				}
+			}
+		}
+
+		public int IndexOf(T item, int index)
+		{
+			if (_lastBlockWithData == 0)
+			{
+				return Array.IndexOf(_memoryBlocks[0], item, index, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+			}
+			else if (_longCount == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			int firstBlockIndex = index >> _blockSizePow2BitShift;
+			int firstItemIndex = index & _blockSizeMinus1;
+			int itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex], item, firstItemIndex, (firstBlockIndex == _lastBlockWithData ? _nextItemIndex : _blockSize) - firstItemIndex);
+			if (itemIndex >= 0)
+			{
+				return (firstBlockIndex << _blockSizePow2BitShift) + itemIndex;
+			}
+			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
+			{
+				return (int)RecyclableLongList<T>.IndexOfHelpers.IndexOfSequential(this, item, firstBlockIndex + 1);
+			}
+			else
+			{
+				if (firstBlockIndex + 1 <= _lastBlockWithData)
+				{
+					itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex + 1], item, 0, (int)Math.Min(firstBlockIndex + 1 == _lastBlockWithData ? _nextItemIndex : _blockSize, _longCount - _blockSize));
+					return itemIndex >= 0 ? ((firstBlockIndex + 1) << _blockSizePow2BitShift) + itemIndex : checked((int)RecyclableLongList<T>.IndexOfHelpers.IndexOfParallel(this, item, firstBlockIndex + 2));
+				}
+				else
+				{
+					return RecyclableDefaults.ItemNotFoundIndex;
+				}
+			}
+		}
+
+		public int IndexOf(T item, int index, int count)
+		{
+			if (_lastBlockWithData == 0)
+			{
+				return Array.IndexOf(_memoryBlocks[0], item, index, count);
+			}
+			else if (_longCount == 0 || count == 0)
+			{
+				return RecyclableDefaults.ItemNotFoundIndex;
+			}
+
+			int blockSize = _blockSize,
+				firstBlockIndex = index >> _blockSizePow2BitShift,
+				firstItemIndex = index & _blockSizeMinus1;
+
+			int firstBlockItemsCount = Math.Min(blockSize - firstItemIndex, count);
+			int itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex], item, firstItemIndex, firstBlockItemsCount);
+			if (itemIndex >= 0)
+			{
+				return (firstBlockIndex << _blockSizePow2BitShift) + itemIndex;
+			}
+			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
+			{
+				return (int)RecyclableLongList<T>.IndexOfHelpers.IndexOfSequential(this, item, firstBlockIndex + 1, count - firstBlockItemsCount);
+			}
+			else
+			{
+				if (_longCount > blockSize)
+				{
+					itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex + 1], item, 0, (int)MathUtils.Min(blockSize, _longCount - blockSize, count - firstBlockItemsCount));
+					return itemIndex >= 0 ? ((firstBlockIndex + 1) << _blockSizePow2BitShift) + itemIndex : checked((int)RecyclableLongList<T>.IndexOfHelpers.IndexOfParallel(this, item, firstBlockIndex + 2, count - firstBlockItemsCount - blockSize));
 				}
 				else
 				{

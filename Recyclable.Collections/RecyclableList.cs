@@ -244,6 +244,16 @@ namespace Recyclable.Collections
 				? Array.IndexOf(_memoryBlock, itemToFind, 0, _count)
 				: RecyclableDefaults.ItemNotFoundIndex;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item, int index) => _count != 0
+				? Array.IndexOf(_memoryBlock, item, index, _count - index)
+				: RecyclableDefaults.ItemNotFoundIndex;
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public int IndexOf(T item, int index, int count) => _count != 0
+				? Array.IndexOf(_memoryBlock, item, index, count)
+				: RecyclableDefaults.ItemNotFoundIndex;
+
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void Insert(int index, T item)
 		{

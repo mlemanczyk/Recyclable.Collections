@@ -673,6 +673,46 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void IndexOfShouldReturnCorrectIndexesWhenConstrainedCount(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData, itemsCount);
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expected = expectedData.IndexOf(expectedData[(int)itemIndex], (int)itemIndex, (int)(itemsCount - itemIndex));
+
+				// Act
+				var actual = list.IndexOf(expectedData[(int)itemIndex], (int)itemIndex, (int)(itemsCount - itemIndex));
+
+				// Validate
+				_ = actual.Should().Be((int)itemIndex).And.Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+		public void IndexOfShouldReturnCorrectIndexesWhenConstrainedIndex(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
+		{
+			// Prepare
+			using var list = new RecyclableList<long>(testData, itemsCount);
+			var expectedData = testData.ToList();
+
+			foreach (var itemIndex in itemIndexes)
+			{
+				var expected = expectedData.IndexOf(expectedData[(int)itemIndex], (int)itemIndex);
+
+				// Act
+				var actual = list.IndexOf(expectedData[(int)itemIndex], (int)itemIndex);
+
+				// Validate
+				_ = actual.Should().Be((int)itemIndex).And.Be(expected);
+			}
+		}
+
+		[Theory]
+		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
 		public void InitializeSortClearAddRangeRemoveShouldSucceed(string testCase, IEnumerable<long> testData, int itemsCount, in long[] itemIndexes)
 		{
 			foreach (var itemIndex in itemIndexes)
