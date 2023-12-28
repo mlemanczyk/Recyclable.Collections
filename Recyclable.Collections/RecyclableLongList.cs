@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.Contracts;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
@@ -399,9 +400,18 @@ namespace Recyclable.Collections
 
 		public int IndexOf(T item, int index)
 		{
+			if (index < 0 || index >= _longCount)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException_Index();
+			}
+
+			Contract.Requires(index >= 0);
+			Contract.Requires(index < _longCount);
+			Contract.EndContractBlock();
+
 			if (_lastBlockWithData == 0)
 			{
-				return Array.IndexOf(_memoryBlocks[0], item, index, _longCount < _blockSize ? _nextItemIndex : _blockSize);
+				return Array.IndexOf(_memoryBlocks[0], item, index, (_longCount < _blockSize ? _nextItemIndex : _blockSize) - index);
 			}
 			else if (_longCount == 0)
 			{
@@ -410,12 +420,12 @@ namespace Recyclable.Collections
 
 			int firstBlockIndex = index >> _blockSizePow2BitShift;
 			int firstItemIndex = index & _blockSizeMinus1;
-			int itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex], item, firstItemIndex, (firstBlockIndex == _lastBlockWithData ? _nextItemIndex : _blockSize) - firstItemIndex);
+			int itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex], item, firstItemIndex, (firstBlockIndex == _lastBlockWithData && _nextItemIndex > 0 ? _nextItemIndex : _blockSize) - firstItemIndex);
 			if (itemIndex >= 0)
 			{
 				return (firstBlockIndex << _blockSizePow2BitShift) + itemIndex;
 			}
-			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
+			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization && firstBlockIndex + 1 <= _lastBlockWithData)
 			{
 				return (int)RecyclableLongList<T>.IndexOfHelpers.IndexOfSequential(this, item, firstBlockIndex + 1);
 			}
@@ -435,6 +445,20 @@ namespace Recyclable.Collections
 
 		public int IndexOf(T item, int index, int count)
 		{
+			if (index < 0)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException_Index();
+			}
+
+			if (count + index > _longCount)
+			{
+				ThrowHelper.ThrowArgumentOutOfRangeException_Count();
+			}
+
+			Contract.Requires(index >= 0);
+			Contract.Requires(count + index <= _longCount);
+			Contract.EndContractBlock();
+
 			if (_lastBlockWithData == 0)
 			{
 				return Array.IndexOf(_memoryBlocks[0], item, index, count);
@@ -454,13 +478,13 @@ namespace Recyclable.Collections
 			{
 				return (firstBlockIndex << _blockSizePow2BitShift) + itemIndex;
 			}
-			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization)
+			else if (_longCount < RecyclableDefaults.MinItemsCountForParallelization && firstBlockIndex + 1 <= _lastBlockWithData)
 			{
 				return (int)RecyclableLongList<T>.IndexOfHelpers.IndexOfSequential(this, item, firstBlockIndex + 1, count - firstBlockItemsCount);
 			}
 			else
 			{
-				if (_longCount > blockSize)
+				if (firstBlockIndex + 1 <= _lastBlockWithData)
 				{
 					itemIndex = Array.IndexOf(_memoryBlocks[firstBlockIndex + 1], item, 0, (int)MathUtils.Min(blockSize, _longCount - blockSize, count - firstBlockItemsCount));
 					return itemIndex >= 0 ? ((firstBlockIndex + 1) << _blockSizePow2BitShift) + itemIndex : checked((int)RecyclableLongList<T>.IndexOfHelpers.IndexOfParallel(this, item, firstBlockIndex + 2, count - firstBlockItemsCount - blockSize));
