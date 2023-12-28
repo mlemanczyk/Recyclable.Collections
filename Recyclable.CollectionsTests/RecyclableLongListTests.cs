@@ -520,9 +520,10 @@ namespace Recyclable.CollectionsTests
 		{
 			// Prepare
 			var expectedData = testData.ToList();
+			TestCopyTo(0);
+
 			foreach (var itemIndex in itemIndexes)
 			{
-				TestCopyTo(0);
 				TestCopyTo((int)itemIndex);
 				TestCopyTo((int)itemIndex);
 			}
