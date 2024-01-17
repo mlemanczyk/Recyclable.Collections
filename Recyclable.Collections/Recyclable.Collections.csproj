@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
-		<PackageVersion>0.0.6.1</PackageVersion>
+		<PackageVersion>0.0.6.2</PackageVersion>
 		<Authors>Marek Lemańczyk</Authors>
 		<Company>N/A</Company>
 		<Product>Recyclable.Collections</Product>
@@ -17,7 +17,7 @@
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageReleaseNotes>List&lt;T&gt; compatibility code moved to Recyclable.Collections.Compatibility.List package. Cleanup.</PackageReleaseNotes>
+		<PackageReleaseNotes>Various bug fixes and improvements, primarily for .IndexOf().</PackageReleaseNotes>
 		<Platforms>AnyCPU;x64</Platforms>
 		<PackageIcon>logo.png</PackageIcon>
 	</PropertyGroup>
