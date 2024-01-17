@@ -652,33 +652,17 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
-		[ClassData(typeof(BlockSizeTheoryData))]
-		public void IndexOfParallelShouldNotFindAnythingWhenBeyondRange(int blockSize)
+		[ClassData(typeof(BigSourceDataWithOutOfRangeItemIndexesWithRangeTheoryData))]
+		public void IndexOfParallelShouldNotFindAnythingWhenBeyondRange(string testCase, IEnumerable<long> testData, long itemsCount, int blockSize, IEnumerable<(long itemIndex, long rangeStartItemIndex, long rangeItemsCount)> itemIndexesWithRanges)
 		{
-			const long ItemsCount = RecyclableDefaults.MinItemsCountForParallelization * 3;
-
 			// Prepare
-			var testData = RecyclableLongListTestData.CreateTestData(ItemsCount).ToArray();
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: blockSize, initialCapacity: ItemsCount);
+			using var list = new RecyclableLongList<long>(testData, minBlockSize: blockSize, initialCapacity: itemsCount);
+			using var expectedData = testData.ToRecyclableLongList();
 
-			var itemIndexes = RecyclableLongListTestData.CreateItemIndexVariants(ItemsCount, blockSize);
-			foreach (var itemIndexForGenerator in itemIndexes)
+			foreach (var (itemIndex, rangeStartItemIndex, rangedItemsCount) in itemIndexesWithRanges)
 			{
-				var itemRanges = RecyclableLongListTestData.CombineItemIndexWithRange(itemIndexForGenerator, ItemsCount);
-				foreach (var (itemIndex, rangedItemsCount) in itemRanges)
-				{
-					// Try finding the item prior the given itemIndex
-					if (itemIndex > 0)
-					{
-						_ = list.IndexOf(testData[itemIndex - 1], (int)itemIndex, (int)rangedItemsCount).Should().Be(-1);
-					}
-
-					// Try finding the item after the given item range
-					if (itemIndex + rangedItemsCount < ItemsCount)
-					{
-						_ = list.IndexOf(testData[itemIndex + rangedItemsCount], (int)itemIndex, (int)rangedItemsCount).Should().Be(-1);
-					}
-				}
+				// Act & Validate
+				_ = list.IndexOf(expectedData[itemIndex], (int)rangeStartItemIndex, (int)rangedItemsCount).Should().Be(-1);
 			}
 		}
 
