@@ -999,6 +999,85 @@ namespace Recyclable.CollectionsTests
 		}
 
 		[Theory]
+		[ClassData(typeof(SourceDataWithBlockSizeWithItemIndexWithRangeTheoryData))]
+		public void InsertRangeShouldMoveItems(string testCase, IEnumerable<long> testData, int itemsCount, int minBlockSize, in (long ItemIndex, long RangedItemsCount)[] itemRanges)
+		{
+			// Prepare
+			var expectedData = testData.Reverse().ToArray();
+
+			foreach ((var itemIndex, var rangedItemsCount) in itemRanges)
+			{
+				using var list = new RecyclableLongList<long>(testData.Reverse(), minBlockSize, itemsCount);
+				var expected = expectedData.ToList();
+				var rangedTestData = expected.GetRange((int)itemIndex, (int)rangedItemsCount).ToArray();
+				expected.InsertRange((int)itemIndex, rangedTestData);
+
+				if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (Array)rangedTestData);
+				}
+				else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (ICollection)rangedTestData);
+				}
+				else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (ICollection<long>)rangedTestData);
+				}
+				else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (IEnumerable)rangedTestData);
+				}
+				else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, (IReadOnlyList<long>)rangedTestData);
+				}
+				else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, new ReadOnlySpan<long>(rangedTestData));
+				}
+				else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+				{
+					list.InsertRange((int)itemIndex, new Span<long>(rangedTestData));
+				}
+				else if (testData is long[] testDataArray)
+				{
+					list.InsertRange((int)itemIndex, rangedTestData);
+				}
+				else if (testData is List<long> testDataList)
+				{
+					list.InsertRange((int)itemIndex, rangedTestData.ToList());
+				}
+				else if (testData is RecyclableList<long> testDataRecyclableList)
+				{
+					using RecyclableList<long> rangedTestDataRecyclableList = rangedTestData.ToRecyclableList();
+					list.InsertRange((int)itemIndex, rangedTestDataRecyclableList);
+				}
+				else if (testData is RecyclableLongList<long> testDataRecyclableLongList)
+				{
+					using RecyclableLongList<long> rangedTestDataRecyclableList = rangedTestData.ToRecyclableLongList();
+					list.InsertRange((int)itemIndex, rangedTestDataRecyclableList);
+				}
+				else if (testData is IList<long> testDataIList)
+				{
+					list.InsertRange((int)itemIndex, (IList<long>)rangedTestData);
+				}
+				else if (testData is IEnumerable<long> testDataIEnumerable)
+				{
+					list.InsertRangeEnumerated((int)itemIndex, (IEnumerable<long>)rangedTestData);
+				}
+				else
+				{
+					throw new InvalidCastException("Unknown type of test data");
+				}
+
+				// Validate
+				list.Count.Should().Be(expected.Count);
+				_ = list.Should().Equal(expected);
+			}
+		}
+
+		[Theory]
 		[ClassData(typeof(SourceDataWithBlockSizeWithItemIndexTheoryData))]
 		public void InsertShouldMoveItemsWhenLong(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize, in long[] itemIndexes)
 		{

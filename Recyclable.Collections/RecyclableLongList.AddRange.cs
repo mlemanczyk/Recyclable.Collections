@@ -32,7 +32,7 @@ namespace Recyclable.Collections
 			{
 				if (copied + blockSize > capacity)
 				{
-					capacity = RecyclableLongList<T>.Helpers.Resize(targetList, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + blockSize))));
+					capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + blockSize))));
 					memoryBlocksSpan = targetList._memoryBlocks;
 					available = capacity - copied;
 				}
@@ -45,7 +45,7 @@ namespace Recyclable.Collections
 					if (!enumerator.MoveNext())
 					{
 						targetList._lastBlockWithData = targetBlockIdx;
-						targetList._longCount += copied + i - targetList._longCount;
+						targetList._longCount = copied + i;
 						if (targetItemIdx < blockSize)
 						{
 							targetList._nextItemBlockIndex = targetBlockIdx;
@@ -93,7 +93,7 @@ namespace Recyclable.Collections
 
 			if (targetList._capacity < requiredCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity)));
 			}
 
 			ReadOnlySpan<T[]> memoryBlocksSpan = targetList._memoryBlocks;
@@ -137,7 +137,7 @@ namespace Recyclable.Collections
 
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T[]> memoryBlocksSpan = targetList._memoryBlocks;
@@ -186,7 +186,7 @@ namespace Recyclable.Collections
 			long targetCapacity = targetList._longCount + items.Count;
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			// We're better off to temporarily copy it to a fixed array,
@@ -252,7 +252,7 @@ namespace Recyclable.Collections
 			long targetCapacity = targetList._longCount + items.Count;
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			// We're better off to temporarily copy it to a fixed array,
@@ -332,7 +332,7 @@ namespace Recyclable.Collections
 			{
 				if (copied + blockSize > capacity)
 				{
-					capacity = RecyclableLongList<T>.Helpers.Resize(targetList, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + blockSize))));
+					capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)(capacity + blockSize))));
 					memoryBlocksSpan = targetList._memoryBlocks;
 					available = capacity - copied;
 				}
@@ -345,7 +345,7 @@ namespace Recyclable.Collections
 					if (!enumerator.MoveNext())
 					{
 						targetList._lastBlockWithData = targetBlockIdx;
-						targetList._longCount += copied + i - targetList._longCount;
+						targetList._longCount = copied + i;
 						if (targetItemIdx < blockSize)
 						{
 							targetList._nextItemBlockIndex = targetBlockIdx;
@@ -445,7 +445,7 @@ namespace Recyclable.Collections
 
 			if (targetList._capacity < requiredCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity)));
 			}
 
 			ReadOnlySpan<T[]> memoryBlocksSpan = targetList._memoryBlocks;
@@ -488,7 +488,7 @@ namespace Recyclable.Collections
 			long targetCapacity = targetList._longCount + items.Count;
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T[]> memoryBlocksSpan = targetList._memoryBlocks;
@@ -534,7 +534,7 @@ namespace Recyclable.Collections
 			long targetCapacity = targetList._longCount + items.Length;
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T[]> memoryBlocksSpan = targetList._memoryBlocks;
@@ -589,7 +589,7 @@ namespace Recyclable.Collections
 			long targetCapacity = targetList._longCount + items._count;
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T> itemsSpan = new(items._memoryBlock, 0, items._count);
@@ -651,7 +651,7 @@ namespace Recyclable.Collections
 
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T[]> sourceMemoryBlocksSpan = items._memoryBlocks;
@@ -719,7 +719,7 @@ namespace Recyclable.Collections
 
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T[]> memoryBlocksSpan = targetList._memoryBlocks;
@@ -774,7 +774,7 @@ namespace Recyclable.Collections
 			long targetCapacity = targetList._longCount + items.LongLength;
 			if (targetList._capacity < targetCapacity)
 			{
-				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+				targetList._capacity = RecyclableLongList<T>.Helpers.Resize(ref targetList._memoryBlocks, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
 			}
 
 			ReadOnlySpan<T> itemsSpan = items;

@@ -16,8 +16,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Recyclable.Collections.TestData" Version="0.0.3.4" />
-    <PackageReference Include="Recyclable.Collections.TestData.xUnit" Version="0.0.0.1" />
+    <PackageReference Include="Recyclable.Collections.TestData" Version="0.0.3.5" />
+    <PackageReference Include="Recyclable.Collections.TestData.xUnit" Version="0.0.0.2" />
     <PackageReference Include="xunit" Version="2.6.4" />
     <PackageReference Include="xunit.runner.console" Version="2.6.4">
       <PrivateAssets>all</PrivateAssets>

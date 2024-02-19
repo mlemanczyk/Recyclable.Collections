@@ -142,9 +142,9 @@ namespace Recyclable.Collections
 			/// </remarks>
 			/// <returns>The maximum no. of items <paramref name="list"/> can store.</returns>
 			[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-			public static long Resize(RecyclableLongList<T> list, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
+			public static long Resize(ref T[][] memoryBlocks, int minBlockSize, byte minBlockSizePow2Shift, long newCapacity)
 			{
-				int sourceBlockCount = list._memoryBlocks?.Length ?? 0;
+				int sourceBlockCount = memoryBlocks?.Length ?? 0;
 				int requiredBlockCount = checked((int)(newCapacity >> minBlockSizePow2Shift) + ((newCapacity & (minBlockSize - 1)) != 0 ? 1 : 0));
 				int blockIndex;
 
@@ -157,19 +157,19 @@ namespace Recyclable.Collections
 					// Copy arrays from the old memory block for all arrays
 					if (sourceBlockCount > 0)
 					{
-						Array.Copy(list._memoryBlocks!, newMemoryBlocks, sourceBlockCount);
+						Array.Copy(memoryBlocks!, newMemoryBlocks, sourceBlockCount);
 						// We can now return the old memory block for all arrays itself
 						if (sourceBlockCount >= RecyclableDefaults.MinPooledArrayLength)
 						{
-							RecyclableArrayPool<T[]>.ReturnShared(list._memoryBlocks!, true);
+							RecyclableArrayPool<T[]>.ReturnShared(memoryBlocks!, true);
 						}
 					}
 
-					list._memoryBlocks = newMemoryBlocks;
+					memoryBlocks = newMemoryBlocks;
 				}
 				else
 				{
-					newMemoryBlocks = list._memoryBlocks!;
+					newMemoryBlocks = memoryBlocks!;
 				}
 
 				// Allocate arrays for any new blocks
