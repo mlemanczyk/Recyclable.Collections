@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Recyclable.Collections.Benchmarks/bin/Debug/net6.0/Recyclable.Collections.Benchmarks.dll",
+            "program": "${workspaceFolder}/Recyclable.Collections.Benchmarks/bin/Debug/net8.0/Recyclable.Collections.Benchmarks.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Recyclable.Collections.Benchmarks",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
