@@ -190,12 +190,12 @@ namespace Recyclable.Collections
 			}
 		}
 
-		internal int _count;
-		public int Count
-		{
-			get => _count;
-			set
-			{
+                internal int _count;
+                public int Count
+                {
+                        get => _count;
+                        set
+                        {
 				if (_count != value)
 				{
 					if (value > _capacity)
@@ -206,10 +206,26 @@ namespace Recyclable.Collections
 					_count = value;
 					_version++;
 				}
-			}
-		}
+                        }
+                }
 
-		public bool IsReadOnly => false;
+                /// <summary>
+                /// Ensures that the capacity of this list is at least the specified value.
+                /// </summary>
+                /// <param name="capacity">The minimum capacity to ensure.</param>
+                /// <returns>The new capacity of the list.</returns>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public int EnsureCapacity(int capacity)
+                {
+                        if (capacity > _capacity)
+                        {
+                                _capacity = RecyclableListHelpers<T>.EnsureCapacity(this, _count, checked((int)BitOperations.RoundUpToPowerOf2((uint)capacity)));
+                        }
+
+                        return _capacity;
+                }
+
+                public bool IsReadOnly => false;
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void Add(T item)
