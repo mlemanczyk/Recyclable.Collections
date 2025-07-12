@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Numerics;
+using Microsoft.Extensions.ObjectPool;
+using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
@@ -7,23 +9,42 @@ namespace Recyclable.Collections
     internal sealed class RecyclableStack<T> : IEnumerable<T>, IDisposable
     {
         private static readonly bool _needsClearing = !typeof(T).IsValueType;
+        private static readonly ObjectPool<Chunk> _chunkPool = new DefaultObjectPool<Chunk>(new DefaultPooledObjectPolicy<Chunk>());
 
         private sealed class Chunk
         {
-            internal T[] Buffer;
+            internal T[] Buffer = Array.Empty<T>();
             internal int Index;
             internal Chunk? Previous;
             internal Chunk? Next;
+        }
 
-            internal Chunk(int size, Chunk? previous)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Chunk RentChunk(int size, Chunk? previous)
+        {
+            var chunk = _chunkPool.Get();
+            chunk.Buffer = size >= RecyclableDefaults.MinPooledArrayLength
+                ? RecyclableArrayPool<T>.RentShared(size)
+                : new T[size];
+            chunk.Index = 0;
+            chunk.Previous = previous;
+            chunk.Next = null;
+            return chunk;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void ReturnChunk(Chunk chunk)
+        {
+            var buffer = chunk.Buffer;
+            if (buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
             {
-                Buffer = size >= RecyclableDefaults.MinPooledArrayLength
-                    ? RecyclableArrayPool<T>.RentShared(size)
-                    : new T[size];
-                Previous = previous;
-                Next = null;
-                Index = 0;
+                RecyclableArrayPool<T>.ReturnShared(buffer, _needsClearing);
             }
+            chunk.Buffer = Array.Empty<T>();
+            chunk.Index = 0;
+            chunk.Previous = null;
+            chunk.Next = null;
+            _chunkPool.Return(chunk);
         }
 
         private Chunk _current;
@@ -44,7 +65,7 @@ namespace Recyclable.Collections
                 initialCapacity = (int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity);
             }
 
-            _current = new Chunk(initialCapacity, null);
+            _current = RentChunk(initialCapacity, null);
             _bottom = _current;
             _capacity = initialCapacity;
             _count = 0;
@@ -128,11 +149,11 @@ namespace Recyclable.Collections
             }
             else
             {
-                var doubled = _capacity * 2;
+                var doubled = _capacity << 1;
                 newSize = (int)Math.Min(doubled - _capacity, RecyclableDefaults.MaxPooledBlockSize);
             }
 
-            var newChunk = new Chunk(newSize, _current);
+            var newChunk = RentChunk(newSize, _current);
             _current.Next = newChunk;
             _current = newChunk;
             _capacity += newSize;
@@ -140,18 +161,15 @@ namespace Recyclable.Collections
 
         private void ReleaseCurrentChunk()
         {
-            var toReturn = _current.Buffer;
-            _current = _current.Previous!;
+            var toReturn = _current;
+            _current = toReturn.Previous!;
             _current.Next = null;
-            _capacity -= toReturn.Length;
+            _capacity -= toReturn.Buffer.Length;
             if (_current.Previous == null)
             {
                 _bottom = _current;
             }
-            if (toReturn.Length >= RecyclableDefaults.MinPooledArrayLength)
-            {
-                RecyclableArrayPool<T>.ReturnShared(toReturn, _needsClearing);
-            }
+            ReturnChunk(toReturn);
         }
 
         public void Dispose()
@@ -162,10 +180,7 @@ namespace Recyclable.Collections
             }
 
             Clear();
-            if (_current.Buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
-            {
-                RecyclableArrayPool<T>.ReturnShared(_current.Buffer, _needsClearing);
-            }
+            ReturnChunk(_current);
             _disposed = true;
             GC.SuppressFinalize(this);
         }
