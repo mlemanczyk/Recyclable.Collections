@@ -32,8 +32,8 @@ namespace Recyclable.CollectionsTests
 			using var sortedList = new RecyclableStack<string>(_testData, 2);
 
 			// Validate
-			_ = sortedList.Should().HaveCount(_testData.Length)
-				.And.ContainInConsecutiveOrder(_testData);
+                        _ = sortedList.Should().HaveCount(_testData.Length)
+                                .And.ContainInConsecutiveOrder(_testData.Reverse());
 		}
 
 		[Fact]
@@ -60,9 +60,9 @@ namespace Recyclable.CollectionsTests
 			};
 
 			// Validate
-			_ = sortedList.Should().NotBeEmpty()
-				.And.ContainInConsecutiveOrder(_testData)
-				.And.BeEquivalentTo(_testData);
+                        _ = sortedList.Should().NotBeEmpty()
+                                .And.ContainInConsecutiveOrder(_testData.Reverse())
+                                .And.BeEquivalentTo(_testData);
 		}
 
 		[Fact]

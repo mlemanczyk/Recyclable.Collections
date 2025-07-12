@@ -1,94 +1,225 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Numerics;
+using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	internal class RecyclableStack<T> : IList<T>, IDisposable
-	{
-		private static readonly bool _needsClearing = !typeof(T).IsValueType;
-		private bool _disposedValue;
+    internal sealed class RecyclableStack<T> : IEnumerable<T>, IDisposable
+    {
+        private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
-		protected RecyclableLongList<T> List { get; }
-		public int Count => checked((int)List._longCount);
-		public long LongCount
-		{
-			get => List._longCount;
-			set => List._longCount = value;
-		}
-		public bool IsReadOnly => false;
+        private sealed class Chunk
+        {
+            internal T[] Buffer;
+            internal int Index;
+            internal Chunk? Previous;
+            internal Chunk? Next;
 
-		public T this[int index] { get => this[(long)index]; set => this[(long)index] = value; }
-		public T this[long index] { get => List[index]; set => List[index] = value; }
+            internal Chunk(int size, Chunk? previous)
+            {
+                Buffer = size >= RecyclableDefaults.MinPooledArrayLength
+                    ? RecyclableArrayPool<T>.RentShared(size)
+                    : new T[size];
+                Previous = previous;
+                Next = null;
+                Index = 0;
+            }
+        }
 
-		public RecyclableStack(int blockSize = RecyclableDefaults.BlockSize)
-		{
-			List = new(blockSize);
-		}
+        private Chunk _current;
+        private Chunk _bottom;
+        private bool _disposed;
+        private long _capacity;
+        private long _count;
 
-		public RecyclableStack(IEnumerable<T> list, int blockSize = RecyclableDefaults.BlockSize)
-		{
-			List = new(list, blockSize);
-		}
+        public RecyclableStack(int initialCapacity = RecyclableDefaults.InitialCapacity)
+        {
+            if (initialCapacity < 1)
+            {
+                initialCapacity = 1;
+            }
 
-		public RecyclableStack(RecyclableLongList<T> list, int blockSize = RecyclableDefaults.BlockSize)
-		{
-			List = new(list, blockSize);
-		}
+            if (!BitOperations.IsPow2((uint)initialCapacity))
+            {
+                initialCapacity = (int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity);
+            }
 
-		public void Push(T item)
-		{
-			List.Add(item);
-		}
+            _current = new Chunk(initialCapacity, null);
+            _bottom = _current;
+            _capacity = initialCapacity;
+            _count = 0;
+        }
 
-		public T Pop()
-		{
-			RecyclableLongList<T> list = List;
-			var itemIndex = (int)(list.LongCount & list._blockSizeMinus1) - 1;
-			var blockIndex = (int)(LongCount >> list._blockSizePow2BitShift);
-			var toRemove = list._memoryBlocks[blockIndex][itemIndex];
-			
-			LongCount--;
+        public RecyclableStack(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.InitialCapacity) : this(initialCapacity)
+        {
+            foreach (var item in source)
+            {
+                Push(item);
+            }
+        }
 
-			if (_needsClearing)
-			{
-#nullable disable
-				new Span<T>(list._memoryBlocks[blockIndex])[itemIndex] = default;
-#nullable restore
-			}
+        public int Count => checked((int)_count);
+        public long LongCount => _count;
 
-			if (itemIndex == 0)
-			{
-				list.RemoveBlock(blockIndex);
-			}
+        public void Push(T item)
+        {
+            if (_current.Index == _current.Buffer.Length)
+            {
+                Grow();
+            }
 
-			return toRemove;
-		}
+            _current.Buffer[_current.Index++] = item;
+            _count++;
+        }
 
-		public int IndexOf(T item) => List.IndexOf(item);
-		public long LongIndexOf(T item) => List.LongIndexOf(item);
-		public void Insert(int index, T item) => List.Insert(index, item);
-		public void RemoveAt(int index) => List.RemoveAt(index);
-		public void Add(T item) => List.Add(item);
-		public void Clear() => List.Clear();
-		public bool Contains(T item) => List.Contains(item);
-		public void CopyTo(T[] array, int arrayIndex) => List.CopyTo(array, arrayIndex);
-		public bool Remove(T item) => List.Remove(item);
-		public IEnumerator<T> GetEnumerator() => List.Reverse().GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public void Add(T item) => Push(item);
 
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposedValue)
-			{
-				Clear();
-				_disposedValue = true;
-			}
-		}
+        public T Pop()
+        {
+            if (_count == 0)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(_count), "Stack is empty");
+            }
 
-		public void Dispose()
-		{
-			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-			Dispose(disposing: true);
-			GC.SuppressFinalize(this);
-		}
-	}
+            _count--;
+            _current.Index--;
+            var value = _current.Buffer[_current.Index];
+            if (_needsClearing)
+            {
+                _current.Buffer[_current.Index] = default!;
+            }
+
+            if (_current.Index == 0 && _current.Previous != null)
+            {
+                ReleaseCurrentChunk();
+            }
+
+            return value;
+        }
+
+        public void Clear()
+        {
+            while (_current.Previous != null)
+            {
+                ReleaseCurrentChunk();
+            }
+
+            if (_needsClearing && _current.Index > 0)
+            {
+                Array.Clear(_current.Buffer, 0, _current.Index);
+            }
+
+            _capacity = _current.Buffer.Length;
+            _current.Index = 0;
+            _count = 0;
+            _bottom = _current;
+        }
+
+        public Enumerator GetEnumerator() => new(this);
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
+        IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+
+        private void Grow()
+        {
+            int newSize;
+            if (_capacity >= RecyclableDefaults.MaxPooledBlockSize)
+            {
+                newSize = RecyclableDefaults.MaxPooledBlockSize;
+            }
+            else
+            {
+                var doubled = _capacity * 2;
+                newSize = (int)Math.Min(doubled - _capacity, RecyclableDefaults.MaxPooledBlockSize);
+            }
+
+            var newChunk = new Chunk(newSize, _current);
+            _current.Next = newChunk;
+            _current = newChunk;
+            _capacity += newSize;
+        }
+
+        private void ReleaseCurrentChunk()
+        {
+            var toReturn = _current.Buffer;
+            _current = _current.Previous!;
+            _current.Next = null;
+            _capacity -= toReturn.Length;
+            if (_current.Previous == null)
+            {
+                _bottom = _current;
+            }
+            if (toReturn.Length >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                RecyclableArrayPool<T>.ReturnShared(toReturn, _needsClearing);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            Clear();
+            if (_current.Buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                RecyclableArrayPool<T>.ReturnShared(_current.Buffer, _needsClearing);
+            }
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        public struct Enumerator : IEnumerator<T>
+        {
+            private readonly Chunk? _start;
+            private Chunk? _chunk;
+            private int _index;
+            private T? _current;
+
+            internal Enumerator(RecyclableStack<T> stack)
+            {
+                _start = stack._current;
+                _chunk = stack._current;
+                _index = _chunk != null ? _chunk.Index - 1 : -1;
+                _current = default;
+            }
+
+            public T Current => _current!;
+            object IEnumerator.Current => _current!;
+
+            public bool MoveNext()
+            {
+                if (_chunk == null)
+                {
+                    return false;
+                }
+
+                if (_index < 0)
+                {
+                    _chunk = _chunk.Previous;
+                    if (_chunk == null)
+                    {
+                        return false;
+                    }
+                    _index = _chunk.Index - 1;
+                }
+
+                _current = _chunk.Buffer[_index--];
+                return true;
+            }
+
+            public void Reset()
+            {
+                _chunk = _start;
+                _index = _chunk != null ? _chunk.Index - 1 : -1;
+            }
+
+            public void Dispose()
+            {
+                _chunk = null;
+                _current = default;
+            }
+        }
+    }
 }
