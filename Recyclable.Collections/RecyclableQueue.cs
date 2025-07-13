@@ -1,211 +1,257 @@
-﻿using System.Buffers;
 using System.Collections;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	internal class RecyclableQueue<T> : IRecyclableOwner<T>, IList<T>, IDisposable
-	{
-		private static readonly ArrayPool<T> _arrayPool = ArrayPool<T>.Create();
-		private static readonly IEqualityComparer<T> _equalityComparer = EqualityComparer<T>.Default;
+    internal sealed class RecyclableQueue<T> : IEnumerable<T>, IDisposable
+    {
+        private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
-		private bool _disposedValue;
-		private RecyclableList<T[]> Memory { get; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static RecyclableArrayPoolQueueChunk<T> RentChunk(int size, RecyclableArrayPoolQueueChunk<T>? previous)
+        {
+            var chunk = RecyclableArrayPoolQueueChunkPool<T>.Rent();
+            if (chunk.Buffer.Length < size)
+            {
+                if (chunk.Buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
+                {
+                    RecyclableArrayPool<T>.ReturnShared(chunk.Buffer, _needsClearing);
+                }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static T Dequeue(RecyclableQueue<T> queue)
-		{
-			if (queue.LongCount <= 0)
-			{
-				throw new ArgumentOutOfRangeException(nameof(queue), "There are no items in the queue");
-			}
+                chunk.Buffer = size >= RecyclableDefaults.MinPooledArrayLength
+                    ? RecyclableArrayPool<T>.RentShared(size)
+                    : new T[size];
+            }
 
-			var toRemove = queue[0];
-			queue.RemovedCount++;
-			queue.LongCount--;
-			if (queue.Capacity - queue.LongCount == queue.BlockSize)
-			{
-				queue.RemoveBlock(0);
-				queue.RemovedCount -= queue.BlockSize;
-			}
+            chunk.Top = 0;
+            chunk.Bottom = 0;
+            chunk.Previous = previous;
+            chunk.Next = null;
+            return chunk;
+        }
 
-			return toRemove;
-		}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void ReturnChunk(RecyclableArrayPoolQueueChunk<T> chunk)
+        {
+            RecyclableArrayPoolQueueChunkPool<T>.Return(chunk);
+        }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private static bool TryDequeue(RecyclableQueue<T> queue, out T? item)
-		{
-			if (queue.LongCount > 0)
-			{
-				item = queue.Dequeue();
-				return true;
-			}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void DisposeChunk(RecyclableArrayPoolQueueChunk<T> chunk)
+        {
+            RecyclableArrayPoolQueueChunkPool<T>.Dispose(chunk, _needsClearing);
+        }
 
-			item = default;
-			return false;
-		}
+        private RecyclableArrayPoolQueueChunk<T> _head;
+        private RecyclableArrayPoolQueueChunk<T> _tail;
+        private bool _disposed;
+        private long _capacity;
+        private long _count;
 
-		protected static readonly bool NeedsClearing = !typeof(T).IsValueType;
+        public RecyclableQueue(int initialCapacity = RecyclableDefaults.InitialCapacity)
+        {
+            if (initialCapacity < 1)
+            {
+                initialCapacity = 1;
+            }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected static long GetAbsoluteIndex(long index, long removedCount) => index + removedCount;
+            if (!BitOperations.IsPow2((uint)initialCapacity))
+            {
+                initialCapacity = (int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity);
+            }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		protected long GetRelativeIndex(long index) => index - RemovedCount;
+            _head = RentChunk(initialCapacity, null);
+            _tail = _head;
+            _capacity = initialCapacity;
+            _count = 0;
+        }
 
-		protected long RemovedCount { get; set; }
+        public RecyclableQueue(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.InitialCapacity) : this(initialCapacity)
+        {
+            foreach (var item in source)
+            {
+                Enqueue(item);
+            }
+        }
 
-		public RecyclableQueue(IEnumerable<T> source, int blockSize = RecyclableDefaults.BlockSize)
-		{
-			BlockSize = blockSize;
-			Memory = new(1);
-			foreach (var item in source)
-			{
-				Enqueue(item);
-			}
-		}
+        public int Count => checked((int)_count);
+        public long LongCount => _count;
 
-		public RecyclableQueue(int blockSize = RecyclableDefaults.BlockSize)
-		{
-			BlockSize = blockSize;
-			Memory = new(1);
-		}
+        public void Enqueue(T item)
+        {
+            if (_tail.Top == _tail.Buffer.Length)
+            {
+                Grow();
+            }
 
-		public int BlockSize { get; protected set; }
-		public long Capacity { get; set; }
+            _tail.Buffer[_tail.Top++] = item;
+            _count++;
+        }
 
-		public int Count
-		{
-			get => checked((int)LongCount);
-			set => LongCount = value;
-		}
+        public void Add(T item) => Enqueue(item);
 
-		public long LongCount { get; set; }
-		public bool IsReadOnly { get; }
+        public T Dequeue()
+        {
+            if (_count == 0)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(_count), "Queue is empty");
+            }
 
-		public T this[int index]
-		{
-			get => GetItem(index);
-			set => SetItem(index, value);
-		}
+            _count--;
+            var value = _head.Buffer[_head.Bottom];
+            if (_needsClearing)
+            {
+                _head.Buffer[_head.Bottom] = default!;
+            }
 
-		public T this[long index]
-		{
-			get => GetItem(index);
-			set => SetItem(index, value);
-		}
+            _head.Bottom++;
+            if (_head.Bottom == _head.Top && _head.Next != null)
+            {
+                ReleaseHeadChunk();
+            }
+            else if (_head.Bottom == _head.Top)
+            {
+                _head.Bottom = 0;
+                _head.Top = 0;
+            }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void SetItem(long index, T value)
-		{
-			long absoluteIndex = GetAbsoluteIndex(index, RemovedCount);
-			int arrayIndex = RecyclableQueueHelpers<T>.ToArrayIndex(absoluteIndex, BlockSize);
-			long itemIndex = RecyclableQueueHelpers<T>.ToItemIndex(absoluteIndex, BlockSize);
-			Memory[arrayIndex][itemIndex] = value;
-		}
+            return value;
+        }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private T GetItem(long index)
-		{
-			long absoluteIndex = GetAbsoluteIndex(index, RemovedCount);
-			int arrayIndex = RecyclableQueueHelpers<T>.ToArrayIndex(absoluteIndex, BlockSize);
-			long itemIndex = RecyclableQueueHelpers<T>.ToItemIndex(absoluteIndex, BlockSize);
-			return Memory[arrayIndex][itemIndex];
-		}
+        public bool TryDequeue(out T? item)
+        {
+            if (_count > 0)
+            {
+                item = Dequeue();
+                return true;
+            }
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void Enqueue(T item)
-		{
-			if (LongCount == Capacity)
-			{
-				AddBlock();
-			}
+            item = default;
+            return false;
+        }
 
-			SetItem(LongCount, item);
-			LongCount++;
-		}
+        public void Clear()
+        {
+            while (_head.Next != null)
+            {
+                ReleaseHeadChunk();
+            }
 
-		public void AddBlock()
-		{
-			T[] newArray = (BlockSize >= RecyclableDefaults.MinPooledArrayLength)
-				? _arrayPool.Rent(BlockSize)
-				: new T[BlockSize];
+            if (_needsClearing && _head.Top > _head.Bottom)
+            {
+                Array.Clear(_head.Buffer, _head.Bottom, _head.Top - _head.Bottom);
+            }
 
-			Memory.Add(newArray);
-			Capacity += BlockSize;
-		}
+            _capacity = _head.Buffer.Length;
+            _head.Top = 0;
+            _head.Bottom = 0;
+            _tail = _head;
+            _count = 0;
+        }
 
-		public T Dequeue() => Dequeue(this);
+        public Enumerator GetEnumerator() => new(this);
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
+        IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 
-		public void Add(T item) => Enqueue(item);
+        private void Grow()
+        {
+            int newSize;
+            if (_capacity >= RecyclableDefaults.MaxPooledBlockSize)
+            {
+                newSize = RecyclableDefaults.MaxPooledBlockSize;
+            }
+            else
+            {
+                var doubled = _capacity << 1;
+                newSize = (int)Math.Min(doubled - _capacity, RecyclableDefaults.MaxPooledBlockSize);
+            }
 
-		public void Clear()
-		{
-			try
-			{
-				// Remove in reversed order for performance savings
-				while (Memory._count > 0)
-				{
-					try
-					{
-						RemoveBlock(Memory._count - 1);
-					}
-#pragma warning disable RCS1075 // We want to try returning as many arrays, as possible, before the list is cleared.
-					catch (Exception)
-#pragma warning restore RCS1075
-					{
-					}
-				}
-			}
-			finally
-			{
-				LongCount = 0;
-				RemovedCount = 0;
-				Memory.Clear();
-			}
-		}
+            var newChunk = RentChunk(newSize, _tail);
+            _tail.Next = newChunk;
+            _tail = newChunk;
+            _capacity += newSize;
+        }
 
-#pragma	warning disable CS0618
-		public bool Contains(T item) => RecyclableQueueHelpers<T>.Contains(Memory, item);
-		public void CopyTo(T[] array, int arrayIndex) => RecyclableQueueHelpers<T>.CopyTo(Memory, RemovedCount, BlockSize, checked((int)(LongCount % BlockSize)), array, arrayIndex);
-		public IEnumerable<T> Enumerate() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount);
-		public IEnumerator<T> GetEnumerator() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		IEnumerator IEnumerable.GetEnumerator() => RecyclableQueueHelpers<T>.Enumerate(Memory, BlockSize, LongCount).GetEnumerator();
-		public int IndexOf(T item) => checked((int)GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer)));
-		public long LongIndexOf(T item) => GetRelativeIndex(RecyclableQueueHelpers<T>.LongIndexOf(Memory, BlockSize, item, _equalityComparer));
-#pragma warning restore CS0618
+        private void ReleaseHeadChunk()
+        {
+            var toReturn = _head;
+            _head = toReturn.Next!;
+            _head.Previous = null;
+            _capacity -= toReturn.Buffer.Length;
+            ReturnChunk(toReturn);
+        }
 
-		public void Insert(int index, T item) => throw new NotSupportedException();
-		public void RemoveAt(int index) => throw new NotSupportedException();
-		public bool TryDequeue(out T? item) => TryDequeue(this, out item);
-		public bool Remove(T item) => TryDequeue(out var _);
-		public void RemoveBlock(int index)
-		{
-			try
-			{
-				if (Memory[index].LongLength is > RecyclableDefaults.MinPooledArrayLength and <= int.MaxValue)
-				{
-					_arrayPool.Return(Memory[index], NeedsClearing);
-				}
+        public void Dispose()
+        {
+            if (_disposed)
+            {
+                return;
+            }
 
-				Memory.RemoveAt(index);
-			}
-			finally
-			{
-				Capacity -= BlockSize;
-				//LongCount -= BlockSize;
-			}
-		}
+            var chunk = _head;
+            while (chunk != null)
+            {
+                var next = chunk.Next;
+                DisposeChunk(chunk);
+                chunk = next;
+            }
 
-		public void Dispose()
-		{
-			if (!_disposedValue)
-			{
-				Clear();
-				_disposedValue = true;
-			}
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
 
-			GC.SuppressFinalize(this);
-		}
-	}
+        public struct Enumerator : IEnumerator<T>
+        {
+            private readonly RecyclableArrayPoolQueueChunk<T>? _start;
+            private RecyclableArrayPoolQueueChunk<T>? _chunk;
+            private int _index;
+            private T? _current;
+
+            internal Enumerator(RecyclableQueue<T> queue)
+            {
+                _start = queue._head;
+                _chunk = queue._head;
+                _index = _chunk != null ? _chunk.Bottom : 0;
+                _current = default;
+            }
+
+            public T Current => _current!;
+            object IEnumerator.Current => _current!;
+
+            public bool MoveNext()
+            {
+                if (_chunk == null)
+                {
+                    return false;
+                }
+
+                if (_index >= _chunk.Top)
+                {
+                    _chunk = _chunk.Next;
+                    if (_chunk == null)
+                    {
+                        return false;
+                    }
+                    _index = _chunk.Bottom;
+                }
+
+                _current = _chunk.Buffer[_index++];
+                return true;
+            }
+
+            public void Reset()
+            {
+                _chunk = _start;
+                _index = _chunk != null ? _chunk.Bottom : 0;
+            }
+
+            public void Dispose()
+            {
+                _chunk = null;
+                _current = default;
+            }
+        }
+    }
 }
