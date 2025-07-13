@@ -2,7 +2,7 @@
 
 This repository hosts various libraries distributed as NuGet packages. Keep these links up to date so contributors and tools can easily locate them.
 
-Only the .NET SDK **8.0** is available in the execution environment. Use this version when building or running tests.
+Only the .NET SDK **8.0** is available in the execution environment. Use this version when building or running tests. When invoking `dotnet test`, do **not** pass `--no-build` because that leads to missing assemblies. Instead, specify the `--framework` argument matching the SDK available in the environment (currently `net8.0`).
 
 All `*.csproj` files should enable nullable reference types with `<Nullable>enable</Nullable>`.
 Indent code using four spaces or a single tab per level. Place one blank line after each closing curly brace of a code block, except when several closing braces appear sequentially. Always use braces for `if` and `else` bodies.

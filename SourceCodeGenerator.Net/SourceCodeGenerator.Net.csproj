@@ -1,8 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-	<EnforceExtendedAnalyzerRules>True</EnforceExtendedAnalyzerRules>
+    <TargetFrameworks>net8.0;net7.0;net6.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <EnforceExtendedAnalyzerRules>True</EnforceExtendedAnalyzerRules>
   </PropertyGroup>
 
   <ItemGroup>

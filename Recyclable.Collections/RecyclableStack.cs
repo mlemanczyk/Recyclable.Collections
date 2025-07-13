@@ -43,7 +43,6 @@ namespace Recyclable.Collections
         }
 
         private RecyclableArrayPoolChunk<T> _current;
-        private RecyclableArrayPoolChunk<T> _bottom;
         private bool _disposed;
         private long _capacity;
         private long _count;
@@ -61,7 +60,6 @@ namespace Recyclable.Collections
             }
 
             _current = RentChunk(initialCapacity, null);
-            _bottom = _current;
             _capacity = initialCapacity;
             _count = 0;
         }
@@ -128,7 +126,6 @@ namespace Recyclable.Collections
             _capacity = _current.Buffer.Length;
             _current.Index = 0;
             _count = 0;
-            _bottom = _current;
         }
 
         public Enumerator GetEnumerator() => new(this);
@@ -160,10 +157,6 @@ namespace Recyclable.Collections
             _current = toReturn.Previous!;
             _current.Next = null;
             _capacity -= toReturn.Buffer.Length;
-            if (_current.Previous == null)
-            {
-                _bottom = _current;
-            }
             ReturnChunk(toReturn);
         }
 
