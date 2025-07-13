@@ -1,6 +1,6 @@
 namespace Recyclable.Collections.Pools
 {
-    public sealed class RecyclableArrayPoolQueueChunk<T>
+    public sealed class BiDirectionalRecyclableArrayPoolChunk<T>
     {
         private static readonly T[] _empty = Array.Empty<T>();
 
@@ -9,10 +9,10 @@ namespace Recyclable.Collections.Pools
         internal T[] Buffer;
         internal int Top;
         internal int Bottom;
-        internal RecyclableArrayPoolQueueChunk<T>? Previous;
-        internal RecyclableArrayPoolQueueChunk<T>? Next;
+        internal BiDirectionalRecyclableArrayPoolChunk<T>? Previous;
+        internal BiDirectionalRecyclableArrayPoolChunk<T>? Next;
 
-        public RecyclableArrayPoolQueueChunk()
+        public BiDirectionalRecyclableArrayPoolChunk()
         {
             Buffer = _empty;
         }

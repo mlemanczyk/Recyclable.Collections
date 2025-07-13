@@ -10,9 +10,9 @@ namespace Recyclable.Collections
         private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static RecyclableArrayPoolQueueChunk<T> RentChunk(int size, RecyclableArrayPoolQueueChunk<T>? previous)
+        private static BiDirectionalRecyclableArrayPoolChunk<T> RentChunk(int size, BiDirectionalRecyclableArrayPoolChunk<T>? previous)
         {
-            var chunk = RecyclableArrayPoolQueueChunkPool<T>.Rent();
+            var chunk = BiDirectionalRecyclableArrayPoolChunkPool<T>.Rent();
             if (chunk.Buffer.Length < size)
             {
                 if (chunk.Buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
@@ -33,19 +33,19 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ReturnChunk(RecyclableArrayPoolQueueChunk<T> chunk)
+        private static void ReturnChunk(BiDirectionalRecyclableArrayPoolChunk<T> chunk)
         {
-            RecyclableArrayPoolQueueChunkPool<T>.Return(chunk);
+            BiDirectionalRecyclableArrayPoolChunkPool<T>.Return(chunk);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void DisposeChunk(RecyclableArrayPoolQueueChunk<T> chunk)
+        private static void DisposeChunk(BiDirectionalRecyclableArrayPoolChunk<T> chunk)
         {
-            RecyclableArrayPoolQueueChunkPool<T>.Dispose(chunk, _needsClearing);
+            BiDirectionalRecyclableArrayPoolChunkPool<T>.Dispose(chunk, _needsClearing);
         }
 
-        private RecyclableArrayPoolQueueChunk<T> _head;
-        private RecyclableArrayPoolQueueChunk<T> _tail;
+        private BiDirectionalRecyclableArrayPoolChunk<T> _head;
+        private BiDirectionalRecyclableArrayPoolChunk<T> _tail;
         private bool _disposed;
         private long _capacity;
         private long _count;
@@ -204,8 +204,8 @@ namespace Recyclable.Collections
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly RecyclableArrayPoolQueueChunk<T>? _start;
-            private RecyclableArrayPoolQueueChunk<T>? _chunk;
+            private readonly BiDirectionalRecyclableArrayPoolChunk<T>? _start;
+            private BiDirectionalRecyclableArrayPoolChunk<T>? _chunk;
             private int _index;
             private T? _current;
 
