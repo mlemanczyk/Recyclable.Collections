@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Numerics;
-using Microsoft.Extensions.ObjectPool;
 using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
@@ -9,23 +8,22 @@ namespace Recyclable.Collections
     internal sealed class RecyclableStack<T> : IEnumerable<T>, IDisposable
     {
         private static readonly bool _needsClearing = !typeof(T).IsValueType;
-        private static readonly ObjectPool<Chunk> _chunkPool = new DefaultObjectPool<Chunk>(new DefaultPooledObjectPolicy<Chunk>());
-
-        private sealed class Chunk
-        {
-            internal T[] Buffer = Array.Empty<T>();
-            internal int Index;
-            internal Chunk? Previous;
-            internal Chunk? Next;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Chunk RentChunk(int size, Chunk? previous)
+        private static RecyclableArrayPoolChunk<T> RentChunk(int size, RecyclableArrayPoolChunk<T>? previous)
         {
-            var chunk = _chunkPool.Get();
-            chunk.Buffer = size >= RecyclableDefaults.MinPooledArrayLength
-                ? RecyclableArrayPool<T>.RentShared(size)
-                : new T[size];
+            var chunk = RecyclableArrayPoolChunkPool<T>.Rent();
+            if (chunk.Buffer.Length < size)
+            {
+                if (chunk.Buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
+                {
+                    RecyclableArrayPool<T>.ReturnShared(chunk.Buffer, _needsClearing);
+                }
+
+                chunk.Buffer = size >= RecyclableDefaults.MinPooledArrayLength
+                    ? RecyclableArrayPool<T>.RentShared(size)
+                    : new T[size];
+            }
             chunk.Index = 0;
             chunk.Previous = previous;
             chunk.Next = null;
@@ -33,22 +31,19 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void ReturnChunk(Chunk chunk)
+        private static void ReturnChunk(RecyclableArrayPoolChunk<T> chunk)
         {
-            var buffer = chunk.Buffer;
-            if (buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
-            {
-                RecyclableArrayPool<T>.ReturnShared(buffer, _needsClearing);
-            }
-            chunk.Buffer = Array.Empty<T>();
-            chunk.Index = 0;
-            chunk.Previous = null;
-            chunk.Next = null;
-            _chunkPool.Return(chunk);
+            RecyclableArrayPoolChunkPool<T>.Return(chunk);
         }
 
-        private Chunk _current;
-        private Chunk _bottom;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void DisposeChunk(RecyclableArrayPoolChunk<T> chunk)
+        {
+            RecyclableArrayPoolChunkPool<T>.Dispose(chunk, _needsClearing);
+        }
+
+        private RecyclableArrayPoolChunk<T> _current;
+        private RecyclableArrayPoolChunk<T> _bottom;
         private bool _disposed;
         private long _capacity;
         private long _count;
@@ -179,16 +174,22 @@ namespace Recyclable.Collections
                 return;
             }
 
-            Clear();
-            ReturnChunk(_current);
+            var chunk = _current;
+            while (chunk != null)
+            {
+                var previous = chunk.Previous;
+                DisposeChunk(chunk);
+                chunk = previous;
+            }
+
             _disposed = true;
             GC.SuppressFinalize(this);
         }
 
         public struct Enumerator : IEnumerator<T>
         {
-            private readonly Chunk? _start;
-            private Chunk? _chunk;
+            private readonly RecyclableArrayPoolChunk<T>? _start;
+            private RecyclableArrayPoolChunk<T>? _chunk;
             private int _index;
             private T? _current;
 
