@@ -9,7 +9,8 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+        [VersionedCollectionsGenerator.GenerateVersioned]
+        public partial class RecyclableLongList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
 		private static readonly bool _defaultIsNull = default(T) == null;
 		internal static readonly bool _needsClearing = !typeof(T).IsValueType;
@@ -25,7 +26,7 @@ namespace Recyclable.Collections
 #nullable restore
 		internal int _nextItemBlockIndex;
 		internal int _nextItemIndex;
-		internal ulong _version;
+                internal ulong _version;
 
 		public int BlockSize => _blockSize;
 		public int BlockSizeMinus1 => _blockSizeMinus1;
@@ -35,15 +36,19 @@ namespace Recyclable.Collections
 			get => _capacity;
 			private set
 			{
-				_capacity = value;
-				_version++;
-				if (_capacity != value)
-				{
-					_capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)value)));
-					_version++;
-				}
-			}
-		}
+                                _capacity = value;
+#if WITH_VERSIONING
+                                _version++;
+#endif
+                                if (_capacity != value)
+                                {
+                                        _capacity = Helpers.Resize(this, _blockSize, _blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)value)));
+#if WITH_VERSIONING
+                                        _version++;
+#endif
+                                }
+                        }
+                }
 
 		public int Count => checked((int)_longCount);
 		public bool IsReadOnly => false;
@@ -51,7 +56,8 @@ namespace Recyclable.Collections
 		public long LongCount => _longCount;
 		public int NextItemBlockIndex => _nextItemBlockIndex;
 		public int NextItemIndex => _nextItemIndex;
-		public ulong Version => _version;
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                public ulong Version => _version;
 
 		public RecyclableLongList(int minBlockSize = RecyclableDefaults.BlockSize, long initialCapacity = RecyclableDefaults.InitialCapacity)
 		{			
@@ -251,20 +257,24 @@ namespace Recyclable.Collections
 			get => _memoryBlocks[index >> _blockSizePow2BitShift][index & _blockSizeMinus1];
 			set
 			{
-				new Span<T>(_memoryBlocks[(int)(index >> _blockSizePow2BitShift)])[(int)(index & _blockSizeMinus1)] = value;
-				_version++;
-			}
-		}
+                                new Span<T>(_memoryBlocks[(int)(index >> _blockSizePow2BitShift)])[(int)(index & _blockSizeMinus1)] = value;
+#if WITH_VERSIONING
+                                _version++;
+#endif
+                        }
+                }
 
 		public T this[int index]
 		{
 			get => _memoryBlocks[index >> _blockSizePow2BitShift][index & _blockSizeMinus1];
 			set
 			{
-				new Span<T>(_memoryBlocks[index >> _blockSizePow2BitShift])[index & _blockSizeMinus1] = value;
-				_version++;
-			}
-		}
+                                new Span<T>(_memoryBlocks[index >> _blockSizePow2BitShift])[index & _blockSizeMinus1] = value;
+#if WITH_VERSIONING
+                                _version++;
+#endif
+                        }
+                }
 
 		public T[][] AsArray => _memoryBlocks;
 
@@ -292,9 +302,11 @@ namespace Recyclable.Collections
 				_lastBlockWithData++;
 			}
 
-			_longCount++;
-			_version++;
-		}
+                        _longCount++;
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
 		public void Clear()
 		{
@@ -326,9 +338,11 @@ namespace Recyclable.Collections
 			_nextItemBlockIndex = 0;
 			_nextItemIndex = 0;
 			_lastBlockWithData = RecyclableDefaults.ItemNotFoundIndex;
-			_longCount = 0;
-			_version++;
-		}
+                        _longCount = 0;
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public bool Contains(T item)
@@ -358,9 +372,24 @@ namespace Recyclable.Collections
 
 		public void CopyTo(T[] array, int arrayIndex) => Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
 
-		public Enumerator GetEnumerator() => new(this);
-		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
-		IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+#if WITH_VERSIONING
+                public VersionedEnumerator GetEnumerator() => new(this);
+#else
+                public Enumerator GetEnumerator() => new(this);
+#endif
+                [VersionedCollectionsGenerator.CloneForVersioned]
+#if WITH_VERSIONING
+                IEnumerator IEnumerable.GetEnumerator() => new VersionedEnumerator(this);
+#else
+                IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+#endif
+                [VersionedCollectionsGenerator.CloneForVersioned]
+#if WITH_VERSIONING
+                IEnumerator<T> IEnumerable<T>.GetEnumerator() => new VersionedEnumerator(this);
+#else
+                IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
+#endif
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public int IndexOf(T item)
@@ -433,8 +462,10 @@ namespace Recyclable.Collections
 				_lastBlockWithData++;
 			}
 
-			_version++;
-		}
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
 		public void Insert(long index, T item)
 		{
@@ -472,8 +503,10 @@ namespace Recyclable.Collections
 				_lastBlockWithData++;
 			}
 
-			_version++;
-		}
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public long LongIndexOf(T item)
@@ -543,9 +576,11 @@ namespace Recyclable.Collections
 #nullable restore
 				}
 
-				_version++;
-				return true;
-			}
+#if WITH_VERSIONING
+                                _version++;
+#endif
+                                return true;
+                        }
 
 			return false;
 		}
@@ -585,8 +620,10 @@ namespace Recyclable.Collections
 #nullable restore
 			}
 
-			_version++;
-		}
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public void RemoveAt(long index)
@@ -623,8 +660,10 @@ namespace Recyclable.Collections
 #nullable restore
 			}
 
-			_version++;
-		}
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
 		public void RemoveBlock(int index)
 		{
@@ -644,17 +683,21 @@ namespace Recyclable.Collections
 				_nextItemBlockIndex--;
 			}
 
-			_lastBlockWithData--;
-			_version++;
-		}
+                        _lastBlockWithData--;
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                }
 
-		public void Dispose()
-		{
-			_version++;
-			if (_capacity > 0)
-			{
-				Clear();
-				if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
+                public void Dispose()
+                {
+#if WITH_VERSIONING
+                        _version++;
+#endif
+                        if (_capacity > 0)
+                        {
+                                Clear();
+                                if (_memoryBlocks.Length >= RecyclableDefaults.MinPooledArrayLength)
 				{
 					// If anything, it has been already cleared by .Clear(), Remove() or RemoveAt() methods, as the list was modified / disposed.
 					RecyclableArrayPool<T[]>.ReturnShared(_memoryBlocks, false);

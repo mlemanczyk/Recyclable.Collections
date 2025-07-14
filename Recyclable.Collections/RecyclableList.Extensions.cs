@@ -3,8 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public static class RecyclableListExtensions
-	{
+        [VersionedCollectionsGenerator.GenerateVersioned]
+        public static class RecyclableListExtensions
+        {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableList<T> ToRecyclableList<T>(this Array values) => new(values);
 

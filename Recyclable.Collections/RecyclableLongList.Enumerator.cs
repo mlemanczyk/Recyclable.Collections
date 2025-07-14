@@ -5,8 +5,9 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableLongList<T>
 	{
-		public struct Enumerator : IEnumerator<T>
-		{
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                public struct Enumerator : IEnumerator<T>
+                {
 #nullable disable
 			private static readonly T _default = default;
 #nullable restore
