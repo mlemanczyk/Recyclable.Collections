@@ -1,14 +1,83 @@
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
+using System.Reflection;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public static class zRecyclableLongListAddRange
-	{
-		private static void AddRangeEnumerated<T>(this RecyclableLongList<T> targetList, IEnumerable<T> items)
-		{
+        public static class zRecyclableLongListAddRange
+        {
+
+                private static class AddRangeHelper<T>
+                {
+                        private static readonly Action<RecyclableLongList<T>, object>? _dictionaryAdder;
+                        private static readonly Action<RecyclableLongList<T>, object>? _sortedListAdder;
+                        private static readonly Type? _dictionaryType;
+                        private static readonly Type? _sortedListType;
+
+                        static AddRangeHelper()
+                        {
+                                Type elementType = typeof(T);
+                                if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                                {
+                                        Type[] args = elementType.GetGenericArguments();
+                                        _dictionaryType = typeof(RecyclableDictionary<,>).MakeGenericType(args);
+                                        MethodInfo? method = typeof(zRecyclableLongListAddRange).GetMethod(
+                                                nameof(AddRange),
+                                                BindingFlags.NonPublic | BindingFlags.Static,
+                                                binder: null,
+                                                types: new[] { typeof(RecyclableLongList<>).MakeGenericType(elementType), _dictionaryType },
+                                                modifiers: null);
+                                        if (method != null)
+                                        {
+                                                var listParam = Expression.Parameter(typeof(RecyclableLongList<T>));
+                                                var objParam = Expression.Parameter(typeof(object));
+                                                var call = Expression.Call(method, listParam, Expression.Convert(objParam, _dictionaryType));
+                                                _dictionaryAdder = Expression.Lambda<Action<RecyclableLongList<T>, object>>(call, listParam, objParam).Compile();
+                                        }
+                                }
+                                else if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(ValueTuple<,>))
+                                {
+                                        Type[] args = elementType.GetGenericArguments();
+                                        _sortedListType = typeof(RecyclableSortedList<,>).MakeGenericType(args);
+                                        MethodInfo? method = typeof(zRecyclableLongListAddRange).GetMethod(
+                                                nameof(AddRange),
+                                                BindingFlags.NonPublic | BindingFlags.Static,
+                                                binder: null,
+                                                types: new[] { typeof(RecyclableLongList<>).MakeGenericType(elementType), _sortedListType },
+                                                modifiers: null);
+                                        if (method != null)
+                                        {
+                                                var listParam = Expression.Parameter(typeof(RecyclableLongList<T>));
+                                                var objParam = Expression.Parameter(typeof(object));
+                                                var call = Expression.Call(method, listParam, Expression.Convert(objParam, _sortedListType));
+                                                _sortedListAdder = Expression.Lambda<Action<RecyclableLongList<T>, object>>(call, listParam, objParam).Compile();
+                                        }
+                                }
+                        }
+
+                        internal static bool TryAddRange(RecyclableLongList<T> list, IEnumerable<T> items)
+                        {
+                                if (_dictionaryAdder != null && _dictionaryType!.IsInstanceOfType(items))
+                                {
+                                        _dictionaryAdder(list, items);
+                                        return true;
+                                }
+
+                                if (_sortedListAdder != null && _sortedListType!.IsInstanceOfType(items))
+                                {
+                                        _sortedListAdder(list, items);
+                                        return true;
+                                }
+
+                                return false;
+                        }
+                }
+
+                private static void AddRangeEnumerated<T>(this RecyclableLongList<T> targetList, IEnumerable<T> items)
+                {
 			using IEnumerator<T> enumerator = items.GetEnumerator();
 			if (!enumerator.MoveNext())
 			{
@@ -438,19 +507,24 @@ namespace Recyclable.Collections
                                         targetList.AddRange(sourceQueue);
                                         return;
 
-				default:
-					if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
-					{
-						targetList.AddRangeWithKnownCount(items, requiredAdditionalCapacity);
-					}
-					else
-					{
-						targetList.AddRangeEnumerated(items);
-					}
+                                default:
+                                        if (AddRangeHelper<T>.TryAddRange(targetList, items))
+                                        {
+                                                return;
+                                        }
 
-					return;
-			}
-		}
+                                        if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+                                        {
+                                                targetList.AddRangeWithKnownCount(items, requiredAdditionalCapacity);
+                                        }
+                                        else
+                                        {
+                                                targetList.AddRangeEnumerated(items);
+                                        }
+
+                                        return;
+                        }
+                }
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, IReadOnlyList<T> items)
 		{
