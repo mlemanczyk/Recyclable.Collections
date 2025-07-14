@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
@@ -14,7 +15,9 @@ namespace Recyclable.Collections
         private readonly int _blockSizeMinus1;
         private readonly byte _blockShift;
 
+#nullable disable
         private Entry[][] _entries;
+#nullable restore
         private int[] _buckets;
         private int _count;
         private bool _disposed;
@@ -38,8 +41,12 @@ namespace Recyclable.Collections
             _blockSizeMinus1 = blockSize - 1;
             _blockShift = (byte)(31 - BitOperations.LeadingZeroCount((uint)blockSize));
 
-            _entries = new Entry[4][];
-            _entries[0] = new Entry[blockSize];
+            _entries = 4 >= RecyclableDefaults.MinPooledArrayLength
+                ? RecyclableArrayPool<Entry[]>.RentShared(4)
+                : new Entry[4][];
+            _entries[0] = blockSize >= RecyclableDefaults.MinPooledArrayLength
+                ? RecyclableArrayPool<Entry>.RentShared(blockSize)
+                : new Entry[blockSize];
             _buckets = new int[4];
             Array.Fill(_buckets, -1);
         }
@@ -171,11 +178,37 @@ namespace Recyclable.Collections
 
         public void Clear()
         {
-            if (_needsClearing)
+            if (_count == 0)
             {
-                for (var i = 0; i < _count; i++)
+                Array.Fill(_buckets, -1);
+                return;
+            }
+
+            int blockIndex = 0;
+            if (_blockSize >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                while (blockIndex < _entries.Length && _entries[blockIndex] != null)
                 {
-                    ClearEntry(i);
+                    RecyclableArrayPool<Entry>.ReturnShared(_entries[blockIndex]!, _needsClearing);
+                    _entries[blockIndex++] = null!;
+                }
+            }
+            else
+            {
+                if (_needsClearing)
+                {
+                    while (blockIndex < _entries.Length && _entries[blockIndex] != null)
+                    {
+                        Array.Clear(_entries[blockIndex]!, 0, _entries[blockIndex]!.Length);
+                        _entries[blockIndex++] = null!;
+                    }
+                }
+                else
+                {
+                    while (blockIndex < _entries.Length && _entries[blockIndex] != null)
+                    {
+                        _entries[blockIndex++] = null!;
+                    }
                 }
             }
 
@@ -201,6 +234,16 @@ namespace Recyclable.Collections
             }
 
             Clear();
+            if (_entries.Length >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                RecyclableArrayPool<Entry[]>.ReturnShared(_entries, false);
+            }
+
+            if (_buckets.Length >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                RecyclableArrayPool<int>.ReturnShared(_buckets, false);
+            }
+
             _entries = Array.Empty<Entry[]>();
             _buckets = Array.Empty<int>();
             _disposed = true;
@@ -254,12 +297,28 @@ namespace Recyclable.Collections
             int requiredBlocks = (min + _blockSizeMinus1) >> _blockShift;
             if (_entries.Length < requiredBlocks)
             {
-                Array.Resize(ref _entries, requiredBlocks);
+                var newBlocks = requiredBlocks >= RecyclableDefaults.MinPooledArrayLength
+                    ? RecyclableArrayPool<Entry[]>.RentShared(requiredBlocks)
+                    : new Entry[requiredBlocks][];
+
+                Array.Copy(_entries, newBlocks, _entries.Length);
+
+                if (_entries.Length >= RecyclableDefaults.MinPooledArrayLength)
+                {
+                    RecyclableArrayPool<Entry[]>.ReturnShared(_entries, false);
+                }
+
+                _entries = newBlocks;
             }
 
             for (int i = 0; i < requiredBlocks; i++)
             {
-                _entries[i] ??= new Entry[_blockSize];
+                if (_entries[i] == null)
+                {
+                    _entries[i] = _blockSize >= RecyclableDefaults.MinPooledArrayLength
+                        ? RecyclableArrayPool<Entry>.RentShared(_blockSize)
+                        : new Entry[_blockSize];
+                }
             }
         }
 
