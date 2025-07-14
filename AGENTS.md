@@ -10,7 +10,8 @@ Only the .NET SDK **8.0** is available in the execution environment. Use this ve
 1. Consider applying attributes such as `MethodImplOptions.AggressiveInlining` or faster alternatives to common operations when appropriate. Another would be modulo "%" or division "/" operations, which could be often replaced with faster alternatives, possibly under specific conditions.
 
 ## Running Tests
-1. When invoking `dotnet test`, do **not** pass `--no-build` because that leads to missing assemblies. Instead, specify the `--framework` argument matching the SDK available in the environment (currently `net8.0`).
+1. When running `dotnet test`, do **not** pass `--no-build` because that leads to missing assemblies, test failures without logs and other issues.
+1. When running `dotnet test` specify the `--framework` argument matching the SDK available in the environment (currently `net8.0`). If you omit this parameter, the tests will fail running with no logs etc.
 1. The tests run for a very long time, because there are 61_000+ unit tests for all the collections. Set timeout when running them to 15 mis.
 1. All tests must use **xUnit** together with **FluentAssertions**.
 
