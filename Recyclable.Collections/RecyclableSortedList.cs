@@ -5,7 +5,7 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-    internal sealed class RecyclableSortedList<TKey, TValue> : IEnumerable<(TKey Key, TValue Value)>, IDisposable
+    internal sealed class RecyclableSortedList<TKey, TValue> : IEnumerable<(TKey Key, TValue Value)>, IDisposable, IAddRangeProvider<(TKey Key, TValue Value)>
         where TKey : notnull
     {
         internal static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
@@ -275,6 +275,16 @@ namespace Recyclable.Collections
             public void Dispose()
             {
             }
+        }
+
+        void IAddRangeProvider<(TKey Key, TValue Value)>.AddRangeTo(RecyclableList<(TKey Key, TValue Value)> list)
+        {
+            zRecyclableListAddRange.AddRange(list, this);
+        }
+
+        void IAddRangeProvider<(TKey Key, TValue Value)>.AddRangeTo(RecyclableLongList<(TKey Key, TValue Value)> list)
+        {
+            zRecyclableLongListAddRange.AddRange(list, this);
         }
     }
 }

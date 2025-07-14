@@ -6,7 +6,7 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-    internal sealed class RecyclableDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable
+    internal sealed class RecyclableDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable, IAddRangeProvider<KeyValuePair<TKey, TValue>>
         where TKey : notnull
     {
         internal static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
@@ -400,6 +400,16 @@ namespace Recyclable.Collections
             public void Dispose()
             {
             }
+        }
+
+        void IAddRangeProvider<KeyValuePair<TKey, TValue>>.AddRangeTo(RecyclableList<KeyValuePair<TKey, TValue>> list)
+        {
+            zRecyclableListAddRange.AddRange(list, this);
+        }
+
+        void IAddRangeProvider<KeyValuePair<TKey, TValue>>.AddRangeTo(RecyclableLongList<KeyValuePair<TKey, TValue>> list)
+        {
+            zRecyclableLongListAddRange.AddRange(list, this);
         }
     }
 }
