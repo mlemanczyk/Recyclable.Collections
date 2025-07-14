@@ -101,7 +101,9 @@ namespace Recyclable.Collections
 			}
 
 			list._count -= foundItemsCount;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 			return foundItemsCount;
 		}
 
@@ -125,43 +127,57 @@ namespace Recyclable.Collections
 			}
 
 			list._count -= count;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static void Reverse<T>(this RecyclableList<T> list)
 		{
 			Array.Reverse(list._memoryBlock, 0, list._count);
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static void Reverse<T>(this RecyclableList<T> list, int index, int count)
 		{
 			Array.Reverse(list._memoryBlock, index, count);
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static void Sort<T>(this RecyclableList<T> list)
 		{
 			Array.Sort(list._memoryBlock, 0, list._count);
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static void Sort<T>(this RecyclableList<T> list, Comparison<T> comparison)
 		{
 			Array.Sort(list._memoryBlock, 0, list._count, new ComparisonToComparerAdapter<T>(comparison));
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static void Sort<T>(this RecyclableList<T> list, IComparer<T>? comparer)
 		{
 			Array.Sort(list._memoryBlock, 0, list._count, comparer);
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static void Sort<T>(this RecyclableList<T> list, int index, int count, IComparer<T>? comparer)
 		{
 			Array.Sort(list._memoryBlock, index, count, comparer);
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static T[] ToArray<T>(this RecyclableList<T> list)

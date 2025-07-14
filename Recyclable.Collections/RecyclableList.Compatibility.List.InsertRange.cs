@@ -79,7 +79,9 @@ namespace Recyclable.Collections
 			}
 
 			list._count += requiredAdditionalCapacity;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -94,7 +96,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Length, list._count - index);
 			Array.Copy(items, items.GetLowerBound(0), memoryBlock, index, items.Length);
 			list._count += items.Length;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -109,7 +113,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Length, list._count - index);
 			new ReadOnlySpan<T>(items).CopyTo(new Span<T>(memoryBlock, index, items.Length));
 			list._count += items.Length;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -124,7 +130,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Length, list._count - index);
 			items.CopyTo(new Span<T>(memoryBlock, index, items.Length));
 			list._count += items.Length;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -139,7 +147,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Length, list._count - index);
 			items.CopyTo(new Span<T>(memoryBlock, index, items.Length));
 			list._count += items.Length;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -154,7 +164,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Count, list._count - index);
 			items.CopyTo(memoryBlock, index);
 			list._count += items.Count;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -169,7 +181,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Count, list._count - index);
 			items.CopyTo(list._memoryBlock, index);
 			list._count += items.Count;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -184,7 +198,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Count, list._count - index);
 			items.CopyTo(memoryBlock, index);
 			list._count += items.Count;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -199,7 +215,9 @@ namespace Recyclable.Collections
 			Array.Copy(memoryBlock, index, memoryBlock, index + items.Count, list._count - index);
 			new ReadOnlySpan<T>(items._memoryBlock, 0, items._count).CopyTo(new(list._memoryBlock, index, items._count));
 			list._count += items._count;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -251,7 +269,9 @@ namespace Recyclable.Collections
 			}
 
 			list._count = targetCapacity;
+			#if WITH_VERSIONING
 			list._version++;
+			#endif
 		}
 
 		public static IEnumerator InsertRange<T>(this RecyclableList<T> list, int index, IEnumerable source, int growByCount = RecyclableDefaults.MinPooledArrayLength)

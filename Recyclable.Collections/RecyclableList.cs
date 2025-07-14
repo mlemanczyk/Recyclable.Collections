@@ -5,8 +5,9 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	[Serializable]
-	public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
+        [Serializable]
+        [VersionedCollectionsGenerator.GenerateVersioned]
+        public sealed partial class RecyclableList<T> : IList<T>, IReadOnlyList<T>, IDisposable
 	{
 		internal static readonly bool _needsClearing = !typeof(T).IsValueType;
 
@@ -17,7 +18,8 @@ namespace Recyclable.Collections
 #nullable restore
 
 		internal ulong _version;
-		public ulong Version => _version;
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                public ulong Version => _version;
 
 		public RecyclableList()
 		{
@@ -172,7 +174,9 @@ namespace Recyclable.Collections
 			set
 			{
 				_memoryBlock[index] = value;
+				#if WITH_VERSIONING
 				_version++;
+				#endif
 			}
 		}
 
@@ -185,7 +189,9 @@ namespace Recyclable.Collections
 				if (_capacity != value)
 				{
 					_capacity = RecyclableListHelpers<T>.EnsureCapacity(this, _count, checked((int)BitOperations.RoundUpToPowerOf2((uint)value)));
+					#if WITH_VERSIONING
 					_version++;
+					#endif
 				}
 			}
 		}
@@ -204,7 +210,9 @@ namespace Recyclable.Collections
 					}
 
 					_count = value;
+					#if WITH_VERSIONING
 					_version++;
+					#endif
 				}
                         }
                 }
@@ -243,7 +251,9 @@ namespace Recyclable.Collections
 			}
 
 			_memoryBlock[_count++] = item;
+			#if WITH_VERSIONING
 			_version++;
+			#endif
 		}
 
 		public T[] AsArray => _memoryBlock;
@@ -262,7 +272,9 @@ namespace Recyclable.Collections
 			}
 
 			_count = 0;
+			#if WITH_VERSIONING
 			_version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -295,7 +307,9 @@ namespace Recyclable.Collections
 
 			_memoryBlock[index] = item;
 			_count++;
+			#if WITH_VERSIONING
 			_version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -315,7 +329,9 @@ namespace Recyclable.Collections
 					_memoryBlock[_count] = default;
 				}
 
+				#if WITH_VERSIONING
 				_version++;
+				#endif
 
 				return true;
 			}
@@ -342,7 +358,9 @@ namespace Recyclable.Collections
 				_memoryBlock[_count] = default;
 			}
 
+			#if WITH_VERSIONING
 			_version++;
+			#endif
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -356,7 +374,9 @@ namespace Recyclable.Collections
 
 		public void Dispose()
 		{
+			#if WITH_VERSIONING
 			_version++;
+			#endif
 			if (_count != 0)
 			{
 				if (_needsClearing)
