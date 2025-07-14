@@ -2,7 +2,8 @@
 	<PropertyGroup>
                 <TargetFrameworks>net8.0;net7.0;net6.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+                <Nullable>enable</Nullable>
+                <DefineConstants>$(DefineConstants);WITH_VERSIONING</DefineConstants>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageId>Recyclable.Collections</PackageId>
 		<PackageVersion>0.0.6</PackageVersion>
@@ -30,8 +31,12 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="7.0.5" />
-	  <PackageReference Include="morelinq" Version="3.4.2" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="7.0.5" />
+    <PackageReference Include="morelinq" Version="3.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VersionedCollectionsGenerator\VersionedCollectionsGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
 </Project>
