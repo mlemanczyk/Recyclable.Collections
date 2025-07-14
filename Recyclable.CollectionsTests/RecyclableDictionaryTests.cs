@@ -9,20 +9,22 @@ namespace Recyclable.CollectionsTests
     {
         private static readonly (int, string)[] _testData = new[] { (1, "a"), (2, "b"), (3, "c"), (4, "d"), (5, "e") };
 
-        [Fact]
-        public void AddShouldStoreItems()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddShouldStoreItems(int itemsCount)
         {
-            using var dict = new RecyclableDictionary<int, string>();
-            foreach (var (key, value) in _testData)
+            using var dict = new RecyclableDictionary<long, long>();
+            foreach (var key in RecyclableLongListTestData.CreateTestData(itemsCount))
             {
-                dict.Add(key, value);
+                dict.Add(key, -key);
             }
 
-            _ = dict.Should().HaveCount(_testData.Length);
-            for (var i = 0; i < _testData.Length; i++)
+            _ = dict.Should().HaveCount(itemsCount);
+            for (var i = 0; i < itemsCount; i++)
             {
-                dict.GetKey(i).Should().Be(_testData[i].Item1);
-                dict.GetValue(i).Should().Be(_testData[i].Item2);
+                long expectedKey = i + 1;
+                dict.GetKey(i).Should().Be(expectedKey);
+                dict.GetValue(i).Should().Be(-expectedKey);
             }
         }
 
@@ -37,18 +39,28 @@ namespace Recyclable.CollectionsTests
             _ = dict[1].Should().Be("b");
         }
 
-        [Fact]
-        public void RemoveShouldSwapWithLast()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void RemoveShouldSwapWithLast(int itemsCount)
         {
-            using var dict = new RecyclableDictionary<int, string>();
-            foreach (var (key, value) in _testData)
+            using var dict = new RecyclableDictionary<long, long>();
+            foreach (var key in RecyclableLongListTestData.CreateTestData(itemsCount))
             {
-                dict.Add(key, value);
+                dict.Add(key, key);
             }
 
-            dict.Remove(3).Should().BeTrue();
-            _ = dict.ContainsKey(3).Should().BeFalse();
-            _ = dict.Should().HaveCount(_testData.Length - 1);
+            if (itemsCount > 0)
+            {
+                long keyToRemove = (itemsCount + 1) / 2;
+                dict.Remove(keyToRemove).Should().BeTrue();
+                _ = dict.ContainsKey(keyToRemove).Should().BeFalse();
+                _ = dict.Should().HaveCount(itemsCount - 1);
+            }
+            else
+            {
+                dict.Remove(0).Should().BeFalse();
+                _ = dict.Should().BeEmpty();
+            }
         }
 
         [Fact]
@@ -63,23 +75,25 @@ namespace Recyclable.CollectionsTests
             _ = value.Should().Be("a");
         }
 
-        [Fact]
-        public void EnumeratorShouldYieldItems()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void EnumeratorShouldYieldItems(int itemsCount)
         {
-            using var dict = new RecyclableDictionary<int, string>();
-            foreach (var (key, value) in _testData)
+            using var dict = new RecyclableDictionary<long, long>();
+            foreach (var key in RecyclableLongListTestData.CreateTestData(itemsCount))
             {
-                dict.Add(key, value);
+                dict.Add(key, key);
             }
 
-            var actual = new List<KeyValuePair<int, string>>();
+            var actual = new List<long>();
             var enumerator = dict.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                actual.Add(enumerator.Current);
+                actual.Add(enumerator.Current.Key);
             }
 
-            _ = actual.Should().ContainInConsecutiveOrder(_testData.Select(x => new KeyValuePair<int, string>(x.Item1, x.Item2)));
+            var expected = RecyclableLongListTestData.CreateTestData(itemsCount).ToList();
+            _ = actual.Should().ContainInConsecutiveOrder(expected);
         }
     }
 }
