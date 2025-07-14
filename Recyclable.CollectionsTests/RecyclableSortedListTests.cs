@@ -1,86 +1,97 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Recyclable.Collections;
+using System.Linq;
 
 namespace Recyclable.CollectionsTests
 {
-	public class RecyclableSortedListTests
-	{
-		private static readonly (int, string)[] _testData = new[] { (5, "a"), (4, "d"), (3, "c"), (2, "b"), (1, "a") };
+    public class RecyclableSortedListTests
+    {
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddShouldStoreItemsSorted(int itemsCount)
+        {
+            using var list = new RecyclableSortedList<long, long>();
+            foreach (var key in RecyclableLongListTestData.CreateTestData(itemsCount).Reverse())
+            {
+                list.Add(key, -key);
+            }
 
-		[Fact]
-		public void ShouldBeSortedWhenCreated()
-		{
-			// Act
-			using var sortedList = new RecyclableSortedList<int, string>(_testData, 2);
+            _ = list.Should().HaveCount(itemsCount)
+                .And.BeInAscendingOrder(x => x.Key);
+            for (int i = 0; i < itemsCount; i++)
+            {
+                long expectedKey = i + 1;
+                list.GetKey(i).Should().Be(expectedKey);
+                list.GetValue(i).Should().Be(-expectedKey);
+            }
+        }
 
-			// Validate
-			_ = sortedList.Should().HaveCount(_testData.Length)
-				.And.BeEquivalentTo(_testData)
-				.And.BeInAscendingOrder((item) => item.Key);
-		}
+        [Fact]
+        public void IndexerShouldUpdateValue()
+        {
+            using var list = new RecyclableSortedList<int, string>();
+            list.Add(1, "a");
 
-		[Fact]
-		public void ShouldBeEmptyWhenNotInitialized()
-		{
-			// Act
-			using var sortedList = new RecyclableSortedList<int, string>(2);
+            list[1] = "b";
 
-			// Validate
-			_ = sortedList.Should().BeEmpty();
-		}
+            _ = list[1].Should().Be("b");
+        }
 
-		[Fact]
-		public void ShouldNotBeSortedWhenInitialized()
-		{
-			// Act
-			using var sortedList = new RecyclableSortedList<int, string>(2)
-			{
-				_testData[0],
-				_testData[1],
-				_testData[2],
-				_testData[3],
-				_testData[4]
-			};
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void RemoveShouldDeleteItem(int itemsCount)
+        {
+            using var list = new RecyclableSortedList<long, long>();
+            foreach (var key in RecyclableLongListTestData.CreateTestData(itemsCount))
+            {
+                list.Add(key, key);
+            }
 
-			// Validate
-			_ = sortedList.Should().NotBeEmpty()
-				.And.ContainInConsecutiveOrder(_testData);
-		}
+            if (itemsCount > 0)
+            {
+                long keyToRemove = (itemsCount + 1) / 2;
+                list.Remove(keyToRemove).Should().BeTrue();
+                _ = list.ContainsKey(keyToRemove).Should().BeFalse();
+                _ = list.Should().HaveCount(itemsCount - 1);
+            }
+            else
+            {
+                list.Remove(0).Should().BeFalse();
+                _ = list.Should().BeEmpty();
+            }
+        }
 
-		[Fact]
-		public void ShouldBeSortedWhenUpdateEnds()
-		{
-			// Prepare
-			using var sortedList = new RecyclableSortedList<int, string>(2);
+        [Fact]
+        public void TryGetValueShouldReturnValue()
+        {
+            using var list = new RecyclableSortedList<int, string>();
+            list.Add(1, "a");
 
-			// Act
-			sortedList.BeginUpdate();
-			foreach (var testItem in _testData)
-			{
-				sortedList.Add(testItem);
-			}
+            var found = list.TryGetValue(1, out var value);
 
-			// Validate
-			_ = sortedList.Should().BeInDescendingOrder(x => x.Key);
+            _ = found.Should().BeTrue();
+            _ = value.Should().Be("a");
+        }
 
-			// Act
-			sortedList.EndUpdate();
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void EnumeratorShouldYieldItemsSorted(int itemsCount)
+        {
+            using var list = new RecyclableSortedList<long, long>();
+            foreach (var key in RecyclableLongListTestData.CreateTestData(itemsCount).Reverse())
+            {
+                list.Add(key, key);
+            }
 
-			// Validate
-			_ = sortedList.Should().BeInAscendingOrder(x => x.Key);
-		}
+            var actual = new List<long>();
+            var enumerator = list.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                actual.Add(enumerator.Current.Key);
+            }
 
-		[Fact]
-		public void ShouldBeEmptyAfterClear()
-		{
-			// Prepare
-			using var sortedList = new RecyclableSortedList<int, string>(_testData);
-
-			// Act
-			sortedList.Clear();
-
-			// Validate
-			_ = sortedList.Should().BeEmpty();
-		}
-	}
+            var expected = RecyclableLongListTestData.CreateTestData(itemsCount).ToList();
+            _ = actual.Should().ContainInConsecutiveOrder(expected);
+        }
+    }
 }

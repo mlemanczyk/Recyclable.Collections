@@ -7,112 +7,126 @@ namespace Recyclable.CollectionsTests
 	{
 		private static readonly string[] _testData = new[] { "a", "d", "c", "b", "a" };
 
-		[Fact]
-		public void GetEnumeratorShouldYieldAllItemsInReversedOrder()
-		{
-			// Prepare
-			using var list = new RecyclableStack<string>(_testData);
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void GetEnumeratorShouldYieldAllItemsInReversedOrder(int itemsCount)
+                {
+                        // Prepare
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount).Select(i => i.ToString()).ToArray();
+                        using var list = new RecyclableStack<string>(data);
 
-			// Act
-			var actual = new RecyclableLongList<string>();
-			using var enumerator = list.GetEnumerator();
-			while (enumerator.MoveNext())
-			{
-				actual.Add(enumerator.Current);
-			}
+                        // Act
+                        var actual = new RecyclableLongList<string>();
+                        using var enumerator = list.GetEnumerator();
+                        while (enumerator.MoveNext())
+                        {
+                                actual.Add(enumerator.Current);
+                        }
 
-			// Validate
-			_ = actual.Should().ContainInConsecutiveOrder(_testData.Reverse());
-		}
+                        // Validate
+                        _ = actual.Should().ContainInConsecutiveOrder(data.Reverse());
+                }
 
-		[Fact]
-		public void ShouldNotBeSortedWhenCreated()
-		{
-			// Act
-			using var sortedList = new RecyclableStack<string>(_testData, 2);
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void ShouldNotBeSortedWhenCreated(int itemsCount)
+                {
+                        // Act
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount).Select(i => i.ToString()).ToArray();
+                        using var sortedList = new RecyclableStack<string>(data, 2);
 
-			// Validate
-                        _ = sortedList.Should().HaveCount(_testData.Length)
-                                .And.ContainInConsecutiveOrder(_testData.Reverse());
-		}
+                        // Validate
+                        _ = sortedList.Should().HaveCount(itemsCount)
+                                .And.ContainInConsecutiveOrder(data.Reverse());
+                }
 
-		[Fact]
-		public void ShouldBeEmptyWhenNotInitialized()
-		{
-			// Act
-			using var sortedList = new RecyclableStack<string>(2);
+                [Fact]
+                public void ShouldBeEmptyWhenNotInitialized()
+                {
+                        // Act
+                        using var sortedList = new RecyclableStack<string>(2);
 
-			// Validate
-			_ = sortedList.Should().BeEmpty();
-		}
+                        // Validate
+                        _ = sortedList.Should().BeEmpty();
+                }
 
-		[Fact]
-		public void ShouldNotBeSortedWhenInitialized()
-		{
-			// Act
-			using var sortedList = new RecyclableStack<string>(2)
-			{
-				_testData[0],
-				_testData[1],
-				_testData[2],
-				_testData[3],
-				_testData[4]
-			};
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void ShouldNotBeSortedWhenInitialized(int itemsCount)
+                {
+                        // Act
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount).Select(i => i.ToString()).ToArray();
+                        using var sortedList = new RecyclableStack<string>(2);
+                        foreach (var item in data)
+                        {
+                                sortedList.Push(item);
+                        }
 
-			// Validate
-                        _ = sortedList.Should().NotBeEmpty()
-                                .And.ContainInConsecutiveOrder(_testData.Reverse())
-                                .And.BeEquivalentTo(_testData);
-		}
+                        // Validate
+                        if (itemsCount == 0)
+                        {
+                                _ = sortedList.Should().BeEmpty();
+                        }
+                        else
+                        {
+                                _ = sortedList.Should().NotBeEmpty()
+                                        .And.ContainInConsecutiveOrder(data.Reverse())
+                                        .And.BeEquivalentTo(data);
+                        }
+                }
 
-		[Fact]
-		public void ShouldBeEmptyAfterClear()
-		{
-			// Prepare
-			using var sortedList = new RecyclableStack<string>(_testData);
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void ShouldBeEmptyAfterClear(int itemsCount)
+                {
+                        // Prepare
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount).Select(i => i.ToString()).ToArray();
+                        using var sortedList = new RecyclableStack<string>(data);
 
-			// Act
-			sortedList.Clear();
+                        // Act
+                        sortedList.Clear();
 
-			// Validate
-			_ = sortedList.Should().BeEmpty();
-		}
+                        // Validate
+                        _ = sortedList.Should().BeEmpty();
+                }
 
-		[Fact]
-		public void PopShouldReturnItemsInReversedOrder()
-		{
-			// Prepare
-			using var list = new RecyclableStack<string>();
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void PopShouldReturnItemsInReversedOrder(int itemsCount)
+                {
+                        // Prepare
+                        using var list = new RecyclableStack<string>();
 
-			// Act
-			for (var itemIdx = 0; itemIdx < _testData.Length; itemIdx++)
-			{
-				list.Push(_testData[itemIdx]);
-			}
+                        // Act
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount).Select(i => i.ToString()).ToArray();
+                        for (var itemIdx = 0; itemIdx < data.Length; itemIdx++)
+                        {
+                                list.Push(data[itemIdx]);
+                        }
 
-			var dequeuedItems = new RecyclableLongList<string>();
-			while (list.LongCount > 0)
-			{
-				dequeuedItems.Add(list.Pop());
-			}
+                        var dequeuedItems = new RecyclableLongList<string>();
+                        while (list.LongCount > 0)
+                        {
+                                dequeuedItems.Add(list.Pop());
+                        }
 
-			// Validate
-			_ = dequeuedItems.Should().ContainInConsecutiveOrder(_testData.Reverse());
-		}
+                        // Validate
+                        _ = dequeuedItems.Should().ContainInConsecutiveOrder(data.Reverse());
+                }
 
-		[Fact]
-		public void PopShoudRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
-		{
-			// Prepare
-			using var list = new RecyclableQueue<string>(_testData);
+                [Fact]
+                public void PopShouldRaiseArgumentOutOfRangeWhenNoMoreElementsFound()
+                {
+                        // Prepare
+                        using var list = new RecyclableStack<string>(_testData);
 
-			// Act
-			while (list.LongCount > 0)
-			{
-				_ = list.Dequeue();
-			}
+                        // Act
+                        while (list.LongCount > 0)
+                        {
+                                _ = list.Pop();
+                        }
 
-			_ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Dequeue());
-		}
+                        _ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Pop());
+                }
 	}
 }

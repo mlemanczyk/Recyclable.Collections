@@ -8,36 +8,40 @@ namespace Recyclable.CollectionsTests
     {
         private static readonly string[] _testData = new[] { "a", "d", "c", "b", "a" };
 
-        [Fact]
-        public void AddLastShouldPreserveOrder()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddLastShouldPreserveOrder(int itemsCount)
         {
-            using var list = new RecyclableLinkedList<string>();
-            foreach (var item in _testData)
+            using var list = new RecyclableLinkedList<long>();
+            var expected = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            foreach (var item in expected)
             {
                 list.AddLast(item);
             }
 
-            var actual = new RecyclableLongList<string>();
+            var actual = new RecyclableLongList<long>();
             foreach (var item in list)
             {
                 actual.Add(item);
             }
 
-            _ = actual.Should().ContainInConsecutiveOrder(_testData)
-                .And.BeEquivalentTo(_testData);
+            _ = actual.Should().ContainInConsecutiveOrder(expected)
+                .And.BeEquivalentTo(expected);
         }
 
-        [Fact]
-        public void AddFirstShouldReverseOrder()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddFirstShouldReverseOrder(int itemsCount)
         {
-            using var list = new RecyclableLinkedList<string>();
-            foreach (var item in _testData)
+            using var list = new RecyclableLinkedList<long>();
+            var source = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            foreach (var item in source)
             {
                 list.AddFirst(item);
             }
 
-            var expected = _testData.Reverse().ToArray();
-            var actual = new RecyclableLongList<string>();
+            var expected = source.Reverse().ToArray();
+            var actual = new RecyclableLongList<long>();
             foreach (var item in list)
             {
                 actual.Add(item);
@@ -46,30 +50,34 @@ namespace Recyclable.CollectionsTests
             _ = actual.Should().ContainInConsecutiveOrder(expected);
         }
 
-        [Fact]
-        public void RemoveFirstShouldReturnItemsInOrder()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void RemoveFirstShouldReturnItemsInOrder(int itemsCount)
         {
-            using var list = new RecyclableLinkedList<string>(_testData);
-            var actual = new RecyclableLongList<string>();
+            var source = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var list = new RecyclableLinkedList<long>(source);
+            var actual = new RecyclableLongList<long>();
             while (list.LongCount > 0)
             {
                 actual.Add(list.RemoveFirst());
             }
 
-            _ = actual.Should().ContainInConsecutiveOrder(_testData);
+            _ = actual.Should().ContainInConsecutiveOrder(source);
         }
 
-        [Fact]
-        public void RemoveLastShouldReturnItemsInReverseOrder()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void RemoveLastShouldReturnItemsInReverseOrder(int itemsCount)
         {
-            using var list = new RecyclableLinkedList<string>(_testData);
-            var actual = new RecyclableLongList<string>();
+            var source = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var list = new RecyclableLinkedList<long>(source);
+            var actual = new RecyclableLongList<long>();
             while (list.LongCount > 0)
             {
                 actual.Add(list.RemoveLast());
             }
 
-            _ = actual.Should().ContainInConsecutiveOrder(_testData.Reverse());
+            _ = actual.Should().ContainInConsecutiveOrder(source.Reverse());
         }
     }
 }

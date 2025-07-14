@@ -7,49 +7,74 @@ namespace Recyclable.CollectionsTests
 {
     public class RecyclableHashSetTests
     {
-        [Fact]
-        public void AddShouldStoreUniqueItems()
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddShouldStoreUniqueItems(int itemsCount)
         {
-            using var set = new RecyclableHashSet<string>();
-            set.Add("a").Should().BeTrue();
-            set.Add("b").Should().BeTrue();
-            set.Add("a").Should().BeFalse();
-
-            _ = set.Should().HaveCount(2);
-            _ = set.Contains("a").Should().BeTrue();
-            _ = set.Contains("b").Should().BeTrue();
-        }
-
-        [Fact]
-        public void RemoveShouldDeleteItem()
-        {
-            using var set = new RecyclableHashSet<int>();
-            set.Add(1);
-            set.Add(2);
-
-            set.Remove(1).Should().BeTrue();
-
-            _ = set.Contains(1).Should().BeFalse();
-            _ = set.Should().HaveCount(1);
-        }
-
-        [Fact]
-        public void EnumeratorShouldYieldItems()
-        {
-            using var set = new RecyclableHashSet<int>();
-            for (int i = 0; i < 5; i++)
+            using var set = new RecyclableHashSet<long>();
+            foreach (var item in RecyclableLongListTestData.CreateTestData(itemsCount))
             {
-                set.Add(i);
+                set.Add(item).Should().BeTrue();
             }
 
-            var actual = new List<int>();
+            foreach (var item in RecyclableLongListTestData.CreateTestData(itemsCount))
+            {
+                set.Add(item).Should().BeFalse();
+            }
+
+            _ = set.Should().HaveCount(itemsCount);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void RemoveShouldDeleteItem(int itemsCount)
+        {
+            using var set = new RecyclableHashSet<long>();
+            foreach (var item in RecyclableLongListTestData.CreateTestData(itemsCount))
+            {
+                set.Add(item);
+            }
+
+            if (itemsCount > 0)
+            {
+                long value = (itemsCount + 1) / 2;
+                set.Remove(value).Should().BeTrue();
+                _ = set.Contains(value).Should().BeFalse();
+                _ = set.Should().HaveCount(itemsCount - 1);
+            }
+            else
+            {
+                set.Remove(0).Should().BeFalse();
+                _ = set.Should().BeEmpty();
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void EnumeratorShouldYieldItems(int itemsCount)
+        {
+            using var set = new RecyclableHashSet<long>();
+            foreach (var item in RecyclableLongListTestData.CreateTestData(itemsCount))
+            {
+                set.Add(item);
+            }
+
+            var actual = new List<long>();
             var enumerator = set.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 actual.Add(enumerator.Current);
             }
 
-            _ = actual.Should().Contain(Enumerable.Range(0, 5)).And.HaveCount(5);
+            var expected = RecyclableLongListTestData.CreateTestData(itemsCount).ToList();
+            if (itemsCount == 0)
+            {
+                _ = actual.Should().BeEmpty();
+            }
+            else
+            {
+                _ = actual.Should().Contain(expected).And.HaveCount(itemsCount);
+            }
         }
     }
 }

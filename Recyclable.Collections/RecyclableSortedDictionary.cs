@@ -1,22 +1,23 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-    internal sealed class RecyclableSortedList<TKey, TValue> : IEnumerable<(TKey Key, TValue Value)>, IDisposable
+    internal sealed class RecyclableSortedDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable
         where TKey : notnull
     {
         private static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
 
+        private readonly IComparer<TKey> _comparer;
         private TKey[] _keys;
         private TValue[] _values;
         private int _count;
-        private readonly IComparer<TKey> _comparer;
         private bool _disposed;
 
-        public RecyclableSortedList(int initialCapacity = RecyclableDefaults.InitialCapacity, IComparer<TKey>? comparer = null)
+        public RecyclableSortedDictionary(int initialCapacity = RecyclableDefaults.InitialCapacity, IComparer<TKey>? comparer = null)
         {
             if (initialCapacity < 1)
             {
@@ -45,7 +46,7 @@ namespace Recyclable.Collections
             get
             {
                 int index = BinarySearch(key);
-                if (index >= 0)
+                if (index < _count && _comparer.Compare(_keys[index], key) == 0)
                 {
                     return _values[index];
                 }
@@ -56,13 +57,13 @@ namespace Recyclable.Collections
             set
             {
                 int index = BinarySearch(key);
-                if (index >= 0)
+                if (index < _count && _comparer.Compare(_keys[index], key) == 0)
                 {
                     _values[index] = value;
                     return;
                 }
 
-                Insert(~index, key, value);
+                InsertAt(index, key, value);
             }
         }
 
@@ -70,36 +71,26 @@ namespace Recyclable.Collections
         public void Add(TKey key, TValue value)
         {
             int index = BinarySearch(key);
-            if (index >= 0)
+            if (index < _count && _comparer.Compare(_keys[index], key) == 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(key), "An element with the same key already exists.");
+                throw new ArgumentException("An element with the same key already exists.", nameof(key));
             }
 
-            Insert(~index, key, value);
+            InsertAt(index, key, value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ContainsKey(TKey key) => BinarySearch(key) >= 0;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool ContainsKey(TKey key)
         {
             int index = BinarySearch(key);
-            if (index >= 0)
-            {
-                value = _values[index];
-                return true;
-            }
-
-            value = default!;
-            return false;
+            return index < _count && _comparer.Compare(_keys[index], key) == 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Remove(TKey key)
         {
             int index = BinarySearch(key);
-            if (index < 0)
+            if (index >= _count || _comparer.Compare(_keys[index], key) != 0)
             {
                 return false;
             }
@@ -120,9 +111,23 @@ namespace Recyclable.Collections
             return true;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            int index = BinarySearch(key);
+            if (index < _count && _comparer.Compare(_keys[index], key) == 0)
+            {
+                value = _values[index];
+                return true;
+            }
+
+            value = default!;
+            return false;
+        }
+
         public void Clear()
         {
-            if (_needsClearing && _count > 0)
+            if (_needsClearing)
             {
                 Array.Clear(_keys, 0, _count);
                 Array.Clear(_values, 0, _count);
@@ -135,38 +140,14 @@ namespace Recyclable.Collections
         public TValue GetValue(int index) => _values[index];
 
         public Enumerator GetEnumerator() => new(this);
-        IEnumerator<(TKey Key, TValue Value)> IEnumerable<(TKey Key, TValue Value)>.GetEnumerator() => new Enumerator(this);
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() => new Enumerator(this);
         IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (_keys.Length >= RecyclableDefaults.MinPooledArrayLength)
-            {
-                RecyclableArrayPool<TKey>.ReturnShared(_keys, _needsClearing);
-            }
-
-            if (_values.Length >= RecyclableDefaults.MinPooledArrayLength)
-            {
-                RecyclableArrayPool<TValue>.ReturnShared(_values, _needsClearing);
-            }
-
-            _keys = Array.Empty<TKey>();
-            _values = Array.Empty<TValue>();
-            _count = 0;
-            _disposed = true;
-            GC.SuppressFinalize(this);
-        }
-
-        private void Insert(int index, TKey key, TValue value)
+        private void InsertAt(int index, TKey key, TValue value)
         {
             if (_count == _keys.Length)
             {
-                Grow(_count + 1);
+                Grow();
             }
 
             if (index < _count)
@@ -180,12 +161,17 @@ namespace Recyclable.Collections
             _count++;
         }
 
-        private void Grow(int min)
+        private void Grow()
         {
-            int newSize = _keys.Length << 1;
-            if (newSize < min)
+            int newSize;
+            if (_keys.Length >= RecyclableDefaults.MaxPooledBlockSize)
             {
-                newSize = min;
+                newSize = RecyclableDefaults.MaxPooledBlockSize;
+            }
+            else
+            {
+                int doubled = _keys.Length << 1;
+                newSize = (int)Math.Min(doubled, RecyclableDefaults.MaxPooledBlockSize);
             }
 
             var newKeys = newSize >= RecyclableDefaults.MinPooledArrayLength
@@ -194,7 +180,6 @@ namespace Recyclable.Collections
             var newValues = newSize >= RecyclableDefaults.MinPooledArrayLength
                 ? RecyclableArrayPool<TValue>.RentShared(newSize)
                 : new TValue[newSize];
-
             Array.Copy(_keys, newKeys, _count);
             Array.Copy(_values, newValues, _count);
 
@@ -202,7 +187,6 @@ namespace Recyclable.Collections
             {
                 RecyclableArrayPool<TKey>.ReturnShared(_keys, _needsClearing);
             }
-
             if (_values.Length >= RecyclableDefaults.MinPooledArrayLength)
             {
                 RecyclableArrayPool<TValue>.ReturnShared(_values, _needsClearing);
@@ -235,33 +219,56 @@ namespace Recyclable.Collections
                 }
             }
 
-            return ~low;
+            return low;
         }
 
-        public struct Enumerator : IEnumerator<(TKey Key, TValue Value)>
+        public void Dispose()
         {
-            private readonly RecyclableSortedList<TKey, TValue> _list;
-            private int _index;
-            private (TKey, TValue) _current;
-
-            internal Enumerator(RecyclableSortedList<TKey, TValue> list)
+            if (_disposed)
             {
-                _list = list;
-                _index = 0;
-                _current = default!;
+                return;
             }
 
-            public (TKey Key, TValue Value) Current => _current;
+            Clear();
+            if (_keys.Length >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                RecyclableArrayPool<TKey>.ReturnShared(_keys, _needsClearing);
+            }
+            if (_values.Length >= RecyclableDefaults.MinPooledArrayLength)
+            {
+                RecyclableArrayPool<TValue>.ReturnShared(_values, _needsClearing);
+            }
+
+            _keys = Array.Empty<TKey>();
+            _values = Array.Empty<TValue>();
+            _disposed = true;
+            GC.SuppressFinalize(this);
+        }
+
+        public struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        {
+            private readonly RecyclableSortedDictionary<TKey, TValue> _dictionary;
+            private int _index;
+            private KeyValuePair<TKey, TValue> _current;
+
+            internal Enumerator(RecyclableSortedDictionary<TKey, TValue> dictionary)
+            {
+                _dictionary = dictionary;
+                _index = 0;
+                _current = default;
+            }
+
+            public KeyValuePair<TKey, TValue> Current => _current;
             object IEnumerator.Current => _current;
 
             public bool MoveNext()
             {
-                if (_index >= _list._count)
+                if (_index >= _dictionary._count)
                 {
                     return false;
                 }
 
-                _current = (_list._keys[_index], _list._values[_index]);
+                _current = new KeyValuePair<TKey, TValue>(_dictionary._keys[_index], _dictionary._values[_index]);
                 _index++;
                 return true;
             }
@@ -269,7 +276,7 @@ namespace Recyclable.Collections
             public void Reset()
             {
                 _index = 0;
-                _current = default!;
+                _current = default;
             }
 
             public void Dispose()
