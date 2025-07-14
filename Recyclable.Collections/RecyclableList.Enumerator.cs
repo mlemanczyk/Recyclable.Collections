@@ -6,9 +6,10 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableList<T>
 	{
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public struct Enumerator : IEnumerator<T>
-		{
+                [StructLayout(LayoutKind.Sequential, Pack = 1)]
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                public struct Enumerator : IEnumerator<T>
+                {
 			private static readonly bool _isReferenceType = !typeof(T).IsValueType;
 
 			private int _currentItemIndex;
