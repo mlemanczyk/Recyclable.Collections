@@ -7,7 +7,7 @@ namespace Recyclable.Collections
 {
     internal sealed class RecyclableStack<T> : IEnumerable<T>, IDisposable
     {
-        private static readonly bool _needsClearing = !typeof(T).IsValueType;
+        internal static readonly bool _needsClearing = !typeof(T).IsValueType;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static RecyclableArrayPoolChunk<T> RentChunk(int size, RecyclableArrayPoolChunk<T>? previous)
@@ -42,10 +42,10 @@ namespace Recyclable.Collections
             RecyclableArrayPoolChunkPool<T>.Dispose(chunk, _needsClearing);
         }
 
-        private RecyclableArrayPoolChunk<T> _current;
-        private bool _disposed;
-        private long _capacity;
-        private long _count;
+        internal RecyclableArrayPoolChunk<T> _current;
+        internal bool _disposed;
+        internal long _capacity;
+        internal long _count;
 
         public RecyclableStack(int initialCapacity = RecyclableDefaults.InitialCapacity)
         {

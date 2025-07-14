@@ -162,12 +162,12 @@ namespace Recyclable.Collections
 		}
 
 		[MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-		public static void AddRange<T>(this RecyclableList<T> list, RecyclableLongList<T> items)
-		{
-			if (items._longCount == 0)
-			{
-				return;
-			}
+                public static void AddRange<T>(this RecyclableList<T> list, RecyclableLongList<T> items)
+                {
+                        if (items._longCount == 0)
+                        {
+                                return;
+                        }
 
 			int oldCount = list._count;
 			long sourceItemsCount = items._longCount;
@@ -208,9 +208,263 @@ namespace Recyclable.Collections
 				itemsSpan.CopyTo(targetSpan);
 			}
 
-			list._count = targetCapacity;
-			list._version++;
-		}
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableList<T> list, RecyclableHashSet<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = items._count,
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        Span<T> targetSpan = new(list._memoryBlock, oldCount, sourceCount);
+                        var entries = items._entries;
+                        int shift = items._blockShift,
+                                mask = items._blockSizeMinus1;
+
+                        for (int i = 0; i < sourceCount; i++)
+                        {
+                                targetSpan[i] = entries[i >> shift][i & mask].Value;
+                        }
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableList<T> list, RecyclableStack<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        if (items._count > int.MaxValue - list._count)
+                        {
+                                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), "The total number of items exceeds the capacity of RecyclableList.");
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = checked((int)items._count),
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        Span<T> targetSpan = new(list._memoryBlock, oldCount, sourceCount);
+                        int index = 0;
+                        var chunk = items._current;
+                        while (chunk != null)
+                        {
+                                var array = chunk.Value;
+                                for (int i = chunk.Index - 1; i >= 0; i--)
+                                {
+                                        targetSpan[index++] = array[i];
+                                }
+
+                                chunk = chunk.Previous;
+                        }
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableList<T> list, RecyclableSortedSet<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = items._count,
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        new ReadOnlySpan<T>(items._items, 0, sourceCount).CopyTo(new Span<T>(list._memoryBlock, oldCount, sourceCount));
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableList<T> list, RecyclableLinkedList<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        if (items._count > int.MaxValue - list._count)
+                        {
+                                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), "The total number of items exceeds the capacity of RecyclableList.");
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = checked((int)items._count),
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        Span<T> targetSpan = new(list._memoryBlock, oldCount, sourceCount);
+                        int index = 0;
+                        var chunk = items._head;
+                        while (chunk != null)
+                        {
+                                for (int i = chunk.Bottom; i < chunk.Top; i++)
+                                {
+                                        targetSpan[index++] = chunk.Value[i];
+                                }
+
+                                chunk = chunk.Next;
+                        }
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableList<T> list, RecyclablePriorityQueue<T> items)
+                {
+                        if (items._size == 0)
+                        {
+                                return;
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = items._size,
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        new ReadOnlySpan<T>(items._heap, 0, sourceCount).CopyTo(new Span<T>(list._memoryBlock, oldCount, sourceCount));
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableList<T> list, RecyclableQueue<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        if (items._count > int.MaxValue - list._count)
+                        {
+                                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), "The total number of items exceeds the capacity of RecyclableList.");
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = checked((int)items._count),
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<T>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        Span<T> targetSpan = new(list._memoryBlock, oldCount, sourceCount);
+                        int index = 0;
+                        var chunk = items._head;
+                        while (chunk != null)
+                        {
+                                for (int i = chunk.Bottom; i < chunk.Top; i++)
+                                {
+                                        targetSpan[index++] = chunk.Value[i];
+                                }
+
+                                chunk = chunk.Next;
+                        }
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<TKey, TValue>(this RecyclableList<KeyValuePair<TKey, TValue>> list, RecyclableDictionary<TKey, TValue> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = items._count,
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<KeyValuePair<TKey, TValue>>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        Span<KeyValuePair<TKey, TValue>> targetSpan = new(list._memoryBlock, oldCount, sourceCount);
+                        var entries = items._entries;
+                        int shift = items._blockShift,
+                                mask = items._blockSizeMinus1;
+
+                        for (int i = 0; i < sourceCount; i++)
+                        {
+                                ref var entry = ref entries[i >> shift][i & mask];
+                                targetSpan[i] = new KeyValuePair<TKey, TValue>(entry.Key, entry.Value);
+                        }
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<TKey, TValue>(this RecyclableList<(TKey Key, TValue Value)> list, RecyclableSortedList<TKey, TValue> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        int oldCount = list._count,
+                                sourceCount = items._count,
+                                targetCapacity = oldCount + sourceCount;
+
+                        if (list._capacity < targetCapacity)
+                        {
+                                list._capacity = RecyclableListHelpers<(TKey Key, TValue Value)>.EnsureCapacity(list, oldCount, checked((int)BitOperations.RoundUpToPowerOf2((uint)targetCapacity)));
+                        }
+
+                        Span<(TKey Key, TValue Value)> targetSpan = new(list._memoryBlock, oldCount, sourceCount);
+                        for (int i = 0; i < sourceCount; i++)
+                        {
+                                targetSpan[i] = (items._keys[i], items._values[i]);
+                        }
+
+                        list._count = targetCapacity;
+                        list._version++;
+                }
 
 		public static IEnumerator AddRange<T>(this RecyclableList<T> list, IEnumerable source, int growByCount = RecyclableDefaults.MinPooledArrayLength)
 		{
@@ -291,15 +545,39 @@ namespace Recyclable.Collections
 			{
 				AddRange(list, sourceList);
 			}
-			else if (items is ICollection<T> sourceICollection)
-			{
-				AddRange(list, sourceICollection);
-			}
-			else if (items is ICollection sourceICollectionWithObjects)
-			{
-				AddRange(list, sourceICollectionWithObjects);
-			}
-			else if (items is IReadOnlyList<T> sourceIReadOnlyList)
+                        else if (items is ICollection<T> sourceICollection)
+                        {
+                                AddRange(list, sourceICollection);
+                        }
+                        else if (items is ICollection sourceICollectionWithObjects)
+                        {
+                                AddRange(list, sourceICollectionWithObjects);
+                        }
+                        else if (items is RecyclableHashSet<T> sourceHashSet)
+                        {
+                                AddRange(list, sourceHashSet);
+                        }
+                        else if (items is RecyclableStack<T> sourceStack)
+                        {
+                                AddRange(list, sourceStack);
+                        }
+                        else if (items is RecyclableSortedSet<T> sourceSortedSet)
+                        {
+                                AddRange(list, sourceSortedSet);
+                        }
+                        else if (items is RecyclableLinkedList<T> sourceLinkedList)
+                        {
+                                AddRange(list, sourceLinkedList);
+                        }
+                        else if (items is RecyclablePriorityQueue<T> sourcePriorityQueue)
+                        {
+                                AddRange(list, sourcePriorityQueue);
+                        }
+                        else if (items is RecyclableQueue<T> sourceQueue)
+                        {
+                                AddRange(list, sourceQueue);
+                        }
+                        else if (items is IReadOnlyList<T> sourceIReadOnlyList)
 			{
 				AddRange(list, sourceIReadOnlyList);
 			}

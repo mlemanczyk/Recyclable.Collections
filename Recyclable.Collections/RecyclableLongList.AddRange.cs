@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
@@ -405,13 +406,37 @@ namespace Recyclable.Collections
 					targetList.AddRange(sourceICollection);
 					return;
 
-				case ICollection sourceICollectionWithObjects:
-					targetList.AddRange(sourceICollectionWithObjects);
-					return;
+                                case ICollection sourceICollectionWithObjects:
+                                        targetList.AddRange(sourceICollectionWithObjects);
+                                        return;
 
-				case IReadOnlyList<T> sourceIReadOnlyList:
-					targetList.AddRange(sourceIReadOnlyList);
-					return;
+                                case IReadOnlyList<T> sourceIReadOnlyList:
+                                        targetList.AddRange(sourceIReadOnlyList);
+                                        return;
+
+                                case RecyclableHashSet<T> sourceHashSet:
+                                        targetList.AddRange(sourceHashSet);
+                                        return;
+
+                                case RecyclableStack<T> sourceStack:
+                                        targetList.AddRange(sourceStack);
+                                        return;
+
+                                case RecyclableSortedSet<T> sourceSortedSet:
+                                        targetList.AddRange(sourceSortedSet);
+                                        return;
+
+                                case RecyclableLinkedList<T> sourceLinkedList:
+                                        targetList.AddRange(sourceLinkedList);
+                                        return;
+
+                                case RecyclablePriorityQueue<T> sourcePriorityQueue:
+                                        targetList.AddRange(sourcePriorityQueue);
+                                        return;
+
+                                case RecyclableQueue<T> sourceQueue:
+                                        targetList.AddRange(sourceQueue);
+                                        return;
 
 				default:
 					if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
@@ -760,12 +785,12 @@ namespace Recyclable.Collections
 			targetList._version++;
 		}
 
-		public static void AddRange<T>(this RecyclableLongList<T> targetList, in T[] items)
-		{
-			if (items.LongLength == 0)
-			{
-				return;
-			}
+                public static void AddRange<T>(this RecyclableLongList<T> targetList, in T[] items)
+                {
+                        if (items.LongLength == 0)
+                        {
+                                return;
+                        }
 
 			int targetBlockIndex = targetList._nextItemBlockIndex;
 
@@ -812,8 +837,344 @@ namespace Recyclable.Collections
 			}
 
 			targetList._longCount = targetCapacity;
-			targetList._lastBlockWithData = targetBlockIndex;
-			targetList._version++;
-		}
+                        targetList._lastBlockWithData = targetBlockIndex;
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableHashSet<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        var entries = items._entries;
+                        int shift = items._blockShift,
+                                mask = items._blockSizeMinus1;
+
+                        for (long i = 0; i < sourceCount; i++)
+                        {
+                                blocks[blockIndex][itemIndex++] = entries[i >> shift][(int)(i & mask)].Value;
+                                if (itemIndex == blockSize)
+                                {
+                                        itemIndex = 0;
+                                        blockIndex++;
+                                }
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableStack<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        var chunk = items._current;
+                        while (chunk != null)
+                        {
+                                var array = chunk.Value;
+                                for (int i = chunk.Index - 1; i >= 0; i--)
+                                {
+                                        blocks[blockIndex][itemIndex++] = array[i];
+                                        if (itemIndex == blockSize)
+                                        {
+                                                itemIndex = 0;
+                                                blockIndex++;
+                                        }
+                                }
+
+                                chunk = chunk.Previous;
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableSortedSet<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        int idx = 0;
+                        while (idx < items._count)
+                        {
+                                blocks[blockIndex][itemIndex++] = items._items[idx++];
+                                if (itemIndex == blockSize)
+                                {
+                                        itemIndex = 0;
+                                        blockIndex++;
+                                }
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableLinkedList<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        var chunk = items._head;
+                        while (chunk != null)
+                        {
+                                for (int i = chunk.Bottom; i < chunk.Top; i++)
+                                {
+                                        blocks[blockIndex][itemIndex++] = chunk.Value[i];
+                                        if (itemIndex == blockSize)
+                                        {
+                                                itemIndex = 0;
+                                                blockIndex++;
+                                        }
+                                }
+
+                                chunk = chunk.Next;
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclablePriorityQueue<T> items)
+                {
+                        if (items._size == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._size,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        int idx = 0;
+                        while (idx < items._size)
+                        {
+                                blocks[blockIndex][itemIndex++] = items._heap[idx++];
+                                if (itemIndex == blockSize)
+                                {
+                                        itemIndex = 0;
+                                        blockIndex++;
+                                }
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableQueue<T> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<T>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        var chunkQ = items._head;
+                        while (chunkQ != null)
+                        {
+                                for (int i = chunkQ.Bottom; i < chunkQ.Top; i++)
+                                {
+                                        blocks[blockIndex][itemIndex++] = chunkQ.Value[i];
+                                        if (itemIndex == blockSize)
+                                        {
+                                                itemIndex = 0;
+                                                blockIndex++;
+                                        }
+                                }
+
+                                chunkQ = chunkQ.Next;
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<TKey, TValue>(this RecyclableLongList<KeyValuePair<TKey, TValue>> targetList, RecyclableDictionary<TKey, TValue> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<KeyValuePair<TKey, TValue>>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        var entries = items._entries;
+                        int shift = items._blockShift,
+                                mask = items._blockSizeMinus1;
+
+                        for (long i = 0; i < sourceCount; i++)
+                        {
+                                ref var entry = ref entries[i >> shift][(int)(i & mask)];
+                                blocks[blockIndex][itemIndex++] = new KeyValuePair<TKey, TValue>(entry.Key, entry.Value);
+                                if (itemIndex == blockSize)
+                                {
+                                        itemIndex = 0;
+                                        blockIndex++;
+                                }
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+                internal static void AddRange<TKey, TValue>(this RecyclableLongList<(TKey Key, TValue Value)> targetList, RecyclableSortedList<TKey, TValue> items)
+                {
+                        if (items._count == 0)
+                        {
+                                return;
+                        }
+
+                        long sourceCount = items._count,
+                                targetCapacity = targetList._longCount + sourceCount;
+
+                        if (targetList._capacity < targetCapacity)
+                        {
+                                targetList._capacity = RecyclableLongList<(TKey Key, TValue Value)>.Helpers.Resize(targetList, targetList._blockSize, targetList._blockSizePow2BitShift, checked((long)BitOperations.RoundUpToPowerOf2((ulong)targetCapacity)));
+                        }
+
+                        var blocks = targetList._memoryBlocks;
+                        int blockIndex = targetList._nextItemBlockIndex,
+                                itemIndex = targetList._nextItemIndex,
+                                blockSize = targetList._blockSize;
+
+                        int idx2 = 0;
+                        while (idx2 < items._count)
+                        {
+                                blocks[blockIndex][itemIndex++] = (items._keys[idx2], items._values[idx2]);
+                                idx2++;
+                                if (itemIndex == blockSize)
+                                {
+                                        itemIndex = 0;
+                                        blockIndex++;
+                                }
+                        }
+
+                        targetList._longCount = targetCapacity;
+                        targetList._nextItemBlockIndex = blockIndex;
+                        targetList._nextItemIndex = itemIndex;
+                        targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
+                        targetList._version++;
+                }
 	}
 }

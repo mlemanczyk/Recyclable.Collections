@@ -8,13 +8,13 @@ namespace Recyclable.Collections
     internal sealed class RecyclableSortedList<TKey, TValue> : IEnumerable<(TKey Key, TValue Value)>, IDisposable
         where TKey : notnull
     {
-        private static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
+        internal static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
 
-        private TKey[] _keys;
-        private TValue[] _values;
-        private int _count;
-        private readonly IComparer<TKey> _comparer;
-        private bool _disposed;
+        internal TKey[] _keys;
+        internal TValue[] _values;
+        internal int _count;
+        internal readonly IComparer<TKey> _comparer;
+        internal bool _disposed;
 
         public RecyclableSortedList(int initialCapacity = RecyclableDefaults.InitialCapacity, IComparer<TKey>? comparer = null)
         {
