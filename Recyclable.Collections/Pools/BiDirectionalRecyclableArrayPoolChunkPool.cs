@@ -20,13 +20,13 @@ namespace Recyclable.Collections.Pools
 
         public static void Dispose(BiDirectionalRecyclableArrayPoolChunk<T> chunk, bool needsClearing)
         {
-            var buffer = chunk.Buffer;
+            var buffer = chunk.Value;
             if (buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
             {
                 RecyclableArrayPool<T>.ReturnShared(buffer, needsClearing);
             }
 
-            chunk.Buffer = BiDirectionalRecyclableArrayPoolChunk<T>.Empty;
+            chunk.Value = BiDirectionalRecyclableArrayPoolChunk<T>.Empty;
             chunk.Top = 0;
             chunk.Bottom = 0;
             chunk.Previous = null;

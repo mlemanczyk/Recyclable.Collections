@@ -13,14 +13,14 @@ namespace Recyclable.Collections
         private static RecyclableArrayPoolChunk<T> RentChunk(int size, RecyclableArrayPoolChunk<T>? previous)
         {
             var chunk = RecyclableArrayPoolChunkPool<T>.Rent();
-            if (chunk.Buffer.Length < size)
+            if (chunk.Value.Length < size)
             {
-                if (chunk.Buffer.Length >= RecyclableDefaults.MinPooledArrayLength)
+                if (chunk.Value.Length >= RecyclableDefaults.MinPooledArrayLength)
                 {
-                    RecyclableArrayPool<T>.ReturnShared(chunk.Buffer, _needsClearing);
+                    RecyclableArrayPool<T>.ReturnShared(chunk.Value, _needsClearing);
                 }
 
-                chunk.Buffer = size >= RecyclableDefaults.MinPooledArrayLength
+                chunk.Value = size >= RecyclableDefaults.MinPooledArrayLength
                     ? RecyclableArrayPool<T>.RentShared(size)
                     : new T[size];
             }
@@ -77,12 +77,12 @@ namespace Recyclable.Collections
 
         public void Push(T item)
         {
-            if (_current.Index == _current.Buffer.Length)
+            if (_current.Index == _current.Value.Length)
             {
                 Grow();
             }
 
-            _current.Buffer[_current.Index++] = item;
+            _current.Value[_current.Index++] = item;
             _count++;
         }
 
@@ -97,10 +97,10 @@ namespace Recyclable.Collections
 
             _count--;
             _current.Index--;
-            var value = _current.Buffer[_current.Index];
+            var value = _current.Value[_current.Index];
             if (_needsClearing)
             {
-                _current.Buffer[_current.Index] = default!;
+                _current.Value[_current.Index] = default!;
             }
 
             if (_current.Index == 0 && _current.Previous != null)
@@ -120,10 +120,10 @@ namespace Recyclable.Collections
 
             if (_needsClearing && _current.Index > 0)
             {
-                Array.Clear(_current.Buffer, 0, _current.Index);
+                Array.Clear(_current.Value, 0, _current.Index);
             }
 
-            _capacity = _current.Buffer.Length;
+            _capacity = _current.Value.Length;
             _current.Index = 0;
             _count = 0;
         }
@@ -156,7 +156,7 @@ namespace Recyclable.Collections
             var toReturn = _current;
             _current = toReturn.Previous!;
             _current.Next = null;
-            _capacity -= toReturn.Buffer.Length;
+            _capacity -= toReturn.Value.Length;
             ReturnChunk(toReturn);
         }
 
@@ -214,7 +214,7 @@ namespace Recyclable.Collections
                     _index = _chunk.Index - 1;
                 }
 
-                _current = _chunk.Buffer[_index--];
+                _current = _chunk.Value[_index--];
                 return true;
             }
 

@@ -6,7 +6,7 @@ namespace Recyclable.Collections.Pools
 
         internal static T[] Empty => _empty;
 
-        internal T[] Buffer;
+        internal T[] Value;
         internal int Top;
         internal int Bottom;
         internal BiDirectionalRecyclableArrayPoolChunk<T>? Previous;
@@ -14,7 +14,7 @@ namespace Recyclable.Collections.Pools
 
         public BiDirectionalRecyclableArrayPoolChunk()
         {
-            Buffer = _empty;
+            Value = _empty;
         }
     }
 }

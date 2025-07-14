@@ -5,12 +5,12 @@ using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-    internal sealed class RecyclableQueue<T> : IEnumerable<T>, IDisposable
+    internal sealed class RecyclableLinkedList<T> : IEnumerable<T>, IDisposable
     {
         private static readonly bool _needsClearing = !typeof(T).IsValueType;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static BiDirectionalRecyclableArrayPoolChunk<T> RentChunk(int size, BiDirectionalRecyclableArrayPoolChunk<T>? previous)
+        private static BiDirectionalRecyclableArrayPoolChunk<T> RentChunk(int size, BiDirectionalRecyclableArrayPoolChunk<T>? previous, bool forHead)
         {
             var chunk = BiDirectionalRecyclableArrayPoolChunkPool<T>.Rent();
             if (chunk.Value.Length < size)
@@ -25,8 +25,17 @@ namespace Recyclable.Collections
                     : new T[size];
             }
 
-            chunk.Top = 0;
-            chunk.Bottom = 0;
+            if (forHead)
+            {
+                chunk.Top = size;
+                chunk.Bottom = size;
+            }
+            else
+            {
+                chunk.Top = 0;
+                chunk.Bottom = 0;
+            }
+
             chunk.Previous = previous;
             chunk.Next = null;
             return chunk;
@@ -50,7 +59,7 @@ namespace Recyclable.Collections
         private long _capacity;
         private long _count;
 
-        public RecyclableQueue(int initialCapacity = RecyclableDefaults.InitialCapacity)
+        public RecyclableLinkedList(int initialCapacity = RecyclableDefaults.InitialCapacity)
         {
             if (initialCapacity < 1)
             {
@@ -62,41 +71,50 @@ namespace Recyclable.Collections
                 initialCapacity = (int)BitOperations.RoundUpToPowerOf2((uint)initialCapacity);
             }
 
-            _head = RentChunk(initialCapacity, null);
+            _head = RentChunk(initialCapacity, null, false);
             _tail = _head;
             _capacity = initialCapacity;
             _count = 0;
         }
 
-        public RecyclableQueue(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.InitialCapacity) : this(initialCapacity)
+        public RecyclableLinkedList(IEnumerable<T> source, int initialCapacity = RecyclableDefaults.InitialCapacity) : this(initialCapacity)
         {
             foreach (var item in source)
             {
-                Enqueue(item);
+                AddLast(item);
             }
         }
 
         public int Count => checked((int)_count);
         public long LongCount => _count;
 
-        public void Enqueue(T item)
+        public void AddLast(T item)
         {
             if (_tail.Top == _tail.Value.Length)
             {
-                Grow();
+                GrowTail();
             }
 
             _tail.Value[_tail.Top++] = item;
             _count++;
         }
 
-        public void Add(T item) => Enqueue(item);
+        public void AddFirst(T item)
+        {
+            if (_head.Bottom == 0)
+            {
+                GrowHead();
+            }
 
-        public T Dequeue()
+            _head.Value[--_head.Bottom] = item;
+            _count++;
+        }
+
+        public T RemoveFirst()
         {
             if (_count == 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(_count), "Queue is empty");
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(_count), "List is empty");
             }
 
             _count--;
@@ -113,23 +131,37 @@ namespace Recyclable.Collections
             }
             else if (_head.Bottom == _head.Top)
             {
-                _head.Bottom = 0;
-                _head.Top = 0;
+                _head.Bottom = _head.Top;
             }
 
             return value;
         }
 
-        public bool TryDequeue(out T? item)
+        public T RemoveLast()
         {
-            if (_count > 0)
+            if (_count == 0)
             {
-                item = Dequeue();
-                return true;
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(_count), "List is empty");
             }
 
-            item = default;
-            return false;
+            _count--;
+            _tail.Top--;
+            var value = _tail.Value[_tail.Top];
+            if (_needsClearing)
+            {
+                _tail.Value[_tail.Top] = default!;
+            }
+
+            if (_tail.Top == _tail.Bottom && _tail.Previous != null)
+            {
+                ReleaseTailChunk();
+            }
+            else if (_tail.Top == _tail.Bottom)
+            {
+                _tail.Top = _tail.Bottom;
+            }
+
+            return value;
         }
 
         public void Clear()
@@ -139,14 +171,18 @@ namespace Recyclable.Collections
                 ReleaseHeadChunk();
             }
 
+            while (_tail.Previous != null)
+            {
+                ReleaseTailChunk();
+            }
+
             if (_needsClearing && _head.Top > _head.Bottom)
             {
                 Array.Clear(_head.Value, _head.Bottom, _head.Top - _head.Bottom);
             }
 
             _capacity = _head.Value.Length;
-            _head.Top = 0;
-            _head.Bottom = 0;
+            _head.Bottom = _head.Top;
             _tail = _head;
             _count = 0;
         }
@@ -155,7 +191,7 @@ namespace Recyclable.Collections
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
         IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 
-        private void Grow()
+        private void GrowTail()
         {
             int newSize;
             if (_capacity >= RecyclableDefaults.MaxPooledBlockSize)
@@ -168,9 +204,29 @@ namespace Recyclable.Collections
                 newSize = (int)Math.Min(doubled - _capacity, RecyclableDefaults.MaxPooledBlockSize);
             }
 
-            var newChunk = RentChunk(newSize, _tail);
+            var newChunk = RentChunk(newSize, _tail, false);
             _tail.Next = newChunk;
             _tail = newChunk;
+            _capacity += newSize;
+        }
+
+        private void GrowHead()
+        {
+            int newSize;
+            if (_capacity >= RecyclableDefaults.MaxPooledBlockSize)
+            {
+                newSize = RecyclableDefaults.MaxPooledBlockSize;
+            }
+            else
+            {
+                var doubled = _capacity << 1;
+                newSize = (int)Math.Min(doubled - _capacity, RecyclableDefaults.MaxPooledBlockSize);
+            }
+
+            var newChunk = RentChunk(newSize, null, true);
+            newChunk.Next = _head;
+            _head.Previous = newChunk;
+            _head = newChunk;
             _capacity += newSize;
         }
 
@@ -179,6 +235,15 @@ namespace Recyclable.Collections
             var toReturn = _head;
             _head = toReturn.Next!;
             _head.Previous = null;
+            _capacity -= toReturn.Value.Length;
+            ReturnChunk(toReturn);
+        }
+
+        private void ReleaseTailChunk()
+        {
+            var toReturn = _tail;
+            _tail = toReturn.Previous!;
+            _tail.Next = null;
             _capacity -= toReturn.Value.Length;
             ReturnChunk(toReturn);
         }
@@ -209,10 +274,10 @@ namespace Recyclable.Collections
             private int _index;
             private T? _current;
 
-            internal Enumerator(RecyclableQueue<T> queue)
+            internal Enumerator(RecyclableLinkedList<T> list)
             {
-                _start = queue._head;
-                _chunk = queue._head;
+                _start = list._head;
+                _chunk = list._head;
                 _index = _chunk != null ? _chunk.Bottom : 0;
                 _current = default;
             }
@@ -255,3 +320,4 @@ namespace Recyclable.Collections
         }
     }
 }
+

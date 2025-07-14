@@ -6,14 +6,14 @@ namespace Recyclable.Collections.Pools
 
         internal static T[] Empty => _empty;
 
-        internal T[] Buffer;
+        internal T[] Value;
         internal int Index;
         internal RecyclableArrayPoolChunk<T>? Previous;
         internal RecyclableArrayPoolChunk<T>? Next;
 
         public RecyclableArrayPoolChunk()
         {
-            Buffer = _empty;
+            Value = _empty;
         }
     }
 }
