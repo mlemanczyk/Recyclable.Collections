@@ -438,10 +438,24 @@ namespace Recyclable.Collections
                                         targetList.AddRange(sourceQueue);
                                         return;
 
-				default:
-					if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
-					{
-						targetList.AddRangeWithKnownCount(items, requiredAdditionalCapacity);
+                                case var _ when typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(KeyValuePair<,>)
+                                            && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableDictionary<,>):
+                                        dynamic dynTargetList = targetList;
+                                        dynamic dynDict = items;
+                                        AddRange(dynTargetList, dynDict);
+                                        return;
+
+                                case var _ when typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(ValueTuple<,>)
+                                            && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableSortedList<,>):
+                                        dynamic dynTargetList2 = targetList;
+                                        dynamic dynSortedList = items;
+                                        AddRange(dynTargetList2, dynSortedList);
+                                        return;
+
+                                default:
+                                        if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity))
+                                        {
+                                                targetList.AddRangeWithKnownCount(items, requiredAdditionalCapacity);
 					}
 					else
 					{

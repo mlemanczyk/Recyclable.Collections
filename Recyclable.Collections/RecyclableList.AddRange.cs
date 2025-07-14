@@ -577,10 +577,24 @@ namespace Recyclable.Collections
                         {
                                 AddRange(list, sourceQueue);
                         }
+                        else if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(KeyValuePair<,>)
+                                 && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableDictionary<,>))
+                        {
+                                dynamic dynList = list;
+                                dynamic dynDict = items;
+                                AddRange(dynList, dynDict);
+                        }
+                        else if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(ValueTuple<,>)
+                                 && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableSortedList<,>))
+                        {
+                                dynamic dynList = list;
+                                dynamic dynSortedList = items;
+                                AddRange(dynList, dynSortedList);
+                        }
                         else if (items is IReadOnlyList<T> sourceIReadOnlyList)
-			{
-				AddRange(list, sourceIReadOnlyList);
-			}
+                        {
+                                AddRange(list, sourceIReadOnlyList);
+                        }
 			else if (items.TryGetNonEnumeratedCount(out var requiredAdditionalCapacity) && requiredAdditionalCapacity != 0)
 			{
 				AddRangeWithKnownCount(list, items, list._count, requiredAdditionalCapacity);
