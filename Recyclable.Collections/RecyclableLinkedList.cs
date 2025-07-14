@@ -7,7 +7,7 @@ namespace Recyclable.Collections
 {
     internal sealed class RecyclableLinkedList<T> : IEnumerable<T>, IDisposable
     {
-        private static readonly bool _needsClearing = !typeof(T).IsValueType;
+        internal static readonly bool _needsClearing = !typeof(T).IsValueType;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static BiDirectionalRecyclableArrayPoolChunk<T> RentChunk(int size, BiDirectionalRecyclableArrayPoolChunk<T>? previous, bool forHead)
@@ -53,11 +53,11 @@ namespace Recyclable.Collections
             BiDirectionalRecyclableArrayPoolChunkPool<T>.Dispose(chunk, _needsClearing);
         }
 
-        private BiDirectionalRecyclableArrayPoolChunk<T> _head;
-        private BiDirectionalRecyclableArrayPoolChunk<T> _tail;
-        private bool _disposed;
-        private long _capacity;
-        private long _count;
+        internal BiDirectionalRecyclableArrayPoolChunk<T> _head;
+        internal BiDirectionalRecyclableArrayPoolChunk<T> _tail;
+        internal bool _disposed;
+        internal long _capacity;
+        internal long _count;
 
         public RecyclableLinkedList(int initialCapacity = RecyclableDefaults.InitialCapacity)
         {

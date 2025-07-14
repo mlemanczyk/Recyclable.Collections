@@ -7,15 +7,15 @@ namespace Recyclable.Collections
 {
     internal sealed class RecyclablePriorityQueue<T> : IEnumerable<T>, IDisposable
     {
-        private static readonly bool _needsClearing = !typeof(T).IsValueType;
+        internal static readonly bool _needsClearing = !typeof(T).IsValueType;
 
-        private readonly IComparer<T> _comparer;
+        internal readonly IComparer<T> _comparer;
 
 #nullable disable
-        private T[] _heap;
+        internal T[] _heap;
 #nullable restore
-        private int _size;
-        private bool _disposed;
+        internal int _size;
+        internal bool _disposed;
 
         public RecyclablePriorityQueue(int initialCapacity = RecyclableDefaults.InitialCapacity, IComparer<T>? comparer = null)
         {

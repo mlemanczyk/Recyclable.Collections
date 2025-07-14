@@ -9,20 +9,20 @@ namespace Recyclable.Collections
     internal sealed class RecyclableDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable
         where TKey : notnull
     {
-        private static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
+        internal static readonly bool _needsClearing = !typeof(TKey).IsValueType || !typeof(TValue).IsValueType;
 
-        private readonly int _blockSize;
-        private readonly int _blockSizeMinus1;
-        private readonly byte _blockShift;
+        internal readonly int _blockSize;
+        internal readonly int _blockSizeMinus1;
+        internal readonly byte _blockShift;
 
 #nullable disable
-        private Entry[][] _entries;
+        internal Entry[][] _entries;
 #nullable restore
-        private int[] _buckets;
-        private int _count;
-        private bool _disposed;
+        internal int[] _buckets;
+        internal int _count;
+        internal bool _disposed;
 
-        private struct Entry
+        internal struct Entry
         {
             public int HashCode;
             public int Next;

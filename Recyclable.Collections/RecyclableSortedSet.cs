@@ -7,13 +7,13 @@ namespace Recyclable.Collections
 {
     internal sealed class RecyclableSortedSet<T> : IEnumerable<T>, IDisposable where T : notnull
     {
-        private static readonly bool _needsClearing = !typeof(T).IsValueType;
+        internal static readonly bool _needsClearing = !typeof(T).IsValueType;
 
-        private readonly IComparer<T> _comparer;
+        internal readonly IComparer<T> _comparer;
 
-        private T[] _items;
-        private int _count;
-        private bool _disposed;
+        internal T[] _items;
+        internal int _count;
+        internal bool _disposed;
 
         public RecyclableSortedSet(int initialCapacity = RecyclableDefaults.InitialCapacity, IComparer<T>? comparer = null)
         {
