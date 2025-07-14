@@ -128,5 +128,243 @@ namespace Recyclable.CollectionsTests
 
                         _ = Assert.Throws<ArgumentOutOfRangeException>(() => list.Pop());
                 }
+        [Fact]
+        public void AddRangeShouldAcceptNulls()
+        {
+            using var stack = new RecyclableStack<long?>();
+            stack.AddRange(new long?[] { null, default });
+            _ = stack.Should().HaveCount(2).And.AllSatisfy(x => x.Should().BeNull());
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddItemsInCorrectOrder(string testCase, IEnumerable<long> testData, int itemsCount)
+        {
+            using var stack = new RecyclableStack<long>();
+
+            if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((Array)testData);
+            }
+            else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((System.Collections.ICollection)testData);
+            }
+            else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((ICollection<long>)testData);
+            }
+            else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+            {
+                _ = stack.AddRange((System.Collections.IEnumerable)testData);
+            }
+            else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((IReadOnlyList<long>)testData);
+            }
+            else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange(new ReadOnlySpan<long>((long[])testData));
+            }
+            else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange(new Span<long>((long[])testData));
+            }
+            else if (testData is long[] array)
+            {
+                stack.AddRange(array);
+            }
+            else if (testData is List<long> list)
+            {
+                stack.AddRange(list);
+            }
+            else if (testData is RecyclableList<long> rList)
+            {
+                stack.AddRange(rList);
+            }
+            else if (testData is RecyclableLongList<long> rLongList)
+            {
+                stack.AddRange(rLongList);
+            }
+            else if (testData is IList<long> iList)
+            {
+                stack.AddRange((ICollection<long>)iList);
+            }
+            else if (testData is IEnumerable<long> enumerable)
+            {
+                stack.AddRange(enumerable);
+            }
+            else
+            {
+                throw new InvalidCastException("Unknown type of test data");
+            }
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(testData);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.EmptySourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldDoNothingWhenSourceIsEmpty(string testCase, IEnumerable<long> testData, int itemsCount)
+        {
+            using var stack = new RecyclableStack<long>();
+
+            if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((Array)testData);
+            }
+            else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((System.Collections.ICollection)testData);
+            }
+            else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((ICollection<long>)testData);
+            }
+            else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+            {
+                _ = stack.AddRange((System.Collections.IEnumerable)testData);
+            }
+            else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((IReadOnlyList<long>)testData);
+            }
+            else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange(new ReadOnlySpan<long>((long[])testData));
+            }
+            else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange(new Span<long>((long[])testData));
+            }
+            else if (testData is long[] array)
+            {
+                stack.AddRange(array);
+            }
+            else if (testData is List<long> list)
+            {
+                stack.AddRange(list);
+            }
+            else if (testData is RecyclableList<long> rList)
+            {
+                stack.AddRange(rList);
+            }
+            else if (testData is RecyclableLongList<long> rLongList)
+            {
+                stack.AddRange(rLongList);
+            }
+            else if (testData is IList<long> iList)
+            {
+                stack.AddRange((ICollection<long>)iList);
+            }
+            else if (testData is IEnumerable<long> enumerable)
+            {
+                stack.AddRange(enumerable);
+            }
+            else
+            {
+                throw new InvalidCastException("Unknown type of test data");
+            }
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(testData);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItems(string testCase, IEnumerable<long> testData, int itemsCount)
+        {
+            using var stack = new RecyclableStack<long>();
+            itemsCount = checked(itemsCount << 1);
+
+            if (testCase.Contains("Array[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((Array)testData);
+                stack.AddRange((Array)testData);
+            }
+            else if (testCase.Contains("ICollection[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((System.Collections.ICollection)testData);
+                stack.AddRange((System.Collections.ICollection)testData);
+            }
+            else if (testCase.Contains("ICollection<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((ICollection<long>)testData);
+                stack.AddRange((ICollection<long>)testData);
+            }
+            else if (testCase.Contains("IEnumerable[", StringComparison.OrdinalIgnoreCase))
+            {
+                _ = stack.AddRange((System.Collections.IEnumerable)testData);
+                _ = stack.AddRange((System.Collections.IEnumerable)testData);
+            }
+            else if (testCase.Contains("IReadOnlyList<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                stack.AddRange((IReadOnlyList<long>)testData);
+                stack.AddRange((IReadOnlyList<long>)testData);
+            }
+            else if (testCase.Contains("ReadOnlySpan<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                var span = new ReadOnlySpan<long>((long[])testData);
+                stack.AddRange(span);
+                stack.AddRange(span);
+            }
+            else if (testCase.Contains("Span<T>[", StringComparison.OrdinalIgnoreCase))
+            {
+                var span = new Span<long>((long[])testData);
+                stack.AddRange(span);
+                stack.AddRange(span);
+            }
+            else if (testData is long[] array)
+            {
+                stack.AddRange(array);
+                stack.AddRange(array);
+            }
+            else if (testData is List<long> list)
+            {
+                stack.AddRange(list);
+                stack.AddRange(list);
+            }
+            else if (testData is RecyclableList<long> rList)
+            {
+                stack.AddRange(rList);
+                stack.AddRange(rList);
+            }
+            else if (testData is RecyclableLongList<long> rLongList)
+            {
+                stack.AddRange(rLongList);
+                stack.AddRange(rLongList);
+            }
+            else if (testData is IList<long> iList)
+            {
+                stack.AddRange((ICollection<long>)iList);
+                stack.AddRange((ICollection<long>)iList);
+            }
+            else if (testData is IEnumerable<long> enumerable)
+            {
+                stack.AddRange(enumerable);
+                stack.AddRange(enumerable);
+            }
+            else
+            {
+                throw new InvalidCastException("Unknown type of test data");
+            }
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(testData);
+            expected.AddRange(testData);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
 	}
 }
