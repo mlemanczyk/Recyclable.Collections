@@ -928,11 +928,11 @@ namespace Recyclable.CollectionsTests
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
-		public void SetByIndexShouldReturnCorrectItemWhenLong(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
-		{
-			// Prepare
-			using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
-			var expectedData = testData.ToList();
+                public void SetByIndexShouldReturnCorrectItemWhenLong(string testCase, IEnumerable<long> testData, long itemsCount, int targetBlockSize)
+                {
+                        // Prepare
+                        using var list = new RecyclableLongList<long>(testData, minBlockSize: targetBlockSize, itemsCount);
+                        var expectedData = testData.ToList();
 
 			// Act & Validate
 			foreach (long item in testData)
@@ -941,11 +941,96 @@ namespace Recyclable.CollectionsTests
 				list[item - 1] = item + 1;
 
 				// Validate
-				expectedData[(int)item - 1] = item + 1;
-				list[item - 1].Should().Be(item + 1);
-				list.Should().Equal(expectedData);
-			}
-		}
+                                expectedData[(int)item - 1] = item + 1;
+                                list[item - 1].Should().Be(item + 1);
+                                list.Should().Equal(expectedData);
+                        }
+                }
+
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+                public void SortShouldSortItemsInCorrectOrder(string testCase, IEnumerable<long> testData, long itemsCount)
+                {
+                        // Prepare
+                        using var list = new RecyclableLongList<long>(testData.Reverse(), initialCapacity: itemsCount);
+                        var expectedData = testData.Reverse().ToList();
+                        expectedData.Sort();
+
+                        // Act
+                        list.Sort();
+
+                        // Validate
+                        _ = list.Should().Equal(expectedData);
+                }
+
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+                public void SortShouldSortItemsInCorrectOrderWhenWithComparer(string testCase, IEnumerable<long> testData, long itemsCount)
+                {
+                        // Prepare
+                        using var list = new RecyclableLongList<long>(testData.Reverse(), initialCapacity: itemsCount);
+                        IComparer<long> comparer = Comparer<long>.Default;
+                        var expectedData = testData.Reverse().ToList();
+                        expectedData.Sort(comparer);
+
+                        // Act
+                        list.Sort(comparer);
+
+                        // Validate
+                        _ = list.Should().Equal(expectedData);
+                }
+
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.SourceDataVariants), MemberType = typeof(RecyclableLongListTestData))]
+                public void SortShouldSortItemsInCorrectOrderWhenWithComparison(string testCase, IEnumerable<long> testData, long itemsCount)
+                {
+                        // Prepare
+                        using var list = new RecyclableLongList<long>(testData.Reverse(), initialCapacity: itemsCount);
+
+                        static int comparison(long x, long y)
+                        {
+                                return (x - y) switch
+                                {
+                                        > 0 => 1,
+                                        < 0 => -1,
+                                        _ => 0,
+                                };
+                        }
+
+                        var expectedData = testData.Reverse().ToList();
+                        expectedData.Sort(comparison);
+
+                        // Act
+                        list.Sort(comparison);
+
+                        // Validate
+                        _ = list.Should().Equal(expectedData);
+                }
+
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.SourceDataWithItemIndexVariants), MemberType = typeof(RecyclableLongListTestData))]
+                public void SortShouldSortItemsInCorrectOrderWhenConstrained(string testCase, IEnumerable<long> testData, long itemsCount, long[] itemIndexes)
+                {
+                        // Prepare
+                        IComparer<long> comparer = Comparer<long>.Default;
+                        var expectedData = testData.Reverse().ToArray();
+
+                        foreach (var itemIndex in itemIndexes)
+                        {
+                                // Prepare
+                                using var list = new RecyclableLongList<long>(testData.Reverse(), initialCapacity: itemsCount);
+                                var startingIndex = (int)Math.Min(1, itemIndex);
+
+                                var expectedSortedData = expectedData.ToList();
+                                expectedSortedData.Sort(startingIndex, (int)itemIndex, comparer);
+
+                                // Act
+                                list.Sort(startingIndex, (int)itemIndex, comparer);
+
+                                // Validate
+                                _ = list.Should().Equal(expectedSortedData);
+                        }
+                }
 
 		[Theory]
 		[MemberData(nameof(RecyclableLongListTestData.SourceDataWithBlockSizeVariants), MemberType = typeof(RecyclableLongListTestData))]
