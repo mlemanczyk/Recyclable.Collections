@@ -1,4 +1,5 @@
 ﻿using Recyclable.Collections.Pools;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
@@ -76,11 +77,11 @@ namespace Recyclable.Collections
 					return;
 				}
 
-				ReadOnlySpan<T> sourceBlockMemory;
-				Span<T> destinationArrayMemory;
-				// TODO: Replace with bit-shifting
-				int startingBlockIndex = (int)(startingIndex / blockSize);
-				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize != 0 ? 1 : 0)) - 1;
+                                ReadOnlySpan<T> sourceBlockMemory;
+                                Span<T> destinationArrayMemory;
+                                int blockSizePow2Shift = BitOperations.TrailingZeroCount((uint)blockSize);
+                                int startingBlockIndex = (int)(startingIndex >> blockSizePow2Shift);
+                                int lastBlockIndex = (int)((itemsCount >> blockSizePow2Shift) + ((itemsCount & (blockSize - 1)) != 0 ? 1 : 0)) - 1;
 				ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
 				destinationArrayMemory = new Span<T>(destinationArray, destinationArrayIndex, (int)Math.Min(destinationArray.Length - destinationArrayIndex, itemsCount));
 				int memoryBlockIndex;
@@ -105,9 +106,9 @@ namespace Recyclable.Collections
 					return;
 				}
 
-				// TODO: Replace with bit-shifting
-				int startingBlockIndex = (int)(startingIndex / blockSize);
-				int lastBlockIndex = (int)((itemsCount / blockSize) + (itemsCount % blockSize != 0 ? 1 : 0)) - 1;
+                                int blockSizePow2Shift = BitOperations.TrailingZeroCount((uint)blockSize);
+                                int startingBlockIndex = (int)(startingIndex >> blockSizePow2Shift);
+                                int lastBlockIndex = (int)((itemsCount >> blockSizePow2Shift) + ((itemsCount & (blockSize - 1)) != 0 ? 1 : 0)) - 1;
 
 				var destinationIndex = destinationArrayIndex;
 				ReadOnlySpan<T[]> sourceMemoryBlocksSpan = new(sourceMemoryBlocks, startingBlockIndex, lastBlockIndex + 1);
