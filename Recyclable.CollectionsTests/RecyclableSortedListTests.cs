@@ -7,17 +7,20 @@ namespace Recyclable.CollectionsTests
 	{
 		private static readonly (int, string)[] _testData = new[] { (5, "a"), (4, "d"), (3, "c"), (2, "b"), (1, "a") };
 
-		[Fact]
-		public void ShouldBeSortedWhenCreated()
-		{
-			// Act
-			using var sortedList = new RecyclableSortedList<int, string>(_testData, 2);
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void ShouldBeSortedWhenCreated(int itemsCount)
+                {
+                        // Act
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount)
+                                .Select(x => (itemsCount - x + 1, x))
+                                .ToArray();
+                        using var sortedList = new RecyclableSortedList<long, long>(data, 2);
 
-			// Validate
-			_ = sortedList.Should().HaveCount(_testData.Length)
-				.And.BeEquivalentTo(_testData)
-				.And.BeInAscendingOrder((item) => item.Key);
-		}
+                        // Validate
+                        _ = sortedList.Should().HaveCount(itemsCount)
+                                .And.BeInAscendingOrder(item => item.Key);
+                }
 
 		[Fact]
 		public void ShouldBeEmptyWhenNotInitialized()
@@ -47,40 +50,44 @@ namespace Recyclable.CollectionsTests
 				.And.ContainInConsecutiveOrder(_testData);
 		}
 
-		[Fact]
-		public void ShouldBeSortedWhenUpdateEnds()
-		{
-			// Prepare
-			using var sortedList = new RecyclableSortedList<int, string>(2);
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void ShouldBeSortedWhenUpdateEnds(int itemsCount)
+                {
+                        // Prepare
+                        using var sortedList = new RecyclableSortedList<long, long>(2);
 
-			// Act
-			sortedList.BeginUpdate();
-			foreach (var testItem in _testData)
-			{
-				sortedList.Add(testItem);
-			}
+                        // Act
+                        sortedList.BeginUpdate();
+                        foreach (var value in RecyclableLongListTestData.CreateTestData(itemsCount))
+                        {
+                                sortedList.Add((itemsCount - value + 1, value));
+                        }
 
-			// Validate
-			_ = sortedList.Should().BeInDescendingOrder(x => x.Key);
+                        // Validate
+                        _ = sortedList.Should().BeInDescendingOrder(x => x.Key);
 
-			// Act
-			sortedList.EndUpdate();
+                        // Act
+                        sortedList.EndUpdate();
 
-			// Validate
-			_ = sortedList.Should().BeInAscendingOrder(x => x.Key);
-		}
+                        // Validate
+                        _ = sortedList.Should().BeInAscendingOrder(x => x.Key);
+                }
 
-		[Fact]
-		public void ShouldBeEmptyAfterClear()
-		{
-			// Prepare
-			using var sortedList = new RecyclableSortedList<int, string>(_testData);
+                [Theory]
+                [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+                public void ShouldBeEmptyAfterClear(int itemsCount)
+                {
+                        // Prepare
+                        var data = RecyclableLongListTestData.CreateTestData(itemsCount)
+                                .Select(x => (x, x));
+                        using var sortedList = new RecyclableSortedList<long, long>(data);
 
-			// Act
-			sortedList.Clear();
+                        // Act
+                        sortedList.Clear();
 
-			// Validate
-			_ = sortedList.Should().BeEmpty();
-		}
-	}
+                        // Validate
+                        _ = sortedList.Should().BeEmpty();
+                }
+        }
 }
