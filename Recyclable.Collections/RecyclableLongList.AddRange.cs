@@ -126,7 +126,9 @@ namespace Recyclable.Collections
 						}
 
 						targetList._capacity = capacity;
-						targetList._version++;
+						#if WITH_VERSIONING
+targetList._version++;
+#endif
 						return;
 					}
 
@@ -186,10 +188,13 @@ namespace Recyclable.Collections
 			targetList._nextItemBlockIndex = targetBlockIdx;
 			targetList._nextItemIndex = targetItemIdx;
 			targetList._lastBlockWithData = targetBlockIdx - (targetItemIdx > 0 ? 0 : 1);
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
-		public static void AddRange<T>(this RecyclableLongList<T> targetList, in Array items)
+                [VersionedCollectionsGenerator.RewriteForVersioned]
+                public static void AddRange<T>(this RecyclableLongList<T> targetList, in Array items)
 		{
 			if (items.LongLength == 0)
 			{
@@ -240,7 +245,9 @@ namespace Recyclable.Collections
 			}
 
 			targetList._longCount = targetCapacity;
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, ICollection items)
@@ -305,7 +312,9 @@ namespace Recyclable.Collections
 				RecyclableArrayPool<T>.ReturnShared(itemsBuffer, RecyclableLongList<T>._needsClearing);
 			}
 
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, ICollection<T> items)
@@ -373,7 +382,9 @@ namespace Recyclable.Collections
 				RecyclableArrayPool<T>.ReturnShared(itemsBuffer, RecyclableLongList<T>._needsClearing);
 			}
 
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, IEnumerable source)
@@ -616,7 +627,9 @@ namespace Recyclable.Collections
 			targetList._nextItemBlockIndex = targetBlockIndex;
 			targetList._longCount = targetCapacity;
 			targetList._lastBlockWithData = targetBlockIndex - (targetList._nextItemIndex > 0 ? 0 : 1);
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, ReadOnlySpan<T> items)
@@ -671,7 +684,9 @@ namespace Recyclable.Collections
 
 			targetList._longCount = targetCapacity;
 			targetList._lastBlockWithData = targetBlockIndex;
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableList<T> items)
@@ -728,7 +743,9 @@ namespace Recyclable.Collections
 			}
 
 			targetList._longCount = targetCapacity;
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, RecyclableLongList<T> items)
@@ -801,7 +818,9 @@ namespace Recyclable.Collections
 			}
 
 			targetList._longCount = targetCapacity;
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
 		public static void AddRange<T>(this RecyclableLongList<T> targetList, Span<T> items)
@@ -856,7 +875,9 @@ namespace Recyclable.Collections
 
 			targetList._longCount = targetCapacity;
 			targetList._lastBlockWithData = targetBlockIndex;
-			targetList._version++;
+			#if WITH_VERSIONING
+targetList._version++;
+#endif
 		}
 
                 public static void AddRange<T>(this RecyclableLongList<T> targetList, in T[] items)
@@ -912,7 +933,9 @@ namespace Recyclable.Collections
 
 			targetList._longCount = targetCapacity;
                         targetList._lastBlockWithData = targetBlockIndex;
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -954,7 +977,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -999,7 +1024,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1038,7 +1065,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1082,7 +1111,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1121,7 +1152,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1165,7 +1198,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1208,7 +1243,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 
                 [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1248,7 +1285,9 @@ namespace Recyclable.Collections
                         targetList._nextItemBlockIndex = blockIndex;
                         targetList._nextItemIndex = itemIndex;
                         targetList._lastBlockWithData = blockIndex - (itemIndex > 0 ? 0 : 1);
-                        targetList._version++;
+                        #if WITH_VERSIONING
+targetList._version++;
+#endif
                 }
 	}
 }
