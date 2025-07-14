@@ -1,14 +1,75 @@
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
+using System.Reflection;
 using Recyclable.Collections.Pools;
 
 namespace Recyclable.Collections
 {
-	public static class zRecyclableLongListAddRange
-	{
-		private static void AddRangeEnumerated<T>(this RecyclableLongList<T> targetList, IEnumerable<T> items)
-		{
+        public static class zRecyclableLongListAddRange
+        {
+                private static class AddRangeHelper<T>
+                {
+                        internal static readonly Type? DictionaryType;
+                        internal static readonly Type? SortedListType;
+                        internal static readonly Action<RecyclableLongList<T>, IEnumerable<T>>? DictionaryAdder;
+                        internal static readonly Action<RecyclableLongList<T>, IEnumerable<T>>? SortedListAdder;
+
+                        static AddRangeHelper()
+                        {
+                                var itemType = typeof(T);
+                                if (itemType.IsGenericType)
+                                {
+                                        var genericDefinition = itemType.GetGenericTypeDefinition();
+                                        if (genericDefinition == typeof(KeyValuePair<,>))
+                                        {
+                                                var args = itemType.GetGenericArguments();
+                                                DictionaryType = typeof(RecyclableDictionary<,>).MakeGenericType(args);
+
+                                                var listType = typeof(RecyclableLongList<>).MakeGenericType(itemType);
+                                                var method = typeof(zRecyclableLongListAddRange).GetMethod(
+                                                        nameof(AddRange),
+                                                        BindingFlags.NonPublic | BindingFlags.Static,
+                                                        null,
+                                                        new[] { listType, DictionaryType },
+                                                        null)!.MakeGenericMethod(args);
+
+                                                var listParam = Expression.Parameter(typeof(RecyclableLongList<T>), "list");
+                                                var itemsParam = Expression.Parameter(typeof(IEnumerable<T>), "items");
+                                                var call = Expression.Call(method,
+                                                        Expression.Convert(listParam, listType),
+                                                        Expression.Convert(itemsParam, DictionaryType));
+
+                                                DictionaryAdder = Expression.Lambda<Action<RecyclableLongList<T>, IEnumerable<T>>>(call, listParam, itemsParam).Compile();
+                                        }
+                                        else if (genericDefinition == typeof(ValueTuple<,>))
+                                        {
+                                                var args = itemType.GetGenericArguments();
+                                                SortedListType = typeof(RecyclableSortedList<,>).MakeGenericType(args);
+
+                                                var listType = typeof(RecyclableLongList<>).MakeGenericType(itemType);
+                                                var method = typeof(zRecyclableLongListAddRange).GetMethod(
+                                                        nameof(AddRange),
+                                                        BindingFlags.NonPublic | BindingFlags.Static,
+                                                        null,
+                                                        new[] { listType, SortedListType },
+                                                        null)!.MakeGenericMethod(args);
+
+                                                var listParam = Expression.Parameter(typeof(RecyclableLongList<T>), "list");
+                                                var itemsParam = Expression.Parameter(typeof(IEnumerable<T>), "items");
+                                                var call = Expression.Call(method,
+                                                        Expression.Convert(listParam, listType),
+                                                        Expression.Convert(itemsParam, SortedListType));
+
+                                                SortedListAdder = Expression.Lambda<Action<RecyclableLongList<T>, IEnumerable<T>>>(call, listParam, itemsParam).Compile();
+                                        }
+                                }
+                        }
+                }
+
+                private static void AddRangeEnumerated<T>(this RecyclableLongList<T> targetList, IEnumerable<T> items)
+                {
 			using IEnumerator<T> enumerator = items.GetEnumerator();
 			if (!enumerator.MoveNext())
 			{
@@ -438,18 +499,12 @@ namespace Recyclable.Collections
                                         targetList.AddRange(sourceQueue);
                                         return;
 
-                                case var _ when typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(KeyValuePair<,>)
-                                            && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableDictionary<,>):
-                                        dynamic dynTargetList = targetList;
-                                        dynamic dynDict = items;
-                                        AddRange(dynTargetList, dynDict);
+                                case var _ when AddRangeHelper<T>.DictionaryAdder != null && AddRangeHelper<T>.DictionaryType!.IsInstanceOfType(items):
+                                        AddRangeHelper<T>.DictionaryAdder!(targetList, items);
                                         return;
 
-                                case var _ when typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(ValueTuple<,>)
-                                            && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableSortedList<,>):
-                                        dynamic dynTargetList2 = targetList;
-                                        dynamic dynSortedList = items;
-                                        AddRange(dynTargetList2, dynSortedList);
+                                case var _ when AddRangeHelper<T>.SortedListAdder != null && AddRangeHelper<T>.SortedListType!.IsInstanceOfType(items):
+                                        AddRangeHelper<T>.SortedListAdder!(targetList, items);
                                         return;
 
                                 default:

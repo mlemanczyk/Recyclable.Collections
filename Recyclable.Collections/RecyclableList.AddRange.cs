@@ -1,13 +1,74 @@
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Recyclable.Collections
 {
-	public static class zRecyclableListAddRange
-	{
-		private static void AddRangeEnumerated<T>(this RecyclableList<T> list, IEnumerable<T> items, int growByCount)
-		{
+        public static class zRecyclableListAddRange
+        {
+                private static class AddRangeHelper<T>
+                {
+                        internal static readonly Type? DictionaryType;
+                        internal static readonly Type? SortedListType;
+                        internal static readonly Action<RecyclableList<T>, IEnumerable<T>>? DictionaryAdder;
+                        internal static readonly Action<RecyclableList<T>, IEnumerable<T>>? SortedListAdder;
+
+                        static AddRangeHelper()
+                        {
+                                var itemType = typeof(T);
+                                if (itemType.IsGenericType)
+                                {
+                                        var genericDefinition = itemType.GetGenericTypeDefinition();
+                                        if (genericDefinition == typeof(KeyValuePair<,>))
+                                        {
+                                                var args = itemType.GetGenericArguments();
+                                                DictionaryType = typeof(RecyclableDictionary<,>).MakeGenericType(args);
+
+                                                var listType = typeof(RecyclableList<>).MakeGenericType(itemType);
+                                                var method = typeof(zRecyclableListAddRange).GetMethod(
+                                                        nameof(AddRange),
+                                                        BindingFlags.NonPublic | BindingFlags.Static,
+                                                        null,
+                                                        new[] { listType, DictionaryType },
+                                                        null)!.MakeGenericMethod(args);
+
+                                                var listParam = Expression.Parameter(typeof(RecyclableList<T>), "list");
+                                                var itemsParam = Expression.Parameter(typeof(IEnumerable<T>), "items");
+                                                var call = Expression.Call(method,
+                                                        Expression.Convert(listParam, listType),
+                                                        Expression.Convert(itemsParam, DictionaryType));
+
+                                                DictionaryAdder = Expression.Lambda<Action<RecyclableList<T>, IEnumerable<T>>>(call, listParam, itemsParam).Compile();
+                                        }
+                                        else if (genericDefinition == typeof(ValueTuple<,>))
+                                        {
+                                                var args = itemType.GetGenericArguments();
+                                                SortedListType = typeof(RecyclableSortedList<,>).MakeGenericType(args);
+
+                                                var listType = typeof(RecyclableList<>).MakeGenericType(itemType);
+                                                var method = typeof(zRecyclableListAddRange).GetMethod(
+                                                        nameof(AddRange),
+                                                        BindingFlags.NonPublic | BindingFlags.Static,
+                                                        null,
+                                                        new[] { listType, SortedListType },
+                                                        null)!.MakeGenericMethod(args);
+
+                                                var listParam = Expression.Parameter(typeof(RecyclableList<T>), "list");
+                                                var itemsParam = Expression.Parameter(typeof(IEnumerable<T>), "items");
+                                                var call = Expression.Call(method,
+                                                        Expression.Convert(listParam, listType),
+                                                        Expression.Convert(itemsParam, SortedListType));
+
+                                                SortedListAdder = Expression.Lambda<Action<RecyclableList<T>, IEnumerable<T>>>(call, listParam, itemsParam).Compile();
+                                        }
+                                }
+                        }
+                }
+
+                private static void AddRangeEnumerated<T>(this RecyclableList<T> list, IEnumerable<T> items, int growByCount)
+                {
 			var enumerator = items.GetEnumerator();
 			if (!enumerator.MoveNext())
 			{
@@ -577,19 +638,13 @@ namespace Recyclable.Collections
                         {
                                 AddRange(list, sourceQueue);
                         }
-                        else if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(KeyValuePair<,>)
-                                 && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableDictionary<,>))
+                        else if (AddRangeHelper<T>.DictionaryAdder != null && AddRangeHelper<T>.DictionaryType!.IsInstanceOfType(items))
                         {
-                                dynamic dynList = list;
-                                dynamic dynDict = items;
-                                AddRange(dynList, dynDict);
+                                AddRangeHelper<T>.DictionaryAdder!(list, items);
                         }
-                        else if (typeof(T).IsGenericType && typeof(T).GetGenericTypeDefinition() == typeof(ValueTuple<,>)
-                                 && items.GetType().IsGenericType && items.GetType().GetGenericTypeDefinition() == typeof(RecyclableSortedList<,>))
+                        else if (AddRangeHelper<T>.SortedListAdder != null && AddRangeHelper<T>.SortedListType!.IsInstanceOfType(items))
                         {
-                                dynamic dynList = list;
-                                dynamic dynSortedList = items;
-                                AddRange(dynList, dynSortedList);
+                                AddRangeHelper<T>.SortedListAdder!(list, items);
                         }
                         else if (items is IReadOnlyList<T> sourceIReadOnlyList)
                         {
