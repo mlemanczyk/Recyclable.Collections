@@ -372,9 +372,15 @@ namespace Recyclable.Collections
 
 		public void CopyTo(T[] array, int arrayIndex) => Helpers.CopyTo(_memoryBlocks, 0, _blockSize, _longCount, array, arrayIndex);
 
-		public Enumerator GetEnumerator() => new(this);
-		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
-		IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: review if returned enumerator type should change for versioned list
+                public Enumerator GetEnumerator() => new(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: review if returned enumerator type should change for versioned list
+                IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: review if returned enumerator type should change for versioned list
+                IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 		public int IndexOf(T item)

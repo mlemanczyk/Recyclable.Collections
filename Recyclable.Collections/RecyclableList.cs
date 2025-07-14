@@ -363,14 +363,20 @@ namespace Recyclable.Collections
 			#endif
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Enumerator GetEnumerator() => new(this);
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: review if returned enumerator type should change for versioned list
+                public Enumerator GetEnumerator() => new(this);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: review if returned enumerator type should change for versioned list
+                IEnumerator IEnumerable.GetEnumerator() => new Enumerator(this);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: review if returned enumerator type should change for versioned list
+                IEnumerator<T> IEnumerable<T>.GetEnumerator() => new Enumerator(this);
 
 		public void Dispose()
 		{

@@ -6,11 +6,14 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableList<T> : IRecyclableVersionedList<T>
 	{
-		VersionedEnumerator IRecyclableVersionedList<T>.GetEnumerator() => new(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                VersionedEnumerator IRecyclableVersionedList<T>.GetEnumerator() => new(this);
 
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public struct VersionedEnumerator : IEnumerator<T>
-		{
+                [StructLayout(LayoutKind.Sequential, Pack = 1)]
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: confirm if enumerator should implement a versioned interface for generated types
+                public struct VersionedEnumerator : IEnumerator<T>
+                {
 			private int _currentItemIndex;
 			private readonly ulong _enumeratorVersion;
 			private readonly RecyclableList<T> _list;

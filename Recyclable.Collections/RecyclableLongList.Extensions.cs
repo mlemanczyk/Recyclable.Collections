@@ -3,8 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace Recyclable.Collections
 {
-	public static class RecyclableLongListExtensions
-	{
+        [VersionedCollectionsGenerator.GenerateVersioned]
+        public static class RecyclableLongListExtensions
+        {
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public static RecyclableLongList<T> ToRecyclableLongList<T>(this Array values, int minBlockSize = RecyclableDefaults.BlockSize) => new(values, minBlockSize);
 

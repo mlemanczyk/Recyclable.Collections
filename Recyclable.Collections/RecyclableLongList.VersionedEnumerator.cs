@@ -5,11 +5,15 @@ namespace Recyclable.Collections
 {
 	public partial class RecyclableLongList<T> : IRecyclableVersionedLongList<T>
 	{
-		public VersionedEnumerator GetVersionedEnumerator() => new(this);
-		VersionedEnumerator IRecyclableVersionedLongList<T>.GetEnumerator() => new(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                public VersionedEnumerator GetVersionedEnumerator() => new(this);
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                VersionedEnumerator IRecyclableVersionedLongList<T>.GetEnumerator() => new(this);
 
-		public struct VersionedEnumerator : IEnumerator<T>
-		{
+                [VersionedCollectionsGenerator.CloneForVersioned]
+                // TODO: confirm if enumerator should implement a versioned interface for generated types
+                public struct VersionedEnumerator : IEnumerator<T>
+                {
 #nullable disable
 			private static readonly T _default = default;
 #nullable restore
