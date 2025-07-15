@@ -199,23 +199,27 @@ namespace Recyclable.Collections
 
             public bool MoveNext()
             {
-                if (_chunk == null)
+                while (true)
                 {
-                    return false;
-                }
-
-                if (_index < 0)
-                {
-                    _chunk = _chunk.Previous;
                     if (_chunk == null)
                     {
                         return false;
                     }
-                    _index = _chunk.Index - 1;
-                }
 
-                _current = _chunk.Value[_index--];
-                return true;
+                    if (_index < 0)
+                    {
+                        _chunk = _chunk.Previous;
+                        if (_chunk == null)
+                        {
+                            return false;
+                        }
+                        _index = _chunk.Index - 1;
+                        continue;
+                    }
+
+                    _current = _chunk.Value[_index--];
+                    return true;
+                }
             }
 
             public void Reset()

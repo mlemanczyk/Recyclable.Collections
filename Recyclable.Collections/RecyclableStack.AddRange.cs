@@ -158,7 +158,118 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableList<T> items)
         {
-            AddRange(stack, new ReadOnlySpan<T>(items._memoryBlock, 0, items._count));
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            EnsureCapacity(stack, stack._count + count);
+
+            RecyclableArrayPoolChunk<T> chunk = stack._current;
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            T[] source = items._memoryBlock;
+
+            while (copied < count)
+            {
+                if (index == chunkLength)
+                {
+                    chunk.Index = index;
+                    Grow(stack);
+                    chunk = stack._current;
+                    index = chunk.Index;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                Array.Copy(source, copied, chunk.Value, index, toCopy);
+                copied += toCopy;
+                index += toCopy;
+            }
+
+            chunk.Index = index;
+            stack._count += count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Grow<T>(RecyclableStack<T> stack)
+        {
+            int newSize;
+            if (stack._capacity >= RecyclableDefaults.MaxPooledBlockSize)
+            {
+                newSize = RecyclableDefaults.MaxPooledBlockSize;
+            }
+            else
+            {
+                long doubled = stack._capacity << 1;
+                newSize = (int)Math.Min(doubled - stack._capacity, RecyclableDefaults.MaxPooledBlockSize);
+            }
+
+            var newChunk = RecyclableArrayPoolChunkPool<T>.Rent();
+            if (newChunk.Value.Length < newSize)
+            {
+                if (newChunk.Value.Length >= RecyclableDefaults.MinPooledArrayLength)
+                {
+                    RecyclableArrayPool<T>.ReturnShared(newChunk.Value, RecyclableStack<T>._needsClearing);
+                }
+
+                newChunk.Value = newSize >= RecyclableDefaults.MinPooledArrayLength
+                    ? RecyclableArrayPool<T>.RentShared(newSize)
+                    : new T[newSize];
+            }
+
+            newChunk.Index = 0;
+            newChunk.Previous = stack._current;
+            newChunk.Next = null;
+            stack._current.Next = newChunk;
+            stack._current = newChunk;
+            stack._capacity += newSize;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Grow<T>(RecyclableStack<T> stack, long additionalCapacity)
+        {
+            int newSize = additionalCapacity >= RecyclableDefaults.MaxPooledBlockSize
+                ? RecyclableDefaults.MaxPooledBlockSize
+                : (int)Math.Min(BitOperations.RoundUpToPowerOf2((uint)additionalCapacity), RecyclableDefaults.MaxPooledBlockSize);
+
+            var newChunk = RecyclableArrayPoolChunkPool<T>.Rent();
+            if (newChunk.Value.Length < newSize)
+            {
+                if (newChunk.Value.Length >= RecyclableDefaults.MinPooledArrayLength)
+                {
+                    RecyclableArrayPool<T>.ReturnShared(newChunk.Value, RecyclableStack<T>._needsClearing);
+                }
+
+                newChunk.Value = newSize >= RecyclableDefaults.MinPooledArrayLength
+                    ? RecyclableArrayPool<T>.RentShared(newSize)
+                    : new T[newSize];
+            }
+
+            newChunk.Index = 0;
+            newChunk.Previous = stack._current;
+            newChunk.Next = null;
+            stack._current.Next = newChunk;
+            stack._current = newChunk;
+            stack._capacity += newSize;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void EnsureCapacity<T>(RecyclableStack<T> stack, long requiredCapacity)
+        {
+            if (stack._capacity >= requiredCapacity)
+            {
+                return;
+            }
+
+            long newCapacity = (long)Math.Min(
+                BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity),
+                (ulong)RecyclableDefaults.MaxPooledBlockSize);
+
+            Grow(stack, newCapacity - stack._capacity);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
