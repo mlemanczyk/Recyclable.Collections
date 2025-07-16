@@ -79,10 +79,38 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, ReadOnlySpan<T> items)
         {
-            for (int i = 0; i < items.Length; i++)
+            int count = items.Length;
+            if (count == 0)
             {
-                stack.Push(items[i]);
+                return;
             }
+
+            EnsureCapacity(stack, stack._count + count);
+
+            RecyclableArrayPoolChunk<T> chunk = stack._current;
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
+            {
+                if (index == chunkLength)
+                {
+                    chunk.Index = index;
+                    Grow(stack);
+                    chunk = stack._current;
+                    index = chunk.Index;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                items.Slice(copied, toCopy).CopyTo(new Span<T>(chunk.Value, index, toCopy));
+                copied += toCopy;
+                index += toCopy;
+            }
+
+            chunk.Index = index;
+            stack._count += count;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -94,10 +122,39 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, in Array items)
         {
-            for (int i = 0; i < items.Length; i++)
+            int count = items.Length;
+            if (count == 0)
             {
-                stack.Push((T)items.GetValue(i)!);
+                return;
             }
+
+            EnsureCapacity(stack, stack._count + count);
+
+            RecyclableArrayPoolChunk<T> chunk = stack._current;
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+            int lower = items.GetLowerBound(0);
+
+            while (copied < count)
+            {
+                if (index == chunkLength)
+                {
+                    chunk.Index = index;
+                    Grow(stack);
+                    chunk = stack._current;
+                    index = chunk.Index;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                Array.Copy(items, lower + copied, chunk.Value, index, toCopy);
+                copied += toCopy;
+                index += toCopy;
+            }
+
+            chunk.Index = index;
+            stack._count += count;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -118,10 +175,32 @@ namespace Recyclable.Collections
 
             items.CopyTo(buffer, 0);
 
-            for (int i = 0; i < count; i++)
+            EnsureCapacity(stack, stack._count + count);
+
+            RecyclableArrayPoolChunk<T> chunk = stack._current;
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
             {
-                stack.Push(buffer[i]);
+                if (index == chunkLength)
+                {
+                    chunk.Index = index;
+                    Grow(stack);
+                    chunk = stack._current;
+                    index = chunk.Index;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                Array.Copy(buffer, copied, chunk.Value, index, toCopy);
+                copied += toCopy;
+                index += toCopy;
             }
+
+            chunk.Index = index;
+            stack._count += count;
 
             if (count >= RecyclableDefaults.MinPooledArrayLength)
             {
@@ -144,10 +223,32 @@ namespace Recyclable.Collections
 
             items.CopyTo(buffer, 0);
 
-            for (int i = 0; i < count; i++)
+            EnsureCapacity(stack, stack._count + count);
+
+            RecyclableArrayPoolChunk<T> chunk = stack._current;
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
             {
-                stack.Push(buffer[i]);
+                if (index == chunkLength)
+                {
+                    chunk.Index = index;
+                    Grow(stack);
+                    chunk = stack._current;
+                    index = chunk.Index;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                Array.Copy(buffer, copied, chunk.Value, index, toCopy);
+                copied += toCopy;
+                index += toCopy;
             }
+
+            chunk.Index = index;
+            stack._count += count;
 
             if (count >= RecyclableDefaults.MinPooledArrayLength)
             {
