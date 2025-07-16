@@ -168,29 +168,10 @@ namespace Recyclable.Collections
 
             RecyclableArrayPoolChunk<T> chunk = stack._current;
             int index = chunk.Index;
-            int chunkLength = chunk.Value.Length;
-            int copied = 0;
 
-            T[] source = items._memoryBlock;
+            Array.Copy(items._memoryBlock, 0, chunk.Value, index, count);
 
-            while (copied < count)
-            {
-                if (index == chunkLength)
-                {
-                    chunk.Index = index;
-                    Grow(stack);
-                    chunk = stack._current;
-                    index = chunk.Index;
-                    chunkLength = chunk.Value.Length;
-                }
-
-                int toCopy = Math.Min(chunkLength - index, count - copied);
-                Array.Copy(source, copied, chunk.Value, index, toCopy);
-                copied += toCopy;
-                index += toCopy;
-            }
-
-            chunk.Index = index;
+            chunk.Index = index + count;
             stack._count += count;
         }
 
@@ -260,16 +241,23 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void EnsureCapacity<T>(RecyclableStack<T> stack, long requiredCapacity)
         {
-            if (stack._capacity >= requiredCapacity)
+            long needed = requiredCapacity - stack._count;
+            if (needed <= 0)
             {
                 return;
             }
 
-            long newCapacity = (long)Math.Min(
-                BitOperations.RoundUpToPowerOf2((ulong)requiredCapacity),
-                (ulong)RecyclableDefaults.MaxPooledBlockSize);
+            if (stack._current.Value.Length - stack._current.Index >= needed)
+            {
+                if (stack._capacity < requiredCapacity)
+                {
+                    stack._capacity = requiredCapacity;
+                }
 
-            Grow(stack, newCapacity - stack._capacity);
+                return;
+            }
+
+            Grow(stack, needed);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
@@ -289,50 +277,19 @@ namespace Recyclable.Collections
 
             RecyclableArrayPoolChunk<T> chunk = stack._current;
             int index = chunk.Index;
-            int chunkLength = chunk.Value.Length;
 
             for (int blockIndex = 0; blockIndex < fullBlocks; blockIndex++)
             {
                 T[] block = items._memoryBlocks[blockIndex];
-                int sourceIndex = 0;
-                while (sourceIndex < blockSize)
-                {
-                    if (index == chunkLength)
-                    {
-                        chunk.Index = index;
-                        Grow(stack);
-                        chunk = stack._current;
-                        index = chunk.Index;
-                        chunkLength = chunk.Value.Length;
-                    }
-
-                    int toCopy = Math.Min(chunkLength - index, blockSize - sourceIndex);
-                    Array.Copy(block, sourceIndex, chunk.Value, index, toCopy);
-                    sourceIndex += toCopy;
-                    index += toCopy;
-                }
+                Array.Copy(block, 0, chunk.Value, index, blockSize);
+                index += blockSize;
             }
 
             if (lastBlockLength > 0)
             {
                 T[] block = items._memoryBlocks[fullBlocks];
-                int sourceIndex = 0;
-                while (sourceIndex < lastBlockLength)
-                {
-                    if (index == chunkLength)
-                    {
-                        chunk.Index = index;
-                        Grow(stack);
-                        chunk = stack._current;
-                        index = chunk.Index;
-                        chunkLength = chunk.Value.Length;
-                    }
-
-                    int toCopy = Math.Min(chunkLength - index, lastBlockLength - sourceIndex);
-                    Array.Copy(block, sourceIndex, chunk.Value, index, toCopy);
-                    sourceIndex += toCopy;
-                    index += toCopy;
-                }
+                Array.Copy(block, 0, chunk.Value, index, lastBlockLength);
+                index += lastBlockLength;
             }
 
             chunk.Index = index;
