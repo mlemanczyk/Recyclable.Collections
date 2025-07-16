@@ -703,5 +703,60 @@ namespace Recyclable.CollectionsTests
             _ = stack.Should().Equal(expected);
         }
 
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<(int Key, long Value)>();
+
+            stack.AddRange(source);
+
+            List<(int Key, long Value)> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<(int Key, long Value)>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<(int Key, long Value)> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
         }
 }
