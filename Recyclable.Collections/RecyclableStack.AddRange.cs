@@ -694,29 +694,104 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableQueue<T> items)
         {
-            var chunk = items._head;
-            while (chunk != null)
+            long longCount = items._count;
+            if (longCount == 0)
             {
-                for (int i = chunk.Bottom; i < chunk.Top; i++)
-                {
-                    stack.Push(chunk.Value[i]);
-                }
-                chunk = chunk.Next;
+                return;
             }
+
+            EnsureCapacity(stack, stack._count + longCount);
+
+            RecyclableArrayPoolChunk<T> destChunk = stack._current;
+            while (destChunk.Previous != null && destChunk.Previous.Index < destChunk.Previous.Value.Length)
+            {
+                destChunk = destChunk.Previous;
+            }
+
+            int destIndex = destChunk.Index;
+            int destLength = destChunk.Value.Length;
+
+            var sourceChunk = items._head;
+            while (sourceChunk != null)
+            {
+                int sourceCount = sourceChunk.Top - sourceChunk.Bottom;
+                int sourceIndex = sourceChunk.Bottom;
+
+                while (sourceCount > 0)
+                {
+                    int toCopy = Math.Min(destLength - destIndex, sourceCount);
+                    Array.Copy(sourceChunk.Value, sourceIndex, destChunk.Value, destIndex, toCopy);
+                    destIndex += toCopy;
+                    sourceIndex += toCopy;
+                    sourceCount -= toCopy;
+
+                    if (destIndex == destLength && (sourceCount > 0 || sourceChunk.Next != null))
+                    {
+                        destChunk.Index = destIndex;
+                        destChunk = destChunk.Next!;
+                        destIndex = 0;
+                        destLength = destChunk.Value.Length;
+                    }
+                }
+
+                sourceChunk = sourceChunk.Next;
+            }
+
+            destChunk.Index = destIndex;
+            stack._count += longCount;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<TKey, TValue>(this RecyclableStack<KeyValuePair<TKey, TValue>> stack, RecyclableDictionary<TKey, TValue> items)
             where TKey : notnull
         {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            EnsureCapacity(stack, stack._count + count);
+
             var entries = items._entries;
             int shift = items._blockShift,
                 mask = items._blockSizeMinus1;
-            for (int i = 0; i < items._count; i++)
+
+            RecyclableArrayPoolChunk<KeyValuePair<TKey, TValue>> chunk = stack._current;
+            while (chunk.Previous != null && chunk.Previous.Index < chunk.Previous.Value.Length)
             {
-                ref var entry = ref entries[i >> shift][i & mask];
-                stack.Push(new KeyValuePair<TKey, TValue>(entry.Key, entry.Value));
+                chunk = chunk.Previous;
             }
+
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
+            {
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                var destination = chunk.Value;
+                int local = copied;
+                for (int i = 0; i < toCopy; i++)
+                {
+                    ref var entry = ref entries[(local + i) >> shift][(local + i) & mask];
+                    destination[index + i] = new KeyValuePair<TKey, TValue>(entry.Key, entry.Value);
+                }
+
+                copied += toCopy;
+                index += toCopy;
+
+                if (index == chunkLength && copied < count)
+                {
+                    chunk.Index = index;
+                    chunk = chunk.Next!;
+                    index = 0;
+                    chunkLength = chunk.Value.Length;
+                }
+            }
+
+            chunk.Index = index;
+            stack._count += count;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
