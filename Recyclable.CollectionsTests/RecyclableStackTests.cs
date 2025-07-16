@@ -366,5 +366,452 @@ namespace Recyclable.CollectionsTests
             _ = stack.Should().Equal(expected);
         }
 
-	}
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddLongListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableLongList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromLongList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableLongList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddHashSetItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableHashSet<long>();
+            foreach (long item in data)
+            {
+                source.Add(item);
+            }
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromHashSet(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableHashSet<long>();
+            foreach (long item in data)
+            {
+                source.Add(item);
+            }
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddStackItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableStack<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromStack(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableStack<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedSetItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedSet<long>();
+            foreach (long item in data)
+            {
+                source.Add(item);
+            }
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedSet(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedSet<long>();
+            foreach (long item in data)
+            {
+                source.Add(item);
+            }
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddLinkedListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableLinkedList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromLinkedList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableLinkedList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddQueueItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableQueue<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromQueue(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableQueue<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddDictionaryItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<KeyValuePair<int, long>>();
+
+            stack.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromDictionary(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<KeyValuePair<int, long>>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<(int Key, long Value)>();
+
+            stack.AddRange(source);
+
+            List<(int Key, long Value)> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<(int Key, long Value)>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<(int Key, long Value)> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedDictionaryItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<KeyValuePair<int, long>>();
+
+            stack.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedDictionary(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<KeyValuePair<int, long>>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
+        }
 }
