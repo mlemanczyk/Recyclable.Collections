@@ -404,5 +404,43 @@ namespace Recyclable.CollectionsTests
             _ = stack.Should().Equal(expected);
         }
 
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddLongListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableLongList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromLongList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableLongList<long>(data);
+            using var stack = new RecyclableStack<long>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<long> expected = new(itemsCount * 2);
+            expected.AddRange(data);
+            expected.AddRange(data);
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
         }
 }
