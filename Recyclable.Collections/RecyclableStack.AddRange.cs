@@ -14,8 +14,10 @@ namespace Recyclable.Collections
         {
             private static readonly Action<RecyclableStack<T>, object>? _dictionaryAdder;
             private static readonly Action<RecyclableStack<T>, object>? _sortedListAdder;
+            private static readonly Action<RecyclableStack<T>, object>? _sortedDictionaryAdder;
             private static readonly Type? _dictionaryType;
             private static readonly Type? _sortedListType;
+            private static readonly Type? _sortedDictionaryType;
 
             static AddRangeHelper()
             {
@@ -24,6 +26,7 @@ namespace Recyclable.Collections
                 {
                     Type[] args = elementType.GetGenericArguments();
                     _dictionaryType = typeof(RecyclableDictionary<,>).MakeGenericType(args);
+                    _sortedDictionaryType = typeof(RecyclableSortedDictionary<,>).MakeGenericType(args);
                     MethodInfo? method = typeof(zRecyclableStackAddRange).GetMethod(
                         nameof(AddRange),
                         BindingFlags.NonPublic | BindingFlags.Static,
@@ -36,6 +39,20 @@ namespace Recyclable.Collections
                         var objParam = Expression.Parameter(typeof(object));
                         var call = Expression.Call(method, stackParam, Expression.Convert(objParam, _dictionaryType));
                         _dictionaryAdder = Expression.Lambda<Action<RecyclableStack<T>, object>>(call, stackParam, objParam).Compile();
+                    }
+
+                    method = typeof(zRecyclableStackAddRange).GetMethod(
+                        nameof(AddRange),
+                        BindingFlags.NonPublic | BindingFlags.Static,
+                        binder: null,
+                        types: new[] { typeof(RecyclableStack<>).MakeGenericType(elementType), _sortedDictionaryType },
+                        modifiers: null);
+                    if (method != null)
+                    {
+                        var stackParam = Expression.Parameter(typeof(RecyclableStack<T>));
+                        var objParam = Expression.Parameter(typeof(object));
+                        var call = Expression.Call(method, stackParam, Expression.Convert(objParam, _sortedDictionaryType));
+                        _sortedDictionaryAdder = Expression.Lambda<Action<RecyclableStack<T>, object>>(call, stackParam, objParam).Compile();
                     }
                 }
                 else if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(ValueTuple<,>))
@@ -63,6 +80,12 @@ namespace Recyclable.Collections
                 if (_dictionaryAdder != null && _dictionaryType!.IsInstanceOfType(items))
                 {
                     _dictionaryAdder(stack, items);
+                    return true;
+                }
+
+                if (_sortedDictionaryAdder != null && _sortedDictionaryType!.IsInstanceOfType(items))
+                {
+                    _sortedDictionaryAdder(stack, items);
                     return true;
                 }
 
@@ -275,7 +298,7 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableList<T> items)
         {
-            int count = items._count;
+            int count = items.Count;
             if (count == 0)
             {
                 return;
@@ -492,7 +515,7 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableHashSet<T> items)
         {
-            int count = items._count;
+            int count = items.Count;
             if (count == 0)
             {
                 return;
@@ -542,7 +565,7 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableStack<T> items)
         {
-            long longCount = items._count;
+            long longCount = items.Count;
             if (longCount == 0)
             {
                 return;
@@ -597,7 +620,7 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableSortedSet<T> items)
         {
-            int count = items._count;
+            int count = items.Count;
             if (count == 0)
             {
                 return;
@@ -638,7 +661,7 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableLinkedList<T> items)
         {
-            long longCount = items._count;
+            long longCount = items.Count;
             if (longCount == 0)
             {
                 return;
@@ -694,7 +717,7 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableStack<T> stack, RecyclableQueue<T> items)
         {
-            long longCount = items._count;
+            long longCount = items.Count;
             if (longCount == 0)
             {
                 return;
@@ -745,7 +768,7 @@ namespace Recyclable.Collections
         internal static void AddRange<TKey, TValue>(this RecyclableStack<KeyValuePair<TKey, TValue>> stack, RecyclableDictionary<TKey, TValue> items)
             where TKey : notnull
         {
-            int count = items._count;
+            int count = items.Count;
             if (count == 0)
             {
                 return;
@@ -795,16 +818,68 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void AddRange<TKey, TValue>(this RecyclableStack<(TKey Key, TValue Value)> stack, RecyclableSortedList<TKey, TValue> items)
+        internal static void AddRange<TKey, TValue>(this RecyclableStack<KeyValuePair<TKey, TValue>> stack, RecyclableSortedDictionary<TKey, TValue> items)
             where TKey : notnull
         {
-            int count = items._count;
+            int count = items.Count;
             if (count == 0)
             {
                 return;
             }
 
             EnsureCapacity(stack, stack._count + count);
+
+
+            RecyclableArrayPoolChunk<KeyValuePair<TKey, TValue>> chunk = stack._current;
+            while (chunk.Previous != null && chunk.Previous.Index < chunk.Previous.Value.Length)
+            {
+                chunk = chunk.Previous;
+            }
+
+            int index = chunk.Index;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
+            {
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                var destination = chunk.Value;
+                int local = copied;
+                for (int i = 0; i < toCopy; i++)
+                {
+                    destination[index + i] = new KeyValuePair<TKey, TValue>(items.GetKey(local + i), items.GetValue(local + i));
+                }
+
+                copied += toCopy;
+                index += toCopy;
+
+                if (index == chunkLength && copied < count)
+                {
+                    chunk.Index = index;
+                    chunk = chunk.Next!;
+                    index = 0;
+                    chunkLength = chunk.Value.Length;
+                }
+            }
+
+            chunk.Index = index;
+            stack._count += count;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclableStack<(TKey Key, TValue Value)> stack, RecyclableSortedList<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            EnsureCapacity(stack, stack._count + count);
+
+            TKey[] keys = items._keys;
+            TValue[] values = items._values;
 
             RecyclableArrayPoolChunk<(TKey Key, TValue Value)> chunk = stack._current;
             while (chunk.Previous != null && chunk.Previous.Index < chunk.Previous.Value.Length)
@@ -815,8 +890,6 @@ namespace Recyclable.Collections
             int index = chunk.Index;
             int chunkLength = chunk.Value.Length;
             int copied = 0;
-            TKey[] keys = items._keys;
-            TValue[] values = items._values;
 
             while (copied < count)
             {

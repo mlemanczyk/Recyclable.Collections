@@ -758,5 +758,60 @@ namespace Recyclable.CollectionsTests
             _ = stack.Should().Equal(expected);
         }
 
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedDictionaryItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<KeyValuePair<int, long>>();
+
+            stack.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount);
+            _ = stack.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedDictionary(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var stack = new RecyclableStack<KeyValuePair<int, long>>();
+
+            stack.AddRange(source);
+            stack.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            expected.Reverse();
+
+            _ = stack.Count.Should().Be(itemsCount * 2);
+            _ = stack.Should().Equal(expected);
+        }
+
         }
 }
