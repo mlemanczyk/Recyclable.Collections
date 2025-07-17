@@ -966,6 +966,408 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<T>(this RecyclableHashSet<T> set, RecyclableSortedSet<T> items)
+            where T : notnull
+        {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+            T[] source = items._items;
+
+            for (int i = 0; i < count; i++)
+            {
+                T value = source[i];
+                int hash = value?.GetHashCode() & int.MaxValue ?? 0;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<T>.Default.Equals(check.Value, value))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = value!;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<T>(this RecyclableHashSet<T> set, RecyclableLinkedList<T> items)
+            where T : notnull
+        {
+            long longCount = items._count;
+            if (longCount == 0)
+            {
+                return;
+            }
+
+            if (longCount > int.MaxValue - set._count)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(items), $"The total number of items exceeds {int.MaxValue}");
+            }
+
+            int count = (int)longCount;
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+
+            var chunk = items._head;
+            while (chunk != null)
+            {
+                int index = chunk.Bottom;
+                int top = chunk.Top;
+                var source = chunk.Value;
+
+                while (index < top)
+                {
+                    T value = source[index++];
+                    int hash = value?.GetHashCode() & int.MaxValue ?? 0;
+                    int bucket = hash & bucketMask;
+
+                    int checkIndex = set._buckets[bucket];
+                    bool exists = false;
+                    while (checkIndex >= 0)
+                    {
+                        ref var check = ref GetEntry(set, checkIndex);
+                        if (check.HashCode == hash && EqualityComparer<T>.Default.Equals(check.Value, value))
+                        {
+                            exists = true;
+                            break;
+                        }
+
+                        checkIndex = check.Next;
+                    }
+
+                    if (exists)
+                    {
+                        continue;
+                    }
+
+                    ref var entry = ref GetEntry(set, insertIndex);
+                    entry.HashCode = hash;
+                    entry.Value = value!;
+                    entry.Next = set._buckets[bucket];
+                    set._buckets[bucket] = insertIndex;
+                    insertIndex++;
+                }
+
+                chunk = chunk.Next;
+            }
+
+            set._count = insertIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<T>(this RecyclableHashSet<T> set, RecyclablePriorityQueue<T> items)
+            where T : notnull
+        {
+            int count = items._size;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+            T[] source = items._heap;
+
+            for (int i = 0; i < count; i++)
+            {
+                T value = source[i];
+                int hash = value?.GetHashCode() & int.MaxValue ?? 0;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<T>.Default.Equals(check.Value, value))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = value!;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclableHashSet<KeyValuePair<TKey, TValue>> set, RecyclableDictionary<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+            var entries = items._entries;
+            int shift = items._blockShift,
+                mask = items._blockSizeMinus1;
+
+            for (int i = 0; i < count; i++)
+            {
+                ref var src = ref entries[i >> shift][i & mask];
+                var pair = new KeyValuePair<TKey, TValue>(src.Key, src.Value);
+                int hash = pair.GetHashCode() & int.MaxValue;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(check.Value, pair))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = pair;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclableHashSet<KeyValuePair<TKey, TValue>> set, RecyclableSortedDictionary<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+
+            for (int i = 0; i < count; i++)
+            {
+                var pair = new KeyValuePair<TKey, TValue>(items.GetKey(i), items.GetValue(i));
+                int hash = pair.GetHashCode() & int.MaxValue;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<KeyValuePair<TKey, TValue>>.Default.Equals(check.Value, pair))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = pair;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclableHashSet<(TKey Key, TValue Value)> set, RecyclableSortedList<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+            TKey[] keys = items._keys;
+            TValue[] values = items._values;
+
+            for (int i = 0; i < count; i++)
+            {
+                var pair = (keys[i], values[i]);
+                int hash = pair.GetHashCode() & int.MaxValue;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<(TKey Key, TValue Value)>.Default.Equals(check.Value, pair))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = pair;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableHashSet<T> set, IReadOnlyList<T> items)
             where T : notnull
         {
