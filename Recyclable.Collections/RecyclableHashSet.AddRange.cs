@@ -139,11 +139,127 @@ namespace Recyclable.Collections
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableHashSet<T> set, Span<T> items)
             where T : notnull
-            => AddRange(set, (ReadOnlySpan<T>)items);
+        {
+            int count = items.Length;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+
+            for (int i = 0; i < count; i++)
+            {
+                T value = items[i];
+                int hash = value?.GetHashCode() & int.MaxValue ?? 0;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<T>.Default.Equals(check.Value, value))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = value!;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclableHashSet<T> set, T[] items)
             where T : notnull
-            => AddRange(set, (ReadOnlySpan<T>)items);
+        {
+            int count = items.Length;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int requiredCount = set._count + count;
+            EnsureCapacity(set, requiredCount);
+
+            int bucketsLength = set._buckets.Length;
+            while (requiredCount >= (bucketsLength * 3) / 4)
+            {
+                bucketsLength <<= 1;
+            }
+
+            if (bucketsLength != set._buckets.Length)
+            {
+                ResizeBuckets(set, bucketsLength);
+            }
+
+            int bucketMask = set._buckets.Length - 1;
+            int insertIndex = set._count;
+
+            for (int i = 0; i < count; i++)
+            {
+                T value = items[i];
+                int hash = value?.GetHashCode() & int.MaxValue ?? 0;
+                int bucket = hash & bucketMask;
+
+                int index = set._buckets[bucket];
+                bool exists = false;
+                while (index >= 0)
+                {
+                    ref var check = ref GetEntry(set, index);
+                    if (check.HashCode == hash && EqualityComparer<T>.Default.Equals(check.Value, value))
+                    {
+                        exists = true;
+                        break;
+                    }
+
+                    index = check.Next;
+                }
+
+                if (exists)
+                {
+                    continue;
+                }
+
+                ref var entry = ref GetEntry(set, insertIndex);
+                entry.HashCode = hash;
+                entry.Value = value!;
+                entry.Next = set._buckets[bucket];
+                set._buckets[bucket] = insertIndex;
+                insertIndex++;
+            }
+
+            set._count = insertIndex;
+        }
     }
 }
