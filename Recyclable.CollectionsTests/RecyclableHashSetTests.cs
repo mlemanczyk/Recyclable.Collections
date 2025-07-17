@@ -125,5 +125,41 @@ namespace Recyclable.CollectionsTests
             _ = set.Should().Contain(new[] { 1, 2, 3 });
         }
 
+        [Fact]
+        public void AddRangeShouldAddItemsFromLongList()
+        {
+            using var set = new RecyclableHashSet<int>();
+            using var list = new RecyclableLongList<int>(new[] { 1, 2, 3 });
+
+            set.AddRange(list);
+
+            _ = set.Count.Should().Be(3);
+            _ = set.Should().Contain(new[] { 1, 2, 3 });
+        }
+
+        [Fact]
+        public void AddRangeShouldAddItemsFromStack()
+        {
+            using var set = new RecyclableHashSet<int>();
+            using var stack = new RecyclableStack<int>(new[] { 1, 2, 3 });
+
+            set.AddRange(stack);
+
+            _ = set.Count.Should().Be(3);
+            _ = set.Should().Contain(new[] { 1, 2, 3 });
+        }
+
+        [Fact]
+        public void AddRangeShouldAddItemsFromQueue()
+        {
+            using var set = new RecyclableHashSet<int>();
+            using var queue = new RecyclableQueue<int>(new[] { 1, 2, 3 });
+
+            set.AddRange(queue);
+
+            _ = set.Count.Should().Be(3);
+            _ = set.Should().Contain(new[] { 1, 2, 3 });
+        }
+
     }
 }
