@@ -95,5 +95,229 @@ namespace Recyclable.CollectionsTests
             var expected = RecyclableLongListTestData.CreateTestData(itemsCount).ToList();
             _ = actual.Should().ContainInConsecutiveOrder(expected);
         }
+
+        [Fact]
+        public void AddRangeShouldAddItemsFromSpan()
+        {
+            using var dict = new RecyclableDictionary<int, string>();
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            dict.AddRange(data);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(i + 1);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
+
+        [Fact]
+        public void AddRangeShouldAddItemsFromDictionary()
+        {
+            using var source = new RecyclableDictionary<int, string>();
+            source.Add(1, "a");
+            source.Add(2, "b");
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(2);
+            dict.GetKey(0).Should().Be(1);
+            dict.GetValue(0).Should().Be("a");
+            dict.GetKey(1).Should().Be(2);
+            dict.GetValue(1).Should().Be("b");
+        }
+
+        [Fact]
+        public void AddRangeShouldAddListItemsInCorrectOrder()
+        {
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            using var source = new RecyclableList<KeyValuePair<int, string>>(data);
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(data[i].Key);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
+
+        [Fact]
+        public void AddRangeShouldAddLongListItemsInCorrectOrder()
+        {
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            using var source = new RecyclableLongList<KeyValuePair<int, string>>(data);
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(data[i].Key);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedDictionaryItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var dict = new RecyclableDictionary<int, long>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                dict.GetKey(i).Should().Be(i);
+                dict.GetValue(i).Should().Be(data[i]);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var dict = new RecyclableDictionary<int, long>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                dict.GetKey(i).Should().Be(i);
+                dict.GetValue(i).Should().Be(data[i]);
+            }
+        }
+
+        [Fact]
+        public void AddRangeShouldAddQueueItemsInCorrectOrder()
+        {
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            using var source = new RecyclableQueue<KeyValuePair<int, string>>(data);
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(data[i].Key);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
+
+        [Fact]
+        public void AddRangeShouldAddStackItemsInCorrectOrder()
+        {
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            using var source = new RecyclableStack<KeyValuePair<int, string>>(data);
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(data[i].Key);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
+
+        [Fact]
+        public void AddRangeShouldAddLinkedListItemsInCorrectOrder()
+        {
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            using var source = new RecyclableLinkedList<KeyValuePair<int, string>>(data);
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(data[i].Key);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
+
+        [Fact]
+        public void AddRangeShouldAddPriorityQueueItemsInCorrectOrder()
+        {
+            var data = new[]
+            {
+                new KeyValuePair<int, string>(1, "a"),
+                new KeyValuePair<int, string>(2, "b"),
+                new KeyValuePair<int, string>(3, "c"),
+            };
+
+            using var source = new RecyclablePriorityQueue<KeyValuePair<int, string>>(comparer: Comparer<KeyValuePair<int, string>>.Create((x, y) => x.Key.CompareTo(y.Key)));
+            foreach (var kvp in data)
+            {
+                source.Enqueue(kvp);
+            }
+            using var dict = new RecyclableDictionary<int, string>();
+
+            dict.AddRange(source);
+
+            _ = dict.Count.Should().Be(3);
+            for (int i = 0; i < 3; i++)
+            {
+                dict.GetKey(i).Should().Be(data[i].Key);
+                dict.GetValue(i).Should().Be(data[i].Value);
+            }
+        }
     }
 }

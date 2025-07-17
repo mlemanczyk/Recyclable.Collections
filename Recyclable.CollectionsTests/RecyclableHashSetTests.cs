@@ -76,5 +76,30 @@ namespace Recyclable.CollectionsTests
                 _ = actual.Should().Contain(expected).And.HaveCount(itemsCount);
             }
         }
+
+        [Fact]
+        public void AddRangeShouldAddItemsFromSpan()
+        {
+            using var set = new RecyclableHashSet<int>();
+            var data = new[] { 1, 2, 3 };
+
+            set.AddRange(data);
+
+            _ = set.Count.Should().Be(3);
+            _ = set.Should().ContainInOrder(data);
+        }
+
+        [Fact]
+        public void AddRangeShouldIgnoreDuplicates()
+        {
+            using var set = new RecyclableHashSet<int>();
+            var data = new[] { 1, 2, 3 };
+
+            set.AddRange(data);
+            set.AddRange(data);
+
+            _ = set.Count.Should().Be(3);
+            _ = set.Should().ContainInOrder(data);
+        }
     }
 }
