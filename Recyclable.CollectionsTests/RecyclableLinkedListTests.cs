@@ -424,6 +424,112 @@ namespace Recyclable.CollectionsTests
             _ = list.Should().Equal(expected);
         }
 
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedListItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var list = new RecyclableLinkedList<(int Key, long Value)>();
+
+            list.AddRange(source);
+
+            List<(int Key, long Value)> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+
+            _ = list.LongCount.Should().Be(itemsCount);
+            _ = list.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedList(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedList<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var list = new RecyclableLinkedList<(int Key, long Value)>();
+
+            list.AddRange(source);
+            list.AddRange(source);
+
+            List<(int Key, long Value)> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add((i, data[i]));
+            }
+
+            _ = list.LongCount.Should().Be(itemsCount * 2);
+            _ = list.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldAddSortedDictionaryItemsInCorrectOrder(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var list = new RecyclableLinkedList<KeyValuePair<int, long>>();
+
+            list.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+
+            _ = list.LongCount.Should().Be(itemsCount);
+            _ = list.Should().Equal(expected);
+        }
+
+        [Theory]
+        [MemberData(nameof(RecyclableLongListTestData.ItemsCountTestCases), MemberType = typeof(RecyclableLongListTestData))]
+        public void AddRangeShouldNotOverrideItemsFromSortedDictionary(int itemsCount)
+        {
+            long[] data = RecyclableLongListTestData.CreateTestData(itemsCount).ToArray();
+            using var source = new RecyclableSortedDictionary<int, long>();
+            for (int i = 0; i < data.Length; i++)
+            {
+                source.Add(i, data[i]);
+            }
+            using var list = new RecyclableLinkedList<KeyValuePair<int, long>>();
+
+            list.AddRange(source);
+            list.AddRange(source);
+
+            List<KeyValuePair<int, long>> expected = new(itemsCount * 2);
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+            for (int i = 0; i < data.Length; i++)
+            {
+                expected.Add(new KeyValuePair<int, long>(i, data[i]));
+            }
+
+            _ = list.LongCount.Should().Be(itemsCount * 2);
+            _ = list.Should().Equal(expected);
+        }
+
         [Fact]
         public void AddRangeShouldAddArrayItems()
         {

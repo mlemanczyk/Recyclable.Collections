@@ -14,8 +14,10 @@ namespace Recyclable.Collections
         {
             private static readonly Action<RecyclableLinkedList<T>, object>? _dictionaryAdder;
             private static readonly Action<RecyclableLinkedList<T>, object>? _sortedListAdder;
+            private static readonly Action<RecyclableLinkedList<T>, object>? _sortedDictionaryAdder;
             private static readonly Type? _dictionaryType;
             private static readonly Type? _sortedListType;
+            private static readonly Type? _sortedDictionaryType;
 
             static AddRangeHelper()
             {
@@ -24,6 +26,8 @@ namespace Recyclable.Collections
                 {
                     Type[] args = elementType.GetGenericArguments();
                     _dictionaryType = typeof(RecyclableDictionary<,>).MakeGenericType(args);
+                    _sortedDictionaryType = typeof(RecyclableSortedDictionary<,>).MakeGenericType(args);
+
                     MethodInfo? method = typeof(zRecyclableLinkedListAddRange).GetMethod(
                         nameof(AddRange),
                         BindingFlags.NonPublic | BindingFlags.Static,
@@ -36,6 +40,20 @@ namespace Recyclable.Collections
                         var objParam = Expression.Parameter(typeof(object));
                         var call = Expression.Call(method, listParam, Expression.Convert(objParam, _dictionaryType));
                         _dictionaryAdder = Expression.Lambda<Action<RecyclableLinkedList<T>, object>>(call, listParam, objParam).Compile();
+                    }
+
+                    method = typeof(zRecyclableLinkedListAddRange).GetMethod(
+                        nameof(AddRange),
+                        BindingFlags.NonPublic | BindingFlags.Static,
+                        binder: null,
+                        types: new[] { typeof(RecyclableLinkedList<>).MakeGenericType(elementType), _sortedDictionaryType },
+                        modifiers: null);
+                    if (method != null)
+                    {
+                        var listParam = Expression.Parameter(typeof(RecyclableLinkedList<T>));
+                        var objParam = Expression.Parameter(typeof(object));
+                        var call = Expression.Call(method, listParam, Expression.Convert(objParam, _sortedDictionaryType));
+                        _sortedDictionaryAdder = Expression.Lambda<Action<RecyclableLinkedList<T>, object>>(call, listParam, objParam).Compile();
                     }
                 }
                 else if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(ValueTuple<,>))
@@ -63,6 +81,12 @@ namespace Recyclable.Collections
                 if (_dictionaryAdder != null && _dictionaryType!.IsInstanceOfType(items))
                 {
                     _dictionaryAdder(list, items);
+                    return true;
+                }
+
+                if (_sortedDictionaryAdder != null && _sortedDictionaryType!.IsInstanceOfType(items))
+                {
+                    _sortedDictionaryAdder(list, items);
                     return true;
                 }
 
@@ -912,6 +936,96 @@ namespace Recyclable.Collections
                 {
                     ref var entry = ref entries[(local + i) >> shift][(local + i) & mask];
                     destination[index + i] = new KeyValuePair<TKey, TValue>(entry.Key, entry.Value);
+                }
+
+                copied += toCopy;
+                index += toCopy;
+            }
+
+            chunk.Top = index;
+            list._count += count;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclableLinkedList<KeyValuePair<TKey, TValue>> list, RecyclableSortedDictionary<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            BiDirectionalRecyclableArrayPoolChunk<KeyValuePair<TKey, TValue>> chunk = list._tail;
+            int index = chunk.Top;
+
+            EnsureCapacity(list, list._count + count);
+
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
+            {
+                if (index == chunkLength)
+                {
+                    chunk.Top = index;
+                    chunk = chunk.Next!;
+                    index = chunk.Top;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                var destination = chunk.Value;
+                int local = copied;
+                for (int i = 0; i < toCopy; i++)
+                {
+                    destination[index + i] = new KeyValuePair<TKey, TValue>(items.GetKey(local + i), items.GetValue(local + i));
+                }
+
+                copied += toCopy;
+                index += toCopy;
+            }
+
+            chunk.Top = index;
+            list._count += count;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclableLinkedList<(TKey Key, TValue Value)> list, RecyclableSortedList<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            BiDirectionalRecyclableArrayPoolChunk<(TKey Key, TValue Value)> chunk = list._tail;
+            int index = chunk.Top;
+
+            EnsureCapacity(list, list._count + count);
+
+            TKey[] keys = items._keys;
+            TValue[] values = items._values;
+            int chunkLength = chunk.Value.Length;
+            int copied = 0;
+
+            while (copied < count)
+            {
+                if (index == chunkLength)
+                {
+                    chunk.Top = index;
+                    chunk = chunk.Next!;
+                    index = chunk.Top;
+                    chunkLength = chunk.Value.Length;
+                }
+
+                int toCopy = Math.Min(chunkLength - index, count - copied);
+                var destination = chunk.Value;
+                int local = copied;
+                for (int i = 0; i < toCopy; i++)
+                {
+                    destination[index + i] = (keys[local + i], values[local + i]);
                 }
 
                 copied += toCopy;
