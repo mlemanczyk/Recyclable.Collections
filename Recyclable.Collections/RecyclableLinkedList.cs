@@ -292,7 +292,7 @@ namespace Recyclable.Collections
                     return false;
                 }
 
-                if (_index >= _chunk.Top)
+                while (_index >= _chunk.Top)
                 {
                     _chunk = _chunk.Next;
                     if (_chunk == null)
