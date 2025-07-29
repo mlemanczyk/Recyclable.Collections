@@ -52,5 +52,55 @@ namespace Recyclable.CollectionsTests
             using var queue = new RecyclablePriorityQueue<int>();
             _ = Assert.Throws<ArgumentOutOfRangeException>(() => queue.Dequeue());
         }
+
+        [Fact]
+        public void AddRangeSpanShouldAddItemsInSortedOrder()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+            queue.AddRange((ReadOnlySpan<int>)_testData);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(_testData.Order());
+        }
+
+        [Fact]
+        public void AddRangeSpanShouldDoNothingWhenEmpty()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+            queue.AddRange(ReadOnlySpan<int>.Empty);
+            _ = queue.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void AddRangeSpanShouldNotOverrideItems()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+            queue.AddRange((ReadOnlySpan<int>)_testData);
+            queue.AddRange((ReadOnlySpan<int>)_testData);
+
+            var expected = _testData.Concat(_testData).Order().ToArray();
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeShouldAcceptNulls()
+        {
+            using var queue = new RecyclablePriorityQueue<long?>();
+            queue.AddRange(new long?[] { null, 1 });
+            _ = queue.Should().HaveCount(2).And.Contain((long?)null);
+        }
+
     }
 }
+
