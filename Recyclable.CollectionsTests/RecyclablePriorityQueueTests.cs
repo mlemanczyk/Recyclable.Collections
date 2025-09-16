@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Recyclable.Collections;
+using System.Collections;
 
 namespace Recyclable.CollectionsTests
 {
@@ -406,6 +407,57 @@ namespace Recyclable.CollectionsTests
             _ = result.Should().Equal(expected);
         }
 
+        [Fact]
+        public void AddRangeReadOnlyCollectionShouldAddItemsInSortedOrder()
+        {
+            var source = new TestReadOnlyCollection<int>(_testData);
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            queue.AddRange(source);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(_testData.Order());
+        }
+
+        [Fact]
+        public void AddRangeReadOnlyCollectionShouldNotOverrideItems()
+        {
+            var source = new TestReadOnlyCollection<int>(_testData);
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            queue.AddRange(source);
+            queue.AddRange(source);
+
+            var expected = _testData.Concat(_testData).Order().ToArray();
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(expected);
+        }
+
+        private sealed class TestReadOnlyCollection<T> : IReadOnlyCollection<T>
+        {
+            private readonly T[] _items;
+
+            public TestReadOnlyCollection(T[] items)
+            {
+                _items = items;
+            }
+
+            public int Count => _items.Length;
+
+            public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)_items).GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => _items.GetEnumerator();
+        }
     }
 }
 

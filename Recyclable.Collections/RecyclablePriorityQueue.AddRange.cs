@@ -1109,6 +1109,53 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<T>(this RecyclablePriorityQueue<T> queue, IReadOnlyCollection<T> items)
+        {
+            int count = items.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int startIndex = queue._size;
+            int newCount = startIndex + count;
+            EnsureCapacity(queue, newCount);
+
+            int index = startIndex;
+            foreach (T item in items)
+            {
+                queue._heap[index++] = item;
+            }
+            queue._size = newCount;
+
+            int half = newCount >> 1;
+            for (int i = half - 1; i >= 0; i--)
+            {
+                int idx = i;
+                T current = queue._heap[idx];
+                while (idx < half)
+                {
+                    int child = (idx << 1) + 1;
+                    int right = child + 1;
+                    if (right < newCount && queue._comparer.Compare(queue._heap[right], queue._heap[child]) < 0)
+                    {
+                        child = right;
+                    }
+
+                    if (queue._comparer.Compare(queue._heap[child], current) >= 0)
+                    {
+                        break;
+                    }
+
+                    queue._heap[idx] = queue._heap[child];
+                    idx = child;
+                }
+
+                queue._heap[idx] = current;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static IEnumerator AddRange<T>(this RecyclablePriorityQueue<T> queue, IEnumerable source)
         {
             IEnumerator enumerator = source.GetEnumerator();
@@ -1177,6 +1224,10 @@ namespace Recyclable.Collections
             else if (items is IReadOnlyList<T> readOnlyList)
             {
                 AddRange(queue, readOnlyList);
+            }
+            else if (items is IReadOnlyCollection<T> readOnlyCollection)
+            {
+                AddRange(queue, readOnlyCollection);
             }
             else
             {
