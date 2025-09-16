@@ -223,6 +223,154 @@ namespace Recyclable.CollectionsTests
             _ = result.Should().Equal(_testData.Order());
         }
 
+        [Fact]
+        public void AddRangeDictionaryShouldAddItemsInSortedOrder()
+        {
+            using var source = new RecyclableDictionary<int, int>();
+            for (int i = 0; i < _testData.Length; i++)
+            {
+                source.Add(i, _testData[i]);
+            }
+
+            using var queue = new RecyclablePriorityQueue<KeyValuePair<int, int>>(comparer: Comparer<KeyValuePair<int, int>>.Create((a, b) => a.Key.CompareTo(b.Key)));
+
+            queue.AddRange(source);
+
+            var result = new List<KeyValuePair<int, int>>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Select((v, i) => new KeyValuePair<int, int>(i, v)).ToList();
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeDictionaryShouldNotOverrideItems()
+        {
+            using var source = new RecyclableDictionary<int, int>();
+            for (int i = 0; i < _testData.Length; i++)
+            {
+                source.Add(i, _testData[i]);
+            }
+
+            using var queue = new RecyclablePriorityQueue<KeyValuePair<int, int>>(comparer: Comparer<KeyValuePair<int, int>>.Create((a, b) => a.Key.CompareTo(b.Key)));
+
+            queue.AddRange(source);
+            queue.AddRange(source);
+
+            var result = new List<KeyValuePair<int, int>>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Select((v, i) => new KeyValuePair<int, int>(i, v))
+                .Concat(_testData.Select((v, i) => new KeyValuePair<int, int>(i, v)))
+                .ToList();
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeSortedListShouldAddItemsInSortedOrder()
+        {
+            using var source = new RecyclableSortedList<int, int>();
+            for (int i = 0; i < _testData.Length; i++)
+            {
+                source.Add(i, _testData[i]);
+            }
+
+            using var queue = new RecyclablePriorityQueue<(int Key, int Value)>(comparer: Comparer<(int Key, int Value)>.Create((a, b) => a.Key.CompareTo(b.Key)));
+
+            queue.AddRange(source);
+
+            var result = new List<(int Key, int Value)>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Select((v, i) => (i, v)).ToList();
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeSortedListShouldNotOverrideItems()
+        {
+            using var source = new RecyclableSortedList<int, int>();
+            for (int i = 0; i < _testData.Length; i++)
+            {
+                source.Add(i, _testData[i]);
+            }
+
+            using var queue = new RecyclablePriorityQueue<(int Key, int Value)>(comparer: Comparer<(int Key, int Value)>.Create((a, b) => a.Key.CompareTo(b.Key)));
+
+            queue.AddRange(source);
+            queue.AddRange(source);
+
+            var result = new List<(int Key, int Value)>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Select((v, i) => (i, v))
+                .Concat(_testData.Select((v, i) => (i, v)))
+                .OrderBy(p => p.Item1)
+                .ToList();
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeSortedDictionaryShouldAddItemsInSortedOrder()
+        {
+            using var source = new RecyclableSortedDictionary<int, int>();
+            for (int i = 0; i < _testData.Length; i++)
+            {
+                source.Add(i, _testData[i]);
+            }
+
+            using var queue = new RecyclablePriorityQueue<KeyValuePair<int, int>>(comparer: Comparer<KeyValuePair<int, int>>.Create((a, b) => a.Key.CompareTo(b.Key)));
+
+            queue.AddRange(source);
+
+            var result = new List<KeyValuePair<int, int>>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Select((v, i) => new KeyValuePair<int, int>(i, v)).ToList();
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeSortedDictionaryShouldNotOverrideItems()
+        {
+            using var source = new RecyclableSortedDictionary<int, int>();
+            for (int i = 0; i < _testData.Length; i++)
+            {
+                source.Add(i, _testData[i]);
+            }
+
+            using var queue = new RecyclablePriorityQueue<KeyValuePair<int, int>>(comparer: Comparer<KeyValuePair<int, int>>.Create((a, b) => a.Key.CompareTo(b.Key)));
+
+            queue.AddRange(source);
+            queue.AddRange(source);
+
+            var result = new List<KeyValuePair<int, int>>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Select((v, i) => new KeyValuePair<int, int>(i, v))
+                .Concat(_testData.Select((v, i) => new KeyValuePair<int, int>(i, v)))
+                .ToList();
+            _ = result.Should().Equal(expected);
+        }
+
     }
 }
 

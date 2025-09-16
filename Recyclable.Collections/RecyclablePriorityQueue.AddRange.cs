@@ -2,6 +2,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Numerics;
 using Recyclable.Collections.Pools;
 
@@ -9,6 +11,96 @@ namespace Recyclable.Collections
 {
     internal static class zRecyclablePriorityQueueAddRange
     {
+        private static class AddRangeHelper<T>
+        {
+            private static readonly Action<RecyclablePriorityQueue<T>, object>? _dictionaryAdder;
+            private static readonly Action<RecyclablePriorityQueue<T>, object>? _sortedListAdder;
+            private static readonly Action<RecyclablePriorityQueue<T>, object>? _sortedDictionaryAdder;
+            private static readonly Type? _dictionaryType;
+            private static readonly Type? _sortedListType;
+            private static readonly Type? _sortedDictionaryType;
+
+            static AddRangeHelper()
+            {
+                Type elementType = typeof(T);
+                if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                {
+                    Type[] args = elementType.GetGenericArguments();
+                    _dictionaryType = typeof(RecyclableDictionary<,>).MakeGenericType(args);
+                    _sortedDictionaryType = typeof(RecyclableSortedDictionary<,>).MakeGenericType(args);
+
+                    MethodInfo? method = typeof(zRecyclablePriorityQueueAddRange).GetMethod(
+                        nameof(AddRange),
+                        BindingFlags.NonPublic | BindingFlags.Static,
+                        binder: null,
+                        types: new[] { typeof(RecyclablePriorityQueue<>).MakeGenericType(elementType), _dictionaryType },
+                        modifiers: null);
+                    if (method != null)
+                    {
+                        var queueParam = Expression.Parameter(typeof(RecyclablePriorityQueue<T>));
+                        var objParam = Expression.Parameter(typeof(object));
+                        var call = Expression.Call(method, queueParam, Expression.Convert(objParam, _dictionaryType));
+                        _dictionaryAdder = Expression.Lambda<Action<RecyclablePriorityQueue<T>, object>>(call, queueParam, objParam).Compile();
+                    }
+
+                    method = typeof(zRecyclablePriorityQueueAddRange).GetMethod(
+                        nameof(AddRange),
+                        BindingFlags.NonPublic | BindingFlags.Static,
+                        binder: null,
+                        types: new[] { typeof(RecyclablePriorityQueue<>).MakeGenericType(elementType), _sortedDictionaryType },
+                        modifiers: null);
+                    if (method != null)
+                    {
+                        var queueParam = Expression.Parameter(typeof(RecyclablePriorityQueue<T>));
+                        var objParam = Expression.Parameter(typeof(object));
+                        var call = Expression.Call(method, queueParam, Expression.Convert(objParam, _sortedDictionaryType));
+                        _sortedDictionaryAdder = Expression.Lambda<Action<RecyclablePriorityQueue<T>, object>>(call, queueParam, objParam).Compile();
+                    }
+                }
+                else if (elementType.IsGenericType && elementType.GetGenericTypeDefinition() == typeof(ValueTuple<,>))
+                {
+                    Type[] args = elementType.GetGenericArguments();
+                    _sortedListType = typeof(RecyclableSortedList<,>).MakeGenericType(args);
+                    MethodInfo? method = typeof(zRecyclablePriorityQueueAddRange).GetMethod(
+                        nameof(AddRange),
+                        BindingFlags.NonPublic | BindingFlags.Static,
+                        binder: null,
+                        types: new[] { typeof(RecyclablePriorityQueue<>).MakeGenericType(elementType), _sortedListType },
+                        modifiers: null);
+                    if (method != null)
+                    {
+                        var queueParam = Expression.Parameter(typeof(RecyclablePriorityQueue<T>));
+                        var objParam = Expression.Parameter(typeof(object));
+                        var call = Expression.Call(method, queueParam, Expression.Convert(objParam, _sortedListType));
+                        _sortedListAdder = Expression.Lambda<Action<RecyclablePriorityQueue<T>, object>>(call, queueParam, objParam).Compile();
+                    }
+                }
+            }
+
+            internal static bool TryAddRange(RecyclablePriorityQueue<T> queue, IEnumerable<T> items)
+            {
+                if (_dictionaryAdder != null && _dictionaryType!.IsInstanceOfType(items))
+                {
+                    _dictionaryAdder(queue, items);
+                    return true;
+                }
+
+                if (_sortedDictionaryAdder != null && _sortedDictionaryType!.IsInstanceOfType(items))
+                {
+                    _sortedDictionaryAdder(queue, items);
+                    return true;
+                }
+
+                if (_sortedListAdder != null && _sortedListType!.IsInstanceOfType(items))
+                {
+                    _sortedListAdder(queue, items);
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void EnsureCapacity<T>(RecyclablePriorityQueue<T> queue, int min)
         {
@@ -822,6 +914,155 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclablePriorityQueue<KeyValuePair<TKey, TValue>> queue, RecyclableDictionary<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int startIndex = queue._size;
+            int newCount = startIndex + count;
+            EnsureCapacity(queue, newCount);
+
+            var entries = items._entries;
+            int shift = items._blockShift,
+                mask = items._blockSizeMinus1;
+
+            for (int i = 0; i < count; i++)
+            {
+                ref var src = ref entries[i >> shift][i & mask];
+                queue._heap[startIndex + i] = new KeyValuePair<TKey, TValue>(src.Key, src.Value);
+            }
+            queue._size = newCount;
+
+            int half = newCount >> 1;
+            for (int i = half - 1; i >= 0; i--)
+            {
+                int index = i;
+                var item = queue._heap[index];
+                while (index < half)
+                {
+                    int child = (index << 1) + 1;
+                    int right = child + 1;
+                    if (right < newCount && queue._comparer.Compare(queue._heap[right], queue._heap[child]) < 0)
+                    {
+                        child = right;
+                    }
+
+                    if (queue._comparer.Compare(queue._heap[child], item) >= 0)
+                    {
+                        break;
+                    }
+
+                    queue._heap[index] = queue._heap[child];
+                    index = child;
+                }
+
+                queue._heap[index] = item;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclablePriorityQueue<KeyValuePair<TKey, TValue>> queue, RecyclableSortedDictionary<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items.Count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int startIndex = queue._size;
+            int newCount = startIndex + count;
+            EnsureCapacity(queue, newCount);
+
+            for (int i = 0; i < count; i++)
+            {
+                queue._heap[startIndex + i] = new KeyValuePair<TKey, TValue>(items.GetKey(i), items.GetValue(i));
+            }
+            queue._size = newCount;
+
+            int half = newCount >> 1;
+            for (int i = half - 1; i >= 0; i--)
+            {
+                int index = i;
+                var item = queue._heap[index];
+                while (index < half)
+                {
+                    int child = (index << 1) + 1;
+                    int right = child + 1;
+                    if (right < newCount && queue._comparer.Compare(queue._heap[right], queue._heap[child]) < 0)
+                    {
+                        child = right;
+                    }
+
+                    if (queue._comparer.Compare(queue._heap[child], item) >= 0)
+                    {
+                        break;
+                    }
+
+                    queue._heap[index] = queue._heap[child];
+                    index = child;
+                }
+
+                queue._heap[index] = item;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<TKey, TValue>(this RecyclablePriorityQueue<(TKey Key, TValue Value)> queue, RecyclableSortedList<TKey, TValue> items)
+            where TKey : notnull
+        {
+            int count = items._count;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int startIndex = queue._size;
+            int newCount = startIndex + count;
+            EnsureCapacity(queue, newCount);
+
+            TKey[] keys = items._keys;
+            TValue[] values = items._values;
+
+            for (int i = 0; i < count; i++)
+            {
+                queue._heap[startIndex + i] = (keys[i], values[i]);
+            }
+            queue._size = newCount;
+
+            int half = newCount >> 1;
+            for (int i = half - 1; i >= 0; i--)
+            {
+                int index = i;
+                var item = queue._heap[index];
+                while (index < half)
+                {
+                    int child = (index << 1) + 1;
+                    int right = child + 1;
+                    if (right < newCount && queue._comparer.Compare(queue._heap[right], queue._heap[child]) < 0)
+                    {
+                        child = right;
+                    }
+
+                    if (queue._comparer.Compare(queue._heap[child], item) >= 0)
+                    {
+                        break;
+                    }
+
+                    queue._heap[index] = queue._heap[child];
+                    index = child;
+                }
+
+                queue._heap[index] = item;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclablePriorityQueue<T> queue, IReadOnlyList<T> items)
         {
             int count = items.Count;
@@ -917,6 +1158,9 @@ namespace Recyclable.Collections
             else if (items is ICollection collection)
             {
                 AddRange(queue, collection);
+            }
+            else if (AddRangeHelper<T>.TryAddRange(queue, items))
+            {
             }
             else if (items is IReadOnlyList<T> readOnlyList)
             {
