@@ -148,6 +148,81 @@ namespace Recyclable.CollectionsTests
             _ = queue.Should().HaveCount(2).And.Contain((long?)null);
         }
 
+        [Fact]
+        public void AddRangeQueueShouldAddItemsInSortedOrder()
+        {
+            using var source = new RecyclableQueue<int>(_testData);
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            queue.AddRange(source);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(_testData.Order());
+        }
+
+        [Fact]
+        public void AddRangeQueueShouldNotOverrideItems()
+        {
+            using var source = new RecyclableQueue<int>(_testData);
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            queue.AddRange(source);
+            queue.AddRange(source);
+
+            var expected = _testData.Concat(_testData).Order().ToArray();
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeStackShouldAddItemsInSortedOrder()
+        {
+            using var source = new RecyclableStack<int>(_testData);
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            queue.AddRange(source);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(_testData.Order());
+        }
+
+        [Fact]
+        public void AddRangeSortedSetShouldAddItemsInSortedOrder()
+        {
+            using var source = new RecyclableSortedSet<int>();
+            foreach (int item in _testData)
+            {
+                source.Add(item);
+            }
+
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            queue.AddRange(source);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(_testData.Order());
+        }
+
     }
 }
 
