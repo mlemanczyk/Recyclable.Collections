@@ -125,6 +125,38 @@ namespace Recyclable.CollectionsTests
         }
 
         [Fact]
+        public void AddRangeReadOnlyMemoryShouldAddItemsInSortedOrder()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+            queue.AddRange((ReadOnlyMemory<int>)_testData);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(_testData.Order());
+        }
+
+        [Fact]
+        public void AddRangeMemoryShouldNotOverrideItems()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+            queue.AddRange(_testData.AsMemory());
+            queue.AddRange(_testData.AsMemory());
+
+            var expected = _testData.Concat(_testData).Order().ToArray();
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
         public void AddRangeArrayShouldNotOverrideItems()
         {
             using var queue = new RecyclablePriorityQueue<int>();

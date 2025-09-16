@@ -233,6 +233,100 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<T>(this RecyclablePriorityQueue<T> queue, ReadOnlyMemory<T> items)
+        {
+            ReadOnlySpan<T> span = items.Span;
+            int count = span.Length;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int startIndex = queue._size;
+            int newCount = startIndex + count;
+            EnsureCapacity(queue, newCount);
+
+            for (int i = 0; i < count; i++)
+            {
+                queue._heap[startIndex + i] = span[i];
+            }
+            queue._size = newCount;
+
+            int half = newCount >> 1;
+            for (int i = half - 1; i >= 0; i--)
+            {
+                int index = i;
+                T item = queue._heap[index];
+                while (index < half)
+                {
+                    int child = (index << 1) + 1;
+                    int right = child + 1;
+                    if (right < newCount && queue._comparer.Compare(queue._heap[right], queue._heap[child]) < 0)
+                    {
+                        child = right;
+                    }
+
+                    if (queue._comparer.Compare(queue._heap[child], item) >= 0)
+                    {
+                        break;
+                    }
+
+                    queue._heap[index] = queue._heap[child];
+                    index = child;
+                }
+
+                queue._heap[index] = item;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static void AddRange<T>(this RecyclablePriorityQueue<T> queue, Memory<T> items)
+        {
+            Span<T> span = items.Span;
+            int count = span.Length;
+            if (count == 0)
+            {
+                return;
+            }
+
+            int startIndex = queue._size;
+            int newCount = startIndex + count;
+            EnsureCapacity(queue, newCount);
+
+            for (int i = 0; i < count; i++)
+            {
+                queue._heap[startIndex + i] = span[i];
+            }
+            queue._size = newCount;
+
+            int half = newCount >> 1;
+            for (int i = half - 1; i >= 0; i--)
+            {
+                int index = i;
+                T item = queue._heap[index];
+                while (index < half)
+                {
+                    int child = (index << 1) + 1;
+                    int right = child + 1;
+                    if (right < newCount && queue._comparer.Compare(queue._heap[right], queue._heap[child]) < 0)
+                    {
+                        child = right;
+                    }
+
+                    if (queue._comparer.Compare(queue._heap[child], item) >= 0)
+                    {
+                        break;
+                    }
+
+                    queue._heap[index] = queue._heap[child];
+                    index = child;
+                }
+
+                queue._heap[index] = item;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclablePriorityQueue<T> queue, T[] items)
         {
             int count = items.Length;
