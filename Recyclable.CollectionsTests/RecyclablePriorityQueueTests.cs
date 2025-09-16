@@ -66,7 +66,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace Recyclable.CollectionsTests
             queue.AddRange((ReadOnlySpan<int>)_testData);
             queue.AddRange((ReadOnlySpan<int>)_testData);
 
-            var expected = _testData.Concat(_testData).Order().ToArray();
+            var expected = _testData.Concat(_testData).OrderBy(static value => value).ToArray();
             var result = new List<int>();
             while (queue.LongCount > 0)
             {
@@ -106,7 +106,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -136,7 +136,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -146,7 +146,7 @@ namespace Recyclable.CollectionsTests
             queue.AddRange(_testData.AsMemory());
             queue.AddRange(_testData.AsMemory());
 
-            var expected = _testData.Concat(_testData).Order().ToArray();
+            var expected = _testData.Concat(_testData).OrderBy(static value => value).ToArray();
             var result = new List<int>();
             while (queue.LongCount > 0)
             {
@@ -163,7 +163,7 @@ namespace Recyclable.CollectionsTests
             queue.AddRange(_testData);
             queue.AddRange(_testData);
 
-            var expected = _testData.Concat(_testData).Order().ToArray();
+            var expected = _testData.Concat(_testData).OrderBy(static value => value).ToArray();
             var result = new List<int>();
             while (queue.LongCount > 0)
             {
@@ -195,7 +195,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -207,7 +207,7 @@ namespace Recyclable.CollectionsTests
             queue.AddRange(source);
             queue.AddRange(source);
 
-            var expected = _testData.Concat(_testData).Order().ToArray();
+            var expected = _testData.Concat(_testData).OrderBy(static value => value).ToArray();
             var result = new List<int>();
             while (queue.LongCount > 0)
             {
@@ -231,7 +231,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -253,7 +253,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -453,7 +453,7 @@ namespace Recyclable.CollectionsTests
                 result.Add(queue.Dequeue());
             }
 
-            _ = result.Should().Equal(_testData.Order());
+            _ = result.Should().Equal(_testData.OrderBy(static value => value));
         }
 
         [Fact]
@@ -465,7 +465,7 @@ namespace Recyclable.CollectionsTests
             queue.AddRange(source);
             queue.AddRange(source);
 
-            var expected = _testData.Concat(_testData).Order().ToArray();
+            var expected = _testData.Concat(_testData).OrderBy(static value => value).ToArray();
             var result = new List<int>();
             while (queue.LongCount > 0)
             {
