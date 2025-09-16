@@ -1109,6 +1109,18 @@ namespace Recyclable.Collections
         }
 
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static IEnumerator AddRange<T>(this RecyclablePriorityQueue<T> queue, IEnumerable source)
+        {
+            IEnumerator enumerator = source.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                queue.Enqueue((T)enumerator.Current!);
+            }
+
+            return enumerator;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void AddRange<T>(this RecyclablePriorityQueue<T> queue, IEnumerable<T> items)
         {
             if (items is RecyclableList<T> recyclableList)

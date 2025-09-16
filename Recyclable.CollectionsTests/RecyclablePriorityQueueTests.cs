@@ -371,6 +371,41 @@ namespace Recyclable.CollectionsTests
             _ = result.Should().Equal(expected);
         }
 
+        [Fact]
+        public void AddRangeEnumerableShouldAddItemsInSortedOrder()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            _ = queue.AddRange((System.Collections.IEnumerable)_testData);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.OrderBy(v => v).ToList();
+            _ = result.Should().Equal(expected);
+        }
+
+        [Fact]
+        public void AddRangeEnumerableShouldNotOverrideItems()
+        {
+            using var queue = new RecyclablePriorityQueue<int>();
+
+            _ = queue.AddRange((System.Collections.IEnumerable)_testData);
+            _ = queue.AddRange((System.Collections.IEnumerable)_testData);
+
+            var result = new List<int>();
+            while (queue.LongCount > 0)
+            {
+                result.Add(queue.Dequeue());
+            }
+
+            var expected = _testData.Concat(_testData).OrderBy(v => v).ToList();
+            _ = result.Should().Equal(expected);
+        }
+
     }
 }
 
